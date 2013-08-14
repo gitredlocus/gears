@@ -1,0 +1,8 @@
+#
+# Here is the list of tools we plan to support for this langugage
+#
+
+pylint
+pyflakes
+clone digger
+pycov

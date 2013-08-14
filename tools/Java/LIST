@@ -1,0 +1,9 @@
+#
+# Here is the list of tools we plan to support for this langugage
+#
+
+findbugs
+pmd-cpd
+JLint
+Jacoco
+pmccabe
