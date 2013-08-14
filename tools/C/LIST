@@ -5,9 +5,6 @@
 clang
 pmccabe
 pmd-cpd
-sloc
 gcov/lcov
 cppcheck (?)
 splint (?)
-cstyle (?)
-valgrind (?)
