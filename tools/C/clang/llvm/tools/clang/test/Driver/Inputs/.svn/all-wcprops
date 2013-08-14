@@ -1,0 +1,11 @@
+K 25
+svn:wc:ra_dav:version-url
+V 62
+/svn/llvm-project/!svn/ver/187175/cfe/trunk/test/Driver/Inputs
+END
+lit.local.cfg
+K 25
+svn:wc:ra_dav:version-url
+V 76
+/svn/llvm-project/!svn/ver/173416/cfe/trunk/test/Driver/Inputs/lit.local.cfg
+END

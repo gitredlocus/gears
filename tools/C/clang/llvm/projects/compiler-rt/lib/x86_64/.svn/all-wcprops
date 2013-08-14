@@ -1,0 +1,47 @@
+K 25
+svn:wc:ra_dav:version-url
+V 62
+/svn/llvm-project/!svn/ver/154059/compiler-rt/trunk/lib/x86_64
+END
+floatdisf.c
+K 25
+svn:wc:ra_dav:version-url
+V 74
+/svn/llvm-project/!svn/ver/144750/compiler-rt/trunk/lib/x86_64/floatdisf.c
+END
+floatdidf.c
+K 25
+svn:wc:ra_dav:version-url
+V 74
+/svn/llvm-project/!svn/ver/144750/compiler-rt/trunk/lib/x86_64/floatdidf.c
+END
+floatundisf.S
+K 25
+svn:wc:ra_dav:version-url
+V 76
+/svn/llvm-project/!svn/ver/150253/compiler-rt/trunk/lib/x86_64/floatundisf.S
+END
+floatundidf.S
+K 25
+svn:wc:ra_dav:version-url
+V 76
+/svn/llvm-project/!svn/ver/150253/compiler-rt/trunk/lib/x86_64/floatundidf.S
+END
+floatdixf.c
+K 25
+svn:wc:ra_dav:version-url
+V 74
+/svn/llvm-project/!svn/ver/144750/compiler-rt/trunk/lib/x86_64/floatdixf.c
+END
+Makefile.mk
+K 25
+svn:wc:ra_dav:version-url
+V 74
+/svn/llvm-project/!svn/ver/145674/compiler-rt/trunk/lib/x86_64/Makefile.mk
+END
+floatundixf.S
+K 25
+svn:wc:ra_dav:version-url
+V 76
+/svn/llvm-project/!svn/ver/150253/compiler-rt/trunk/lib/x86_64/floatundixf.S
+END

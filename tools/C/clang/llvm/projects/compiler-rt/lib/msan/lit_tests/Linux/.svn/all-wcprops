@@ -1,0 +1,41 @@
+K 25
+svn:wc:ra_dav:version-url
+V 76
+/svn/llvm-project/!svn/ver/187414/compiler-rt/trunk/lib/msan/lit_tests/Linux
+END
+glob.cc
+K 25
+svn:wc:ra_dav:version-url
+V 84
+/svn/llvm-project/!svn/ver/185935/compiler-rt/trunk/lib/msan/lit_tests/Linux/glob.cc
+END
+lit.local.cfg
+K 25
+svn:wc:ra_dav:version-url
+V 90
+/svn/llvm-project/!svn/ver/179091/compiler-rt/trunk/lib/msan/lit_tests/Linux/lit.local.cfg
+END
+glob_nomatch.cc
+K 25
+svn:wc:ra_dav:version-url
+V 92
+/svn/llvm-project/!svn/ver/185428/compiler-rt/trunk/lib/msan/lit_tests/Linux/glob_nomatch.cc
+END
+syscalls.cc
+K 25
+svn:wc:ra_dav:version-url
+V 88
+/svn/llvm-project/!svn/ver/187414/compiler-rt/trunk/lib/msan/lit_tests/Linux/syscalls.cc
+END
+glob_altdirfunc.cc
+K 25
+svn:wc:ra_dav:version-url
+V 95
+/svn/llvm-project/!svn/ver/185935/compiler-rt/trunk/lib/msan/lit_tests/Linux/glob_altdirfunc.cc
+END
+tcgetattr.cc
+K 25
+svn:wc:ra_dav:version-url
+V 89
+/svn/llvm-project/!svn/ver/185626/compiler-rt/trunk/lib/msan/lit_tests/Linux/tcgetattr.cc
+END
