@@ -1,0 +1,47 @@
+K 25
+svn:wc:ra_dav:version-url
+V 65
+/svn/llvm-project/!svn/ver/187924/compiler-rt/trunk/make/platform
+END
+clang_darwin_test_input.c
+K 25
+svn:wc:ra_dav:version-url
+V 91
+/svn/llvm-project/!svn/ver/144786/compiler-rt/trunk/make/platform/clang_darwin_test_input.c
+END
+clang_linux.mk
+K 25
+svn:wc:ra_dav:version-url
+V 80
+/svn/llvm-project/!svn/ver/187924/compiler-rt/trunk/make/platform/clang_linux.mk
+END
+multi_arch.mk
+K 25
+svn:wc:ra_dav:version-url
+V 79
+/svn/llvm-project/!svn/ver/144658/compiler-rt/trunk/make/platform/multi_arch.mk
+END
+clang_darwin.mk
+K 25
+svn:wc:ra_dav:version-url
+V 81
+/svn/llvm-project/!svn/ver/186410/compiler-rt/trunk/make/platform/clang_darwin.mk
+END
+clang_linux_test_input.c
+K 25
+svn:wc:ra_dav:version-url
+V 90
+/svn/llvm-project/!svn/ver/165504/compiler-rt/trunk/make/platform/clang_linux_test_input.c
+END
+darwin_bni.mk
+K 25
+svn:wc:ra_dav:version-url
+V 79
+/svn/llvm-project/!svn/ver/182435/compiler-rt/trunk/make/platform/darwin_bni.mk
+END
+darwin_fat.mk
+K 25
+svn:wc:ra_dav:version-url
+V 79
+/svn/llvm-project/!svn/ver/144659/compiler-rt/trunk/make/platform/darwin_fat.mk
+END

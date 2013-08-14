@@ -1,0 +1,71 @@
+K 25
+svn:wc:ra_dav:version-url
+V 55
+/svn/llvm-project/!svn/ver/186647/cfe/trunk/test/OpenMP
+END
+threadprivate_ast_print.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 83
+/svn/llvm-project/!svn/ver/186647/cfe/trunk/test/OpenMP/threadprivate_ast_print.cpp
+END
+openmp_common.c
+K 25
+svn:wc:ra_dav:version-url
+V 71
+/svn/llvm-project/!svn/ver/177705/cfe/trunk/test/OpenMP/openmp_common.c
+END
+predefined_macro.c
+K 25
+svn:wc:ra_dav:version-url
+V 74
+/svn/llvm-project/!svn/ver/181683/cfe/trunk/test/OpenMP/predefined_macro.c
+END
+no_option_no_warn.c
+K 25
+svn:wc:ra_dav:version-url
+V 75
+/svn/llvm-project/!svn/ver/177705/cfe/trunk/test/OpenMP/no_option_no_warn.c
+END
+parallel_default_messages.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 85
+/svn/llvm-project/!svn/ver/186647/cfe/trunk/test/OpenMP/parallel_default_messages.cpp
+END
+threadprivate_messages.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 82
+/svn/llvm-project/!svn/ver/186647/cfe/trunk/test/OpenMP/threadprivate_messages.cpp
+END
+linking.c
+K 25
+svn:wc:ra_dav:version-url
+V 65
+/svn/llvm-project/!svn/ver/172715/cfe/trunk/test/OpenMP/linking.c
+END
+parallel_private_messages.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 85
+/svn/llvm-project/!svn/ver/186647/cfe/trunk/test/OpenMP/parallel_private_messages.cpp
+END
+option_warn.c
+K 25
+svn:wc:ra_dav:version-url
+V 69
+/svn/llvm-project/!svn/ver/177705/cfe/trunk/test/OpenMP/option_warn.c
+END
+parallel_ast_print.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 78
+/svn/llvm-project/!svn/ver/186647/cfe/trunk/test/OpenMP/parallel_ast_print.cpp
+END
+no_option.c
+K 25
+svn:wc:ra_dav:version-url
+V 67
+/svn/llvm-project/!svn/ver/177705/cfe/trunk/test/OpenMP/no_option.c
+END

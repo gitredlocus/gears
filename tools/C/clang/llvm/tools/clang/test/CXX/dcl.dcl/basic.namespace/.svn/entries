@@ -1,0 +1,40 @@
+10
+
+dir
+188362
+http://llvm.org/svn/llvm-project/cfe/trunk/test/CXX/dcl.dcl/basic.namespace
+http://llvm.org/svn/llvm-project
+
+
+
+2013-07-02T23:47:44.577775Z
+185487
+rikka
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+91177308-0d34-0410-b5e6-96231b3b80d8
+
+namespace.udir
+dir
+
+namespace.alias
+dir
+
+namespace.udecl
+dir
+
+namespace.def
+dir
+
