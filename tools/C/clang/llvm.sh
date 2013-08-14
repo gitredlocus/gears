@@ -31,3 +31,14 @@ echo "Clang is now ready to use"
 # If above step fails try this configuration 
 # echo "Run sudo make install in $PWD"
 
+# Here is how to run clang
+# $PATH_TO_CLANG/llvm/tools/clang/tools/scan-build/scan-build --use-analyzer=$PATH_TO_CLANG/llvm/build/Release/bin/clang make -j8 CC=$PATH_TO_CLANG/llvm/tools/clang/tools/scan-build/ccc-analyzer
+
+# At the end of the run, the defects are available at:
+# scan-build: 58 bugs found.
+# scan-build: Run 'scan-view /tmp/scan-build-2013-08-03-1' to examine bug reports.
+
+# $PATH_TO_CLANG/llvm/./tools/clang/tools/scan-view/scan-view /tmp/scan-build-2013-08-03-1/
+# Starting scan-view at: http://127.0.0.1:8181
+#   Use Ctrl-C to exit.
+# Created new window in existing browser session.
