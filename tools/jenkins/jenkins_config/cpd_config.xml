@@ -1,0 +1,111 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<project>
+  <actions/>
+  <description></description>
+  <keepDependencies>false</keepDependencies>
+  <properties/>
+  <scm class="hudson.plugins.git.GitSCM" plugin="git@1.4.0">
+    <configVersion>2</configVersion>
+    <userRemoteConfigs>
+      <hudson.plugins.git.UserRemoteConfig>
+        <name></name>
+        <refspec></refspec>
+        <url>ssh://jenkins@gerrit.redlocus.com:29418/redis</url>
+      </hudson.plugins.git.UserRemoteConfig>
+    </userRemoteConfigs>
+    <branches>
+      <hudson.plugins.git.BranchSpec>
+        <name>master</name>
+      </hudson.plugins.git.BranchSpec>
+    </branches>
+    <disableSubmodules>false</disableSubmodules>
+    <recursiveSubmodules>false</recursiveSubmodules>
+    <doGenerateSubmoduleConfigurations>false</doGenerateSubmoduleConfigurations>
+    <authorOrCommitter>false</authorOrCommitter>
+    <clean>false</clean>
+    <wipeOutWorkspace>false</wipeOutWorkspace>
+    <pruneBranches>false</pruneBranches>
+    <remotePoll>false</remotePoll>
+    <ignoreNotifyCommit>false</ignoreNotifyCommit>
+    <useShallowClone>false</useShallowClone>
+    <buildChooser class="hudson.plugins.git.util.DefaultBuildChooser"/>
+    <gitTool>Default</gitTool>
+    <submoduleCfg class="list"/>
+    <relativeTargetDir></relativeTargetDir>
+    <reference></reference>
+    <excludedRegions></excludedRegions>
+    <excludedUsers></excludedUsers>
+    <gitConfigName></gitConfigName>
+    <gitConfigEmail></gitConfigEmail>
+    <skipTag>false</skipTag>
+    <includedRegions></includedRegions>
+    <scmName></scmName>
+  </scm>
+  <canRoam>true</canRoam>
+  <disabled>false</disabled>
+  <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
+  <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
+  <triggers/>
+  <concurrentBuild>false</concurrentBuild>
+  <builders>
+    <hudson.tasks.Shell>
+      <command>#!/bin/bash
+
+make clean
+
+secloud_path=/opt/sw/secloud
+tools_path=/opt/sw/pmd-bin-5.0.4
+report_path=/var/lib/jenkins/jobs/${JOB_NAME}/reports
+latest_path=/var/lib/jenkins/jobs/${JOB_NAME}/reports/latest
+
+mkdir -p $report_path
+mkdir -p $report_path/${JOB_NAME}_${BUILD_NUMBER}
+mkdir -p $latest_path
+
+if [[ &quot;:$PATH:&quot; != *&quot;:$tools_path:&quot;* ]]; then
+    PATH=&quot;${PATH:+&quot;$PATH:&quot;}$tools_path&quot;
+fi
+set +e
+java -Xmx256m -classpath $tools_path/lib/pmd-5.0.4.jar:$tools_path/lib/commons-io-2.2.jar net.sourceforge.pmd.cpd.CPD --minimum-tokens 100 --language cpp --encoding UTF-8 --format net.sourceforge.pmd.cpd.XMLRenderer --files src &gt; $report_path/${JOB_NAME}_${BUILD_NUMBER}/cpd.xml
+rc=$?
+echo &quot;Found $rc defects&quot;
+
+cp $report_path/${JOB_NAME}_${BUILD_NUMBER}/cpd.xml cpd.xml
+
+python $secloud_path/tools/cpd_parser.py cpd.xml $report_path/${JOB_NAME}_${BUILD_NUMBER}/cpd.JSON
+
+cp -r $report_path/${JOB_NAME}_${BUILD_NUMBER}/* $latest_path
+
+exit 0</command>
+    </hudson.tasks.Shell>
+  </builders>
+  <publishers>
+    <hudson.plugins.dry.DryPublisher plugin="dry@2.34">
+      <healthy></healthy>
+      <unHealthy></unHealthy>
+      <thresholdLimit>low</thresholdLimit>
+      <pluginName>[DRY] </pluginName>
+      <defaultEncoding></defaultEncoding>
+      <canRunOnFailed>false</canRunOnFailed>
+      <useStableBuildAsReference>false</useStableBuildAsReference>
+      <useDeltaValues>false</useDeltaValues>
+      <thresholds plugin="analysis-core@1.49">
+        <unstableTotalAll></unstableTotalAll>
+        <unstableTotalHigh></unstableTotalHigh>
+        <unstableTotalNormal></unstableTotalNormal>
+        <unstableTotalLow></unstableTotalLow>
+        <failedTotalAll></failedTotalAll>
+        <failedTotalHigh></failedTotalHigh>
+        <failedTotalNormal></failedTotalNormal>
+        <failedTotalLow></failedTotalLow>
+      </thresholds>
+      <shouldDetectModules>false</shouldDetectModules>
+      <dontComputeNew>true</dontComputeNew>
+      <doNotResolveRelativePaths>false</doNotResolveRelativePaths>
+      <pattern>**/cpd.xml</pattern>
+      <highThreshold>50</highThreshold>
+      <normalThreshold>25</normalThreshold>
+    </hudson.plugins.dry.DryPublisher>
+  </publishers>
+  <buildWrappers/>
+</project>
