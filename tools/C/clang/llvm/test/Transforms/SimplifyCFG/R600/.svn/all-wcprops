@@ -1,0 +1,23 @@
+K 25
+svn:wc:ra_dav:version-url
+V 77
+/svn/llvm-project/!svn/ver/187764/llvm/trunk/test/Transforms/SimplifyCFG/R600
+END
+parallelorifcollapse.ll
+K 25
+svn:wc:ra_dav:version-url
+V 101
+/svn/llvm-project/!svn/ver/187764/llvm/trunk/test/Transforms/SimplifyCFG/R600/parallelorifcollapse.ll
+END
+parallelandifcollapse.ll
+K 25
+svn:wc:ra_dav:version-url
+V 102
+/svn/llvm-project/!svn/ver/187764/llvm/trunk/test/Transforms/SimplifyCFG/R600/parallelandifcollapse.ll
+END
+lit.local.cfg
+K 25
+svn:wc:ra_dav:version-url
+V 91
+/svn/llvm-project/!svn/ver/187764/llvm/trunk/test/Transforms/SimplifyCFG/R600/lit.local.cfg
+END
