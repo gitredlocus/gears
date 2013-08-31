@@ -1,0 +1,1241 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - redis-lcov_9.info - /var/lib/jenkins/jobs/redis-lcov/workspace/src/t_list.c</title>
+  <link rel="stylesheet" type="text/css" href="../../../../../../../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../../../../../../../index.html">top level</a> - <a href="index.html">var/lib/jenkins/jobs/redis-lcov/workspace/src</a> - t_list.c<span style="font-size: 80%;"> (source / <a href="t_list.c.func.html">functions</a>)</span></td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">redis-lcov_9.info</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">561</td>
+            <td class="headerCovTableEntry">572</td>
+            <td class="headerCovTableEntryHi">98.1 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2013-08-26</td>
+            <td></td>
+            <td class="headerItem">Functions:</td>
+            <td class="headerCovTableEntry">40</td>
+            <td class="headerCovTableEntry">40</td>
+            <td class="headerCovTableEntryHi">100.0 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Legend:</td>
+            <td class="headerValueLeg">            Lines:
+            <span class="coverLegendCov">hit</span>
+            <span class="coverLegendNoCov">not hit</span>
+            | Branches:
+            <span class="coverLegendCov">+</span> taken
+            <span class="coverLegendNoCov">-</span> not taken
+            <span class="coverLegendNoCov">#</span> not executed
+</td>
+            <td></td>
+            <td class="headerItem">Branches:</td>
+            <td class="headerCovTableEntry">321</td>
+            <td class="headerCovTableEntry">374</td>
+            <td class="headerCovTableEntryMed">85.8 %</td>
+          </tr>
+          <tr><td><img src="../../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">           Branch data     Line data    Source code</pre>
+<pre class="source">
+<a name="1"><span class="lineNum">       1 </span>                :            : /*</a>
+<span class="lineNum">       2 </span>                :            :  * Copyright (c) 2009-2012, Salvatore Sanfilippo &lt;antirez at gmail dot com&gt;
+<span class="lineNum">       3 </span>                :            :  * All rights reserved.
+<span class="lineNum">       4 </span>                :            :  *
+<span class="lineNum">       5 </span>                :            :  * Redistribution and use in source and binary forms, with or without
+<span class="lineNum">       6 </span>                :            :  * modification, are permitted provided that the following conditions are met:
+<span class="lineNum">       7 </span>                :            :  *
+<span class="lineNum">       8 </span>                :            :  *   * Redistributions of source code must retain the above copyright notice,
+<span class="lineNum">       9 </span>                :            :  *     this list of conditions and the following disclaimer.
+<span class="lineNum">      10 </span>                :            :  *   * Redistributions in binary form must reproduce the above copyright
+<span class="lineNum">      11 </span>                :            :  *     notice, this list of conditions and the following disclaimer in the
+<span class="lineNum">      12 </span>                :            :  *     documentation and/or other materials provided with the distribution.
+<span class="lineNum">      13 </span>                :            :  *   * Neither the name of Redis nor the names of its contributors may be used
+<span class="lineNum">      14 </span>                :            :  *     to endorse or promote products derived from this software without
+<span class="lineNum">      15 </span>                :            :  *     specific prior written permission.
+<span class="lineNum">      16 </span>                :            :  *
+<span class="lineNum">      17 </span>                :            :  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS &quot;AS IS&quot;
+<span class="lineNum">      18 </span>                :            :  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+<span class="lineNum">      19 </span>                :            :  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+<span class="lineNum">      20 </span>                :            :  * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+<span class="lineNum">      21 </span>                :            :  * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+<span class="lineNum">      22 </span>                :            :  * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+<span class="lineNum">      23 </span>                :            :  * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+<span class="lineNum">      24 </span>                :            :  * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+<span class="lineNum">      25 </span>                :            :  * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+<span class="lineNum">      26 </span>                :            :  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+<span class="lineNum">      27 </span>                :            :  * POSSIBILITY OF SUCH DAMAGE.
+<span class="lineNum">      28 </span>                :            :  */
+<span class="lineNum">      29 </span>                :            : 
+<span class="lineNum">      30 </span>                :            : #include &quot;redis.h&quot;
+<span class="lineNum">      31 </span>                :            : 
+<span class="lineNum">      32 </span>                :            : void signalListAsReady(redisClient *c, robj *key);
+<span class="lineNum">      33 </span>                :            : 
+<span class="lineNum">      34 </span>                :            : /*-----------------------------------------------------------------------------
+<span class="lineNum">      35 </span>                :            :  * List API
+<span class="lineNum">      36 </span>                :            :  *----------------------------------------------------------------------------*/
+<span class="lineNum">      37 </span>                :            : 
+<span class="lineNum">      38 </span>                :            : /* Check the argument length to see if it requires us to convert the ziplist
+<a name="39"><span class="lineNum">      39 </span>                :            :  * to a real list. Only check raw-encoded objects because integer encoded</a>
+<span class="lineNum">      40 </span>                :            :  * objects are never too long. */
+<span class="lineNum">      41 </span>                :<span class="lineCov">     341226 : void listTypeTryConversion(robj *subject, robj *value) {</span>
+<span class="lineNum">      42 </span>        [<span class="branchCov" title="Branch 0 was taken 167876 times"> + </span><span class="branchCov" title="Branch 1 was taken 173350 times"> + </span>]:<span class="lineCov">     509102 :     if (subject-&gt;encoding != REDIS_ENCODING_ZIPLIST) return;</span>
+<span class="lineNum">      43 </span>[<span class="branchCov" title="Branch 0 was taken 43922 times"> + </span><span class="branchCov" title="Branch 1 was taken 123954 times"> + </span>][<span class="branchCov" title="Branch 2 was taken 10497 times"> + </span><span class="branchCov" title="Branch 3 was taken 33425 times"> + </span>]:<span class="lineCov">     167876 :     if (sdsEncodedObject(value) &amp;&amp;</span>
+<span class="lineNum">      44 </span>                :<span class="lineCov">      87844 :         sdslen(value-&gt;ptr) &gt; server.list_max_ziplist_value)</span>
+<span class="lineNum">      45 </span>                :<span class="lineCov">      10497 :             listTypeConvert(subject,REDIS_ENCODING_LINKEDLIST);</span>
+<span class="lineNum">      46 </span>                :            : }
+<span class="lineNum">      47 </span>                :            : 
+<span class="lineNum">      48 </span>                :            : /* The function pushes an element to the specified list object 'subject',
+<span class="lineNum">      49 </span>                :            :  * at head or tail position as specified by 'where'.
+<span class="lineNum">      50 </span>                :            :  *
+<a name="51"><span class="lineNum">      51 </span>                :            :  * There is no need for the caller to increment the refcount of 'value' as</a>
+<span class="lineNum">      52 </span>                :            :  * the function takes care of it if needed. */
+<span class="lineNum">      53 </span>                :<span class="lineCov">     341200 : void listTypePush(robj *subject, robj *value, int where) {</span>
+<span class="lineNum">      54 </span>                :            :     /* Check if we need to convert the ziplist */
+<span class="lineNum">      55 </span>                :<span class="lineCov">     341200 :     listTypeTryConversion(subject,value);</span>
+<span class="lineNum">      56 </span>  [<span class="branchCov" title="Branch 0 was taken 157365 times"> + </span><span class="branchCov" title="Branch 1 was taken 183835 times"> + </span><span class="branchCov" title="Branch 2 was taken 145 times"> + </span><span class="branchCov" title="Branch 3 was taken 157220 times"> + </span>]:<span class="lineCov">     498565 :     if (subject-&gt;encoding == REDIS_ENCODING_ZIPLIST &amp;&amp;</span>
+<span class="lineNum">      57 </span>                :<span class="lineCov">     157365 :         ziplistLen(subject-&gt;ptr) &gt;= server.list_max_ziplist_entries)</span>
+<span class="lineNum">      58 </span>                :<span class="lineCov">        145 :             listTypeConvert(subject,REDIS_ENCODING_LINKEDLIST);</span>
+<span class="lineNum">      59 </span>                :            : 
+<span class="lineNum">      60 </span>        [<span class="branchCov" title="Branch 0 was taken 157220 times"> + </span><span class="branchCov" title="Branch 1 was taken 183980 times"> + </span>]:<span class="lineCov">     341200 :     if (subject-&gt;encoding == REDIS_ENCODING_ZIPLIST) {</span>
+<span class="lineNum">      61 </span>                :<span class="lineCov">     157220 :         int pos = (where == REDIS_HEAD) ? ZIPLIST_HEAD : ZIPLIST_TAIL;</span>
+<span class="lineNum">      62 </span>                :<span class="lineCov">     157220 :         value = getDecodedObject(value);</span>
+<span class="lineNum">      63 </span>                :<span class="lineCov">     157220 :         subject-&gt;ptr = ziplistPush(subject-&gt;ptr,value-&gt;ptr,sdslen(value-&gt;ptr),pos);</span>
+<span class="lineNum">      64 </span>                :<span class="lineCov">     157220 :         decrRefCount(value);</span>
+<span class="lineNum">      65 </span>        [<span class="branchCov" title="Branch 0 was taken 183980 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">     183980 :     } else if (subject-&gt;encoding == REDIS_ENCODING_LINKEDLIST) {</span>
+<span class="lineNum">      66 </span>        [<span class="branchCov" title="Branch 0 was taken 42936 times"> + </span><span class="branchCov" title="Branch 1 was taken 141044 times"> + </span>]:<span class="lineCov">     183980 :         if (where == REDIS_HEAD) {</span>
+<span class="lineNum">      67 </span>                :<span class="lineCov">      42936 :             listAddNodeHead(subject-&gt;ptr,value);</span>
+<span class="lineNum">      68 </span>                :            :         } else {
+<span class="lineNum">      69 </span>                :<span class="lineCov">     141044 :             listAddNodeTail(subject-&gt;ptr,value);</span>
+<span class="lineNum">      70 </span>                :            :         }
+<span class="lineNum">      71 </span>                :<span class="lineCov">     183980 :         incrRefCount(value);</span>
+<span class="lineNum">      72 </span>                :            :     } else {
+<span class="lineNum">      73 </span>                :<span class="lineNoCov">          0 :         redisPanic(&quot;Unknown list encoding&quot;);</span>
+<span class="lineNum">      74 </span>                :            :     }
+<a name="75"><span class="lineNum">      75 </span>                :<span class="lineCov">     341200 : }</span></a>
+<span class="lineNum">      76 </span>                :            : 
+<span class="lineNum">      77 </span>                :<span class="lineCov">      24546 : robj *listTypePop(robj *subject, int where) {</span>
+<span class="lineNum">      78 </span>                :<span class="lineCov">      24546 :     robj *value = NULL;</span>
+<span class="lineNum">      79 </span>        [<span class="branchCov" title="Branch 0 was taken 19546 times"> + </span><span class="branchCov" title="Branch 1 was taken 5000 times"> + </span>]:<span class="lineCov">      24546 :     if (subject-&gt;encoding == REDIS_ENCODING_ZIPLIST) {</span>
+<span class="lineNum">      80 </span>                :            :         unsigned char *p;
+<span class="lineNum">      81 </span>                :            :         unsigned char *vstr;
+<span class="lineNum">      82 </span>                :            :         unsigned int vlen;
+<span class="lineNum">      83 </span>                :            :         long long vlong;
+<span class="lineNum">      84 </span>        [<span class="branchCov" title="Branch 0 was taken 9739 times"> + </span><span class="branchCov" title="Branch 1 was taken 9807 times"> + </span>]:<span class="lineCov">      19546 :         int pos = (where == REDIS_HEAD) ? 0 : -1;</span>
+<span class="lineNum">      85 </span>                :<span class="lineCov">      19546 :         p = ziplistIndex(subject-&gt;ptr,pos);</span>
+<span class="lineNum">      86 </span>        [<span class="branchCov" title="Branch 1 was taken 19546 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">      19546 :         if (ziplistGet(p,&amp;vstr,&amp;vlen,&amp;vlong)) {</span>
+<span class="lineNum">      87 </span>        [<span class="branchCov" title="Branch 0 was taken 1406 times"> + </span><span class="branchCov" title="Branch 1 was taken 18140 times"> + </span>]:<span class="lineCov">      19546 :             if (vstr) {</span>
+<span class="lineNum">      88 </span>                :<span class="lineCov">       1406 :                 value = createStringObject((char*)vstr,vlen);</span>
+<span class="lineNum">      89 </span>                :            :             } else {
+<span class="lineNum">      90 </span>                :<span class="lineCov">      18140 :                 value = createStringObjectFromLongLong(vlong);</span>
+<span class="lineNum">      91 </span>                :            :             }
+<span class="lineNum">      92 </span>                :            :             /* We only need to delete an element when it exists */
+<span class="lineNum">      93 </span>                :<span class="lineCov">      19546 :             subject-&gt;ptr = ziplistDelete(subject-&gt;ptr,&amp;p);</span>
+<span class="lineNum">      94 </span>                :            :         }
+<span class="lineNum">      95 </span>        [<span class="branchCov" title="Branch 0 was taken 5000 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">       5000 :     } else if (subject-&gt;encoding == REDIS_ENCODING_LINKEDLIST) {</span>
+<span class="lineNum">      96 </span>                :<span class="lineCov">       5000 :         list *list = subject-&gt;ptr;</span>
+<span class="lineNum">      97 </span>                :            :         listNode *ln;
+<span class="lineNum">      98 </span>        [<span class="branchCov" title="Branch 0 was taken 2514 times"> + </span><span class="branchCov" title="Branch 1 was taken 2486 times"> + </span>]:<span class="lineCov">       5000 :         if (where == REDIS_HEAD) {</span>
+<span class="lineNum">      99 </span>                :<span class="lineCov">       2514 :             ln = listFirst(list);</span>
+<span class="lineNum">     100 </span>                :            :         } else {
+<span class="lineNum">     101 </span>                :<span class="lineCov">       2486 :             ln = listLast(list);</span>
+<span class="lineNum">     102 </span>                :            :         }
+<span class="lineNum">     103 </span>        [<span class="branchCov" title="Branch 0 was taken 5000 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">       5000 :         if (ln != NULL) {</span>
+<span class="lineNum">     104 </span>                :<span class="lineCov">       5000 :             value = listNodeValue(ln);</span>
+<span class="lineNum">     105 </span>                :<span class="lineCov">       5000 :             incrRefCount(value);</span>
+<span class="lineNum">     106 </span>                :<span class="lineCov">       5000 :             listDelNode(list,ln);</span>
+<span class="lineNum">     107 </span>                :            :         }
+<span class="lineNum">     108 </span>                :            :     } else {
+<span class="lineNum">     109 </span>                :<span class="lineNoCov">          0 :         redisPanic(&quot;Unknown list encoding&quot;);</span>
+<span class="lineNum">     110 </span>                :            :     }
+<span class="lineNum">     111 </span>                :<span class="lineCov">      24546 :     return value;</span>
+<a name="112"><span class="lineNum">     112 </span>                :            : }</a>
+<span class="lineNum">     113 </span>                :            : 
+<span class="lineNum">     114 </span>                :<span class="lineCov">     264191 : unsigned long listTypeLength(robj *subject) {</span>
+<span class="lineNum">     115 </span>        [<span class="branchCov" title="Branch 0 was taken 173345 times"> + </span><span class="branchCov" title="Branch 1 was taken 90846 times"> + </span>]:<span class="lineCov">     264191 :     if (subject-&gt;encoding == REDIS_ENCODING_ZIPLIST) {</span>
+<span class="lineNum">     116 </span>                :<span class="lineCov">     173345 :         return ziplistLen(subject-&gt;ptr);</span>
+<span class="lineNum">     117 </span>        [<span class="branchCov" title="Branch 0 was taken 90846 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">      90846 :     } else if (subject-&gt;encoding == REDIS_ENCODING_LINKEDLIST) {</span>
+<span class="lineNum">     118 </span>                :<span class="lineCov">      90846 :         return listLength((list*)subject-&gt;ptr);</span>
+<span class="lineNum">     119 </span>                :            :     } else {
+<span class="lineNum">     120 </span>                :<span class="lineCov">     264191 :         redisPanic(&quot;Unknown list encoding&quot;);</span>
+<span class="lineNum">     121 </span>                :            :     }
+<span class="lineNum">     122 </span>                :            : }
+<a name="123"><span class="lineNum">     123 </span>                :            : </a>
+<span class="lineNum">     124 </span>                :            : /* Initialize an iterator at the specified index. */
+<span class="lineNum">     125 </span>                :<span class="lineCov">      76850 : listTypeIterator *listTypeInitIterator(robj *subject, long index, unsigned char direction) {</span>
+<span class="lineNum">     126 </span>                :<span class="lineCov">      76850 :     listTypeIterator *li = zmalloc(sizeof(listTypeIterator));</span>
+<span class="lineNum">     127 </span>                :<span class="lineCov">      76850 :     li-&gt;subject = subject;</span>
+<span class="lineNum">     128 </span>                :<span class="lineCov">      76850 :     li-&gt;encoding = subject-&gt;encoding;</span>
+<span class="lineNum">     129 </span>                :<span class="lineCov">      76850 :     li-&gt;direction = direction;</span>
+<span class="lineNum">     130 </span>        [<span class="branchCov" title="Branch 0 was taken 63988 times"> + </span><span class="branchCov" title="Branch 1 was taken 12862 times"> + </span>]:<span class="lineCov">      76850 :     if (li-&gt;encoding == REDIS_ENCODING_ZIPLIST) {</span>
+<span class="lineNum">     131 </span>                :<span class="lineCov">      63988 :         li-&gt;zi = ziplistIndex(subject-&gt;ptr,index);</span>
+<span class="lineNum">     132 </span>        [<span class="branchCov" title="Branch 0 was taken 12862 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">      12862 :     } else if (li-&gt;encoding == REDIS_ENCODING_LINKEDLIST) {</span>
+<span class="lineNum">     133 </span>                :<span class="lineCov">      12862 :         li-&gt;ln = listIndex(subject-&gt;ptr,index);</span>
+<span class="lineNum">     134 </span>                :            :     } else {
+<span class="lineNum">     135 </span>                :<span class="lineNoCov">          0 :         redisPanic(&quot;Unknown list encoding&quot;);</span>
+<span class="lineNum">     136 </span>                :            :     }
+<span class="lineNum">     137 </span>                :<span class="lineCov">      76850 :     return li;</span>
+<span class="lineNum">     138 </span>                :            : }
+<a name="139"><span class="lineNum">     139 </span>                :            : </a>
+<a name="140"><span class="lineNum">     140 </span>                :            : /* Clean up the iterator. */</a>
+<span class="lineNum">     141 </span>                :<span class="lineCov">      53465 : void listTypeReleaseIterator(listTypeIterator *li) {</span>
+<span class="lineNum">     142 </span>                :<span class="lineCov">      76850 :     zfree(li);</span>
+<span class="lineNum">     143 </span>                :<span class="lineCov">      53465 : }</span>
+<span class="lineNum">     144 </span>                :            : 
+<span class="lineNum">     145 </span>                :            : /* Stores pointer to current the entry in the provided entry structure
+<a name="146"><span class="lineNum">     146 </span>                :            :  * and advances the position of the iterator. Returns 1 when the current</a>
+<span class="lineNum">     147 </span>                :            :  * entry is in fact an entry, 0 otherwise. */
+<span class="lineNum">     148 </span>                :<span class="lineCov">     399878 : int listTypeNext(listTypeIterator *li, listTypeEntry *entry) {</span>
+<span class="lineNum">     149 </span>                :            :     /* Protect from converting when iterating */
+<span class="lineNum">     150 </span>        [<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchCov" title="Branch 1 was taken 399878 times"> + </span>]:<span class="lineCov">     399878 :     redisAssert(li-&gt;subject-&gt;encoding == li-&gt;encoding);</span>
+<span class="lineNum">     151 </span>                :            : 
+<span class="lineNum">     152 </span>                :<span class="lineCov">     399878 :     entry-&gt;li = li;</span>
+<span class="lineNum">     153 </span>        [<span class="branchCov" title="Branch 0 was taken 224435 times"> + </span><span class="branchCov" title="Branch 1 was taken 175443 times"> + </span>]:<span class="lineCov">     399878 :     if (li-&gt;encoding == REDIS_ENCODING_ZIPLIST) {</span>
+<span class="lineNum">     154 </span>                :<span class="lineCov">     224435 :         entry-&gt;zi = li-&gt;zi;</span>
+<span class="lineNum">     155 </span>        [<span class="branchCov" title="Branch 0 was taken 160458 times"> + </span><span class="branchCov" title="Branch 1 was taken 63977 times"> + </span>]:<span class="lineCov">     224435 :         if (entry-&gt;zi != NULL) {</span>
+<span class="lineNum">     156 </span>        [<span class="branchCov" title="Branch 0 was taken 160452 times"> + </span><span class="branchCov" title="Branch 1 was taken 6 times"> + </span>]:<span class="lineCov">     160458 :             if (li-&gt;direction == REDIS_TAIL)</span>
+<span class="lineNum">     157 </span>                :<span class="lineCov">     160452 :                 li-&gt;zi = ziplistNext(li-&gt;subject-&gt;ptr,li-&gt;zi);</span>
+<span class="lineNum">     158 </span>                :            :             else
+<span class="lineNum">     159 </span>                :<span class="lineCov">          6 :                 li-&gt;zi = ziplistPrev(li-&gt;subject-&gt;ptr,li-&gt;zi);</span>
+<span class="lineNum">     160 </span>                :            :             return 1;
+<span class="lineNum">     161 </span>                :            :         }
+<span class="lineNum">     162 </span>        [<span class="branchCov" title="Branch 0 was taken 175443 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">     175443 :     } else if (li-&gt;encoding == REDIS_ENCODING_LINKEDLIST) {</span>
+<span class="lineNum">     163 </span>                :<span class="lineCov">     175443 :         entry-&gt;ln = li-&gt;ln;</span>
+<span class="lineNum">     164 </span>        [<span class="branchCov" title="Branch 0 was taken 162592 times"> + </span><span class="branchCov" title="Branch 1 was taken 12851 times"> + </span>]:<span class="lineCov">     175443 :         if (entry-&gt;ln != NULL) {</span>
+<span class="lineNum">     165 </span>        [<span class="branchCov" title="Branch 0 was taken 162586 times"> + </span><span class="branchCov" title="Branch 1 was taken 6 times"> + </span>]:<span class="lineCov">     162592 :             if (li-&gt;direction == REDIS_TAIL)</span>
+<span class="lineNum">     166 </span>                :<span class="lineCov">     162586 :                 li-&gt;ln = li-&gt;ln-&gt;next;</span>
+<span class="lineNum">     167 </span>                :            :             else
+<span class="lineNum">     168 </span>                :<span class="lineCov">          6 :                 li-&gt;ln = li-&gt;ln-&gt;prev;</span>
+<span class="lineNum">     169 </span>                :            :             return 1;
+<span class="lineNum">     170 </span>                :            :         }
+<span class="lineNum">     171 </span>                :            :     } else {
+<span class="lineNum">     172 </span>                :<span class="lineCov">     399878 :         redisPanic(&quot;Unknown list encoding&quot;);</span>
+<span class="lineNum">     173 </span>                :            :     }
+<span class="lineNum">     174 </span>                :            :     return 0;
+<span class="lineNum">     175 </span>                :            : }
+<a name="176"><span class="lineNum">     176 </span>                :            : </a>
+<span class="lineNum">     177 </span>                :            : /* Return entry or NULL at the current position of the iterator. */
+<span class="lineNum">     178 </span>                :<span class="lineCov">     301573 : robj *listTypeGet(listTypeEntry *entry) {</span>
+<span class="lineNum">     179 </span>                :<span class="lineCov">     301573 :     listTypeIterator *li = entry-&gt;li;</span>
+<span class="lineNum">     180 </span>                :<span class="lineCov">     301573 :     robj *value = NULL;</span>
+<span class="lineNum">     181 </span>        [<span class="branchCov" title="Branch 0 was taken 141358 times"> + </span><span class="branchCov" title="Branch 1 was taken 160215 times"> + </span>]:<span class="lineCov">     301573 :     if (li-&gt;encoding == REDIS_ENCODING_ZIPLIST) {</span>
+<span class="lineNum">     182 </span>                :            :         unsigned char *vstr;
+<span class="lineNum">     183 </span>                :            :         unsigned int vlen;
+<span class="lineNum">     184 </span>                :            :         long long vlong;
+<span class="lineNum">     185 </span>        [<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchCov" title="Branch 1 was taken 141358 times"> + </span>]:<span class="lineCov">     141358 :         redisAssert(entry-&gt;zi != NULL);</span>
+<span class="lineNum">     186 </span>        [<span class="branchCov" title="Branch 1 was taken 141358 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">     141358 :         if (ziplistGet(entry-&gt;zi,&amp;vstr,&amp;vlen,&amp;vlong)) {</span>
+<span class="lineNum">     187 </span>        [<span class="branchCov" title="Branch 0 was taken 30184 times"> + </span><span class="branchCov" title="Branch 1 was taken 111174 times"> + </span>]:<span class="lineCov">     141358 :             if (vstr) {</span>
+<span class="lineNum">     188 </span>                :<span class="lineCov">      30184 :                 value = createStringObject((char*)vstr,vlen);</span>
+<span class="lineNum">     189 </span>                :            :             } else {
+<span class="lineNum">     190 </span>                :<span class="lineCov">     111174 :                 value = createStringObjectFromLongLong(vlong);</span>
+<span class="lineNum">     191 </span>                :            :             }
+<span class="lineNum">     192 </span>                :            :         }
+<span class="lineNum">     193 </span>        [<span class="branchCov" title="Branch 0 was taken 160215 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">     160215 :     } else if (li-&gt;encoding == REDIS_ENCODING_LINKEDLIST) {</span>
+<span class="lineNum">     194 </span>        [<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchCov" title="Branch 1 was taken 160215 times"> + </span>]:<span class="lineCov">     160215 :         redisAssert(entry-&gt;ln != NULL);</span>
+<span class="lineNum">     195 </span>                :<span class="lineCov">     160215 :         value = listNodeValue(entry-&gt;ln);</span>
+<span class="lineNum">     196 </span>                :<span class="lineCov">     160215 :         incrRefCount(value);</span>
+<span class="lineNum">     197 </span>                :            :     } else {
+<span class="lineNum">     198 </span>                :<span class="lineNoCov">          0 :         redisPanic(&quot;Unknown list encoding&quot;);</span>
+<span class="lineNum">     199 </span>                :            :     }
+<span class="lineNum">     200 </span>                :<span class="lineCov">     301573 :     return value;</span>
+<a name="201"><span class="lineNum">     201 </span>                :            : }</a>
+<span class="lineNum">     202 </span>                :            : 
+<span class="lineNum">     203 </span>                :<span class="lineCov">         14 : void listTypeInsert(listTypeEntry *entry, robj *value, int where) {</span>
+<span class="lineNum">     204 </span>                :<span class="lineCov">         14 :     robj *subject = entry-&gt;li-&gt;subject;</span>
+<span class="lineNum">     205 </span>        [<span class="branchCov" title="Branch 0 was taken 7 times"> + </span><span class="branchCov" title="Branch 1 was taken 7 times"> + </span>]:<span class="lineCov">         14 :     if (entry-&gt;li-&gt;encoding == REDIS_ENCODING_ZIPLIST) {</span>
+<span class="lineNum">     206 </span>                :<span class="lineCov">          7 :         value = getDecodedObject(value);</span>
+<span class="lineNum">     207 </span>        [<span class="branchCov" title="Branch 0 was taken 3 times"> + </span><span class="branchCov" title="Branch 1 was taken 4 times"> + </span>]:<span class="lineCov">          7 :         if (where == REDIS_TAIL) {</span>
+<span class="lineNum">     208 </span>                :<span class="lineCov">          3 :             unsigned char *next = ziplistNext(subject-&gt;ptr,entry-&gt;zi);</span>
+<span class="lineNum">     209 </span>                :            : 
+<span class="lineNum">     210 </span>                :            :             /* When we insert after the current element, but the current element
+<span class="lineNum">     211 </span>                :            :              * is the tail of the list, we need to do a push. */
+<span class="lineNum">     212 </span>        [<span class="branchCov" title="Branch 0 was taken 1 time"> + </span><span class="branchCov" title="Branch 1 was taken 2 times"> + </span>]:<span class="lineCov">          3 :             if (next == NULL) {</span>
+<span class="lineNum">     213 </span>                :<span class="lineCov">          1 :                 subject-&gt;ptr = ziplistPush(subject-&gt;ptr,value-&gt;ptr,sdslen(value-&gt;ptr),REDIS_TAIL);</span>
+<span class="lineNum">     214 </span>                :            :             } else {
+<span class="lineNum">     215 </span>                :<span class="lineCov">          2 :                 subject-&gt;ptr = ziplistInsert(subject-&gt;ptr,next,value-&gt;ptr,sdslen(value-&gt;ptr));</span>
+<span class="lineNum">     216 </span>                :            :             }
+<span class="lineNum">     217 </span>                :            :         } else {
+<span class="lineNum">     218 </span>                :<span class="lineCov">          4 :             subject-&gt;ptr = ziplistInsert(subject-&gt;ptr,entry-&gt;zi,value-&gt;ptr,sdslen(value-&gt;ptr));</span>
+<span class="lineNum">     219 </span>                :            :         }
+<span class="lineNum">     220 </span>                :<span class="lineCov">          7 :         decrRefCount(value);</span>
+<span class="lineNum">     221 </span>        [<span class="branchCov" title="Branch 0 was taken 7 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">          7 :     } else if (entry-&gt;li-&gt;encoding == REDIS_ENCODING_LINKEDLIST) {</span>
+<span class="lineNum">     222 </span>        [<span class="branchCov" title="Branch 0 was taken 3 times"> + </span><span class="branchCov" title="Branch 1 was taken 4 times"> + </span>]:<span class="lineCov">          7 :         if (where == REDIS_TAIL) {</span>
+<span class="lineNum">     223 </span>                :<span class="lineCov">          3 :             listInsertNode(subject-&gt;ptr,entry-&gt;ln,value,AL_START_TAIL);</span>
+<span class="lineNum">     224 </span>                :            :         } else {
+<span class="lineNum">     225 </span>                :<span class="lineCov">          4 :             listInsertNode(subject-&gt;ptr,entry-&gt;ln,value,AL_START_HEAD);</span>
+<span class="lineNum">     226 </span>                :            :         }
+<span class="lineNum">     227 </span>                :<span class="lineCov">          7 :         incrRefCount(value);</span>
+<span class="lineNum">     228 </span>                :            :     } else {
+<span class="lineNum">     229 </span>                :<span class="lineNoCov">          0 :         redisPanic(&quot;Unknown list encoding&quot;);</span>
+<span class="lineNum">     230 </span>                :            :     }
+<span class="lineNum">     231 </span>                :<span class="lineCov">         14 : }</span>
+<a name="232"><span class="lineNum">     232 </span>                :            : </a>
+<span class="lineNum">     233 </span>                :            : /* Compare the given object with the entry at the current position. */
+<span class="lineNum">     234 </span>                :<span class="lineCov">      21477 : int listTypeEqual(listTypeEntry *entry, robj *o) {</span>
+<span class="lineNum">     235 </span>                :<span class="lineCov">      21477 :     listTypeIterator *li = entry-&gt;li;</span>
+<span class="lineNum">     236 </span>        [<span class="branchCov" title="Branch 0 was taken 19100 times"> + </span><span class="branchCov" title="Branch 1 was taken 2377 times"> + </span>]:<span class="lineCov">      21477 :     if (li-&gt;encoding == REDIS_ENCODING_ZIPLIST) {</span>
+<span class="lineNum">     237 </span>        [<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchCov" title="Branch 1 was taken 19100 times"> + </span>]:<span class="lineCov">      19100 :         redisAssertWithInfo(NULL,o,sdsEncodedObject(o));</span>
+<span class="lineNum">     238 </span>                :<span class="lineCov">      19100 :         return ziplistCompare(entry-&gt;zi,o-&gt;ptr,sdslen(o-&gt;ptr));</span>
+<span class="lineNum">     239 </span>        [<span class="branchCov" title="Branch 0 was taken 2377 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">       2377 :     } else if (li-&gt;encoding == REDIS_ENCODING_LINKEDLIST) {</span>
+<span class="lineNum">     240 </span>                :<span class="lineCov">       2377 :         return equalStringObjects(o,listNodeValue(entry-&gt;ln));</span>
+<span class="lineNum">     241 </span>                :            :     } else {
+<span class="lineNum">     242 </span>                :<span class="lineCov">      21477 :         redisPanic(&quot;Unknown list encoding&quot;);</span>
+<span class="lineNum">     243 </span>                :            :     }
+<span class="lineNum">     244 </span>                :            : }
+<a name="245"><span class="lineNum">     245 </span>                :            : </a>
+<span class="lineNum">     246 </span>                :            : /* Delete the element pointed to. */
+<span class="lineNum">     247 </span>                :<span class="lineCov">      10943 : void listTypeDelete(listTypeEntry *entry) {</span>
+<span class="lineNum">     248 </span>                :<span class="lineCov">      10943 :     listTypeIterator *li = entry-&gt;li;</span>
+<span class="lineNum">     249 </span>        [<span class="branchCov" title="Branch 0 was taken 8873 times"> + </span><span class="branchCov" title="Branch 1 was taken 2070 times"> + </span>]:<span class="lineCov">      10943 :     if (li-&gt;encoding == REDIS_ENCODING_ZIPLIST) {</span>
+<span class="lineNum">     250 </span>                :<span class="lineCov">       8873 :         unsigned char *p = entry-&gt;zi;</span>
+<span class="lineNum">     251 </span>                :<span class="lineCov">       8873 :         li-&gt;subject-&gt;ptr = ziplistDelete(li-&gt;subject-&gt;ptr,&amp;p);</span>
+<span class="lineNum">     252 </span>                :            : 
+<span class="lineNum">     253 </span>                :            :         /* Update position of the iterator depending on the direction */
+<span class="lineNum">     254 </span>        [<span class="branchCov" title="Branch 0 was taken 8870 times"> + </span><span class="branchCov" title="Branch 1 was taken 3 times"> + </span>]:<span class="lineCov">       8873 :         if (li-&gt;direction == REDIS_TAIL)</span>
+<span class="lineNum">     255 </span>                :<span class="lineCov">       8870 :             li-&gt;zi = p;</span>
+<span class="lineNum">     256 </span>                :            :         else
+<span class="lineNum">     257 </span>                :<span class="lineCov">          3 :             li-&gt;zi = ziplistPrev(li-&gt;subject-&gt;ptr,p);</span>
+<span class="lineNum">     258 </span>        [<span class="branchCov" title="Branch 0 was taken 2070 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">       2070 :     } else if (entry-&gt;li-&gt;encoding == REDIS_ENCODING_LINKEDLIST) {</span>
+<span class="lineNum">     259 </span>                :            :         listNode *next;
+<span class="lineNum">     260 </span>        [<span class="branchCov" title="Branch 0 was taken 2067 times"> + </span><span class="branchCov" title="Branch 1 was taken 3 times"> + </span>]:<span class="lineCov">       2070 :         if (li-&gt;direction == REDIS_TAIL)</span>
+<span class="lineNum">     261 </span>                :<span class="lineCov">       2067 :             next = entry-&gt;ln-&gt;next;</span>
+<span class="lineNum">     262 </span>                :            :         else
+<span class="lineNum">     263 </span>                :<span class="lineCov">          3 :             next = entry-&gt;ln-&gt;prev;</span>
+<span class="lineNum">     264 </span>                :<span class="lineCov">       2070 :         listDelNode(li-&gt;subject-&gt;ptr,entry-&gt;ln);</span>
+<span class="lineNum">     265 </span>                :<span class="lineCov">       2070 :         li-&gt;ln = next;</span>
+<span class="lineNum">     266 </span>                :            :     } else {
+<span class="lineNum">     267 </span>                :<span class="lineNoCov">          0 :         redisPanic(&quot;Unknown list encoding&quot;);</span>
+<span class="lineNum">     268 </span>                :            :     }
+<span class="lineNum">     269 </span>                :<span class="lineCov">      10943 : }</span>
+<span class="lineNum">     270 </span>                :            : 
+<span class="lineNum">     271 </span>                :<span class="lineCov">      11926 : void listTypeConvert(robj *subject, int enc) {</span>
+<span class="lineNum">     272 </span>                :            :     listTypeIterator *li;
+<span class="lineNum">     273 </span>                :            :     listTypeEntry entry;
+<span class="lineNum">     274 </span>        [<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchCov" title="Branch 1 was taken 11926 times"> + </span>]:<span class="lineCov">      11926 :     redisAssertWithInfo(NULL,subject,subject-&gt;type == REDIS_LIST);</span>
+<span class="lineNum">     275 </span>                :            : 
+<span class="lineNum">     276 </span>        [<span class="branchCov" title="Branch 0 was taken 11926 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">      11926 :     if (enc == REDIS_ENCODING_LINKEDLIST) {</span>
+<span class="lineNum">     277 </span>                :<span class="lineCov">      11926 :         list *l = listCreate();</span>
+<span class="lineNum">     278 </span>                :<span class="lineCov">      11926 :         listSetFreeMethod(l,decrRefCountVoid);</span>
+<span class="lineNum">     279 </span>                :            : 
+<span class="lineNum">     280 </span>                :            :         /* listTypeGet returns a robj with incremented refcount */
+<span class="lineNum">     281 </span>                :<span class="lineCov">      11926 :         li = listTypeInitIterator(subject,0,REDIS_TAIL);</span>
+<span class="lineNum">     282 </span>        [<span class="branchCov" title="Branch 3 was taken 54666 times"> + </span><span class="branchCov" title="Branch 4 was taken 11926 times"> + </span>]:<span class="lineCov">      66592 :         while (listTypeNext(li,&amp;entry)) listAddNodeTail(l,listTypeGet(&amp;entry));</span>
+<span class="lineNum">     283 </span>                :            :         listTypeReleaseIterator(li);
+<span class="lineNum">     284 </span>                :            : 
+<span class="lineNum">     285 </span>                :<span class="lineCov">      11926 :         subject-&gt;encoding = REDIS_ENCODING_LINKEDLIST;</span>
+<span class="lineNum">     286 </span>                :<span class="lineCov">      11926 :         zfree(subject-&gt;ptr);</span>
+<span class="lineNum">     287 </span>                :<span class="lineCov">      11926 :         subject-&gt;ptr = l;</span>
+<span class="lineNum">     288 </span>                :            :     } else {
+<span class="lineNum">     289 </span>                :<span class="lineNoCov">          0 :         redisPanic(&quot;Unsupported list conversion&quot;);</span>
+<span class="lineNum">     290 </span>                :            :     }
+<span class="lineNum">     291 </span>                :<span class="lineCov">      11926 : }</span>
+<span class="lineNum">     292 </span>                :            : 
+<span class="lineNum">     293 </span>                :            : /*-----------------------------------------------------------------------------
+<span class="lineNum">     294 </span>                :            :  * List Commands
+<a name="295"><span class="lineNum">     295 </span>                :            :  *----------------------------------------------------------------------------*/</a>
+<span class="lineNum">     296 </span>                :            : 
+<span class="lineNum">     297 </span>                :<span class="lineCov">     219295 : void pushGenericCommand(redisClient *c, int where) {</span>
+<span class="lineNum">     298 </span>                :<span class="lineCov">     219295 :     int j, waiting = 0, pushed = 0;</span>
+<span class="lineNum">     299 </span>                :<span class="lineCov">     219295 :     robj *lobj = lookupKeyWrite(c-&gt;db,c-&gt;argv[1]);</span>
+<span class="lineNum">     300 </span>                :<span class="lineCov">     219295 :     int may_have_waiting_clients = (lobj == NULL);</span>
+<span class="lineNum">     301 </span>                :            : 
+<span class="lineNum">     302 </span>[<span class="branchCov" title="Branch 0 was taken 163863 times"> + </span><span class="branchCov" title="Branch 1 was taken 55432 times"> + </span>][<span class="branchCov" title="Branch 2 was taken 4 times"> + </span><span class="branchCov" title="Branch 3 was taken 163859 times"> + </span>]:<span class="lineCov">     219295 :     if (lobj &amp;&amp; lobj-&gt;type != REDIS_LIST) {</span>
+<span class="lineNum">     303 </span>                :<span class="lineCov">          4 :         addReply(c,shared.wrongtypeerr);</span>
+<span class="lineNum">     304 </span>                :<span class="lineCov">     219295 :         return;</span>
+<span class="lineNum">     305 </span>                :            :     }
+<span class="lineNum">     306 </span>                :            : 
+<span class="lineNum">     307 </span>        [<span class="branchCov" title="Branch 0 was taken 55432 times"> + </span><span class="branchCov" title="Branch 1 was taken 163859 times"> + </span>]:<span class="lineCov">     219291 :     if (may_have_waiting_clients) signalListAsReady(c,c-&gt;argv[1]);</span>
+<span class="lineNum">     308 </span>                :            : 
+<span class="lineNum">     309 </span>        [<span class="branchCov" title="Branch 0 was taken 341100 times"> + </span><span class="branchCov" title="Branch 1 was taken 219291 times"> + </span>]:<span class="lineCov">     560391 :     for (j = 2; j &lt; c-&gt;argc; j++) {</span>
+<span class="lineNum">     310 </span>                :<span class="lineCov">     341100 :         c-&gt;argv[j] = tryObjectEncoding(c-&gt;argv[j]);</span>
+<span class="lineNum">     311 </span>        [<span class="branchCov" title="Branch 0 was taken 55432 times"> + </span><span class="branchCov" title="Branch 1 was taken 285668 times"> + </span>]:<span class="lineCov">     341100 :         if (!lobj) {</span>
+<span class="lineNum">     312 </span>                :<span class="lineCov">      55432 :             lobj = createZiplistObject();</span>
+<span class="lineNum">     313 </span>                :<span class="lineCov">      55432 :             dbAdd(c-&gt;db,c-&gt;argv[1],lobj);</span>
+<span class="lineNum">     314 </span>                :            :         }
+<span class="lineNum">     315 </span>                :<span class="lineCov">     341100 :         listTypePush(lobj,c-&gt;argv[j],where);</span>
+<span class="lineNum">     316 </span>                :<span class="lineCov">     341100 :         pushed++;</span>
+<span class="lineNum">     317 </span>                :            :     }
+<span class="lineNum">     318 </span>        [<span class="branchCov" title="Branch 0 was taken 219291 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">     219291 :     addReplyLongLong(c, waiting + (lobj ? listTypeLength(lobj) : 0));</span>
+<span class="lineNum">     319 </span>        [<span class="branchCov" title="Branch 0 was taken 219291 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">     219291 :     if (pushed) {</span>
+<span class="lineNum">     320 </span>        [<span class="branchCov" title="Branch 0 was taken 87253 times"> + </span><span class="branchCov" title="Branch 1 was taken 132038 times"> + </span>]:<span class="lineCov">     219291 :         char *event = (where == REDIS_HEAD) ? &quot;lpush&quot; : &quot;rpush&quot;;</span>
+<span class="lineNum">     321 </span>                :            : 
+<span class="lineNum">     322 </span>                :<span class="lineCov">     219291 :         signalModifiedKey(c-&gt;db,c-&gt;argv[1]);</span>
+<span class="lineNum">     323 </span>                :<span class="lineCov">     219291 :         notifyKeyspaceEvent(REDIS_NOTIFY_LIST,event,c-&gt;argv[1],c-&gt;db-&gt;id);</span>
+<span class="lineNum">     324 </span>                :            :     }
+<span class="lineNum">     325 </span>                :<span class="lineCov">     219291 :     server.dirty += pushed;</span>
+<a name="326"><span class="lineNum">     326 </span>                :            : }</a>
+<span class="lineNum">     327 </span>                :            : 
+<span class="lineNum">     328 </span>                :<span class="lineCov">     132041 : void lpushCommand(redisClient *c) {</span>
+<span class="lineNum">     329 </span>                :<span class="lineCov">     132041 :     pushGenericCommand(c,REDIS_HEAD);</span>
+<a name="330"><span class="lineNum">     330 </span>                :<span class="lineCov">     132041 : }</span></a>
+<span class="lineNum">     331 </span>                :            : 
+<span class="lineNum">     332 </span>                :<span class="lineCov">      87254 : void rpushCommand(redisClient *c) {</span>
+<span class="lineNum">     333 </span>                :<span class="lineCov">      87254 :     pushGenericCommand(c,REDIS_TAIL);</span>
+<span class="lineNum">     334 </span>                :<span class="lineCov">      87254 : }</span>
+<span class="lineNum">     335 </span>                :            : 
+<span class="lineNum">     336 </span>                :<span class="lineCov">         30 : void pushxGenericCommand(redisClient *c, robj *refval, robj *val, int where) {</span>
+<span class="lineNum">     337 </span>                :            :     robj *subject;
+<span class="lineNum">     338 </span>                :            :     listTypeIterator *iter;
+<span class="lineNum">     339 </span>                :            :     listTypeEntry entry;
+<span class="lineNum">     340 </span>                :<span class="lineCov">         30 :     int inserted = 0;</span>
+<span class="lineNum">     341 </span>                :            : 
+<span class="lineNum">     342 </span>  [<span class="branchCov" title="Branch 1 was taken 28 times"> + </span><span class="branchCov" title="Branch 2 was taken 2 times"> + </span><span class="branchCov" title="Branch 3 was taken 28 times"> + </span><span class="branchNoCov" title="Branch 4 was not taken"> - </span>]:<span class="lineCov">         58 :     if ((subject = lookupKeyReadOrReply(c,c-&gt;argv[1],shared.czero)) == NULL ||</span>
+<span class="lineNum">     343 </span>                :<span class="lineCov">         28 :         checkType(c,subject,REDIS_LIST)) return;</span>
+<span class="lineNum">     344 </span>                :            : 
+<span class="lineNum">     345 </span>        [<span class="branchCov" title="Branch 0 was taken 20 times"> + </span><span class="branchCov" title="Branch 1 was taken 8 times"> + </span>]:<span class="lineCov">         28 :     if (refval != NULL) {</span>
+<span class="lineNum">     346 </span>                :            :         /* We're not sure if this value can be inserted yet, but we cannot
+<span class="lineNum">     347 </span>                :            :          * convert the list inside the iterator. We don't want to loop over
+<span class="lineNum">     348 </span>                :            :          * the list twice (once to see if the value can be inserted and once
+<span class="lineNum">     349 </span>                :            :          * to do the actual insert), so we assume this value can be inserted
+<span class="lineNum">     350 </span>                :            :          * and convert the ziplist to a regular list if necessary. */
+<span class="lineNum">     351 </span>                :<span class="lineCov">         20 :         listTypeTryConversion(subject,val);</span>
+<span class="lineNum">     352 </span>                :            : 
+<span class="lineNum">     353 </span>                :            :         /* Seek refval from head to tail */
+<span class="lineNum">     354 </span>                :<span class="lineCov">         20 :         iter = listTypeInitIterator(subject,0,REDIS_TAIL);</span>
+<span class="lineNum">     355 </span>        [<span class="branchCov" title="Branch 1 was taken 576 times"> + </span><span class="branchCov" title="Branch 2 was taken 6 times"> + </span>]:<span class="lineCov">        582 :         while (listTypeNext(iter,&amp;entry)) {</span>
+<span class="lineNum">     356 </span>        [<span class="branchCov" title="Branch 1 was taken 14 times"> + </span><span class="branchCov" title="Branch 2 was taken 562 times"> + </span>]:<span class="lineCov">        576 :             if (listTypeEqual(&amp;entry,refval)) {</span>
+<span class="lineNum">     357 </span>                :<span class="lineCov">         14 :                 listTypeInsert(&amp;entry,val,where);</span>
+<span class="lineNum">     358 </span>                :<span class="lineCov">         14 :                 inserted = 1;</span>
+<span class="lineNum">     359 </span>                :<span class="lineCov">        576 :                 break;</span>
+<span class="lineNum">     360 </span>                :            :             }
+<span class="lineNum">     361 </span>                :            :         }
+<span class="lineNum">     362 </span>                :            :         listTypeReleaseIterator(iter);
+<span class="lineNum">     363 </span>                :            : 
+<span class="lineNum">     364 </span>        [<span class="branchCov" title="Branch 0 was taken 14 times"> + </span><span class="branchCov" title="Branch 1 was taken 6 times"> + </span>]:<span class="lineCov">         20 :         if (inserted) {</span>
+<span class="lineNum">     365 </span>                :            :             /* Check if the length exceeds the ziplist length threshold. */
+<span class="lineNum">     366 </span>  [<span class="branchCov" title="Branch 0 was taken 7 times"> + </span><span class="branchCov" title="Branch 1 was taken 7 times"> + </span><span class="branchCov" title="Branch 2 was taken 2 times"> + </span><span class="branchCov" title="Branch 3 was taken 5 times"> + </span>]:<span class="lineCov">         21 :             if (subject-&gt;encoding == REDIS_ENCODING_ZIPLIST &amp;&amp;</span>
+<span class="lineNum">     367 </span>                :<span class="lineCov">          7 :                 ziplistLen(subject-&gt;ptr) &gt; server.list_max_ziplist_entries)</span>
+<span class="lineNum">     368 </span>                :<span class="lineCov">          2 :                     listTypeConvert(subject,REDIS_ENCODING_LINKEDLIST);</span>
+<span class="lineNum">     369 </span>                :<span class="lineCov">         14 :             signalModifiedKey(c-&gt;db,c-&gt;argv[1]);</span>
+<span class="lineNum">     370 </span>                :<span class="lineCov">         14 :             notifyKeyspaceEvent(REDIS_NOTIFY_LIST,&quot;linsert&quot;,</span>
+<span class="lineNum">     371 </span>                :<span class="lineCov">         28 :                                 c-&gt;argv[1],c-&gt;db-&gt;id);</span>
+<span class="lineNum">     372 </span>                :<span class="lineCov">         14 :             server.dirty++;</span>
+<span class="lineNum">     373 </span>                :            :         } else {
+<span class="lineNum">     374 </span>                :            :             /* Notify client of a failed insert */
+<span class="lineNum">     375 </span>                :<span class="lineCov">          6 :             addReply(c,shared.cnegone);</span>
+<span class="lineNum">     376 </span>                :<span class="lineCov">          6 :             return;</span>
+<span class="lineNum">     377 </span>                :            :         }
+<span class="lineNum">     378 </span>                :            :     } else {
+<span class="lineNum">     379 </span>        [<span class="branchCov" title="Branch 0 was taken 4 times"> + </span><span class="branchCov" title="Branch 1 was taken 4 times"> + </span>]:<span class="lineCov">          8 :         char *event = (where == REDIS_HEAD) ? &quot;lpush&quot; : &quot;rpush&quot;;</span>
+<span class="lineNum">     380 </span>                :            : 
+<span class="lineNum">     381 </span>                :<span class="lineCov">          8 :         listTypePush(subject,val,where);</span>
+<span class="lineNum">     382 </span>                :<span class="lineCov">          8 :         signalModifiedKey(c-&gt;db,c-&gt;argv[1]);</span>
+<span class="lineNum">     383 </span>                :<span class="lineCov">          8 :         notifyKeyspaceEvent(REDIS_NOTIFY_LIST,event,c-&gt;argv[1],c-&gt;db-&gt;id);</span>
+<span class="lineNum">     384 </span>                :<span class="lineCov">          8 :         server.dirty++;</span>
+<span class="lineNum">     385 </span>                :            :     }
+<span class="lineNum">     386 </span>                :            : 
+<span class="lineNum">     387 </span>                :<span class="lineCov">         30 :     addReplyLongLong(c,listTypeLength(subject));</span>
+<a name="388"><span class="lineNum">     388 </span>                :            : }</a>
+<span class="lineNum">     389 </span>                :            : 
+<span class="lineNum">     390 </span>                :<span class="lineCov">          5 : void lpushxCommand(redisClient *c) {</span>
+<span class="lineNum">     391 </span>                :<span class="lineCov">          5 :     c-&gt;argv[2] = tryObjectEncoding(c-&gt;argv[2]);</span>
+<span class="lineNum">     392 </span>                :<span class="lineCov">          5 :     pushxGenericCommand(c,NULL,c-&gt;argv[2],REDIS_HEAD);</span>
+<a name="393"><span class="lineNum">     393 </span>                :<span class="lineCov">          5 : }</span></a>
+<span class="lineNum">     394 </span>                :            : 
+<span class="lineNum">     395 </span>                :<span class="lineCov">          5 : void rpushxCommand(redisClient *c) {</span>
+<span class="lineNum">     396 </span>                :<span class="lineCov">          5 :     c-&gt;argv[2] = tryObjectEncoding(c-&gt;argv[2]);</span>
+<span class="lineNum">     397 </span>                :<span class="lineCov">          5 :     pushxGenericCommand(c,NULL,c-&gt;argv[2],REDIS_TAIL);</span>
+<a name="398"><span class="lineNum">     398 </span>                :<span class="lineCov">          5 : }</span></a>
+<span class="lineNum">     399 </span>                :            : 
+<span class="lineNum">     400 </span>                :<span class="lineCov">         21 : void linsertCommand(redisClient *c) {</span>
+<span class="lineNum">     401 </span>                :<span class="lineCov">         21 :     c-&gt;argv[4] = tryObjectEncoding(c-&gt;argv[4]);</span>
+<span class="lineNum">     402 </span>        [<span class="branchCov" title="Branch 1 was taken 9 times"> + </span><span class="branchCov" title="Branch 2 was taken 12 times"> + </span>]:<span class="lineCov">         21 :     if (strcasecmp(c-&gt;argv[2]-&gt;ptr,&quot;after&quot;) == 0) {</span>
+<span class="lineNum">     403 </span>                :<span class="lineCov">          9 :         pushxGenericCommand(c,c-&gt;argv[3],c-&gt;argv[4],REDIS_TAIL);</span>
+<span class="lineNum">     404 </span>        [<span class="branchCov" title="Branch 1 was taken 11 times"> + </span><span class="branchCov" title="Branch 2 was taken 1 time"> + </span>]:<span class="lineCov">         12 :     } else if (strcasecmp(c-&gt;argv[2]-&gt;ptr,&quot;before&quot;) == 0) {</span>
+<span class="lineNum">     405 </span>                :<span class="lineCov">         11 :         pushxGenericCommand(c,c-&gt;argv[3],c-&gt;argv[4],REDIS_HEAD);</span>
+<span class="lineNum">     406 </span>                :            :     } else {
+<span class="lineNum">     407 </span>                :<span class="lineCov">          1 :         addReply(c,shared.syntaxerr);</span>
+<span class="lineNum">     408 </span>                :            :     }
+<a name="409"><span class="lineNum">     409 </span>                :<span class="lineCov">         21 : }</span></a>
+<span class="lineNum">     410 </span>                :            : 
+<span class="lineNum">     411 </span>                :<span class="lineCov">       2248 : void llenCommand(redisClient *c) {</span>
+<span class="lineNum">     412 </span>                :<span class="lineCov">       2248 :     robj *o = lookupKeyReadOrReply(c,c-&gt;argv[1],shared.czero);</span>
+<span class="lineNum">     413 </span>[<span class="branchCov" title="Branch 0 was taken 2238 times"> + </span><span class="branchCov" title="Branch 1 was taken 10 times"> + </span>][<span class="branchCov" title="Branch 3 was taken 2237 times"> + </span><span class="branchCov" title="Branch 4 was taken 1 time"> + </span>]:<span class="lineCov">       4485 :     if (o == NULL || checkType(c,o,REDIS_LIST)) return;</span>
+<span class="lineNum">     414 </span>                :<span class="lineCov">       2237 :     addReplyLongLong(c,listTypeLength(o));</span>
+<a name="415"><span class="lineNum">     415 </span>                :            : }</a>
+<span class="lineNum">     416 </span>                :            : 
+<span class="lineNum">     417 </span>                :<span class="lineCov">      45971 : void lindexCommand(redisClient *c) {</span>
+<span class="lineNum">     418 </span>                :<span class="lineCov">      45971 :     robj *o = lookupKeyReadOrReply(c,c-&gt;argv[1],shared.nullbulk);</span>
+<span class="lineNum">     419 </span>[<span class="branchCov" title="Branch 0 was taken 45969 times"> + </span><span class="branchCov" title="Branch 1 was taken 2 times"> + </span>][<span class="branchCov" title="Branch 3 was taken 45968 times"> + </span><span class="branchCov" title="Branch 4 was taken 1 time"> + </span>]:<span class="lineCov">      45971 :     if (o == NULL || checkType(c,o,REDIS_LIST)) return;</span>
+<span class="lineNum">     420 </span>                :            :     long index;
+<span class="lineNum">     421 </span>                :<span class="lineCov">      45968 :     robj *value = NULL;</span>
+<span class="lineNum">     422 </span>                :            : 
+<span class="lineNum">     423 </span>        [<span class="branchCov" title="Branch 1 was taken 45968 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">      45968 :     if ((getLongFromObjectOrReply(c, c-&gt;argv[2], &amp;index, NULL) != REDIS_OK))</span>
+<span class="lineNum">     424 </span>                :            :         return;
+<span class="lineNum">     425 </span>                :            : 
+<span class="lineNum">     426 </span>        [<span class="branchCov" title="Branch 0 was taken 19001 times"> + </span><span class="branchCov" title="Branch 1 was taken 26967 times"> + </span>]:<span class="lineCov">      45968 :     if (o-&gt;encoding == REDIS_ENCODING_ZIPLIST) {</span>
+<span class="lineNum">     427 </span>                :            :         unsigned char *p;
+<span class="lineNum">     428 </span>                :            :         unsigned char *vstr;
+<span class="lineNum">     429 </span>                :            :         unsigned int vlen;
+<span class="lineNum">     430 </span>                :            :         long long vlong;
+<span class="lineNum">     431 </span>                :<span class="lineCov">      19001 :         p = ziplistIndex(o-&gt;ptr,index);</span>
+<span class="lineNum">     432 </span>        [<span class="branchCov" title="Branch 1 was taken 19000 times"> + </span><span class="branchCov" title="Branch 2 was taken 1 time"> + </span>]:<span class="lineCov">      19001 :         if (ziplistGet(p,&amp;vstr,&amp;vlen,&amp;vlong)) {</span>
+<span class="lineNum">     433 </span>        [<span class="branchCov" title="Branch 0 was taken 4055 times"> + </span><span class="branchCov" title="Branch 1 was taken 14945 times"> + </span>]:<span class="lineCov">      19000 :             if (vstr) {</span>
+<span class="lineNum">     434 </span>                :<span class="lineCov">       4055 :                 value = createStringObject((char*)vstr,vlen);</span>
+<span class="lineNum">     435 </span>                :            :             } else {
+<span class="lineNum">     436 </span>                :<span class="lineCov">      14945 :                 value = createStringObjectFromLongLong(vlong);</span>
+<span class="lineNum">     437 </span>                :            :             }
+<span class="lineNum">     438 </span>                :<span class="lineCov">      19000 :             addReplyBulk(c,value);</span>
+<span class="lineNum">     439 </span>                :<span class="lineCov">      19000 :             decrRefCount(value);</span>
+<span class="lineNum">     440 </span>                :            :         } else {
+<span class="lineNum">     441 </span>                :<span class="lineCov">          1 :             addReply(c,shared.nullbulk);</span>
+<span class="lineNum">     442 </span>                :            :         }
+<span class="lineNum">     443 </span>        [<span class="branchCov" title="Branch 0 was taken 26967 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">      26967 :     } else if (o-&gt;encoding == REDIS_ENCODING_LINKEDLIST) {</span>
+<span class="lineNum">     444 </span>                :<span class="lineCov">      26967 :         listNode *ln = listIndex(o-&gt;ptr,index);</span>
+<span class="lineNum">     445 </span>        [<span class="branchCov" title="Branch 0 was taken 26965 times"> + </span><span class="branchCov" title="Branch 1 was taken 2 times"> + </span>]:<span class="lineCov">      26967 :         if (ln != NULL) {</span>
+<span class="lineNum">     446 </span>                :<span class="lineCov">      26965 :             value = listNodeValue(ln);</span>
+<span class="lineNum">     447 </span>                :<span class="lineCov">      26965 :             addReplyBulk(c,value);</span>
+<span class="lineNum">     448 </span>                :            :         } else {
+<span class="lineNum">     449 </span>                :<span class="lineCov">          2 :             addReply(c,shared.nullbulk);</span>
+<span class="lineNum">     450 </span>                :            :         }
+<span class="lineNum">     451 </span>                :            :     } else {
+<span class="lineNum">     452 </span>                :<span class="lineCov">      45971 :         redisPanic(&quot;Unknown list encoding&quot;);</span>
+<span class="lineNum">     453 </span>                :            :     }
+<a name="454"><span class="lineNum">     454 </span>                :            : }</a>
+<span class="lineNum">     455 </span>                :            : 
+<span class="lineNum">     456 </span>                :<span class="lineCov">          8 : void lsetCommand(redisClient *c) {</span>
+<span class="lineNum">     457 </span>                :<span class="lineCov">          8 :     robj *o = lookupKeyWriteOrReply(c,c-&gt;argv[1],shared.nokeyerr);</span>
+<span class="lineNum">     458 </span>[<span class="branchCov" title="Branch 0 was taken 7 times"> + </span><span class="branchCov" title="Branch 1 was taken 1 time"> + </span>][<span class="branchCov" title="Branch 3 was taken 6 times"> + </span><span class="branchCov" title="Branch 4 was taken 1 time"> + </span>]:<span class="lineCov">          8 :     if (o == NULL || checkType(c,o,REDIS_LIST)) return;</span>
+<span class="lineNum">     459 </span>                :            :     long index;
+<span class="lineNum">     460 </span>                :<span class="lineCov">          6 :     robj *value = (c-&gt;argv[3] = tryObjectEncoding(c-&gt;argv[3]));</span>
+<span class="lineNum">     461 </span>                :            : 
+<span class="lineNum">     462 </span>        [<span class="branchCov" title="Branch 1 was taken 6 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          6 :     if ((getLongFromObjectOrReply(c, c-&gt;argv[2], &amp;index, NULL) != REDIS_OK))</span>
+<span class="lineNum">     463 </span>                :            :         return;
+<span class="lineNum">     464 </span>                :            : 
+<span class="lineNum">     465 </span>                :<span class="lineCov">          6 :     listTypeTryConversion(o,value);</span>
+<span class="lineNum">     466 </span>        [<span class="branchCov" title="Branch 0 was taken 3 times"> + </span><span class="branchCov" title="Branch 1 was taken 3 times"> + </span>]:<span class="lineCov">          6 :     if (o-&gt;encoding == REDIS_ENCODING_ZIPLIST) {</span>
+<span class="lineNum">     467 </span>                :<span class="lineCov">          3 :         unsigned char *p, *zl = o-&gt;ptr;</span>
+<span class="lineNum">     468 </span>                :<span class="lineCov">          3 :         p = ziplistIndex(zl,index);</span>
+<span class="lineNum">     469 </span>        [<span class="branchCov" title="Branch 0 was taken 1 time"> + </span><span class="branchCov" title="Branch 1 was taken 2 times"> + </span>]:<span class="lineCov">          3 :         if (p == NULL) {</span>
+<span class="lineNum">     470 </span>                :<span class="lineCov">          1 :             addReply(c,shared.outofrangeerr);</span>
+<span class="lineNum">     471 </span>                :            :         } else {
+<span class="lineNum">     472 </span>                :<span class="lineCov">          2 :             o-&gt;ptr = ziplistDelete(o-&gt;ptr,&amp;p);</span>
+<span class="lineNum">     473 </span>                :<span class="lineCov">          2 :             value = getDecodedObject(value);</span>
+<span class="lineNum">     474 </span>                :<span class="lineCov">          2 :             o-&gt;ptr = ziplistInsert(o-&gt;ptr,p,value-&gt;ptr,sdslen(value-&gt;ptr));</span>
+<span class="lineNum">     475 </span>                :<span class="lineCov">          2 :             decrRefCount(value);</span>
+<span class="lineNum">     476 </span>                :<span class="lineCov">          2 :             addReply(c,shared.ok);</span>
+<span class="lineNum">     477 </span>                :<span class="lineCov">          2 :             signalModifiedKey(c-&gt;db,c-&gt;argv[1]);</span>
+<span class="lineNum">     478 </span>                :<span class="lineCov">          2 :             notifyKeyspaceEvent(REDIS_NOTIFY_LIST,&quot;lset&quot;,c-&gt;argv[1],c-&gt;db-&gt;id);</span>
+<span class="lineNum">     479 </span>                :<span class="lineCov">          2 :             server.dirty++;</span>
+<span class="lineNum">     480 </span>                :            :         }
+<span class="lineNum">     481 </span>        [<span class="branchCov" title="Branch 0 was taken 3 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">          3 :     } else if (o-&gt;encoding == REDIS_ENCODING_LINKEDLIST) {</span>
+<span class="lineNum">     482 </span>                :<span class="lineCov">          3 :         listNode *ln = listIndex(o-&gt;ptr,index);</span>
+<span class="lineNum">     483 </span>        [<span class="branchCov" title="Branch 0 was taken 1 time"> + </span><span class="branchCov" title="Branch 1 was taken 2 times"> + </span>]:<span class="lineCov">          3 :         if (ln == NULL) {</span>
+<span class="lineNum">     484 </span>                :<span class="lineCov">          1 :             addReply(c,shared.outofrangeerr);</span>
+<span class="lineNum">     485 </span>                :            :         } else {
+<span class="lineNum">     486 </span>                :<span class="lineCov">          2 :             decrRefCount((robj*)listNodeValue(ln));</span>
+<span class="lineNum">     487 </span>                :<span class="lineCov">          2 :             listNodeValue(ln) = value;</span>
+<span class="lineNum">     488 </span>                :<span class="lineCov">          2 :             incrRefCount(value);</span>
+<span class="lineNum">     489 </span>                :<span class="lineCov">          2 :             addReply(c,shared.ok);</span>
+<span class="lineNum">     490 </span>                :<span class="lineCov">          2 :             signalModifiedKey(c-&gt;db,c-&gt;argv[1]);</span>
+<span class="lineNum">     491 </span>                :<span class="lineCov">          2 :             notifyKeyspaceEvent(REDIS_NOTIFY_LIST,&quot;lset&quot;,c-&gt;argv[1],c-&gt;db-&gt;id);</span>
+<span class="lineNum">     492 </span>                :<span class="lineCov">          2 :             server.dirty++;</span>
+<span class="lineNum">     493 </span>                :            :         }
+<span class="lineNum">     494 </span>                :            :     } else {
+<span class="lineNum">     495 </span>                :<span class="lineCov">          8 :         redisPanic(&quot;Unknown list encoding&quot;);</span>
+<span class="lineNum">     496 </span>                :            :     }
+<a name="497"><span class="lineNum">     497 </span>                :            : }</a>
+<span class="lineNum">     498 </span>                :            : 
+<span class="lineNum">     499 </span>                :<span class="lineCov">      24475 : void popGenericCommand(redisClient *c, int where) {</span>
+<span class="lineNum">     500 </span>                :<span class="lineCov">      24475 :     robj *o = lookupKeyWriteOrReply(c,c-&gt;argv[1],shared.nullbulk);</span>
+<span class="lineNum">     501 </span>[<span class="branchCov" title="Branch 0 was taken 24470 times"> + </span><span class="branchCov" title="Branch 1 was taken 5 times"> + </span>][<span class="branchCov" title="Branch 3 was taken 24468 times"> + </span><span class="branchCov" title="Branch 4 was taken 2 times"> + </span>]:<span class="lineCov">      48943 :     if (o == NULL || checkType(c,o,REDIS_LIST)) return;</span>
+<span class="lineNum">     502 </span>                :            : 
+<span class="lineNum">     503 </span>                :<span class="lineCov">      24468 :     robj *value = listTypePop(o,where);</span>
+<span class="lineNum">     504 </span>        [<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchCov" title="Branch 1 was taken 24468 times"> + </span>]:<span class="lineCov">      24468 :     if (value == NULL) {</span>
+<span class="lineNum">     505 </span>                :<span class="lineNoCov">          0 :         addReply(c,shared.nullbulk);</span>
+<span class="lineNum">     506 </span>                :            :     } else {
+<span class="lineNum">     507 </span>        [<span class="branchCov" title="Branch 0 was taken 12174 times"> + </span><span class="branchCov" title="Branch 1 was taken 12294 times"> + </span>]:<span class="lineCov">      24468 :         char *event = (where == REDIS_HEAD) ? &quot;lpop&quot; : &quot;rpop&quot;;</span>
+<span class="lineNum">     508 </span>                :            : 
+<span class="lineNum">     509 </span>                :<span class="lineCov">      24468 :         addReplyBulk(c,value);</span>
+<span class="lineNum">     510 </span>                :<span class="lineCov">      24468 :         decrRefCount(value);</span>
+<span class="lineNum">     511 </span>                :<span class="lineCov">      24468 :         notifyKeyspaceEvent(REDIS_NOTIFY_LIST,event,c-&gt;argv[1],c-&gt;db-&gt;id);</span>
+<span class="lineNum">     512 </span>        [<span class="branchCov" title="Branch 1 was taken 22421 times"> + </span><span class="branchCov" title="Branch 2 was taken 2047 times"> + </span>]:<span class="lineCov">      24468 :         if (listTypeLength(o) == 0) {</span>
+<span class="lineNum">     513 </span>                :<span class="lineCov">      22421 :             notifyKeyspaceEvent(REDIS_NOTIFY_GENERIC,&quot;del&quot;,</span>
+<span class="lineNum">     514 </span>                :<span class="lineCov">      44842 :                                 c-&gt;argv[1],c-&gt;db-&gt;id);</span>
+<span class="lineNum">     515 </span>                :<span class="lineCov">      22421 :             dbDelete(c-&gt;db,c-&gt;argv[1]);</span>
+<span class="lineNum">     516 </span>                :            :         }
+<span class="lineNum">     517 </span>                :<span class="lineCov">      24468 :         signalModifiedKey(c-&gt;db,c-&gt;argv[1]);</span>
+<span class="lineNum">     518 </span>                :<span class="lineCov">      24468 :         server.dirty++;</span>
+<span class="lineNum">     519 </span>                :            :     }
+<a name="520"><span class="lineNum">     520 </span>                :            : }</a>
+<span class="lineNum">     521 </span>                :            : 
+<span class="lineNum">     522 </span>                :<span class="lineCov">      12298 : void lpopCommand(redisClient *c) {</span>
+<span class="lineNum">     523 </span>                :<span class="lineCov">      12298 :     popGenericCommand(c,REDIS_HEAD);</span>
+<a name="524"><span class="lineNum">     524 </span>                :<span class="lineCov">      12298 : }</span></a>
+<span class="lineNum">     525 </span>                :            : 
+<span class="lineNum">     526 </span>                :<span class="lineCov">      12177 : void rpopCommand(redisClient *c) {</span>
+<span class="lineNum">     527 </span>                :<span class="lineCov">      12177 :     popGenericCommand(c,REDIS_TAIL);</span>
+<a name="528"><span class="lineNum">     528 </span>                :<span class="lineCov">      12177 : }</span></a>
+<span class="lineNum">     529 </span>                :            : 
+<span class="lineNum">     530 </span>                :<span class="lineCov">       2124 : void lrangeCommand(redisClient *c) {</span>
+<span class="lineNum">     531 </span>                :            :     robj *o;
+<span class="lineNum">     532 </span>                :            :     long start, end, llen, rangelen;
+<span class="lineNum">     533 </span>                :            : 
+<span class="lineNum">     534 </span>  [<span class="branchCov" title="Branch 1 was taken 2124 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span><span class="branchCov" title="Branch 3 was taken 2124 times"> + </span><span class="branchNoCov" title="Branch 4 was not taken"> - </span>]:<span class="lineCov">       4248 :     if ((getLongFromObjectOrReply(c, c-&gt;argv[2], &amp;start, NULL) != REDIS_OK) ||</span>
+<span class="lineNum">     535 </span>                :<span class="lineCov">       2124 :         (getLongFromObjectOrReply(c, c-&gt;argv[3], &amp;end, NULL) != REDIS_OK)) return;</span>
+<span class="lineNum">     536 </span>                :            : 
+<span class="lineNum">     537 </span>        [<span class="branchCov" title="Branch 1 was taken 2117 times"> + </span><span class="branchCov" title="Branch 2 was taken 7 times"> + </span>]:<span class="lineCov">       2124 :     if ((o = lookupKeyReadOrReply(c,c-&gt;argv[1],shared.emptymultibulk)) == NULL</span>
+<span class="lineNum">     538 </span>        [<span class="branchCov" title="Branch 1 was taken 2117 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">       2117 :          || checkType(c,o,REDIS_LIST)) return;</span>
+<span class="lineNum">     539 </span>                :<span class="lineCov">       2117 :     llen = listTypeLength(o);</span>
+<span class="lineNum">     540 </span>                :            : 
+<span class="lineNum">     541 </span>                :            :     /* convert negative indexes */
+<span class="lineNum">     542 </span>        [<span class="branchCov" title="Branch 0 was taken 4 times"> + </span><span class="branchCov" title="Branch 1 was taken 2113 times"> + </span>]:<span class="lineCov">       2117 :     if (start &lt; 0) start = llen+start;</span>
+<span class="lineNum">     543 </span>        [<span class="branchCov" title="Branch 0 was taken 2101 times"> + </span><span class="branchCov" title="Branch 1 was taken 16 times"> + </span>]:<span class="lineCov">       2117 :     if (end &lt; 0) end = llen+end;</span>
+<span class="lineNum">     544 </span>        [<span class="branchCov" title="Branch 0 was taken 2 times"> + </span><span class="branchCov" title="Branch 1 was taken 2115 times"> + </span>]:<span class="lineCov">       2117 :     if (start &lt; 0) start = 0;</span>
+<span class="lineNum">     545 </span>                :            : 
+<span class="lineNum">     546 </span>                :            :     /* Invariant: start &gt;= 0, so this test will be true when end &lt; 0.
+<span class="lineNum">     547 </span>                :            :      * The range is empty when start &gt; end or start &gt;= length. */
+<span class="lineNum">     548 </span>[<span class="branchCov" title="Branch 0 was taken 2113 times"> + </span><span class="branchCov" title="Branch 1 was taken 4 times"> + </span>][<span class="branchNoCov" title="Branch 2 was not taken"> - </span><span class="branchCov" title="Branch 3 was taken 2113 times"> + </span>]:<span class="lineCov">       2117 :     if (start &gt; end || start &gt;= llen) {</span>
+<span class="lineNum">     549 </span>                :<span class="lineCov">          4 :         addReply(c,shared.emptymultibulk);</span>
+<span class="lineNum">     550 </span>                :<span class="lineCov">       2124 :         return;</span>
+<span class="lineNum">     551 </span>                :            :     }
+<span class="lineNum">     552 </span>        [<span class="branchCov" title="Branch 0 was taken 10 times"> + </span><span class="branchCov" title="Branch 1 was taken 2103 times"> + </span>]:<span class="lineCov">       2113 :     if (end &gt;= llen) end = llen-1;</span>
+<span class="lineNum">     553 </span>                :<span class="lineCov">       2113 :     rangelen = (end-start)+1;</span>
+<span class="lineNum">     554 </span>                :            : 
+<span class="lineNum">     555 </span>                :            :     /* Return the result in form of a multi-bulk reply */
+<span class="lineNum">     556 </span>                :<span class="lineCov">       2113 :     addReplyMultiBulkLen(c,rangelen);</span>
+<span class="lineNum">     557 </span>        [<span class="branchCov" title="Branch 0 was taken 1074 times"> + </span><span class="branchCov" title="Branch 1 was taken 1039 times"> + </span>]:<span class="lineCov">       2113 :     if (o-&gt;encoding == REDIS_ENCODING_ZIPLIST) {</span>
+<span class="lineNum">     558 </span>                :<span class="lineCov">       1074 :         unsigned char *p = ziplistIndex(o-&gt;ptr,start);</span>
+<span class="lineNum">     559 </span>                :            :         unsigned char *vstr;
+<span class="lineNum">     560 </span>                :            :         unsigned int vlen;
+<span class="lineNum">     561 </span>                :            :         long long vlong;
+<span class="lineNum">     562 </span>                :            : 
+<span class="lineNum">     563 </span>        [<span class="branchCov" title="Branch 0 was taken 11878 times"> + </span><span class="branchCov" title="Branch 1 was taken 1074 times"> + </span>]:<span class="lineCov">      12952 :         while(rangelen--) {</span>
+<span class="lineNum">     564 </span>                :<span class="lineCov">      11878 :             ziplistGet(p,&amp;vstr,&amp;vlen,&amp;vlong);</span>
+<span class="lineNum">     565 </span>        [<span class="branchCov" title="Branch 0 was taken 210 times"> + </span><span class="branchCov" title="Branch 1 was taken 11668 times"> + </span>]:<span class="lineCov">      11878 :             if (vstr) {</span>
+<span class="lineNum">     566 </span>                :<span class="lineCov">        210 :                 addReplyBulkCBuffer(c,vstr,vlen);</span>
+<span class="lineNum">     567 </span>                :            :             } else {
+<span class="lineNum">     568 </span>                :<span class="lineCov">      11668 :                 addReplyBulkLongLong(c,vlong);</span>
+<span class="lineNum">     569 </span>                :            :             }
+<span class="lineNum">     570 </span>                :<span class="lineCov">      11878 :             p = ziplistNext(o-&gt;ptr,p);</span>
+<span class="lineNum">     571 </span>                :            :         }
+<span class="lineNum">     572 </span>        [<span class="branchCov" title="Branch 0 was taken 1039 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">       1039 :     } else if (o-&gt;encoding == REDIS_ENCODING_LINKEDLIST) {</span>
+<span class="lineNum">     573 </span>                :            :         listNode *ln;
+<span class="lineNum">     574 </span>                :            : 
+<span class="lineNum">     575 </span>                :            :         /* If we are nearest to the end of the list, reach the element
+<span class="lineNum">     576 </span>                :            :          * starting from tail and going backward, as it is faster. */
+<span class="lineNum">     577 </span>        [<span class="branchCov" title="Branch 0 was taken 1 time"> + </span><span class="branchCov" title="Branch 1 was taken 1038 times"> + </span>]:<span class="lineCov">       1039 :         if (start &gt; llen/2) start -= llen;</span>
+<span class="lineNum">     578 </span>                :<span class="lineCov">       1039 :         ln = listIndex(o-&gt;ptr,start);</span>
+<span class="lineNum">     579 </span>                :            : 
+<span class="lineNum">     580 </span>        [<span class="branchCov" title="Branch 0 was taken 11193 times"> + </span><span class="branchCov" title="Branch 1 was taken 1039 times"> + </span>]:<span class="lineCov">      12232 :         while(rangelen--) {</span>
+<span class="lineNum">     581 </span>                :<span class="lineCov">      11193 :             addReplyBulk(c,ln-&gt;value);</span>
+<span class="lineNum">     582 </span>                :<span class="lineCov">      11193 :             ln = ln-&gt;next;</span>
+<span class="lineNum">     583 </span>                :            :         }
+<span class="lineNum">     584 </span>                :            :     } else {
+<span class="lineNum">     585 </span>                :<span class="lineNoCov">          0 :         redisPanic(&quot;List encoding is not LINKEDLIST nor ZIPLIST!&quot;);</span>
+<span class="lineNum">     586 </span>                :            :     }
+<a name="587"><span class="lineNum">     587 </span>                :            : }</a>
+<span class="lineNum">     588 </span>                :            : 
+<span class="lineNum">     589 </span>                :<span class="lineCov">       2028 : void ltrimCommand(redisClient *c) {</span>
+<span class="lineNum">     590 </span>                :            :     robj *o;
+<span class="lineNum">     591 </span>                :            :     long start, end, llen, j, ltrim, rtrim;
+<span class="lineNum">     592 </span>                :            :     list *list;
+<span class="lineNum">     593 </span>                :            :     listNode *ln;
+<span class="lineNum">     594 </span>                :            : 
+<span class="lineNum">     595 </span>  [<span class="branchCov" title="Branch 1 was taken 2028 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span><span class="branchCov" title="Branch 3 was taken 2028 times"> + </span><span class="branchNoCov" title="Branch 4 was not taken"> - </span>]:<span class="lineCov">       4056 :     if ((getLongFromObjectOrReply(c, c-&gt;argv[2], &amp;start, NULL) != REDIS_OK) ||</span>
+<span class="lineNum">     596 </span>                :<span class="lineCov">       2028 :         (getLongFromObjectOrReply(c, c-&gt;argv[3], &amp;end, NULL) != REDIS_OK)) return;</span>
+<span class="lineNum">     597 </span>                :            : 
+<span class="lineNum">     598 </span>  [<span class="branchCov" title="Branch 1 was taken 2028 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span><span class="branchCov" title="Branch 3 was taken 2028 times"> + </span><span class="branchNoCov" title="Branch 4 was not taken"> - </span>]:<span class="lineCov">       4056 :     if ((o = lookupKeyWriteOrReply(c,c-&gt;argv[1],shared.ok)) == NULL ||</span>
+<span class="lineNum">     599 </span>                :<span class="lineCov">       2028 :         checkType(c,o,REDIS_LIST)) return;</span>
+<span class="lineNum">     600 </span>                :<span class="lineCov">       2028 :     llen = listTypeLength(o);</span>
+<span class="lineNum">     601 </span>                :            : 
+<span class="lineNum">     602 </span>                :            :     /* convert negative indexes */
+<span class="lineNum">     603 </span>        [<span class="branchCov" title="Branch 0 was taken 8 times"> + </span><span class="branchCov" title="Branch 1 was taken 2020 times"> + </span>]:<span class="lineCov">       2028 :     if (start &lt; 0) start = llen+start;</span>
+<span class="lineNum">     604 </span>        [<span class="branchCov" title="Branch 0 was taken 14 times"> + </span><span class="branchCov" title="Branch 1 was taken 2014 times"> + </span>]:<span class="lineCov">       2028 :     if (end &lt; 0) end = llen+end;</span>
+<span class="lineNum">     605 </span>        [<span class="branchCov" title="Branch 0 was taken 2 times"> + </span><span class="branchCov" title="Branch 1 was taken 2026 times"> + </span>]:<span class="lineCov">       2028 :     if (start &lt; 0) start = 0;</span>
+<span class="lineNum">     606 </span>                :            : 
+<span class="lineNum">     607 </span>                :            :     /* Invariant: start &gt;= 0, so this test will be true when end &lt; 0.
+<span class="lineNum">     608 </span>                :            :      * The range is empty when start &gt; end or start &gt;= length. */
+<span class="lineNum">     609 </span>[<span class="branchCov" title="Branch 0 was taken 2026 times"> + </span><span class="branchCov" title="Branch 1 was taken 2 times"> + </span>][<span class="branchCov" title="Branch 2 was taken 2026 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">       2028 :     if (start &gt; end || start &gt;= llen) {</span>
+<span class="lineNum">     610 </span>                :            :         /* Out of range start or start &gt; end result in empty list */
+<span class="lineNum">     611 </span>                :            :         ltrim = llen;
+<span class="lineNum">     612 </span>                :            :         rtrim = 0;
+<span class="lineNum">     613 </span>                :            :     } else {
+<span class="lineNum">     614 </span>        [<span class="branchCov" title="Branch 0 was taken 946 times"> + </span><span class="branchCov" title="Branch 1 was taken 1080 times"> + </span>]:<span class="lineCov">       2026 :         if (end &gt;= llen) end = llen-1;</span>
+<span class="lineNum">     615 </span>                :<span class="lineCov">       2026 :         ltrim = start;</span>
+<span class="lineNum">     616 </span>                :<span class="lineCov">       2026 :         rtrim = llen-end-1;</span>
+<span class="lineNum">     617 </span>                :            :     }
+<span class="lineNum">     618 </span>                :            : 
+<span class="lineNum">     619 </span>                :            :     /* Remove list elements to perform the trim */
+<span class="lineNum">     620 </span>        [<span class="branchCov" title="Branch 0 was taken 1014 times"> + </span><span class="branchCov" title="Branch 1 was taken 1014 times"> + </span>]:<span class="lineCov">       2028 :     if (o-&gt;encoding == REDIS_ENCODING_ZIPLIST) {</span>
+<span class="lineNum">     621 </span>                :<span class="lineCov">       1014 :         o-&gt;ptr = ziplistDeleteRange(o-&gt;ptr,0,ltrim);</span>
+<span class="lineNum">     622 </span>                :<span class="lineCov">       1014 :         o-&gt;ptr = ziplistDeleteRange(o-&gt;ptr,-rtrim,rtrim);</span>
+<span class="lineNum">     623 </span>        [<span class="branchCov" title="Branch 0 was taken 1014 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">       1014 :     } else if (o-&gt;encoding == REDIS_ENCODING_LINKEDLIST) {</span>
+<span class="lineNum">     624 </span>                :<span class="lineCov">       1014 :         list = o-&gt;ptr;</span>
+<span class="lineNum">     625 </span>        [<span class="branchCov" title="Branch 0 was taken 15233 times"> + </span><span class="branchCov" title="Branch 1 was taken 1014 times"> + </span>]:<span class="lineCov">      16247 :         for (j = 0; j &lt; ltrim; j++) {</span>
+<span class="lineNum">     626 </span>                :<span class="lineCov">      15233 :             ln = listFirst(list);</span>
+<span class="lineNum">     627 </span>                :<span class="lineCov">      15233 :             listDelNode(list,ln);</span>
+<span class="lineNum">     628 </span>                :            :         }
+<span class="lineNum">     629 </span>        [<span class="branchCov" title="Branch 0 was taken 5758 times"> + </span><span class="branchCov" title="Branch 1 was taken 1014 times"> + </span>]:<span class="lineCov">       6772 :         for (j = 0; j &lt; rtrim; j++) {</span>
+<span class="lineNum">     630 </span>                :<span class="lineCov">       5758 :             ln = listLast(list);</span>
+<span class="lineNum">     631 </span>                :<span class="lineCov">       5758 :             listDelNode(list,ln);</span>
+<span class="lineNum">     632 </span>                :            :         }
+<span class="lineNum">     633 </span>                :            :     } else {
+<span class="lineNum">     634 </span>                :<span class="lineNoCov">          0 :         redisPanic(&quot;Unknown list encoding&quot;);</span>
+<span class="lineNum">     635 </span>                :            :     }
+<span class="lineNum">     636 </span>                :            : 
+<span class="lineNum">     637 </span>                :<span class="lineCov">       2028 :     notifyKeyspaceEvent(REDIS_NOTIFY_LIST,&quot;ltrim&quot;,c-&gt;argv[1],c-&gt;db-&gt;id);</span>
+<span class="lineNum">     638 </span>        [<span class="branchCov" title="Branch 1 was taken 2 times"> + </span><span class="branchCov" title="Branch 2 was taken 2026 times"> + </span>]:<span class="lineCov">       2028 :     if (listTypeLength(o) == 0) {</span>
+<span class="lineNum">     639 </span>                :<span class="lineCov">          2 :         dbDelete(c-&gt;db,c-&gt;argv[1]);</span>
+<span class="lineNum">     640 </span>                :<span class="lineCov">          2 :         notifyKeyspaceEvent(REDIS_NOTIFY_GENERIC,&quot;del&quot;,c-&gt;argv[1],c-&gt;db-&gt;id);</span>
+<span class="lineNum">     641 </span>                :            :     }
+<span class="lineNum">     642 </span>                :<span class="lineCov">       2028 :     signalModifiedKey(c-&gt;db,c-&gt;argv[1]);</span>
+<span class="lineNum">     643 </span>                :<span class="lineCov">       2028 :     server.dirty++;</span>
+<span class="lineNum">     644 </span>                :<span class="lineCov">       2028 :     addReply(c,shared.ok);</span>
+<span class="lineNum">     645 </span>                :            : }
+<span class="lineNum">     646 </span>                :            : 
+<span class="lineNum">     647 </span>                :<span class="lineCov">      11439 : void lremCommand(redisClient *c) {</span>
+<span class="lineNum">     648 </span>                :            :     robj *subject, *obj;
+<span class="lineNum">     649 </span>                :<span class="lineCov">      11439 :     obj = c-&gt;argv[3] = tryObjectEncoding(c-&gt;argv[3]);</span>
+<span class="lineNum">     650 </span>                :            :     long toremove;
+<span class="lineNum">     651 </span>                :<span class="lineCov">      11439 :     long removed = 0;</span>
+<span class="lineNum">     652 </span>                :            :     listTypeEntry entry;
+<span class="lineNum">     653 </span>                :            : 
+<span class="lineNum">     654 </span>        [<span class="branchCov" title="Branch 1 was taken 11439 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">      11439 :     if ((getLongFromObjectOrReply(c, c-&gt;argv[2], &amp;toremove, NULL) != REDIS_OK))</span>
+<span class="lineNum">     655 </span>                :            :         return;
+<span class="lineNum">     656 </span>                :            : 
+<span class="lineNum">     657 </span>                :<span class="lineCov">      11439 :     subject = lookupKeyWriteOrReply(c,c-&gt;argv[1],shared.czero);</span>
+<span class="lineNum">     658 </span>[<span class="branchCov" title="Branch 0 was taken 11439 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>][<span class="branchCov" title="Branch 3 was taken 11439 times"> + </span><span class="branchNoCov" title="Branch 4 was not taken"> - </span>]:<span class="lineCov">      11439 :     if (subject == NULL || checkType(c,subject,REDIS_LIST)) return;</span>
+<span class="lineNum">     659 </span>                :            : 
+<span class="lineNum">     660 </span>                :            :     /* Make sure obj is raw when we're dealing with a ziplist */
+<span class="lineNum">     661 </span>        [<span class="branchCov" title="Branch 0 was taken 9263 times"> + </span><span class="branchCov" title="Branch 1 was taken 2176 times"> + </span>]:<span class="lineCov">      11439 :     if (subject-&gt;encoding == REDIS_ENCODING_ZIPLIST)</span>
+<span class="lineNum">     662 </span>                :<span class="lineCov">       9263 :         obj = getDecodedObject(obj);</span>
+<span class="lineNum">     663 </span>                :            : 
+<span class="lineNum">     664 </span>                :            :     listTypeIterator *li;
+<span class="lineNum">     665 </span>        [<span class="branchCov" title="Branch 0 was taken 4 times"> + </span><span class="branchCov" title="Branch 1 was taken 11435 times"> + </span>]:<span class="lineCov">      11439 :     if (toremove &lt; 0) {</span>
+<span class="lineNum">     666 </span>                :<span class="lineCov">          4 :         toremove = -toremove;</span>
+<span class="lineNum">     667 </span>                :<span class="lineCov">      11439 :         li = listTypeInitIterator(subject,-1,REDIS_HEAD);</span>
+<span class="lineNum">     668 </span>                :            :     } else {
+<span class="lineNum">     669 </span>                :<span class="lineCov">      11435 :         li = listTypeInitIterator(subject,0,REDIS_TAIL);</span>
+<span class="lineNum">     670 </span>                :            :     }
+<span class="lineNum">     671 </span>                :            : 
+<span class="lineNum">     672 </span>        [<span class="branchCov" title="Branch 1 was taken 20901 times"> + </span><span class="branchCov" title="Branch 2 was taken 11431 times"> + </span>]:<span class="lineCov">      32332 :     while (listTypeNext(li,&amp;entry)) {</span>
+<span class="lineNum">     673 </span>        [<span class="branchCov" title="Branch 1 was taken 10943 times"> + </span><span class="branchCov" title="Branch 2 was taken 9958 times"> + </span>]:<span class="lineCov">      20901 :         if (listTypeEqual(&amp;entry,obj)) {</span>
+<span class="lineNum">     674 </span>                :<span class="lineCov">      10943 :             listTypeDelete(&amp;entry);</span>
+<span class="lineNum">     675 </span>                :<span class="lineCov">      10943 :             server.dirty++;</span>
+<span class="lineNum">     676 </span>                :<span class="lineCov">      10943 :             removed++;</span>
+<span class="lineNum">     677 </span>[<span class="branchCov" title="Branch 0 was taken 10 times"> + </span><span class="branchCov" title="Branch 1 was taken 10933 times"> + </span>][<span class="branchCov" title="Branch 2 was taken 2 times"> + </span><span class="branchCov" title="Branch 3 was taken 8 times"> + </span>]:<span class="lineCov">      22382 :             if (toremove &amp;&amp; removed == toremove) break;</span>
+<span class="lineNum">     678 </span>                :            :         }
+<span class="lineNum">     679 </span>                :            :     }
+<span class="lineNum">     680 </span>                :            :     listTypeReleaseIterator(li);
+<span class="lineNum">     681 </span>                :            : 
+<span class="lineNum">     682 </span>                :            :     /* Clean up raw encoded object */
+<span class="lineNum">     683 </span>        [<span class="branchCov" title="Branch 0 was taken 9263 times"> + </span><span class="branchCov" title="Branch 1 was taken 2176 times"> + </span>]:<span class="lineCov">      11439 :     if (subject-&gt;encoding == REDIS_ENCODING_ZIPLIST)</span>
+<span class="lineNum">     684 </span>                :<span class="lineCov">       9263 :         decrRefCount(obj);</span>
+<span class="lineNum">     685 </span>                :            : 
+<span class="lineNum">     686 </span>        [<span class="branchCov" title="Branch 1 was taken 10929 times"> + </span><span class="branchCov" title="Branch 2 was taken 510 times"> + </span>]:<span class="lineCov">      11439 :     if (listTypeLength(subject) == 0) dbDelete(c-&gt;db,c-&gt;argv[1]);</span>
+<span class="lineNum">     687 </span>                :<span class="lineCov">      11439 :     addReplyLongLong(c,removed);</span>
+<span class="lineNum">     688 </span>        [<span class="branchCov" title="Branch 0 was taken 10939 times"> + </span><span class="branchCov" title="Branch 1 was taken 500 times"> + </span>]:<span class="lineCov">      11439 :     if (removed) signalModifiedKey(c-&gt;db,c-&gt;argv[1]);</span>
+<span class="lineNum">     689 </span>                :            : }
+<span class="lineNum">     690 </span>                :            : 
+<span class="lineNum">     691 </span>                :            : /* This is the semantic of this command:
+<span class="lineNum">     692 </span>                :            :  *  RPOPLPUSH srclist dstlist:
+<span class="lineNum">     693 </span>                :            :  *    IF LLEN(srclist) &gt; 0
+<span class="lineNum">     694 </span>                :            :  *      element = RPOP srclist
+<span class="lineNum">     695 </span>                :            :  *      LPUSH dstlist element
+<span class="lineNum">     696 </span>                :            :  *      RETURN element
+<span class="lineNum">     697 </span>                :            :  *    ELSE
+<span class="lineNum">     698 </span>                :            :  *      RETURN nil
+<span class="lineNum">     699 </span>                :            :  *    END
+<span class="lineNum">     700 </span>                :            :  *  END
+<span class="lineNum">     701 </span>                :            :  *
+<span class="lineNum">     702 </span>                :            :  * The idea is to be able to get an element from a list in a reliable way
+<span class="lineNum">     703 </span>                :            :  * since the element is not just returned but pushed against another list
+<span class="lineNum">     704 </span>                :            :  * as well. This command was originally proposed by Ezra Zygmuntowicz.
+<a name="705"><span class="lineNum">     705 </span>                :            :  */</a>
+<span class="lineNum">     706 </span>                :            : 
+<span class="lineNum">     707 </span>                :<span class="lineCov">         33 : void rpoplpushHandlePush(redisClient *c, robj *dstkey, robj *dstobj, robj *value) {</span>
+<span class="lineNum">     708 </span>                :            :     /* Create the list if the key does not exist */
+<span class="lineNum">     709 </span>        [<span class="branchCov" title="Branch 0 was taken 19 times"> + </span><span class="branchCov" title="Branch 1 was taken 14 times"> + </span>]:<span class="lineCov">         33 :     if (!dstobj) {</span>
+<span class="lineNum">     710 </span>                :<span class="lineCov">         19 :         dstobj = createZiplistObject();</span>
+<span class="lineNum">     711 </span>                :<span class="lineCov">         19 :         dbAdd(c-&gt;db,dstkey,dstobj);</span>
+<span class="lineNum">     712 </span>                :<span class="lineCov">         19 :         signalListAsReady(c,dstkey);</span>
+<span class="lineNum">     713 </span>                :            :     }
+<span class="lineNum">     714 </span>                :<span class="lineCov">         33 :     signalModifiedKey(c-&gt;db,dstkey);</span>
+<span class="lineNum">     715 </span>                :<span class="lineCov">         33 :     listTypePush(dstobj,value,REDIS_HEAD);</span>
+<span class="lineNum">     716 </span>                :<span class="lineCov">         33 :     notifyKeyspaceEvent(REDIS_NOTIFY_LIST,&quot;lpush&quot;,dstkey,c-&gt;db-&gt;id);</span>
+<span class="lineNum">     717 </span>                :            :     /* Always send the pushed value to the client. */
+<span class="lineNum">     718 </span>                :<span class="lineCov">         33 :     addReplyBulk(c,value);</span>
+<a name="719"><span class="lineNum">     719 </span>                :<span class="lineCov">         33 : }</span></a>
+<span class="lineNum">     720 </span>                :            : 
+<span class="lineNum">     721 </span>                :<span class="lineCov">         25 : void rpoplpushCommand(redisClient *c) {</span>
+<span class="lineNum">     722 </span>                :            :     robj *sobj, *value;
+<span class="lineNum">     723 </span>  [<span class="branchCov" title="Branch 1 was taken 23 times"> + </span><span class="branchCov" title="Branch 2 was taken 2 times"> + </span><span class="branchCov" title="Branch 3 was taken 22 times"> + </span><span class="branchCov" title="Branch 4 was taken 1 time"> + </span>]:<span class="lineCov">         48 :     if ((sobj = lookupKeyWriteOrReply(c,c-&gt;argv[1],shared.nullbulk)) == NULL ||</span>
+<span class="lineNum">     724 </span>                :<span class="lineCov">         23 :         checkType(c,sobj,REDIS_LIST)) return;</span>
+<span class="lineNum">     725 </span>                :            : 
+<span class="lineNum">     726 </span>        [<span class="branchNoCov" title="Branch 1 was not taken"> - </span><span class="branchCov" title="Branch 2 was taken 22 times"> + </span>]:<span class="lineCov">         22 :     if (listTypeLength(sobj) == 0) {</span>
+<span class="lineNum">     727 </span>                :            :         /* This may only happen after loading very old RDB files. Recent
+<span class="lineNum">     728 </span>                :            :          * versions of Redis delete keys of empty lists. */
+<span class="lineNum">     729 </span>                :<span class="lineNoCov">          0 :         addReply(c,shared.nullbulk);</span>
+<span class="lineNum">     730 </span>                :            :     } else {
+<span class="lineNum">     731 </span>                :<span class="lineCov">         22 :         robj *dobj = lookupKeyWrite(c-&gt;db,c-&gt;argv[2]);</span>
+<span class="lineNum">     732 </span>                :<span class="lineCov">         22 :         robj *touchedkey = c-&gt;argv[1];</span>
+<span class="lineNum">     733 </span>                :            : 
+<span class="lineNum">     734 </span>[<span class="branchCov" title="Branch 0 was taken 15 times"> + </span><span class="branchCov" title="Branch 1 was taken 7 times"> + </span>][<span class="branchCov" title="Branch 3 was taken 13 times"> + </span><span class="branchCov" title="Branch 4 was taken 2 times"> + </span>]:<span class="lineCov">         22 :         if (dobj &amp;&amp; checkType(c,dobj,REDIS_LIST)) return;</span>
+<span class="lineNum">     735 </span>                :<span class="lineCov">         20 :         value = listTypePop(sobj,REDIS_TAIL);</span>
+<span class="lineNum">     736 </span>                :            :         /* We saved touched key, and protect it, since rpoplpushHandlePush
+<span class="lineNum">     737 </span>                :            :          * may change the client command argument vector (it does not
+<span class="lineNum">     738 </span>                :            :          * currently). */
+<span class="lineNum">     739 </span>                :<span class="lineCov">         20 :         incrRefCount(touchedkey);</span>
+<span class="lineNum">     740 </span>                :<span class="lineCov">         20 :         rpoplpushHandlePush(c,c-&gt;argv[2],dobj,value);</span>
+<span class="lineNum">     741 </span>                :            : 
+<span class="lineNum">     742 </span>                :            :         /* listTypePop returns an object with its refcount incremented */
+<span class="lineNum">     743 </span>                :<span class="lineCov">         20 :         decrRefCount(value);</span>
+<span class="lineNum">     744 </span>                :            : 
+<span class="lineNum">     745 </span>                :            :         /* Delete the source list when it is empty */
+<span class="lineNum">     746 </span>                :<span class="lineCov">         20 :         notifyKeyspaceEvent(REDIS_NOTIFY_LIST,&quot;rpop&quot;,touchedkey,c-&gt;db-&gt;id);</span>
+<span class="lineNum">     747 </span>        [<span class="branchCov" title="Branch 1 was taken 1 time"> + </span><span class="branchCov" title="Branch 2 was taken 19 times"> + </span>]:<span class="lineCov">         20 :         if (listTypeLength(sobj) == 0) {</span>
+<span class="lineNum">     748 </span>                :<span class="lineCov">          1 :             dbDelete(c-&gt;db,touchedkey);</span>
+<span class="lineNum">     749 </span>                :<span class="lineCov">          1 :             notifyKeyspaceEvent(REDIS_NOTIFY_GENERIC,&quot;del&quot;,</span>
+<span class="lineNum">     750 </span>                :<span class="lineCov">          1 :                                 touchedkey,c-&gt;db-&gt;id);</span>
+<span class="lineNum">     751 </span>                :            :         }
+<span class="lineNum">     752 </span>                :<span class="lineCov">         20 :         signalModifiedKey(c-&gt;db,touchedkey);</span>
+<span class="lineNum">     753 </span>                :<span class="lineCov">         20 :         decrRefCount(touchedkey);</span>
+<span class="lineNum">     754 </span>                :<span class="lineCov">         25 :         server.dirty++;</span>
+<span class="lineNum">     755 </span>                :            :     }
+<span class="lineNum">     756 </span>                :            : }
+<span class="lineNum">     757 </span>                :            : 
+<span class="lineNum">     758 </span>                :            : /*-----------------------------------------------------------------------------
+<span class="lineNum">     759 </span>                :            :  * Blocking POP operations
+<span class="lineNum">     760 </span>                :            :  *----------------------------------------------------------------------------*/
+<span class="lineNum">     761 </span>                :            : 
+<span class="lineNum">     762 </span>                :            : /* This is how the current blocking POP works, we use BLPOP as example:
+<span class="lineNum">     763 </span>                :            :  * - If the user calls BLPOP and the key exists and contains a non empty list
+<span class="lineNum">     764 </span>                :            :  *   then LPOP is called instead. So BLPOP is semantically the same as LPOP
+<span class="lineNum">     765 </span>                :            :  *   if blocking is not required.
+<span class="lineNum">     766 </span>                :            :  * - If instead BLPOP is called and the key does not exists or the list is
+<span class="lineNum">     767 </span>                :            :  *   empty we need to block. In order to do so we remove the notification for
+<span class="lineNum">     768 </span>                :            :  *   new data to read in the client socket (so that we'll not serve new
+<span class="lineNum">     769 </span>                :            :  *   requests if the blocking request is not served). Also we put the client
+<span class="lineNum">     770 </span>                :            :  *   in a dictionary (db-&gt;blocking_keys) mapping keys to a list of clients
+<span class="lineNum">     771 </span>                :            :  *   blocking for this keys.
+<span class="lineNum">     772 </span>                :            :  * - If a PUSH operation against a key with blocked clients waiting is
+<span class="lineNum">     773 </span>                :            :  *   performed, we mark this key as &quot;ready&quot;, and after the current command,
+<span class="lineNum">     774 </span>                :            :  *   MULTI/EXEC block, or script, is executed, we serve all the clients waiting
+<span class="lineNum">     775 </span>                :            :  *   for this list, from the one that blocked first, to the last, accordingly
+<span class="lineNum">     776 </span>                :            :  *   to the number of elements we have in the ready list.
+<span class="lineNum">     777 </span>                :            :  */
+<span class="lineNum">     778 </span>                :            : 
+<a name="779"><span class="lineNum">     779 </span>                :            : /* Set a client in blocking mode for the specified key, with the specified</a>
+<span class="lineNum">     780 </span>                :            :  * timeout */
+<span class="lineNum">     781 </span>                :<span class="lineCov">         38 : void blockForKeys(redisClient *c, robj **keys, int numkeys, time_t timeout, robj *target) {</span>
+<span class="lineNum">     782 </span>                :            :     dictEntry *de;
+<span class="lineNum">     783 </span>                :            :     list *l;
+<span class="lineNum">     784 </span>                :            :     int j;
+<span class="lineNum">     785 </span>                :            : 
+<span class="lineNum">     786 </span>                :<span class="lineCov">         38 :     c-&gt;bpop.timeout = timeout;</span>
+<span class="lineNum">     787 </span>                :<span class="lineCov">         38 :     c-&gt;bpop.target = target;</span>
+<span class="lineNum">     788 </span>                :            : 
+<span class="lineNum">     789 </span>        [<span class="branchCov" title="Branch 0 was taken 18 times"> + </span><span class="branchCov" title="Branch 1 was taken 20 times"> + </span>]:<span class="lineCov">         38 :     if (target != NULL) incrRefCount(target);</span>
+<span class="lineNum">     790 </span>                :            : 
+<span class="lineNum">     791 </span>        [<span class="branchCov" title="Branch 0 was taken 50 times"> + </span><span class="branchCov" title="Branch 1 was taken 38 times"> + </span>]:<span class="lineCov">         88 :     for (j = 0; j &lt; numkeys; j++) {</span>
+<span class="lineNum">     792 </span>                :            :         /* If the key already exists in the dict ignore it. */
+<span class="lineNum">     793 </span>        [<span class="branchCov" title="Branch 1 was taken 4 times"> + </span><span class="branchCov" title="Branch 2 was taken 46 times"> + </span>]:<span class="lineCov">         50 :         if (dictAdd(c-&gt;bpop.keys,keys[j],NULL) != DICT_OK) continue;</span>
+<span class="lineNum">     794 </span>                :<span class="lineCov">         46 :         incrRefCount(keys[j]);</span>
+<span class="lineNum">     795 </span>                :            : 
+<span class="lineNum">     796 </span>                :            :         /* And in the other &quot;side&quot;, to map keys -&gt; clients */
+<span class="lineNum">     797 </span>                :<span class="lineCov">         46 :         de = dictFind(c-&gt;db-&gt;blocking_keys,keys[j]);</span>
+<span class="lineNum">     798 </span>        [<span class="branchCov" title="Branch 0 was taken 45 times"> + </span><span class="branchCov" title="Branch 1 was taken 1 time"> + </span>]:<span class="lineCov">         46 :         if (de == NULL) {</span>
+<span class="lineNum">     799 </span>                :            :             int retval;
+<span class="lineNum">     800 </span>                :            : 
+<span class="lineNum">     801 </span>                :            :             /* For every key we take a list of clients blocked for it */
+<span class="lineNum">     802 </span>                :<span class="lineCov">         45 :             l = listCreate();</span>
+<span class="lineNum">     803 </span>                :<span class="lineCov">         45 :             retval = dictAdd(c-&gt;db-&gt;blocking_keys,keys[j],l);</span>
+<span class="lineNum">     804 </span>                :<span class="lineCov">         45 :             incrRefCount(keys[j]);</span>
+<span class="lineNum">     805 </span>        [<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchCov" title="Branch 1 was taken 45 times"> + </span>]:<span class="lineCov">         45 :             redisAssertWithInfo(c,keys[j],retval == DICT_OK);</span>
+<span class="lineNum">     806 </span>                :            :         } else {
+<span class="lineNum">     807 </span>                :<span class="lineCov">          1 :             l = dictGetVal(de);</span>
+<span class="lineNum">     808 </span>                :            :         }
+<span class="lineNum">     809 </span>                :<span class="lineCov">         46 :         listAddNodeTail(l,c);</span>
+<span class="lineNum">     810 </span>                :            :     }
+<span class="lineNum">     811 </span>                :            : 
+<span class="lineNum">     812 </span>                :            :     /* Mark the client as a blocked client */
+<span class="lineNum">     813 </span>                :<span class="lineCov">         38 :     c-&gt;flags |= REDIS_BLOCKED;</span>
+<span class="lineNum">     814 </span>                :<span class="lineCov">         38 :     server.bpop_blocked_clients++;</span>
+<span class="lineNum">     815 </span>                :<span class="lineCov">         38 : }</span>
+<a name="816"><span class="lineNum">     816 </span>                :            : </a>
+<span class="lineNum">     817 </span>                :            : /* Unblock a client that's waiting in a blocking operation such as BLPOP */
+<span class="lineNum">     818 </span>                :<span class="lineCov">         38 : void unblockClientWaitingData(redisClient *c) {</span>
+<span class="lineNum">     819 </span>                :            :     dictEntry *de;
+<span class="lineNum">     820 </span>                :            :     dictIterator *di;
+<span class="lineNum">     821 </span>                :            :     list *l;
+<span class="lineNum">     822 </span>                :            : 
+<span class="lineNum">     823 </span>        [<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchCov" title="Branch 1 was taken 38 times"> + </span>]:<span class="lineCov">         38 :     redisAssertWithInfo(c,NULL,dictSize(c-&gt;bpop.keys) != 0);</span>
+<span class="lineNum">     824 </span>                :<span class="lineCov">         38 :     di = dictGetIterator(c-&gt;bpop.keys);</span>
+<span class="lineNum">     825 </span>                :            :     /* The client may wait for multiple keys, so unblock it for every key. */
+<span class="lineNum">     826 </span>        [<span class="branchCov" title="Branch 1 was taken 46 times"> + </span><span class="branchCov" title="Branch 2 was taken 38 times"> + </span>]:<span class="lineCov">        122 :     while((de = dictNext(di)) != NULL) {</span>
+<span class="lineNum">     827 </span>                :<span class="lineCov">         46 :         robj *key = dictGetKey(de);</span>
+<span class="lineNum">     828 </span>                :            : 
+<span class="lineNum">     829 </span>                :            :         /* Remove this client from the list of clients waiting for this key. */
+<span class="lineNum">     830 </span>                :<span class="lineCov">         46 :         l = dictFetchValue(c-&gt;db-&gt;blocking_keys,key);</span>
+<span class="lineNum">     831 </span>        [<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchCov" title="Branch 1 was taken 46 times"> + </span>]:<span class="lineCov">         46 :         redisAssertWithInfo(c,key,l != NULL);</span>
+<span class="lineNum">     832 </span>                :<span class="lineCov">         46 :         listDelNode(l,listSearchKey(l,c));</span>
+<span class="lineNum">     833 </span>                :            :         /* If the list is empty we need to remove it to avoid wasting memory */
+<span class="lineNum">     834 </span>        [<span class="branchCov" title="Branch 0 was taken 1 time"> + </span><span class="branchCov" title="Branch 1 was taken 45 times"> + </span>]:<span class="lineCov">         46 :         if (listLength(l) == 0)</span>
+<span class="lineNum">     835 </span>                :<span class="lineCov">         83 :             dictDelete(c-&gt;db-&gt;blocking_keys,key);</span>
+<span class="lineNum">     836 </span>                :            :     }
+<span class="lineNum">     837 </span>                :<span class="lineCov">         38 :     dictReleaseIterator(di);</span>
+<span class="lineNum">     838 </span>                :            : 
+<span class="lineNum">     839 </span>                :            :     /* Cleanup the client structure */
+<span class="lineNum">     840 </span>                :<span class="lineCov">         38 :     dictEmpty(c-&gt;bpop.keys);</span>
+<span class="lineNum">     841 </span>        [<span class="branchCov" title="Branch 0 was taken 18 times"> + </span><span class="branchCov" title="Branch 1 was taken 20 times"> + </span>]:<span class="lineCov">         38 :     if (c-&gt;bpop.target) {</span>
+<span class="lineNum">     842 </span>                :<span class="lineCov">         18 :         decrRefCount(c-&gt;bpop.target);</span>
+<span class="lineNum">     843 </span>                :<span class="lineCov">         18 :         c-&gt;bpop.target = NULL;</span>
+<span class="lineNum">     844 </span>                :            :     }
+<span class="lineNum">     845 </span>                :<span class="lineCov">         38 :     c-&gt;flags &amp;= ~REDIS_BLOCKED;</span>
+<span class="lineNum">     846 </span>                :<span class="lineCov">         38 :     c-&gt;flags |= REDIS_UNBLOCKED;</span>
+<span class="lineNum">     847 </span>                :<span class="lineCov">         38 :     server.bpop_blocked_clients--;</span>
+<span class="lineNum">     848 </span>                :<span class="lineCov">         38 :     listAddNodeTail(server.unblocked_clients,c);</span>
+<span class="lineNum">     849 </span>                :<span class="lineCov">         38 : }</span>
+<span class="lineNum">     850 </span>                :            : 
+<span class="lineNum">     851 </span>                :            : /* If the specified key has clients blocked waiting for list pushes, this
+<span class="lineNum">     852 </span>                :            :  * function will put the key reference into the server.ready_keys list.
+<span class="lineNum">     853 </span>                :            :  * Note that db-&gt;ready_keys is an hash table that allows us to avoid putting
+<span class="lineNum">     854 </span>                :            :  * the same key again and again in the list in case of multiple pushes
+<span class="lineNum">     855 </span>                :            :  * made by a script or in the context of MULTI/EXEC.
+<a name="856"><span class="lineNum">     856 </span>                :            :  *</a>
+<span class="lineNum">     857 </span>                :            :  * The list will be finally processed by handleClientsBlockedOnLists() */
+<span class="lineNum">     858 </span>                :<span class="lineCov">      55451 : void signalListAsReady(redisClient *c, robj *key) {</span>
+<span class="lineNum">     859 </span>                :            :     readyList *rl;
+<span class="lineNum">     860 </span>                :            : 
+<span class="lineNum">     861 </span>                :            :     /* No clients blocking for this key? No need to queue it. */
+<span class="lineNum">     862 </span>        [<span class="branchCov" title="Branch 1 was taken 35 times"> + </span><span class="branchCov" title="Branch 2 was taken 55416 times"> + </span>]:<span class="lineCov">      55451 :     if (dictFind(c-&gt;db-&gt;blocking_keys,key) == NULL) return;</span>
+<span class="lineNum">     863 </span>                :            : 
+<span class="lineNum">     864 </span>                :            :     /* Key was already signaled? No need to queue it again. */
+<span class="lineNum">     865 </span>        [<span class="branchCov" title="Branch 1 was taken 35 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">         35 :     if (dictFind(c-&gt;db-&gt;ready_keys,key) != NULL) return;</span>
+<span class="lineNum">     866 </span>                :            : 
+<span class="lineNum">     867 </span>                :            :     /* Ok, we need to queue this key into server.ready_keys. */
+<span class="lineNum">     868 </span>                :<span class="lineCov">         35 :     rl = zmalloc(sizeof(*rl));</span>
+<span class="lineNum">     869 </span>                :<span class="lineCov">         35 :     rl-&gt;key = key;</span>
+<span class="lineNum">     870 </span>                :<span class="lineCov">         35 :     rl-&gt;db = c-&gt;db;</span>
+<span class="lineNum">     871 </span>                :<span class="lineCov">         35 :     incrRefCount(key);</span>
+<span class="lineNum">     872 </span>                :<span class="lineCov">         35 :     listAddNodeTail(server.ready_keys,rl);</span>
+<span class="lineNum">     873 </span>                :            : 
+<span class="lineNum">     874 </span>                :            :     /* We also add the key in the db-&gt;ready_keys dictionary in order
+<span class="lineNum">     875 </span>                :            :      * to avoid adding it multiple times into a list with a simple O(1)
+<span class="lineNum">     876 </span>                :            :      * check. */
+<span class="lineNum">     877 </span>                :<span class="lineCov">         35 :     incrRefCount(key);</span>
+<span class="lineNum">     878 </span>        [<span class="branchNoCov" title="Branch 1 was not taken"> - </span><span class="branchCov" title="Branch 2 was taken 35 times"> + </span>]:<span class="lineCov">      55451 :     redisAssert(dictAdd(c-&gt;db-&gt;ready_keys,key,NULL) == DICT_OK);</span>
+<span class="lineNum">     879 </span>                :            : }
+<span class="lineNum">     880 </span>                :            : 
+<span class="lineNum">     881 </span>                :            : /* This is an helper function for handleClientsBlockedOnLists(). It's work
+<span class="lineNum">     882 </span>                :            :  * is to serve a specific client (receiver) that is blocked on 'key'
+<span class="lineNum">     883 </span>                :            :  * in the context of the specified 'db', doing the following:
+<span class="lineNum">     884 </span>                :            :  *
+<span class="lineNum">     885 </span>                :            :  * 1) Provide the client with the 'value' element.
+<span class="lineNum">     886 </span>                :            :  * 2) If the dstkey is not NULL (we are serving a BRPOPLPUSH) also push the
+<span class="lineNum">     887 </span>                :            :  *    'value' element on the destination list (the LPUSH side of the command).
+<span class="lineNum">     888 </span>                :            :  * 3) Propagate the resulting BRPOP, BLPOP and additional LPUSH if any into
+<span class="lineNum">     889 </span>                :            :  *    the AOF and replication channel.
+<span class="lineNum">     890 </span>                :            :  *
+<span class="lineNum">     891 </span>                :            :  * The argument 'where' is REDIS_TAIL or REDIS_HEAD, and indicates if the
+<span class="lineNum">     892 </span>                :            :  * 'value' element was popped fron the head (BLPOP) or tail (BRPOP) so that
+<span class="lineNum">     893 </span>                :            :  * we can propagate the command properly.
+<span class="lineNum">     894 </span>                :            :  *
+<span class="lineNum">     895 </span>                :            :  * The function returns REDIS_OK if we are able to serve the client, otherwise
+<span class="lineNum">     896 </span>                :            :  * REDIS_ERR is returned to signal the caller that the list POP operation
+<span class="lineNum">     897 </span>                :            :  * should be undone as the client was not served: This only happens for
+<a name="898"><span class="lineNum">     898 </span>                :            :  * BRPOPLPUSH that fails to push the value to the destination key as it is</a>
+<span class="lineNum">     899 </span>                :            :  * of the wrong type. */
+<span class="lineNum">     900 </span>                :<span class="lineCov">         34 : int serveClientBlockedOnList(redisClient *receiver, robj *key, robj *dstkey, redisDb *db, robj *value, int where)</span>
+<span class="lineNum">     901 </span>                :            : {
+<span class="lineNum">     902 </span>                :            :     robj *argv[3];
+<span class="lineNum">     903 </span>                :            : 
+<span class="lineNum">     904 </span>        [<span class="branchCov" title="Branch 0 was taken 18 times"> + </span><span class="branchCov" title="Branch 1 was taken 16 times"> + </span>]:<span class="lineCov">         34 :     if (dstkey == NULL) {</span>
+<span class="lineNum">     905 </span>                :            :         /* Propagate the [LR]POP operation. */
+<span class="lineNum">     906 </span>        [<span class="branchCov" title="Branch 0 was taken 13 times"> + </span><span class="branchCov" title="Branch 1 was taken 5 times"> + </span>]:<span class="lineCov">         18 :         argv[0] = (where == REDIS_HEAD) ? shared.lpop :</span>
+<span class="lineNum">     907 </span>                :            :                                           shared.rpop;
+<span class="lineNum">     908 </span>                :<span class="lineCov">         18 :         argv[1] = key;</span>
+<span class="lineNum">     909 </span>        [<span class="branchCov" title="Branch 0 was taken 13 times"> + </span><span class="branchCov" title="Branch 1 was taken 5 times"> + </span>]:<span class="lineCov">         18 :         propagate((where == REDIS_HEAD) ?</span>
+<span class="lineNum">     910 </span>                :            :             server.lpopCommand : server.rpopCommand,
+<span class="lineNum">     911 </span>                :            :             db-&gt;id,argv,2,REDIS_PROPAGATE_AOF|REDIS_PROPAGATE_REPL);
+<span class="lineNum">     912 </span>                :            : 
+<span class="lineNum">     913 </span>                :            :         /* BRPOP/BLPOP */
+<span class="lineNum">     914 </span>                :<span class="lineCov">         18 :         addReplyMultiBulkLen(receiver,2);</span>
+<span class="lineNum">     915 </span>                :<span class="lineCov">         18 :         addReplyBulk(receiver,key);</span>
+<span class="lineNum">     916 </span>                :<span class="lineCov">         18 :         addReplyBulk(receiver,value);</span>
+<span class="lineNum">     917 </span>                :            :     } else {
+<span class="lineNum">     918 </span>                :            :         /* BRPOPLPUSH */
+<span class="lineNum">     919 </span>                :<span class="lineCov">         16 :         robj *dstobj =</span>
+<span class="lineNum">     920 </span>                :<span class="lineCov">         16 :             lookupKeyWrite(receiver-&gt;db,dstkey);</span>
+<span class="lineNum">     921 </span>  [<span class="branchCov" title="Branch 0 was taken 4 times"> + </span><span class="branchCov" title="Branch 1 was taken 12 times"> + </span><span class="branchCov" title="Branch 2 was taken 1 time"> + </span><span class="branchCov" title="Branch 3 was taken 3 times"> + </span>]:<span class="lineCov">         20 :         if (!(dstobj &amp;&amp;</span>
+<span class="lineNum">     922 </span>                :<span class="lineCov">          4 :              checkType(receiver,dstobj,REDIS_LIST)))</span>
+<span class="lineNum">     923 </span>                :            :         {
+<span class="lineNum">     924 </span>                :            :             /* Propagate the RPOP operation. */
+<span class="lineNum">     925 </span>                :<span class="lineCov">         13 :             argv[0] = shared.rpop;</span>
+<span class="lineNum">     926 </span>                :<span class="lineCov">         13 :             argv[1] = key;</span>
+<span class="lineNum">     927 </span>                :<span class="lineCov">         13 :             propagate(server.rpopCommand,</span>
+<span class="lineNum">     928 </span>                :            :                 db-&gt;id,argv,2,
+<span class="lineNum">     929 </span>                :            :                 REDIS_PROPAGATE_AOF|
+<span class="lineNum">     930 </span>                :            :                 REDIS_PROPAGATE_REPL);
+<span class="lineNum">     931 </span>                :<span class="lineCov">         13 :             rpoplpushHandlePush(receiver,dstkey,dstobj,</span>
+<span class="lineNum">     932 </span>                :            :                 value);
+<span class="lineNum">     933 </span>                :            :             /* Propagate the LPUSH operation. */
+<span class="lineNum">     934 </span>                :<span class="lineCov">         13 :             argv[0] = shared.lpush;</span>
+<span class="lineNum">     935 </span>                :<span class="lineCov">         13 :             argv[1] = dstkey;</span>
+<span class="lineNum">     936 </span>                :<span class="lineCov">         13 :             argv[2] = value;</span>
+<span class="lineNum">     937 </span>                :<span class="lineCov">         34 :             propagate(server.lpushCommand,</span>
+<span class="lineNum">     938 </span>                :            :                 db-&gt;id,argv,3,
+<span class="lineNum">     939 </span>                :            :                 REDIS_PROPAGATE_AOF|
+<span class="lineNum">     940 </span>                :            :                 REDIS_PROPAGATE_REPL);
+<span class="lineNum">     941 </span>                :            :         } else {
+<span class="lineNum">     942 </span>                :            :             /* BRPOPLPUSH failed because of wrong
+<span class="lineNum">     943 </span>                :            :              * destination type. */
+<span class="lineNum">     944 </span>                :            :             return REDIS_ERR;
+<span class="lineNum">     945 </span>                :            :         }
+<span class="lineNum">     946 </span>                :            :     }
+<span class="lineNum">     947 </span>                :            :     return REDIS_OK;
+<span class="lineNum">     948 </span>                :            : }
+<span class="lineNum">     949 </span>                :            : 
+<span class="lineNum">     950 </span>                :            : /* This function should be called by Redis every time a single command,
+<span class="lineNum">     951 </span>                :            :  * a MULTI/EXEC block, or a Lua script, terminated its execution after
+<span class="lineNum">     952 </span>                :            :  * being called by a client.
+<span class="lineNum">     953 </span>                :            :  *
+<span class="lineNum">     954 </span>                :            :  * All the keys with at least one client blocked that received at least
+<span class="lineNum">     955 </span>                :            :  * one new element via some PUSH operation are accumulated into
+<span class="lineNum">     956 </span>                :            :  * the server.ready_keys list. This function will run the list and will
+<span class="lineNum">     957 </span>                :            :  * serve clients accordingly. Note that the function will iterate again and
+<a name="958"><span class="lineNum">     958 </span>                :            :  * again as a result of serving BRPOPLPUSH we can have new blocking clients</a>
+<span class="lineNum">     959 </span>                :            :  * to serve because of the PUSH side of BRPOPLPUSH. */
+<span class="lineNum">     960 </span>                :<span class="lineCov">         31 : void handleClientsBlockedOnLists(void) {</span>
+<span class="lineNum">     961 </span>        [<span class="branchCov" title="Branch 0 was taken 35 times"> + </span><span class="branchCov" title="Branch 1 was taken 31 times"> + </span>]:<span class="lineCov">         66 :     while(listLength(server.ready_keys) != 0) {</span>
+<span class="lineNum">     962 </span>                :            :         list *l;
+<span class="lineNum">     963 </span>                :            : 
+<span class="lineNum">     964 </span>                :            :         /* Point server.ready_keys to a fresh list and save the current one
+<span class="lineNum">     965 </span>                :            :          * locally. This way as we run the old list we are free to call
+<span class="lineNum">     966 </span>                :            :          * signalListAsReady() that may push new elements in server.ready_keys
+<span class="lineNum">     967 </span>                :            :          * when handling clients blocked into BRPOPLPUSH. */
+<span class="lineNum">     968 </span>                :<span class="lineCov">         35 :         l = server.ready_keys;</span>
+<span class="lineNum">     969 </span>                :<span class="lineCov">         35 :         server.ready_keys = listCreate();</span>
+<span class="lineNum">     970 </span>                :            : 
+<span class="lineNum">     971 </span>        [<span class="branchCov" title="Branch 0 was taken 35 times"> + </span><span class="branchCov" title="Branch 1 was taken 35 times"> + </span>]:<span class="lineCov">         70 :         while(listLength(l) != 0) {</span>
+<span class="lineNum">     972 </span>                :<span class="lineCov">         35 :             listNode *ln = listFirst(l);</span>
+<span class="lineNum">     973 </span>                :<span class="lineCov">         35 :             readyList *rl = ln-&gt;value;</span>
+<span class="lineNum">     974 </span>                :            : 
+<span class="lineNum">     975 </span>                :            :             /* First of all remove this key from db-&gt;ready_keys so that
+<span class="lineNum">     976 </span>                :            :              * we can safely call signalListAsReady() against this key. */
+<span class="lineNum">     977 </span>                :<span class="lineCov">         35 :             dictDelete(rl-&gt;db-&gt;ready_keys,rl-&gt;key);</span>
+<span class="lineNum">     978 </span>                :            : 
+<span class="lineNum">     979 </span>                :            :             /* If the key exists and it's a list, serve blocked clients
+<span class="lineNum">     980 </span>                :            :              * with data. */
+<span class="lineNum">     981 </span>                :<span class="lineCov">         35 :             robj *o = lookupKeyWrite(rl-&gt;db,rl-&gt;key);</span>
+<span class="lineNum">     982 </span>[<span class="branchCov" title="Branch 0 was taken 34 times"> + </span><span class="branchCov" title="Branch 1 was taken 1 time"> + </span>][<span class="branchCov" title="Branch 2 was taken 33 times"> + </span><span class="branchCov" title="Branch 3 was taken 1 time"> + </span>]:<span class="lineCov">         35 :             if (o != NULL &amp;&amp; o-&gt;type == REDIS_LIST) {</span>
+<span class="lineNum">     983 </span>                :            :                 dictEntry *de;
+<span class="lineNum">     984 </span>                :            : 
+<span class="lineNum">     985 </span>                :            :                 /* We serve clients in the same order they blocked for
+<span class="lineNum">     986 </span>                :            :                  * this key, from the first blocked to the last. */
+<span class="lineNum">     987 </span>                :<span class="lineCov">         33 :                 de = dictFind(rl-&gt;db-&gt;blocking_keys,rl-&gt;key);</span>
+<span class="lineNum">     988 </span>        [<span class="branchCov" title="Branch 0 was taken 33 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">         33 :                 if (de) {</span>
+<span class="lineNum">     989 </span>                :<span class="lineCov">         33 :                     list *clients = dictGetVal(de);</span>
+<span class="lineNum">     990 </span>                :<span class="lineCov">         33 :                     int numclients = listLength(clients);</span>
+<span class="lineNum">     991 </span>                :            : 
+<span class="lineNum">     992 </span>        [<span class="branchCov" title="Branch 0 was taken 34 times"> + </span><span class="branchCov" title="Branch 1 was taken 33 times"> + </span>]:<span class="lineCov">         67 :                     while(numclients--) {</span>
+<span class="lineNum">     993 </span>                :<span class="lineCov">         34 :                         listNode *clientnode = listFirst(clients);</span>
+<span class="lineNum">     994 </span>                :<span class="lineCov">         34 :                         redisClient *receiver = clientnode-&gt;value;</span>
+<span class="lineNum">     995 </span>                :<span class="lineCov">         34 :                         robj *dstkey = receiver-&gt;bpop.target;</span>
+<span class="lineNum">     996 </span>        [<span class="branchCov" title="Branch 0 was taken 34 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">         34 :                         int where = (receiver-&gt;lastcmd &amp;&amp;</span>
+<span class="lineNum">     997 </span>                :<span class="lineCov">         34 :                                      receiver-&gt;lastcmd-&gt;proc == blpopCommand) ?</span>
+<span class="lineNum">     998 </span>        [<span class="branchCov" title="Branch 0 was taken 13 times"> + </span><span class="branchCov" title="Branch 1 was taken 21 times"> + </span>]:<span class="lineCov">         34 :                                     REDIS_HEAD : REDIS_TAIL;</span>
+<span class="lineNum">     999 </span>                :<span class="lineCov">         34 :                         robj *value = listTypePop(o,where);</span>
+<span class="lineNum">    1000 </span>                :            : 
+<span class="lineNum">    1001 </span>        [<span class="branchCov" title="Branch 0 was taken 34 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">         34 :                         if (value) {</span>
+<span class="lineNum">    1002 </span>                :            :                             /* Protect receiver-&gt;bpop.target, that will be
+<span class="lineNum">    1003 </span>                :            :                              * freed by the next unblockClientWaitingData()
+<span class="lineNum">    1004 </span>                :            :                              * call. */
+<span class="lineNum">    1005 </span>        [<span class="branchCov" title="Branch 0 was taken 16 times"> + </span><span class="branchCov" title="Branch 1 was taken 18 times"> + </span>]:<span class="lineCov">         34 :                             if (dstkey) incrRefCount(dstkey);</span>
+<span class="lineNum">    1006 </span>                :<span class="lineCov">         34 :                             unblockClientWaitingData(receiver);</span>
+<span class="lineNum">    1007 </span>                :            : 
+<span class="lineNum">    1008 </span>        [<span class="branchCov" title="Branch 1 was taken 3 times"> + </span><span class="branchCov" title="Branch 2 was taken 31 times"> + </span>]:<span class="lineCov">         34 :                             if (serveClientBlockedOnList(receiver,</span>
+<span class="lineNum">    1009 </span>                :            :                                 rl-&gt;key,dstkey,rl-&gt;db,value,
+<span class="lineNum">    1010 </span>                :            :                                 where) == REDIS_ERR)
+<span class="lineNum">    1011 </span>                :            :                             {
+<span class="lineNum">    1012 </span>                :            :                                 /* If we failed serving the client we need
+<span class="lineNum">    1013 </span>                :            :                                  * to also undo the POP operation. */
+<span class="lineNum">    1014 </span>                :<span class="lineCov">          3 :                                     listTypePush(o,value,where);</span>
+<span class="lineNum">    1015 </span>                :            :                             }
+<span class="lineNum">    1016 </span>                :            : 
+<span class="lineNum">    1017 </span>        [<span class="branchCov" title="Branch 0 was taken 16 times"> + </span><span class="branchCov" title="Branch 1 was taken 18 times"> + </span>]:<span class="lineCov">         34 :                             if (dstkey) decrRefCount(dstkey);</span>
+<span class="lineNum">    1018 </span>                :<span class="lineCov">         34 :                             decrRefCount(value);</span>
+<span class="lineNum">    1019 </span>                :            :                         } else {
+<span class="lineNum">    1020 </span>                :            :                             break;
+<span class="lineNum">    1021 </span>                :            :                         }
+<span class="lineNum">    1022 </span>                :            :                     }
+<span class="lineNum">    1023 </span>                :            :                 }
+<span class="lineNum">    1024 </span>                :            :                 
+<span class="lineNum">    1025 </span>        [<span class="branchCov" title="Branch 1 was taken 27 times"> + </span><span class="branchCov" title="Branch 2 was taken 6 times"> + </span>]:<span class="lineCov">         33 :                 if (listTypeLength(o) == 0) dbDelete(rl-&gt;db,rl-&gt;key);</span>
+<span class="lineNum">    1026 </span>                :            :                 /* We don't call signalModifiedKey() as it was already called
+<span class="lineNum">    1027 </span>                :            :                  * when an element was pushed on the list. */
+<span class="lineNum">    1028 </span>                :            :             }
+<span class="lineNum">    1029 </span>                :            : 
+<span class="lineNum">    1030 </span>                :            :             /* Free this item. */
+<span class="lineNum">    1031 </span>                :<span class="lineCov">         35 :             decrRefCount(rl-&gt;key);</span>
+<span class="lineNum">    1032 </span>                :<span class="lineCov">         35 :             zfree(rl);</span>
+<span class="lineNum">    1033 </span>                :<span class="lineCov">         35 :             listDelNode(l,ln);</span>
+<span class="lineNum">    1034 </span>                :            :         }
+<span class="lineNum">    1035 </span>                :<span class="lineCov">         35 :         listRelease(l); /* We have the new list on place at this point. */</span>
+<span class="lineNum">    1036 </span>                :            :     }
+<a name="1037"><span class="lineNum">    1037 </span>                :<span class="lineCov">         31 : }</span></a>
+<span class="lineNum">    1038 </span>                :            : 
+<span class="lineNum">    1039 </span>                :<span class="lineCov">         78 : int getTimeoutFromObjectOrReply(redisClient *c, robj *object, time_t *timeout) {</span>
+<span class="lineNum">    1040 </span>                :            :     long tval;
+<span class="lineNum">    1041 </span>                :            : 
+<span class="lineNum">    1042 </span>        [<span class="branchCov" title="Branch 1 was taken 76 times"> + </span><span class="branchCov" title="Branch 2 was taken 2 times"> + </span>]:<span class="lineCov">         78 :     if (getLongFromObjectOrReply(c,object,&amp;tval,</span>
+<span class="lineNum">    1043 </span>                :            :         &quot;timeout is not an integer or out of range&quot;) != REDIS_OK)
+<span class="lineNum">    1044 </span>                :            :         return REDIS_ERR;
+<span class="lineNum">    1045 </span>                :            : 
+<span class="lineNum">    1046 </span>        [<span class="branchCov" title="Branch 0 was taken 2 times"> + </span><span class="branchCov" title="Branch 1 was taken 74 times"> + </span>]:<span class="lineCov">         76 :     if (tval &lt; 0) {</span>
+<span class="lineNum">    1047 </span>                :<span class="lineCov">          2 :         addReplyError(c,&quot;timeout is negative&quot;);</span>
+<span class="lineNum">    1048 </span>                :<span class="lineCov">          2 :         return REDIS_ERR;</span>
+<span class="lineNum">    1049 </span>                :            :     }
+<span class="lineNum">    1050 </span>                :            : 
+<span class="lineNum">    1051 </span>        [<span class="branchCov" title="Branch 0 was taken 38 times"> + </span><span class="branchCov" title="Branch 1 was taken 36 times"> + </span>]:<span class="lineCov">         74 :     if (tval &gt; 0) tval += server.unixtime;</span>
+<span class="lineNum">    1052 </span>                :<span class="lineCov">         74 :     *timeout = tval;</span>
+<span class="lineNum">    1053 </span>                :            : 
+<span class="lineNum">    1054 </span>                :<span class="lineCov">         78 :     return REDIS_OK;</span>
+<span class="lineNum">    1055 </span>                :            : }
+<a name="1056"><span class="lineNum">    1056 </span>                :            : </a>
+<span class="lineNum">    1057 </span>                :            : /* Blocking RPOP/LPOP */
+<span class="lineNum">    1058 </span>                :<span class="lineCov">         51 : void blockingPopGenericCommand(redisClient *c, int where) {</span>
+<span class="lineNum">    1059 </span>                :            :     robj *o;
+<span class="lineNum">    1060 </span>                :            :     time_t timeout;
+<span class="lineNum">    1061 </span>                :            :     int j;
+<span class="lineNum">    1062 </span>                :            : 
+<span class="lineNum">    1063 </span>        [<span class="branchCov" title="Branch 1 was taken 47 times"> + </span><span class="branchCov" title="Branch 2 was taken 4 times"> + </span>]:<span class="lineCov">         51 :     if (getTimeoutFromObjectOrReply(c,c-&gt;argv[c-&gt;argc-1],&amp;timeout) != REDIS_OK)</span>
+<span class="lineNum">    1064 </span>                :            :         return;
+<span class="lineNum">    1065 </span>                :            : 
+<span class="lineNum">    1066 </span>        [<span class="branchCov" title="Branch 0 was taken 66 times"> + </span><span class="branchCov" title="Branch 1 was taken 21 times"> + </span>]:<span class="lineCov">         87 :     for (j = 1; j &lt; c-&gt;argc-1; j++) {</span>
+<span class="lineNum">    1067 </span>                :<span class="lineCov">         66 :         o = lookupKeyWrite(c-&gt;db,c-&gt;argv[j]);</span>
+<span class="lineNum">    1068 </span>        [<span class="branchCov" title="Branch 0 was taken 26 times"> + </span><span class="branchCov" title="Branch 1 was taken 40 times"> + </span>]:<span class="lineCov">         66 :         if (o != NULL) {</span>
+<span class="lineNum">    1069 </span>        [<span class="branchCov" title="Branch 0 was taken 2 times"> + </span><span class="branchCov" title="Branch 1 was taken 24 times"> + </span>]:<span class="lineCov">         26 :             if (o-&gt;type != REDIS_LIST) {</span>
+<span class="lineNum">    1070 </span>                :<span class="lineCov">          2 :                 addReply(c,shared.wrongtypeerr);</span>
+<span class="lineNum">    1071 </span>                :<span class="lineCov">          2 :                 return;</span>
+<span class="lineNum">    1072 </span>                :            :             } else {
+<span class="lineNum">    1073 </span>        [<span class="branchCov" title="Branch 1 was taken 24 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">         24 :                 if (listTypeLength(o) != 0) {</span>
+<span class="lineNum">    1074 </span>                :            :                     /* Non empty list, this is like a non normal [LR]POP. */
+<span class="lineNum">    1075 </span>        [<span class="branchCov" title="Branch 0 was taken 10 times"> + </span><span class="branchCov" title="Branch 1 was taken 14 times"> + </span>]:<span class="lineCov">         24 :                     char *event = (where == REDIS_HEAD) ? &quot;lpop&quot; : &quot;rpop&quot;;</span>
+<span class="lineNum">    1076 </span>                :<span class="lineCov">         24 :                     robj *value = listTypePop(o,where);</span>
+<span class="lineNum">    1077 </span>        [<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchCov" title="Branch 1 was taken 24 times"> + </span>]:<span class="lineCov">         24 :                     redisAssert(value != NULL);</span>
+<span class="lineNum">    1078 </span>                :            : 
+<span class="lineNum">    1079 </span>                :<span class="lineCov">         24 :                     addReplyMultiBulkLen(c,2);</span>
+<span class="lineNum">    1080 </span>                :<span class="lineCov">         24 :                     addReplyBulk(c,c-&gt;argv[j]);</span>
+<span class="lineNum">    1081 </span>                :<span class="lineCov">         24 :                     addReplyBulk(c,value);</span>
+<span class="lineNum">    1082 </span>                :<span class="lineCov">         24 :                     decrRefCount(value);</span>
+<span class="lineNum">    1083 </span>                :<span class="lineCov">         24 :                     notifyKeyspaceEvent(REDIS_NOTIFY_LIST,event,</span>
+<span class="lineNum">    1084 </span>                :<span class="lineCov">         48 :                                         c-&gt;argv[j],c-&gt;db-&gt;id);</span>
+<span class="lineNum">    1085 </span>        [<span class="branchCov" title="Branch 1 was taken 3 times"> + </span><span class="branchCov" title="Branch 2 was taken 21 times"> + </span>]:<span class="lineCov">         24 :                     if (listTypeLength(o) == 0) {</span>
+<span class="lineNum">    1086 </span>                :<span class="lineCov">          3 :                         dbDelete(c-&gt;db,c-&gt;argv[j]);</span>
+<span class="lineNum">    1087 </span>                :<span class="lineCov">          3 :                         notifyKeyspaceEvent(REDIS_NOTIFY_GENERIC,&quot;del&quot;,</span>
+<span class="lineNum">    1088 </span>                :<span class="lineCov">          6 :                                             c-&gt;argv[j],c-&gt;db-&gt;id);</span>
+<span class="lineNum">    1089 </span>                :            :                     }
+<span class="lineNum">    1090 </span>                :<span class="lineCov">         24 :                     signalModifiedKey(c-&gt;db,c-&gt;argv[j]);</span>
+<span class="lineNum">    1091 </span>                :<span class="lineCov">         24 :                     server.dirty++;</span>
+<span class="lineNum">    1092 </span>                :            : 
+<span class="lineNum">    1093 </span>                :            :                     /* Replicate it as an [LR]POP instead of B[LR]POP. */
+<span class="lineNum">    1094 </span>        [<span class="branchCov" title="Branch 0 was taken 14 times"> + </span><span class="branchCov" title="Branch 1 was taken 10 times"> + </span>]:<span class="lineCov">         24 :                     rewriteClientCommandVector(c,2,</span>
+<span class="lineNum">    1095 </span>                :            :                         (where == REDIS_HEAD) ? shared.lpop : shared.rpop,
+<span class="lineNum">    1096 </span>                :<span class="lineCov">         24 :                         c-&gt;argv[j]);</span>
+<span class="lineNum">    1097 </span>                :<span class="lineCov">         24 :                     return;</span>
+<span class="lineNum">    1098 </span>                :            :                 }
+<span class="lineNum">    1099 </span>                :            :             }
+<span class="lineNum">    1100 </span>                :            :         }
+<span class="lineNum">    1101 </span>                :            :     }
+<span class="lineNum">    1102 </span>                :            : 
+<span class="lineNum">    1103 </span>                :            :     /* If we are inside a MULTI/EXEC and the list is empty the only thing
+<span class="lineNum">    1104 </span>                :            :      * we can do is treating it as a timeout (even with timeout 0). */
+<span class="lineNum">    1105 </span>        [<span class="branchCov" title="Branch 0 was taken 1 time"> + </span><span class="branchCov" title="Branch 1 was taken 20 times"> + </span>]:<span class="lineCov">         21 :     if (c-&gt;flags &amp; REDIS_MULTI) {</span>
+<span class="lineNum">    1106 </span>                :<span class="lineCov">          1 :         addReply(c,shared.nullmultibulk);</span>
+<span class="lineNum">    1107 </span>                :<span class="lineCov">          1 :         return;</span>
+<span class="lineNum">    1108 </span>                :            :     }
+<span class="lineNum">    1109 </span>                :            : 
+<span class="lineNum">    1110 </span>                :            :     /* If the list is empty or the key does not exists we must block */
+<span class="lineNum">    1111 </span>                :<span class="lineCov">         51 :     blockForKeys(c, c-&gt;argv + 1, c-&gt;argc - 2, timeout, NULL);</span>
+<a name="1112"><span class="lineNum">    1112 </span>                :            : }</a>
+<span class="lineNum">    1113 </span>                :            : 
+<span class="lineNum">    1114 </span>                :<span class="lineCov">         32 : void blpopCommand(redisClient *c) {</span>
+<span class="lineNum">    1115 </span>                :<span class="lineCov">         32 :     blockingPopGenericCommand(c,REDIS_HEAD);</span>
+<a name="1116"><span class="lineNum">    1116 </span>                :<span class="lineCov">         32 : }</span></a>
+<span class="lineNum">    1117 </span>                :            : 
+<span class="lineNum">    1118 </span>                :<span class="lineCov">         19 : void brpopCommand(redisClient *c) {</span>
+<span class="lineNum">    1119 </span>                :<span class="lineCov">         19 :     blockingPopGenericCommand(c,REDIS_TAIL);</span>
+<a name="1120"><span class="lineNum">    1120 </span>                :<span class="lineCov">         19 : }</span></a>
+<span class="lineNum">    1121 </span>                :            : 
+<span class="lineNum">    1122 </span>                :<span class="lineCov">         27 : void brpoplpushCommand(redisClient *c) {</span>
+<span class="lineNum">    1123 </span>                :            :     time_t timeout;
+<span class="lineNum">    1124 </span>                :            : 
+<span class="lineNum">    1125 </span>        [<span class="branchCov" title="Branch 1 was taken 27 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">         27 :     if (getTimeoutFromObjectOrReply(c,c-&gt;argv[3],&amp;timeout) != REDIS_OK)</span>
+<span class="lineNum">    1126 </span>                :<span class="lineCov">         27 :         return;</span>
+<span class="lineNum">    1127 </span>                :            : 
+<span class="lineNum">    1128 </span>                :<span class="lineCov">         27 :     robj *key = lookupKeyWrite(c-&gt;db, c-&gt;argv[1]);</span>
+<span class="lineNum">    1129 </span>                :            : 
+<span class="lineNum">    1130 </span>        [<span class="branchCov" title="Branch 0 was taken 19 times"> + </span><span class="branchCov" title="Branch 1 was taken 8 times"> + </span>]:<span class="lineCov">         27 :     if (key == NULL) {</span>
+<span class="lineNum">    1131 </span>        [<span class="branchCov" title="Branch 0 was taken 1 time"> + </span><span class="branchCov" title="Branch 1 was taken 18 times"> + </span>]:<span class="lineCov">         19 :         if (c-&gt;flags &amp; REDIS_MULTI) {</span>
+<span class="lineNum">    1132 </span>                :            :             /* Blocking against an empty list in a multi state
+<span class="lineNum">    1133 </span>                :            :              * returns immediately. */
+<span class="lineNum">    1134 </span>                :<span class="lineCov">          1 :             addReply(c, shared.nullbulk);</span>
+<span class="lineNum">    1135 </span>                :            :         } else {
+<span class="lineNum">    1136 </span>                :            :             /* The list is empty and the client blocks. */
+<span class="lineNum">    1137 </span>                :<span class="lineCov">         18 :             blockForKeys(c, c-&gt;argv + 1, 1, timeout, c-&gt;argv[2]);</span>
+<span class="lineNum">    1138 </span>                :            :         }
+<span class="lineNum">    1139 </span>                :            :     } else {
+<span class="lineNum">    1140 </span>        [<span class="branchCov" title="Branch 0 was taken 1 time"> + </span><span class="branchCov" title="Branch 1 was taken 7 times"> + </span>]:<span class="lineCov">          8 :         if (key-&gt;type != REDIS_LIST) {</span>
+<span class="lineNum">    1141 </span>                :<span class="lineCov">          1 :             addReply(c, shared.wrongtypeerr);</span>
+<span class="lineNum">    1142 </span>                :            :         } else {
+<span class="lineNum">    1143 </span>                :            :             /* The list exists and has elements, so
+<span class="lineNum">    1144 </span>                :            :              * the regular rpoplpushCommand is executed. */
+<span class="lineNum">    1145 </span>        [<span class="branchNoCov" title="Branch 1 was not taken"> - </span><span class="branchCov" title="Branch 2 was taken 7 times"> + </span>]:<span class="lineCov">          7 :             redisAssertWithInfo(c,key,listTypeLength(key) &gt; 0);</span>
+<span class="lineNum">    1146 </span>                :<span class="lineCov">          7 :             rpoplpushCommand(c);</span>
+<span class="lineNum">    1147 </span>                :            :         }
+<span class="lineNum">    1148 </span>                :            :     }
+<span class="lineNum">    1149 </span>                :            : }
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.9</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

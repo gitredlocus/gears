@@ -1,0 +1,577 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - redis-lcov_9.info - /var/lib/jenkins/jobs/redis-lcov/workspace/src/intset.c</title>
+  <link rel="stylesheet" type="text/css" href="../../../../../../../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../../../../../../../index.html">top level</a> - <a href="index.html">var/lib/jenkins/jobs/redis-lcov/workspace/src</a> - intset.c<span style="font-size: 80%;"> (source / <a href="intset.c.func.html">functions</a>)</span></td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">redis-lcov_9.info</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">111</td>
+            <td class="headerCovTableEntry">111</td>
+            <td class="headerCovTableEntryHi">100.0 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2013-08-26</td>
+            <td></td>
+            <td class="headerItem">Functions:</td>
+            <td class="headerCovTableEntry">13</td>
+            <td class="headerCovTableEntry">13</td>
+            <td class="headerCovTableEntryHi">100.0 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Legend:</td>
+            <td class="headerValueLeg">            Lines:
+            <span class="coverLegendCov">hit</span>
+            <span class="coverLegendNoCov">not hit</span>
+            | Branches:
+            <span class="coverLegendCov">+</span> taken
+            <span class="coverLegendNoCov">-</span> not taken
+            <span class="coverLegendNoCov">#</span> not executed
+</td>
+            <td></td>
+            <td class="headerItem">Branches:</td>
+            <td class="headerCovTableEntry">79</td>
+            <td class="headerCovTableEntry">82</td>
+            <td class="headerCovTableEntryHi">96.3 %</td>
+          </tr>
+          <tr><td><img src="../../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">           Branch data     Line data    Source code</pre>
+<pre class="source">
+<a name="1"><span class="lineNum">       1 </span>                :            : /*</a>
+<span class="lineNum">       2 </span>                :            :  * Copyright (c) 2009-2012, Pieter Noordhuis &lt;pcnoordhuis at gmail dot com&gt;
+<span class="lineNum">       3 </span>                :            :  * Copyright (c) 2009-2012, Salvatore Sanfilippo &lt;antirez at gmail dot com&gt;
+<span class="lineNum">       4 </span>                :            :  * All rights reserved.
+<span class="lineNum">       5 </span>                :            :  *
+<span class="lineNum">       6 </span>                :            :  * Redistribution and use in source and binary forms, with or without
+<span class="lineNum">       7 </span>                :            :  * modification, are permitted provided that the following conditions are met:
+<span class="lineNum">       8 </span>                :            :  *
+<span class="lineNum">       9 </span>                :            :  *   * Redistributions of source code must retain the above copyright notice,
+<span class="lineNum">      10 </span>                :            :  *     this list of conditions and the following disclaimer.
+<span class="lineNum">      11 </span>                :            :  *   * Redistributions in binary form must reproduce the above copyright
+<span class="lineNum">      12 </span>                :            :  *     notice, this list of conditions and the following disclaimer in the
+<span class="lineNum">      13 </span>                :            :  *     documentation and/or other materials provided with the distribution.
+<span class="lineNum">      14 </span>                :            :  *   * Neither the name of Redis nor the names of its contributors may be used
+<span class="lineNum">      15 </span>                :            :  *     to endorse or promote products derived from this software without
+<span class="lineNum">      16 </span>                :            :  *     specific prior written permission.
+<span class="lineNum">      17 </span>                :            :  *
+<span class="lineNum">      18 </span>                :            :  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS &quot;AS IS&quot;
+<span class="lineNum">      19 </span>                :            :  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+<span class="lineNum">      20 </span>                :            :  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+<span class="lineNum">      21 </span>                :            :  * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+<span class="lineNum">      22 </span>                :            :  * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+<span class="lineNum">      23 </span>                :            :  * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+<span class="lineNum">      24 </span>                :            :  * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+<span class="lineNum">      25 </span>                :            :  * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+<span class="lineNum">      26 </span>                :            :  * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+<span class="lineNum">      27 </span>                :            :  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+<span class="lineNum">      28 </span>                :            :  * POSSIBILITY OF SUCH DAMAGE.
+<span class="lineNum">      29 </span>                :            :  */
+<span class="lineNum">      30 </span>                :            : 
+<span class="lineNum">      31 </span>                :            : #include &lt;stdio.h&gt;
+<span class="lineNum">      32 </span>                :            : #include &lt;stdlib.h&gt;
+<span class="lineNum">      33 </span>                :            : #include &lt;string.h&gt;
+<span class="lineNum">      34 </span>                :            : #include &quot;intset.h&quot;
+<span class="lineNum">      35 </span>                :            : #include &quot;zmalloc.h&quot;
+<span class="lineNum">      36 </span>                :            : #include &quot;endianconv.h&quot;
+<span class="lineNum">      37 </span>                :            : 
+<span class="lineNum">      38 </span>                :            : /* Note that these encodings are ordered, so:
+<span class="lineNum">      39 </span>                :            :  * INTSET_ENC_INT16 &lt; INTSET_ENC_INT32 &lt; INTSET_ENC_INT64. */
+<span class="lineNum">      40 </span>                :            : #define INTSET_ENC_INT16 (sizeof(int16_t))
+<span class="lineNum">      41 </span>                :            : #define INTSET_ENC_INT32 (sizeof(int32_t))
+<span class="lineNum">      42 </span>                :            : #define INTSET_ENC_INT64 (sizeof(int64_t))
+<span class="lineNum">      43 </span>                :            : 
+<a name="44"><span class="lineNum">      44 </span>                :            : /* Return the required encoding for the provided value. */</a>
+<span class="lineNum">      45 </span>                :            : static uint8_t _intsetValueEncoding(int64_t v) {
+<span class="lineNum">      46 </span>[<span class="branchCov" title="Branch 0 was taken 6450 times"> + </span><span class="branchCov" title="Branch 1 was taken 3339 times"> + </span>][<span class="branchCov" title="Branch 2 was taken 10517 times"> + </span><span class="branchCov" title="Branch 3 was taken 7671 times"> + </span>]:<span class="lineCov">     161477 :     if (v &lt; INT32_MIN || v &gt; INT32_MAX)</span>
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 4 was taken 56703 times"> + </span><span class="branchCov" title="Branch 5 was taken 38814 times"> + </span>][<span class="branchCov" title="Branch 6 was taken 14226 times"> + </span><span class="branchCov" title="Branch 7 was taken 23757 times"> + </span>]
+<span class="lineNum">      47 </span>                :            :         return INTSET_ENC_INT64;
+<span class="lineNum">      48 </span>[<span class="branchCov" title="Branch 0 was taken 4174 times"> + </span><span class="branchCov" title="Branch 1 was taken 2276 times"> + </span>][<span class="branchCov" title="Branch 2 was taken 5499 times"> + </span><span class="branchCov" title="Branch 3 was taken 5018 times"> + </span>]:<span class="lineCov">      87896 :     else if (v &lt; INT16_MIN || v &gt; INT16_MAX)</span>
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 4 was taken 29664 times"> + </span><span class="branchCov" title="Branch 5 was taken 27039 times"> + </span>][<span class="branchNoCov" title="Branch 6 was not taken"> - </span><span class="branchCov" title="Branch 7 was taken 14226 times"> + </span>]
+<span class="lineNum">      49 </span>                :            :         return INTSET_ENC_INT32;
+<span class="lineNum">      50 </span>                :            :     else
+<span class="lineNum">      51 </span>                :            :         return INTSET_ENC_INT16;
+<span class="lineNum">      52 </span>                :            : }
+<a name="53"><span class="lineNum">      53 </span>                :            : </a>
+<span class="lineNum">      54 </span>                :            : /* Return the value at pos, given an encoding. */
+<span class="lineNum">      55 </span>                :<span class="lineCov">     476984 : static int64_t _intsetGetEncoded(intset *is, int pos, uint8_t enc) {</span>
+<span class="lineNum">      56 </span>                :            :     int64_t v64;
+<span class="lineNum">      57 </span>                :            :     int32_t v32;
+<span class="lineNum">      58 </span>                :            :     int16_t v16;
+<span class="lineNum">      59 </span>                :            : 
+<span class="lineNum">      60 </span>        [<span class="branchCov" title="Branch 0 was taken 332718 times"> + </span><span class="branchCov" title="Branch 1 was taken 144266 times"> + </span>]:<span class="lineCov">     476984 :     if (enc == INTSET_ENC_INT64) {</span>
+<span class="lineNum">      61 </span>                :<span class="lineCov">     332718 :         memcpy(&amp;v64,((int64_t*)is-&gt;contents)+pos,sizeof(v64));</span>
+<span class="lineNum">      62 </span>                :            :         memrev64ifbe(&amp;v64);
+<span class="lineNum">      63 </span>                :<span class="lineCov">     332718 :         return v64;</span>
+<span class="lineNum">      64 </span>        [<span class="branchCov" title="Branch 0 was taken 55475 times"> + </span><span class="branchCov" title="Branch 1 was taken 88791 times"> + </span>]:<span class="lineCov">     144266 :     } else if (enc == INTSET_ENC_INT32) {</span>
+<span class="lineNum">      65 </span>                :<span class="lineCov">      55475 :         memcpy(&amp;v32,((int32_t*)is-&gt;contents)+pos,sizeof(v32));</span>
+<span class="lineNum">      66 </span>                :            :         memrev32ifbe(&amp;v32);
+<span class="lineNum">      67 </span>                :<span class="lineCov">      55475 :         return v32;</span>
+<span class="lineNum">      68 </span>                :            :     } else {
+<span class="lineNum">      69 </span>                :<span class="lineCov">      88791 :         memcpy(&amp;v16,((int16_t*)is-&gt;contents)+pos,sizeof(v16));</span>
+<span class="lineNum">      70 </span>                :            :         memrev16ifbe(&amp;v16);
+<span class="lineNum">      71 </span>                :<span class="lineCov">     476984 :         return v16;</span>
+<span class="lineNum">      72 </span>                :            :     }
+<span class="lineNum">      73 </span>                :            : }
+<span class="lineNum">      74 </span>                :            : 
+<a name="75"><span class="lineNum">      75 </span>                :            : /* Return the value at pos, using the configured encoding. */</a>
+<span class="lineNum">      76 </span>                :            : static int64_t _intsetGet(intset *is, int pos) {
+<span class="lineNum">      77 </span>                :<span class="lineCov">     474192 :     return _intsetGetEncoded(is,pos,intrev32ifbe(is-&gt;encoding));</span>
+<span class="lineNum">      78 </span>                :            : }
+<a name="79"><span class="lineNum">      79 </span>                :            : </a>
+<span class="lineNum">      80 </span>                :            : /* Set the value at pos, using the configured encoding. */
+<span class="lineNum">      81 </span>                :<span class="lineCov">      88047 : static void _intsetSet(intset *is, int pos, int64_t value) {</span>
+<span class="lineNum">      82 </span>                :<span class="lineCov">      88047 :     uint32_t encoding = intrev32ifbe(is-&gt;encoding);</span>
+<span class="lineNum">      83 </span>                :            : 
+<span class="lineNum">      84 </span>        [<span class="branchCov" title="Branch 0 was taken 49035 times"> + </span><span class="branchCov" title="Branch 1 was taken 39012 times"> + </span>]:<span class="lineCov">      88047 :     if (encoding == INTSET_ENC_INT64) {</span>
+<span class="lineNum">      85 </span>                :<span class="lineCov">      49035 :         ((int64_t*)is-&gt;contents)[pos] = value;</span>
+<span class="lineNum">      86 </span>                :            :         memrev64ifbe(((int64_t*)is-&gt;contents)+pos);
+<span class="lineNum">      87 </span>        [<span class="branchCov" title="Branch 0 was taken 16037 times"> + </span><span class="branchCov" title="Branch 1 was taken 22975 times"> + </span>]:<span class="lineCov">      39012 :     } else if (encoding == INTSET_ENC_INT32) {</span>
+<span class="lineNum">      88 </span>                :<span class="lineCov">      16037 :         ((int32_t*)is-&gt;contents)[pos] = value;</span>
+<span class="lineNum">      89 </span>                :            :         memrev32ifbe(((int32_t*)is-&gt;contents)+pos);
+<span class="lineNum">      90 </span>                :            :     } else {
+<span class="lineNum">      91 </span>                :<span class="lineCov">      22975 :         ((int16_t*)is-&gt;contents)[pos] = value;</span>
+<span class="lineNum">      92 </span>                :            :         memrev16ifbe(((int16_t*)is-&gt;contents)+pos);
+<span class="lineNum">      93 </span>                :            :     }
+<span class="lineNum">      94 </span>                :<span class="lineCov">      88047 : }</span>
+<a name="95"><span class="lineNum">      95 </span>                :            : </a>
+<span class="lineNum">      96 </span>                :            : /* Create an empty intset. */
+<span class="lineNum">      97 </span>                :<span class="lineCov">      67866 : intset *intsetNew(void) {</span>
+<span class="lineNum">      98 </span>                :<span class="lineCov">      67866 :     intset *is = zmalloc(sizeof(intset));</span>
+<span class="lineNum">      99 </span>                :<span class="lineCov">      67866 :     is-&gt;encoding = intrev32ifbe(INTSET_ENC_INT16);</span>
+<span class="lineNum">     100 </span>                :<span class="lineCov">      67866 :     is-&gt;length = 0;</span>
+<span class="lineNum">     101 </span>                :<span class="lineCov">      67866 :     return is;</span>
+<span class="lineNum">     102 </span>                :            : }
+<span class="lineNum">     103 </span>                :            : 
+<span class="lineNum">     104 </span>                :            : /* Resize the intset */
+<span class="lineNum">     105 </span>                :            : static intset *intsetResize(intset *is, uint32_t len) {
+<span class="lineNum">     106 </span>                :<span class="lineCov">     102179 :     uint32_t size = len*intrev32ifbe(is-&gt;encoding);</span>
+<span class="lineNum">     107 </span>                :<span class="lineCov">      64196 :     is = zrealloc(is,sizeof(intset)+size);</span>
+<span class="lineNum">     108 </span>                :            :     return is;
+<span class="lineNum">     109 </span>                :            : }
+<span class="lineNum">     110 </span>                :            : 
+<span class="lineNum">     111 </span>                :            : /* Search for the position of &quot;value&quot;. Return 1 when the value was found and
+<span class="lineNum">     112 </span>                :            :  * sets &quot;pos&quot; to the position of the value within the intset. Return 0 when
+<span class="lineNum">     113 </span>                :            :  * the value is not present in the intset and sets &quot;pos&quot; to the position
+<span class="lineNum">     114 </span>                :            :  * where &quot;value&quot; can be inserted. */
+<span class="lineNum">     115 </span>                :<span class="lineCov">      82705 : static uint8_t intsetSearch(intset *is, int64_t value, uint32_t *pos) {</span>
+<span class="lineNum">     116 </span>                :<span class="lineCov">      82705 :     int min = 0, max = intrev32ifbe(is-&gt;length)-1, mid = -1;</span>
+<span class="lineNum">     117 </span>                :<span class="lineCov">      82705 :     int64_t cur = -1;</span>
+<span class="lineNum">     118 </span>                :            : 
+<span class="lineNum">     119 </span>                :            :     /* The value can never be found when the set is empty */
+<span class="lineNum">     120 </span>        [<span class="branchCov" title="Branch 0 was taken 17536 times"> + </span><span class="branchCov" title="Branch 1 was taken 65169 times"> + </span>]:<span class="lineCov">      82705 :     if (intrev32ifbe(is-&gt;length) == 0) {</span>
+<span class="lineNum">     121 </span>        [<span class="branchCov" title="Branch 0 was taken 17536 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">      17536 :         if (pos) *pos = 0;</span>
+<span class="lineNum">     122 </span>                :            :         return 0;
+<span class="lineNum">     123 </span>                :            :     } else {
+<span class="lineNum">     124 </span>                :            :         /* Check for the case where we know we cannot find the value,
+<span class="lineNum">     125 </span>                :            :          * but do know the insert position. */
+<span class="lineNum">     126 </span>        [<span class="branchCov" title="Branch 0 was taken 10865 times"> + </span><span class="branchCov" title="Branch 1 was taken 54304 times"> + </span>]:<span class="lineCov">      65169 :         if (value &gt; _intsetGet(is,intrev32ifbe(is-&gt;length)-1)) {</span>
+<span class="lineNum">     127 </span>        [<span class="branchCov" title="Branch 0 was taken 7483 times"> + </span><span class="branchCov" title="Branch 1 was taken 3382 times"> + </span>]:<span class="lineCov">      10865 :             if (pos) *pos = intrev32ifbe(is-&gt;length);</span>
+<span class="lineNum">     128 </span>                :            :             return 0;
+<span class="lineNum">     129 </span>        [<span class="branchCov" title="Branch 0 was taken 48606 times"> + </span><span class="branchCov" title="Branch 1 was taken 5698 times"> + </span>]:<span class="lineCov">      54304 :         } else if (value &lt; _intsetGet(is,0)) {</span>
+<span class="lineNum">     130 </span>        [<span class="branchCov" title="Branch 0 was taken 3021 times"> + </span><span class="branchCov" title="Branch 1 was taken 2677 times"> + </span>]:<span class="lineCov">       5698 :             if (pos) *pos = 0;</span>
+<span class="lineNum">     131 </span>                :            :             return 0;
+<span class="lineNum">     132 </span>                :            :         }
+<span class="lineNum">     133 </span>                :            :     }
+<span class="lineNum">     134 </span>                :            : 
+<span class="lineNum">     135 </span>        [<span class="branchCov" title="Branch 0 was taken 192515 times"> + </span><span class="branchCov" title="Branch 1 was taken 20759 times"> + </span>]:<span class="lineCov">     213274 :     while(max &gt;= min) {</span>
+<span class="lineNum">     136 </span>                :<span class="lineCov">     192515 :         mid = (min+max)/2;</span>
+<span class="lineNum">     137 </span>                :<span class="lineCov">     192515 :         cur = _intsetGet(is,mid);</span>
+<span class="lineNum">     138 </span>        [<span class="branchCov" title="Branch 0 was taken 86092 times"> + </span><span class="branchCov" title="Branch 1 was taken 106423 times"> + </span>]:<span class="lineCov">     192515 :         if (value &gt; cur) {</span>
+<span class="lineNum">     139 </span>                :<span class="lineCov">      86092 :             min = mid+1;</span>
+<span class="lineNum">     140 </span>        [<span class="branchCov" title="Branch 0 was taken 78576 times"> + </span><span class="branchCov" title="Branch 1 was taken 27847 times"> + </span>]:<span class="lineCov">     106423 :         } else if (value &lt; cur) {</span>
+<span class="lineNum">     141 </span>                :<span class="lineCov">     164668 :             max = mid-1;</span>
+<span class="lineNum">     142 </span>                :            :         } else {
+<span class="lineNum">     143 </span>                :            :             break;
+<span class="lineNum">     144 </span>                :            :         }
+<span class="lineNum">     145 </span>                :            :     }
+<span class="lineNum">     146 </span>                :            : 
+<span class="lineNum">     147 </span>        [<span class="branchCov" title="Branch 0 was taken 27847 times"> + </span><span class="branchCov" title="Branch 1 was taken 20759 times"> + </span>]:<span class="lineCov">      48606 :     if (value == cur) {</span>
+<span class="lineNum">     148 </span>        [<span class="branchCov" title="Branch 0 was taken 27186 times"> + </span><span class="branchCov" title="Branch 1 was taken 661 times"> + </span>]:<span class="lineCov">      27847 :         if (pos) *pos = mid;</span>
+<span class="lineNum">     149 </span>                :            :         return 1;
+<span class="lineNum">     150 </span>                :            :     } else {
+<span class="lineNum">     151 </span>        [<span class="branchCov" title="Branch 0 was taken 20173 times"> + </span><span class="branchCov" title="Branch 1 was taken 586 times"> + </span>]:<span class="lineCov">      82705 :         if (pos) *pos = min;</span>
+<span class="lineNum">     152 </span>                :            :         return 0;
+<span class="lineNum">     153 </span>                :            :     }
+<span class="lineNum">     154 </span>                :            : }
+<span class="lineNum">     155 </span>                :            : 
+<span class="lineNum">     156 </span>                :            : /* Upgrades the intset to a larger encoding and inserts the given integer. */
+<span class="lineNum">     157 </span>                :<span class="lineCov">      37983 : static intset *intsetUpgradeAndAdd(intset *is, int64_t value) {</span>
+<span class="lineNum">     158 </span>                :<span class="lineCov">      37983 :     uint8_t curenc = intrev32ifbe(is-&gt;encoding);</span>
+<span class="lineNum">     159 </span>                :<span class="lineCov">      37983 :     uint8_t newenc = _intsetValueEncoding(value);</span>
+<span class="lineNum">     160 </span>                :<span class="lineCov">      37983 :     int length = intrev32ifbe(is-&gt;length);</span>
+<span class="lineNum">     161 </span>                :<span class="lineCov">      37983 :     int prepend = value &lt; 0 ? 1 : 0;</span>
+<span class="lineNum">     162 </span>                :            : 
+<span class="lineNum">     163 </span>                :            :     /* First set new encoding and resize */
+<span class="lineNum">     164 </span>                :<span class="lineCov">      37983 :     is-&gt;encoding = intrev32ifbe(newenc);</span>
+<span class="lineNum">     165 </span>                :<span class="lineCov">      37983 :     is = intsetResize(is,intrev32ifbe(is-&gt;length)+1);</span>
+<span class="lineNum">     166 </span>                :            : 
+<span class="lineNum">     167 </span>                :            :     /* Upgrade back-to-front so we don't overwrite values.
+<span class="lineNum">     168 </span>                :            :      * Note that the &quot;prepend&quot; variable is used to make sure we have an empty
+<span class="lineNum">     169 </span>                :            :      * space at either the beginning or the end of the intset. */
+<span class="lineNum">     170 </span>        [<span class="branchCov" title="Branch 0 was taken 2792 times"> + </span><span class="branchCov" title="Branch 1 was taken 37983 times"> + </span>]:<span class="lineCov">      40775 :     while(length--)</span>
+<span class="lineNum">     171 </span>                :<span class="lineCov">       2792 :         _intsetSet(is,length+prepend,_intsetGetEncoded(is,length,curenc));</span>
+<span class="lineNum">     172 </span>                :            : 
+<span class="lineNum">     173 </span>                :            :     /* Set the value at the beginning or the end. */
+<span class="lineNum">     174 </span>        [<span class="branchCov" title="Branch 0 was taken 18879 times"> + </span><span class="branchCov" title="Branch 1 was taken 19104 times"> + </span>]:<span class="lineCov">      37983 :     if (prepend)</span>
+<span class="lineNum">     175 </span>                :<span class="lineCov">      18879 :         _intsetSet(is,0,value);</span>
+<span class="lineNum">     176 </span>                :            :     else
+<span class="lineNum">     177 </span>                :<span class="lineCov">      19104 :         _intsetSet(is,intrev32ifbe(is-&gt;length),value);</span>
+<span class="lineNum">     178 </span>                :<span class="lineCov">      37983 :     is-&gt;length = intrev32ifbe(intrev32ifbe(is-&gt;length)+1);</span>
+<span class="lineNum">     179 </span>                :<span class="lineCov">      37983 :     return is;</span>
+<a name="180"><span class="lineNum">     180 </span>                :            : }</a>
+<span class="lineNum">     181 </span>                :            : 
+<span class="lineNum">     182 </span>                :<span class="lineCov">      25672 : static void intsetMoveTail(intset *is, uint32_t from, uint32_t to) {</span>
+<span class="lineNum">     183 </span>                :            :     void *src, *dst;
+<span class="lineNum">     184 </span>                :<span class="lineCov">      25672 :     uint32_t bytes = intrev32ifbe(is-&gt;length)-from;</span>
+<span class="lineNum">     185 </span>                :<span class="lineCov">      25672 :     uint32_t encoding = intrev32ifbe(is-&gt;encoding);</span>
+<span class="lineNum">     186 </span>                :            : 
+<span class="lineNum">     187 </span>        [<span class="branchCov" title="Branch 0 was taken 23811 times"> + </span><span class="branchCov" title="Branch 1 was taken 1861 times"> + </span>]:<span class="lineCov">      25672 :     if (encoding == INTSET_ENC_INT64) {</span>
+<span class="lineNum">     188 </span>                :<span class="lineCov">      23811 :         src = (int64_t*)is-&gt;contents+from;</span>
+<span class="lineNum">     189 </span>                :<span class="lineCov">      23811 :         dst = (int64_t*)is-&gt;contents+to;</span>
+<span class="lineNum">     190 </span>                :<span class="lineCov">      23811 :         bytes *= sizeof(int64_t);</span>
+<span class="lineNum">     191 </span>        [<span class="branchCov" title="Branch 0 was taken 612 times"> + </span><span class="branchCov" title="Branch 1 was taken 1249 times"> + </span>]:<span class="lineCov">       1861 :     } else if (encoding == INTSET_ENC_INT32) {</span>
+<span class="lineNum">     192 </span>                :<span class="lineCov">        612 :         src = (int32_t*)is-&gt;contents+from;</span>
+<span class="lineNum">     193 </span>                :<span class="lineCov">        612 :         dst = (int32_t*)is-&gt;contents+to;</span>
+<span class="lineNum">     194 </span>                :<span class="lineCov">        612 :         bytes *= sizeof(int32_t);</span>
+<span class="lineNum">     195 </span>                :            :     } else {
+<span class="lineNum">     196 </span>                :<span class="lineCov">       1249 :         src = (int16_t*)is-&gt;contents+from;</span>
+<span class="lineNum">     197 </span>                :<span class="lineCov">       1249 :         dst = (int16_t*)is-&gt;contents+to;</span>
+<span class="lineNum">     198 </span>                :<span class="lineCov">       1249 :         bytes *= sizeof(int16_t);</span>
+<span class="lineNum">     199 </span>                :            :     }
+<span class="lineNum">     200 </span>                :<span class="lineCov">      25672 :     memmove(dst,src,bytes);</span>
+<span class="lineNum">     201 </span>                :<span class="lineCov">      25672 : }</span>
+<span class="lineNum">     202 </span>                :            : 
+<span class="lineNum">     203 </span>                :            : /* Insert an integer in the intset */
+<span class="lineNum">     204 </span>                :<span class="lineCov">      95517 : intset *intsetAdd(intset *is, int64_t value, uint8_t *success) {</span>
+<span class="lineNum">     205 </span>                :<span class="lineCov">      95517 :     uint8_t valenc = _intsetValueEncoding(value);</span>
+<span class="lineNum">     206 </span>                :            :     uint32_t pos;
+<span class="lineNum">     207 </span>        [<span class="branchCov" title="Branch 0 was taken 94303 times"> + </span><span class="branchCov" title="Branch 1 was taken 1214 times"> + </span>]:<span class="lineCov">      95517 :     if (success) *success = 1;</span>
+<span class="lineNum">     208 </span>                :            : 
+<span class="lineNum">     209 </span>                :            :     /* Upgrade encoding if necessary. If we need to upgrade, we know that
+<span class="lineNum">     210 </span>                :            :      * this value should be either appended (if &gt; 0) or prepended (if &lt; 0),
+<span class="lineNum">     211 </span>                :            :      * because it lies outside the range of existing values. */
+<span class="lineNum">     212 </span>        [<span class="branchCov" title="Branch 0 was taken 37983 times"> + </span><span class="branchCov" title="Branch 1 was taken 57534 times"> + </span>]:<span class="lineCov">      95517 :     if (valenc &gt; intrev32ifbe(is-&gt;encoding)) {</span>
+<span class="lineNum">     213 </span>                :            :         /* This always succeeds, so we don't need to curry *success. */
+<span class="lineNum">     214 </span>                :<span class="lineCov">      37983 :         return intsetUpgradeAndAdd(is,value);</span>
+<span class="lineNum">     215 </span>                :            :     } else {
+<span class="lineNum">     216 </span>                :            :         /* Abort if the value is already present in the set.
+<span class="lineNum">     217 </span>                :            :          * This call will populate &quot;pos&quot; with the right position to insert
+<span class="lineNum">     218 </span>                :            :          * the value when it cannot be found. */
+<span class="lineNum">     219 </span>        [<span class="branchCov" title="Branch 1 was taken 10262 times"> + </span><span class="branchCov" title="Branch 2 was taken 47272 times"> + </span>]:<span class="lineCov">      57534 :         if (intsetSearch(is,value,&amp;pos)) {</span>
+<span class="lineNum">     220 </span>        [<span class="branchCov" title="Branch 0 was taken 10262 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">      10262 :             if (success) *success = 0;</span>
+<span class="lineNum">     221 </span>                :            :             return is;
+<span class="lineNum">     222 </span>                :            :         }
+<span class="lineNum">     223 </span>                :            : 
+<span class="lineNum">     224 </span>                :<span class="lineCov">      94544 :         is = intsetResize(is,intrev32ifbe(is-&gt;length)+1);</span>
+<span class="lineNum">     225 </span>        [<span class="branchCov" title="Branch 0 was taken 22645 times"> + </span><span class="branchCov" title="Branch 1 was taken 24627 times"> + </span>]:<span class="lineCov">      47272 :         if (pos &lt; intrev32ifbe(is-&gt;length)) intsetMoveTail(is,pos,pos+1);</span>
+<span class="lineNum">     226 </span>                :            :     }
+<span class="lineNum">     227 </span>                :            : 
+<span class="lineNum">     228 </span>                :<span class="lineCov">      47272 :     _intsetSet(is,pos,value);</span>
+<span class="lineNum">     229 </span>                :<span class="lineCov">      47272 :     is-&gt;length = intrev32ifbe(intrev32ifbe(is-&gt;length)+1);</span>
+<span class="lineNum">     230 </span>                :<span class="lineCov">      95517 :     return is;</span>
+<span class="lineNum">     231 </span>                :            : }
+<span class="lineNum">     232 </span>                :            : 
+<span class="lineNum">     233 </span>                :            : /* Delete integer from intset */
+<span class="lineNum">     234 </span>                :<span class="lineCov">      18188 : intset *intsetRemove(intset *is, int64_t value, int *success) {</span>
+<span class="lineNum">     235 </span>                :<span class="lineCov">      18188 :     uint8_t valenc = _intsetValueEncoding(value);</span>
+<span class="lineNum">     236 </span>                :            :     uint32_t pos;
+<span class="lineNum">     237 </span>        [<span class="branchCov" title="Branch 0 was taken 15082 times"> + </span><span class="branchCov" title="Branch 1 was taken 3106 times"> + </span>]:<span class="lineCov">      18188 :     if (success) *success = 0;</span>
+<span class="lineNum">     238 </span>                :            : 
+<span class="lineNum">     239 </span>[<span class="branchCov" title="Branch 0 was taken 17865 times"> + </span><span class="branchCov" title="Branch 1 was taken 323 times"> + </span>][<span class="branchCov" title="Branch 3 was taken 16924 times"> + </span><span class="branchCov" title="Branch 4 was taken 941 times"> + </span>]:<span class="lineCov">      18188 :     if (valenc &lt;= intrev32ifbe(is-&gt;encoding) &amp;&amp; intsetSearch(is,value,&amp;pos)) {</span>
+<span class="lineNum">     240 </span>                :<span class="lineCov">      16924 :         uint32_t len = intrev32ifbe(is-&gt;length);</span>
+<span class="lineNum">     241 </span>                :            : 
+<span class="lineNum">     242 </span>                :            :         /* We know we can delete */
+<span class="lineNum">     243 </span>        [<span class="branchCov" title="Branch 0 was taken 13818 times"> + </span><span class="branchCov" title="Branch 1 was taken 3106 times"> + </span>]:<span class="lineCov">      16924 :         if (success) *success = 1;</span>
+<span class="lineNum">     244 </span>                :            : 
+<span class="lineNum">     245 </span>                :            :         /* Overwrite value with tail and update length */
+<span class="lineNum">     246 </span>        [<span class="branchCov" title="Branch 0 was taken 3027 times"> + </span><span class="branchCov" title="Branch 1 was taken 13897 times"> + </span>]:<span class="lineCov">      16924 :         if (pos &lt; (len-1)) intsetMoveTail(is,pos+1,pos);</span>
+<span class="lineNum">     247 </span>                :<span class="lineCov">      33848 :         is = intsetResize(is,len-1);</span>
+<span class="lineNum">     248 </span>                :<span class="lineCov">      16924 :         is-&gt;length = intrev32ifbe(len-1);</span>
+<span class="lineNum">     249 </span>                :            :     }
+<span class="lineNum">     250 </span>                :<span class="lineCov">      18188 :     return is;</span>
+<span class="lineNum">     251 </span>                :            : }
+<span class="lineNum">     252 </span>                :            : 
+<span class="lineNum">     253 </span>                :            : /* Determine whether a value belongs to this set */
+<span class="lineNum">     254 </span>                :<span class="lineCov">       9789 : uint8_t intsetFind(intset *is, int64_t value) {</span>
+<span class="lineNum">     255 </span>                :<span class="lineCov">       9789 :     uint8_t valenc = _intsetValueEncoding(value);</span>
+<span class="lineNum">     256 </span>[<span class="branchCov" title="Branch 0 was taken 7306 times"> + </span><span class="branchCov" title="Branch 1 was taken 2483 times"> + </span>][<span class="branchCov" title="Branch 3 was taken 6645 times"> + </span><span class="branchCov" title="Branch 4 was taken 661 times"> + </span>]:<span class="lineCov">       9789 :     return valenc &lt;= intrev32ifbe(is-&gt;encoding) &amp;&amp; intsetSearch(is,value,NULL);</span>
+<span class="lineNum">     257 </span>                :            : }
+<span class="lineNum">     258 </span>                :            : 
+<span class="lineNum">     259 </span>                :            : /* Return random member */
+<span class="lineNum">     260 </span>                :<span class="lineCov">       3971 : int64_t intsetRandom(intset *is) {</span>
+<span class="lineNum">     261 </span>                :<span class="lineCov">       7942 :     return _intsetGet(is,rand()%intrev32ifbe(is-&gt;length));</span>
+<span class="lineNum">     262 </span>                :            : }
+<span class="lineNum">     263 </span>                :            : 
+<span class="lineNum">     264 </span>                :            : /* Sets the value to the value at the given position. When this position is
+<span class="lineNum">     265 </span>                :            :  * out of range the function returns 0, when in range it returns 1. */
+<span class="lineNum">     266 </span>                :<span class="lineCov">     278399 : uint8_t intsetGet(intset *is, uint32_t pos, int64_t *value) {</span>
+<span class="lineNum">     267 </span>        [<span class="branchCov" title="Branch 0 was taken 158233 times"> + </span><span class="branchCov" title="Branch 1 was taken 120166 times"> + </span>]:<span class="lineCov">     278399 :     if (pos &lt; intrev32ifbe(is-&gt;length)) {</span>
+<span class="lineNum">     268 </span>                :<span class="lineCov">     316466 :         *value = _intsetGet(is,pos);</span>
+<span class="lineNum">     269 </span>                :<span class="lineCov">     278399 :         return 1;</span>
+<span class="lineNum">     270 </span>                :            :     }
+<span class="lineNum">     271 </span>                :            :     return 0;
+<span class="lineNum">     272 </span>                :            : }
+<a name="273"><span class="lineNum">     273 </span>                :            : </a>
+<span class="lineNum">     274 </span>                :            : /* Return intset length */
+<span class="lineNum">     275 </span>                :<span class="lineCov">     179773 : uint32_t intsetLen(intset *is) {</span>
+<span class="lineNum">     276 </span>                :<span class="lineCov">     179773 :     return intrev32ifbe(is-&gt;length);</span>
+<span class="lineNum">     277 </span>                :            : }
+<a name="278"><span class="lineNum">     278 </span>                :            : </a>
+<span class="lineNum">     279 </span>                :            : /* Return intset blob size in bytes. */
+<span class="lineNum">     280 </span>                :<span class="lineCov">      40914 : size_t intsetBlobLen(intset *is) {</span>
+<span class="lineNum">     281 </span>                :<span class="lineCov">      40914 :     return sizeof(intset)+intrev32ifbe(is-&gt;length)*intrev32ifbe(is-&gt;encoding);</span>
+<span class="lineNum">     282 </span>                :            : }
+<span class="lineNum">     283 </span>                :            : 
+<span class="lineNum">     284 </span>                :            : #ifdef INTSET_TEST_MAIN
+<span class="lineNum">     285 </span>                :            : #include &lt;sys/time.h&gt;
+<span class="lineNum">     286 </span>                :            : 
+<span class="lineNum">     287 </span>                :            : void intsetRepr(intset *is) {
+<span class="lineNum">     288 </span>                :            :     int i;
+<span class="lineNum">     289 </span>                :            :     for (i = 0; i &lt; intrev32ifbe(is-&gt;length); i++) {
+<span class="lineNum">     290 </span>                :            :         printf(&quot;%lld\n&quot;, (uint64_t)_intsetGet(is,i));
+<span class="lineNum">     291 </span>                :            :     }
+<span class="lineNum">     292 </span>                :            :     printf(&quot;\n&quot;);
+<span class="lineNum">     293 </span>                :            : }
+<span class="lineNum">     294 </span>                :            : 
+<span class="lineNum">     295 </span>                :            : void error(char *err) {
+<span class="lineNum">     296 </span>                :            :     printf(&quot;%s\n&quot;, err);
+<span class="lineNum">     297 </span>                :            :     exit(1);
+<span class="lineNum">     298 </span>                :            : }
+<span class="lineNum">     299 </span>                :            : 
+<span class="lineNum">     300 </span>                :            : void ok(void) {
+<span class="lineNum">     301 </span>                :            :     printf(&quot;OK\n&quot;);
+<span class="lineNum">     302 </span>                :            : }
+<span class="lineNum">     303 </span>                :            : 
+<span class="lineNum">     304 </span>                :            : long long usec(void) {
+<span class="lineNum">     305 </span>                :            :     struct timeval tv;
+<span class="lineNum">     306 </span>                :            :     gettimeofday(&amp;tv,NULL);
+<span class="lineNum">     307 </span>                :            :     return (((long long)tv.tv_sec)*1000000)+tv.tv_usec;
+<span class="lineNum">     308 </span>                :            : }
+<span class="lineNum">     309 </span>                :            : 
+<span class="lineNum">     310 </span>                :            : #define assert(_e) ((_e)?(void)0:(_assert(#_e,__FILE__,__LINE__),exit(1)))
+<span class="lineNum">     311 </span>                :            : void _assert(char *estr, char *file, int line) {
+<span class="lineNum">     312 </span>                :            :     printf(&quot;\n\n=== ASSERTION FAILED ===\n&quot;);
+<span class="lineNum">     313 </span>                :            :     printf(&quot;==&gt; %s:%d '%s' is not true\n&quot;,file,line,estr);
+<span class="lineNum">     314 </span>                :            : }
+<span class="lineNum">     315 </span>                :            : 
+<span class="lineNum">     316 </span>                :            : intset *createSet(int bits, int size) {
+<span class="lineNum">     317 </span>                :            :     uint64_t mask = (1&lt;&lt;bits)-1;
+<span class="lineNum">     318 </span>                :            :     uint64_t i, value;
+<span class="lineNum">     319 </span>                :            :     intset *is = intsetNew();
+<span class="lineNum">     320 </span>                :            : 
+<span class="lineNum">     321 </span>                :            :     for (i = 0; i &lt; size; i++) {
+<span class="lineNum">     322 </span>                :            :         if (bits &gt; 32) {
+<span class="lineNum">     323 </span>                :            :             value = (rand()*rand()) &amp; mask;
+<span class="lineNum">     324 </span>                :            :         } else {
+<span class="lineNum">     325 </span>                :            :             value = rand() &amp; mask;
+<span class="lineNum">     326 </span>                :            :         }
+<span class="lineNum">     327 </span>                :            :         is = intsetAdd(is,value,NULL);
+<span class="lineNum">     328 </span>                :            :     }
+<span class="lineNum">     329 </span>                :            :     return is;
+<span class="lineNum">     330 </span>                :            : }
+<span class="lineNum">     331 </span>                :            : 
+<span class="lineNum">     332 </span>                :            : void checkConsistency(intset *is) {
+<span class="lineNum">     333 </span>                :            :     int i;
+<span class="lineNum">     334 </span>                :            : 
+<span class="lineNum">     335 </span>                :            :     for (i = 0; i &lt; (intrev32ifbe(is-&gt;length)-1); i++) {
+<span class="lineNum">     336 </span>                :            :         uint32_t encoding = intrev32ifbe(is-&gt;encoding);
+<span class="lineNum">     337 </span>                :            : 
+<span class="lineNum">     338 </span>                :            :         if (encoding == INTSET_ENC_INT16) {
+<span class="lineNum">     339 </span>                :            :             int16_t *i16 = (int16_t*)is-&gt;contents;
+<span class="lineNum">     340 </span>                :            :             assert(i16[i] &lt; i16[i+1]);
+<span class="lineNum">     341 </span>                :            :         } else if (encoding == INTSET_ENC_INT32) {
+<span class="lineNum">     342 </span>                :            :             int32_t *i32 = (int32_t*)is-&gt;contents;
+<span class="lineNum">     343 </span>                :            :             assert(i32[i] &lt; i32[i+1]);
+<span class="lineNum">     344 </span>                :            :         } else {
+<span class="lineNum">     345 </span>                :            :             int64_t *i64 = (int64_t*)is-&gt;contents;
+<span class="lineNum">     346 </span>                :            :             assert(i64[i] &lt; i64[i+1]);
+<span class="lineNum">     347 </span>                :            :         }
+<span class="lineNum">     348 </span>                :            :     }
+<span class="lineNum">     349 </span>                :            : }
+<span class="lineNum">     350 </span>                :            : 
+<span class="lineNum">     351 </span>                :            : int main(int argc, char **argv) {
+<span class="lineNum">     352 </span>                :            :     uint8_t success;
+<span class="lineNum">     353 </span>                :            :     int i;
+<span class="lineNum">     354 </span>                :            :     intset *is;
+<span class="lineNum">     355 </span>                :            :     sranddev();
+<span class="lineNum">     356 </span>                :            : 
+<span class="lineNum">     357 </span>                :            :     printf(&quot;Value encodings: &quot;); {
+<span class="lineNum">     358 </span>                :            :         assert(_intsetValueEncoding(-32768) == INTSET_ENC_INT16);
+<span class="lineNum">     359 </span>                :            :         assert(_intsetValueEncoding(+32767) == INTSET_ENC_INT16);
+<span class="lineNum">     360 </span>                :            :         assert(_intsetValueEncoding(-32769) == INTSET_ENC_INT32);
+<span class="lineNum">     361 </span>                :            :         assert(_intsetValueEncoding(+32768) == INTSET_ENC_INT32);
+<span class="lineNum">     362 </span>                :            :         assert(_intsetValueEncoding(-2147483648) == INTSET_ENC_INT32);
+<span class="lineNum">     363 </span>                :            :         assert(_intsetValueEncoding(+2147483647) == INTSET_ENC_INT32);
+<span class="lineNum">     364 </span>                :            :         assert(_intsetValueEncoding(-2147483649) == INTSET_ENC_INT64);
+<span class="lineNum">     365 </span>                :            :         assert(_intsetValueEncoding(+2147483648) == INTSET_ENC_INT64);
+<span class="lineNum">     366 </span>                :            :         assert(_intsetValueEncoding(-9223372036854775808ull) == INTSET_ENC_INT64);
+<span class="lineNum">     367 </span>                :            :         assert(_intsetValueEncoding(+9223372036854775807ull) == INTSET_ENC_INT64);
+<span class="lineNum">     368 </span>                :            :         ok();
+<span class="lineNum">     369 </span>                :            :     }
+<span class="lineNum">     370 </span>                :            : 
+<span class="lineNum">     371 </span>                :            :     printf(&quot;Basic adding: &quot;); {
+<span class="lineNum">     372 </span>                :            :         is = intsetNew();
+<span class="lineNum">     373 </span>                :            :         is = intsetAdd(is,5,&amp;success); assert(success);
+<span class="lineNum">     374 </span>                :            :         is = intsetAdd(is,6,&amp;success); assert(success);
+<span class="lineNum">     375 </span>                :            :         is = intsetAdd(is,4,&amp;success); assert(success);
+<span class="lineNum">     376 </span>                :            :         is = intsetAdd(is,4,&amp;success); assert(!success);
+<span class="lineNum">     377 </span>                :            :         ok();
+<span class="lineNum">     378 </span>                :            :     }
+<span class="lineNum">     379 </span>                :            : 
+<span class="lineNum">     380 </span>                :            :     printf(&quot;Large number of random adds: &quot;); {
+<span class="lineNum">     381 </span>                :            :         int inserts = 0;
+<span class="lineNum">     382 </span>                :            :         is = intsetNew();
+<span class="lineNum">     383 </span>                :            :         for (i = 0; i &lt; 1024; i++) {
+<span class="lineNum">     384 </span>                :            :             is = intsetAdd(is,rand()%0x800,&amp;success);
+<span class="lineNum">     385 </span>                :            :             if (success) inserts++;
+<span class="lineNum">     386 </span>                :            :         }
+<span class="lineNum">     387 </span>                :            :         assert(intrev32ifbe(is-&gt;length) == inserts);
+<span class="lineNum">     388 </span>                :            :         checkConsistency(is);
+<span class="lineNum">     389 </span>                :            :         ok();
+<span class="lineNum">     390 </span>                :            :     }
+<span class="lineNum">     391 </span>                :            : 
+<span class="lineNum">     392 </span>                :            :     printf(&quot;Upgrade from int16 to int32: &quot;); {
+<span class="lineNum">     393 </span>                :            :         is = intsetNew();
+<span class="lineNum">     394 </span>                :            :         is = intsetAdd(is,32,NULL);
+<span class="lineNum">     395 </span>                :            :         assert(intrev32ifbe(is-&gt;encoding) == INTSET_ENC_INT16);
+<span class="lineNum">     396 </span>                :            :         is = intsetAdd(is,65535,NULL);
+<span class="lineNum">     397 </span>                :            :         assert(intrev32ifbe(is-&gt;encoding) == INTSET_ENC_INT32);
+<span class="lineNum">     398 </span>                :            :         assert(intsetFind(is,32));
+<span class="lineNum">     399 </span>                :            :         assert(intsetFind(is,65535));
+<span class="lineNum">     400 </span>                :            :         checkConsistency(is);
+<span class="lineNum">     401 </span>                :            : 
+<span class="lineNum">     402 </span>                :            :         is = intsetNew();
+<span class="lineNum">     403 </span>                :            :         is = intsetAdd(is,32,NULL);
+<span class="lineNum">     404 </span>                :            :         assert(intrev32ifbe(is-&gt;encoding) == INTSET_ENC_INT16);
+<span class="lineNum">     405 </span>                :            :         is = intsetAdd(is,-65535,NULL);
+<span class="lineNum">     406 </span>                :            :         assert(intrev32ifbe(is-&gt;encoding) == INTSET_ENC_INT32);
+<span class="lineNum">     407 </span>                :            :         assert(intsetFind(is,32));
+<span class="lineNum">     408 </span>                :            :         assert(intsetFind(is,-65535));
+<span class="lineNum">     409 </span>                :            :         checkConsistency(is);
+<span class="lineNum">     410 </span>                :            :         ok();
+<span class="lineNum">     411 </span>                :            :     }
+<span class="lineNum">     412 </span>                :            : 
+<span class="lineNum">     413 </span>                :            :     printf(&quot;Upgrade from int16 to int64: &quot;); {
+<span class="lineNum">     414 </span>                :            :         is = intsetNew();
+<span class="lineNum">     415 </span>                :            :         is = intsetAdd(is,32,NULL);
+<span class="lineNum">     416 </span>                :            :         assert(intrev32ifbe(is-&gt;encoding) == INTSET_ENC_INT16);
+<span class="lineNum">     417 </span>                :            :         is = intsetAdd(is,4294967295,NULL);
+<span class="lineNum">     418 </span>                :            :         assert(intrev32ifbe(is-&gt;encoding) == INTSET_ENC_INT64);
+<span class="lineNum">     419 </span>                :            :         assert(intsetFind(is,32));
+<span class="lineNum">     420 </span>                :            :         assert(intsetFind(is,4294967295));
+<span class="lineNum">     421 </span>                :            :         checkConsistency(is);
+<span class="lineNum">     422 </span>                :            : 
+<span class="lineNum">     423 </span>                :            :         is = intsetNew();
+<span class="lineNum">     424 </span>                :            :         is = intsetAdd(is,32,NULL);
+<span class="lineNum">     425 </span>                :            :         assert(intrev32ifbe(is-&gt;encoding) == INTSET_ENC_INT16);
+<span class="lineNum">     426 </span>                :            :         is = intsetAdd(is,-4294967295,NULL);
+<span class="lineNum">     427 </span>                :            :         assert(intrev32ifbe(is-&gt;encoding) == INTSET_ENC_INT64);
+<span class="lineNum">     428 </span>                :            :         assert(intsetFind(is,32));
+<span class="lineNum">     429 </span>                :            :         assert(intsetFind(is,-4294967295));
+<span class="lineNum">     430 </span>                :            :         checkConsistency(is);
+<span class="lineNum">     431 </span>                :            :         ok();
+<span class="lineNum">     432 </span>                :            :     }
+<span class="lineNum">     433 </span>                :            : 
+<span class="lineNum">     434 </span>                :            :     printf(&quot;Upgrade from int32 to int64: &quot;); {
+<span class="lineNum">     435 </span>                :            :         is = intsetNew();
+<span class="lineNum">     436 </span>                :            :         is = intsetAdd(is,65535,NULL);
+<span class="lineNum">     437 </span>                :            :         assert(intrev32ifbe(is-&gt;encoding) == INTSET_ENC_INT32);
+<span class="lineNum">     438 </span>                :            :         is = intsetAdd(is,4294967295,NULL);
+<span class="lineNum">     439 </span>                :            :         assert(intrev32ifbe(is-&gt;encoding) == INTSET_ENC_INT64);
+<span class="lineNum">     440 </span>                :            :         assert(intsetFind(is,65535));
+<span class="lineNum">     441 </span>                :            :         assert(intsetFind(is,4294967295));
+<span class="lineNum">     442 </span>                :            :         checkConsistency(is);
+<span class="lineNum">     443 </span>                :            : 
+<span class="lineNum">     444 </span>                :            :         is = intsetNew();
+<span class="lineNum">     445 </span>                :            :         is = intsetAdd(is,65535,NULL);
+<span class="lineNum">     446 </span>                :            :         assert(intrev32ifbe(is-&gt;encoding) == INTSET_ENC_INT32);
+<span class="lineNum">     447 </span>                :            :         is = intsetAdd(is,-4294967295,NULL);
+<span class="lineNum">     448 </span>                :            :         assert(intrev32ifbe(is-&gt;encoding) == INTSET_ENC_INT64);
+<span class="lineNum">     449 </span>                :            :         assert(intsetFind(is,65535));
+<span class="lineNum">     450 </span>                :            :         assert(intsetFind(is,-4294967295));
+<span class="lineNum">     451 </span>                :            :         checkConsistency(is);
+<span class="lineNum">     452 </span>                :            :         ok();
+<span class="lineNum">     453 </span>                :            :     }
+<span class="lineNum">     454 </span>                :            : 
+<span class="lineNum">     455 </span>                :            :     printf(&quot;Stress lookups: &quot;); {
+<span class="lineNum">     456 </span>                :            :         long num = 100000, size = 10000;
+<span class="lineNum">     457 </span>                :            :         int i, bits = 20;
+<span class="lineNum">     458 </span>                :            :         long long start;
+<span class="lineNum">     459 </span>                :            :         is = createSet(bits,size);
+<span class="lineNum">     460 </span>                :            :         checkConsistency(is);
+<span class="lineNum">     461 </span>                :            : 
+<span class="lineNum">     462 </span>                :            :         start = usec();
+<span class="lineNum">     463 </span>                :            :         for (i = 0; i &lt; num; i++) intsetSearch(is,rand() % ((1&lt;&lt;bits)-1),NULL);
+<span class="lineNum">     464 </span>                :            :         printf(&quot;%ld lookups, %ld element set, %lldusec\n&quot;,num,size,usec()-start);
+<span class="lineNum">     465 </span>                :            :     }
+<span class="lineNum">     466 </span>                :            : 
+<span class="lineNum">     467 </span>                :            :     printf(&quot;Stress add+delete: &quot;); {
+<span class="lineNum">     468 </span>                :            :         int i, v1, v2;
+<span class="lineNum">     469 </span>                :            :         is = intsetNew();
+<span class="lineNum">     470 </span>                :            :         for (i = 0; i &lt; 0xffff; i++) {
+<span class="lineNum">     471 </span>                :            :             v1 = rand() % 0xfff;
+<span class="lineNum">     472 </span>                :            :             is = intsetAdd(is,v1,NULL);
+<span class="lineNum">     473 </span>                :            :             assert(intsetFind(is,v1));
+<span class="lineNum">     474 </span>                :            : 
+<span class="lineNum">     475 </span>                :            :             v2 = rand() % 0xfff;
+<span class="lineNum">     476 </span>                :            :             is = intsetRemove(is,v2,NULL);
+<span class="lineNum">     477 </span>                :            :             assert(!intsetFind(is,v2));
+<span class="lineNum">     478 </span>                :            :         }
+<span class="lineNum">     479 </span>                :            :         checkConsistency(is);
+<span class="lineNum">     480 </span>                :            :         ok();
+<span class="lineNum">     481 </span>                :            :     }
+<span class="lineNum">     482 </span>                :            : }
+<span class="lineNum">     483 </span>                :            : #endif
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.9</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

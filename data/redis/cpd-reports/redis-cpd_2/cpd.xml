@@ -1,0 +1,63 @@
+Warning:  The encoding 'ANSI_X3.4-1968' is not supported by the Java runtime.
+<?xml version="1.0" encoding="ANSI_X3.4-1968" standalone="no"?>
+<pmd-cpd>
+<duplication lines="9" tokens="136">
+<file line="183" path="/var/lib/jenkins/jobs/redis-cpd/workspace/src/lzf_c.c"/>
+<file line="193" path="/var/lib/jenkins/jobs/redis-cpd/workspace/src/lzf_c.c"/>
+<codefragment><![CDATA[                  len++; if (ref [len] != ip [len]) break;
+                  len++; if (ref [len] != ip [len]) break;
+                  len++; if (ref [len] != ip [len]) break;
+                  len++; if (ref [len] != ip [len]) break;
+
+                  len++; if (ref [len] != ip [len]) break;
+                  len++; if (ref [len] != ip [len]) break;
+                  len++; if (ref [len] != ip [len]) break;
+                  len++; if (ref [len] != ip [len]) break;]]></codefragment>
+</duplication>
+<duplication lines="8" tokens="119">
+<file line="183" path="/var/lib/jenkins/jobs/redis-cpd/workspace/src/lzf_c.c"/>
+<file line="194" path="/var/lib/jenkins/jobs/redis-cpd/workspace/src/lzf_c.c"/>
+<codefragment><![CDATA[                  len++; if (ref [len] != ip [len]) break;
+                  len++; if (ref [len] != ip [len]) break;
+                  len++; if (ref [len] != ip [len]) break;
+                  len++; if (ref [len] != ip [len]) break;
+
+                  len++; if (ref [len] != ip [len]) break;
+                  len++; if (ref [len] != ip [len]) break;
+                  len++; if (ref [len] != ip [len]) break;]]></codefragment>
+</duplication>
+<duplication lines="18" tokens="106">
+<file line="136" path="/var/lib/jenkins/jobs/redis-cpd/workspace/src/debug.c"/>
+<file line="678" path="/var/lib/jenkins/jobs/redis-cpd/workspace/src/aof.c"/>
+<codefragment><![CDATA[                unsigned char eledigest[20];
+
+                if (o->encoding == REDIS_ENCODING_ZIPLIST) {
+                    unsigned char *zl = o->ptr;
+                    unsigned char *eptr, *sptr;
+                    unsigned char *vstr;
+                    unsigned int vlen;
+                    long long vll;
+                    double score;
+
+                    eptr = ziplistIndex(zl,0);
+                    redisAssert(eptr != NULL);
+                    sptr = ziplistNext(zl,eptr);
+                    redisAssert(sptr != NULL);
+
+                    while (eptr != NULL) {
+                        redisAssert(ziplistGet(eptr,&vstr,&vlen,&vll));
+                        score = zzlGetScore(sptr);]]></codefragment>
+</duplication>
+<duplication lines="7" tokens="102">
+<file line="183" path="/var/lib/jenkins/jobs/redis-cpd/workspace/src/lzf_c.c"/>
+<file line="195" path="/var/lib/jenkins/jobs/redis-cpd/workspace/src/lzf_c.c"/>
+<codefragment><![CDATA[                  len++; if (ref [len] != ip [len]) break;
+                  len++; if (ref [len] != ip [len]) break;
+                  len++; if (ref [len] != ip [len]) break;
+                  len++; if (ref [len] != ip [len]) break;
+
+                  len++; if (ref [len] != ip [len]) break;
+                  len++; if (ref [len] != ip [len]) break;]]></codefragment>
+</duplication>
+</pmd-cpd>
+

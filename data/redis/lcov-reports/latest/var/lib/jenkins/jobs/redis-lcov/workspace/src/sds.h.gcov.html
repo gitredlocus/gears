@@ -1,0 +1,192 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - redis-lcov_9.info - /var/lib/jenkins/jobs/redis-lcov/workspace/src/sds.h</title>
+  <link rel="stylesheet" type="text/css" href="../../../../../../../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../../../../../../../index.html">top level</a> - <a href="index.html">var/lib/jenkins/jobs/redis-lcov/workspace/src</a> - sds.h<span style="font-size: 80%;"> (source / <a href="sds.h.func.html">functions</a>)</span></td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">redis-lcov_9.info</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">4</td>
+            <td class="headerCovTableEntry">4</td>
+            <td class="headerCovTableEntryHi">100.0 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2013-08-26</td>
+            <td></td>
+            <td class="headerItem">Functions:</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntryHi">-</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Legend:</td>
+            <td class="headerValueLeg">            Lines:
+            <span class="coverLegendCov">hit</span>
+            <span class="coverLegendNoCov">not hit</span>
+            | Branches:
+            <span class="coverLegendCov">+</span> taken
+            <span class="coverLegendNoCov">-</span> not taken
+            <span class="coverLegendNoCov">#</span> not executed
+</td>
+            <td></td>
+            <td class="headerItem">Branches:</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntryHi">-</td>
+          </tr>
+          <tr><td><img src="../../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">           Branch data     Line data    Source code</pre>
+<pre class="source">
+<a name="1"><span class="lineNum">       1 </span>                :            : /* SDSLib, A C dynamic strings library</a>
+<span class="lineNum">       2 </span>                :            :  *
+<span class="lineNum">       3 </span>                :            :  * Copyright (c) 2006-2010, Salvatore Sanfilippo &lt;antirez at gmail dot com&gt;
+<span class="lineNum">       4 </span>                :            :  * All rights reserved.
+<span class="lineNum">       5 </span>                :            :  *
+<span class="lineNum">       6 </span>                :            :  * Redistribution and use in source and binary forms, with or without
+<span class="lineNum">       7 </span>                :            :  * modification, are permitted provided that the following conditions are met:
+<span class="lineNum">       8 </span>                :            :  *
+<span class="lineNum">       9 </span>                :            :  *   * Redistributions of source code must retain the above copyright notice,
+<span class="lineNum">      10 </span>                :            :  *     this list of conditions and the following disclaimer.
+<span class="lineNum">      11 </span>                :            :  *   * Redistributions in binary form must reproduce the above copyright
+<span class="lineNum">      12 </span>                :            :  *     notice, this list of conditions and the following disclaimer in the
+<span class="lineNum">      13 </span>                :            :  *     documentation and/or other materials provided with the distribution.
+<span class="lineNum">      14 </span>                :            :  *   * Neither the name of Redis nor the names of its contributors may be used
+<span class="lineNum">      15 </span>                :            :  *     to endorse or promote products derived from this software without
+<span class="lineNum">      16 </span>                :            :  *     specific prior written permission.
+<span class="lineNum">      17 </span>                :            :  *
+<span class="lineNum">      18 </span>                :            :  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS &quot;AS IS&quot;
+<span class="lineNum">      19 </span>                :            :  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+<span class="lineNum">      20 </span>                :            :  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+<span class="lineNum">      21 </span>                :            :  * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+<span class="lineNum">      22 </span>                :            :  * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+<span class="lineNum">      23 </span>                :            :  * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+<span class="lineNum">      24 </span>                :            :  * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+<span class="lineNum">      25 </span>                :            :  * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+<span class="lineNum">      26 </span>                :            :  * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+<span class="lineNum">      27 </span>                :            :  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+<span class="lineNum">      28 </span>                :            :  * POSSIBILITY OF SUCH DAMAGE.
+<span class="lineNum">      29 </span>                :            :  */
+<span class="lineNum">      30 </span>                :            : 
+<span class="lineNum">      31 </span>                :            : #ifndef __SDS_H
+<span class="lineNum">      32 </span>                :            : #define __SDS_H
+<span class="lineNum">      33 </span>                :            : 
+<span class="lineNum">      34 </span>                :            : #define SDS_MAX_PREALLOC (1024*1024)
+<span class="lineNum">      35 </span>                :            : 
+<span class="lineNum">      36 </span>                :            : #include &lt;sys/types.h&gt;
+<span class="lineNum">      37 </span>                :            : #include &lt;stdarg.h&gt;
+<span class="lineNum">      38 </span>                :            : 
+<span class="lineNum">      39 </span>                :            : typedef char *sds;
+<span class="lineNum">      40 </span>                :            : 
+<span class="lineNum">      41 </span>                :            : struct sdshdr {
+<span class="lineNum">      42 </span>                :            :     int len;
+<span class="lineNum">      43 </span>                :            :     int free;
+<span class="lineNum">      44 </span>                :            :     char buf[];
+<span class="lineNum">      45 </span>                :            : };
+<span class="lineNum">      46 </span>                :            : 
+<span class="lineNum">      47 </span>                :            : static inline size_t sdslen(const sds s) {
+<span class="lineNum">      48 </span>                :<span class="lineCov">  337831561 :     struct sdshdr *sh = (void*)(s-(sizeof(struct sdshdr)));</span>
+<span class="lineNum">      49 </span>                :<span class="lineCov">  337831561 :     return sh-&gt;len;</span>
+<span class="lineNum">      50 </span>                :            : }
+<span class="lineNum">      51 </span>                :            : 
+<span class="lineNum">      52 </span>                :            : static inline size_t sdsavail(const sds s) {
+<span class="lineNum">      53 </span>                :<span class="lineCov">   57908198 :     struct sdshdr *sh = (void*)(s-(sizeof(struct sdshdr)));</span>
+<span class="lineNum">      54 </span>                :<span class="lineCov">   57908198 :     return sh-&gt;free;</span>
+<span class="lineNum">      55 </span>                :            : }
+<span class="lineNum">      56 </span>                :            : 
+<span class="lineNum">      57 </span>                :            : sds sdsnewlen(const void *init, size_t initlen);
+<span class="lineNum">      58 </span>                :            : sds sdsnew(const char *init);
+<span class="lineNum">      59 </span>                :            : sds sdsempty(void);
+<span class="lineNum">      60 </span>                :            : size_t sdslen(const sds s);
+<span class="lineNum">      61 </span>                :            : sds sdsdup(const sds s);
+<span class="lineNum">      62 </span>                :            : void sdsfree(sds s);
+<span class="lineNum">      63 </span>                :            : size_t sdsavail(const sds s);
+<span class="lineNum">      64 </span>                :            : sds sdsgrowzero(sds s, size_t len);
+<span class="lineNum">      65 </span>                :            : sds sdscatlen(sds s, const void *t, size_t len);
+<span class="lineNum">      66 </span>                :            : sds sdscat(sds s, const char *t);
+<span class="lineNum">      67 </span>                :            : sds sdscatsds(sds s, const sds t);
+<span class="lineNum">      68 </span>                :            : sds sdscpylen(sds s, const char *t, size_t len);
+<span class="lineNum">      69 </span>                :            : sds sdscpy(sds s, const char *t);
+<span class="lineNum">      70 </span>                :            : 
+<span class="lineNum">      71 </span>                :            : sds sdscatvprintf(sds s, const char *fmt, va_list ap);
+<span class="lineNum">      72 </span>                :            : #ifdef __GNUC__
+<span class="lineNum">      73 </span>                :            : sds sdscatprintf(sds s, const char *fmt, ...)
+<span class="lineNum">      74 </span>                :            :     __attribute__((format(printf, 2, 3)));
+<span class="lineNum">      75 </span>                :            : #else
+<span class="lineNum">      76 </span>                :            : sds sdscatprintf(sds s, const char *fmt, ...);
+<span class="lineNum">      77 </span>                :            : #endif
+<span class="lineNum">      78 </span>                :            : 
+<span class="lineNum">      79 </span>                :            : sds sdstrim(sds s, const char *cset);
+<span class="lineNum">      80 </span>                :            : void sdsrange(sds s, int start, int end);
+<span class="lineNum">      81 </span>                :            : void sdsupdatelen(sds s);
+<span class="lineNum">      82 </span>                :            : void sdsclear(sds s);
+<span class="lineNum">      83 </span>                :            : int sdscmp(const sds s1, const sds s2);
+<span class="lineNum">      84 </span>                :            : sds *sdssplitlen(const char *s, int len, const char *sep, int seplen, int *count);
+<span class="lineNum">      85 </span>                :            : void sdsfreesplitres(sds *tokens, int count);
+<span class="lineNum">      86 </span>                :            : void sdstolower(sds s);
+<span class="lineNum">      87 </span>                :            : void sdstoupper(sds s);
+<span class="lineNum">      88 </span>                :            : sds sdsfromlonglong(long long value);
+<span class="lineNum">      89 </span>                :            : sds sdscatrepr(sds s, const char *p, size_t len);
+<span class="lineNum">      90 </span>                :            : sds *sdssplitargs(const char *line, int *argc);
+<span class="lineNum">      91 </span>                :            : sds sdsmapchars(sds s, const char *from, const char *to, size_t setlen);
+<span class="lineNum">      92 </span>                :            : sds sdsjoin(char **argv, int argc, char *sep);
+<span class="lineNum">      93 </span>                :            : 
+<span class="lineNum">      94 </span>                :            : /* Low level functions exposed to the user API */
+<span class="lineNum">      95 </span>                :            : sds sdsMakeRoomFor(sds s, size_t addlen);
+<span class="lineNum">      96 </span>                :            : void sdsIncrLen(sds s, int incr);
+<span class="lineNum">      97 </span>                :            : sds sdsRemoveFreeSpace(sds s);
+<span class="lineNum">      98 </span>                :            : size_t sdsAllocSize(sds s);
+<span class="lineNum">      99 </span>                :            : 
+<span class="lineNum">     100 </span>                :            : #endif
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.9</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

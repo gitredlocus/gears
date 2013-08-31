@@ -1,0 +1,554 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - redis-lcov_9.info - /var/lib/jenkins/jobs/redis-lcov/workspace/src/t_string.c</title>
+  <link rel="stylesheet" type="text/css" href="../../../../../../../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../../../../../../../index.html">top level</a> - <a href="index.html">var/lib/jenkins/jobs/redis-lcov/workspace/src</a> - t_string.c<span style="font-size: 80%;"> (source / <a href="t_string.c.func.html">functions</a>)</span></td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">redis-lcov_9.info</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">236</td>
+            <td class="headerCovTableEntry">240</td>
+            <td class="headerCovTableEntryHi">98.3 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2013-08-26</td>
+            <td></td>
+            <td class="headerItem">Functions:</td>
+            <td class="headerCovTableEntry">22</td>
+            <td class="headerCovTableEntry">22</td>
+            <td class="headerCovTableEntryHi">100.0 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Legend:</td>
+            <td class="headerValueLeg">            Lines:
+            <span class="coverLegendCov">hit</span>
+            <span class="coverLegendNoCov">not hit</span>
+            | Branches:
+            <span class="coverLegendCov">+</span> taken
+            <span class="coverLegendNoCov">-</span> not taken
+            <span class="coverLegendNoCov">#</span> not executed
+</td>
+            <td></td>
+            <td class="headerItem">Branches:</td>
+            <td class="headerCovTableEntry">143</td>
+            <td class="headerCovTableEntry">172</td>
+            <td class="headerCovTableEntryMed">83.1 %</td>
+          </tr>
+          <tr><td><img src="../../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">           Branch data     Line data    Source code</pre>
+<pre class="source">
+<a name="1"><span class="lineNum">       1 </span>                :            : /*</a>
+<span class="lineNum">       2 </span>                :            :  * Copyright (c) 2009-2012, Salvatore Sanfilippo &lt;antirez at gmail dot com&gt;
+<span class="lineNum">       3 </span>                :            :  * All rights reserved.
+<span class="lineNum">       4 </span>                :            :  *
+<span class="lineNum">       5 </span>                :            :  * Redistribution and use in source and binary forms, with or without
+<span class="lineNum">       6 </span>                :            :  * modification, are permitted provided that the following conditions are met:
+<span class="lineNum">       7 </span>                :            :  *
+<span class="lineNum">       8 </span>                :            :  *   * Redistributions of source code must retain the above copyright notice,
+<span class="lineNum">       9 </span>                :            :  *     this list of conditions and the following disclaimer.
+<span class="lineNum">      10 </span>                :            :  *   * Redistributions in binary form must reproduce the above copyright
+<span class="lineNum">      11 </span>                :            :  *     notice, this list of conditions and the following disclaimer in the
+<span class="lineNum">      12 </span>                :            :  *     documentation and/or other materials provided with the distribution.
+<span class="lineNum">      13 </span>                :            :  *   * Neither the name of Redis nor the names of its contributors may be used
+<span class="lineNum">      14 </span>                :            :  *     to endorse or promote products derived from this software without
+<span class="lineNum">      15 </span>                :            :  *     specific prior written permission.
+<span class="lineNum">      16 </span>                :            :  *
+<span class="lineNum">      17 </span>                :            :  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS &quot;AS IS&quot;
+<span class="lineNum">      18 </span>                :            :  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+<span class="lineNum">      19 </span>                :            :  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+<span class="lineNum">      20 </span>                :            :  * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+<span class="lineNum">      21 </span>                :            :  * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+<span class="lineNum">      22 </span>                :            :  * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+<span class="lineNum">      23 </span>                :            :  * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+<span class="lineNum">      24 </span>                :            :  * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+<span class="lineNum">      25 </span>                :            :  * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+<span class="lineNum">      26 </span>                :            :  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+<span class="lineNum">      27 </span>                :            :  * POSSIBILITY OF SUCH DAMAGE.
+<span class="lineNum">      28 </span>                :            :  */
+<span class="lineNum">      29 </span>                :            : 
+<span class="lineNum">      30 </span>                :            : #include &quot;redis.h&quot;
+<span class="lineNum">      31 </span>                :            : #include &lt;math.h&gt; /* isnan(), isinf() */
+<span class="lineNum">      32 </span>                :            : 
+<span class="lineNum">      33 </span>                :            : /*-----------------------------------------------------------------------------
+<span class="lineNum">      34 </span>                :            :  * String Commands
+<span class="lineNum">      35 </span>                :            :  *----------------------------------------------------------------------------*/
+<a name="36"><span class="lineNum">      36 </span>                :            : </a>
+<span class="lineNum">      37 </span>                :            : static int checkStringLength(redisClient *c, long long size) {
+<span class="lineNum">      38 </span>[<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchCov" title="Branch 1 was taken 3000 times"> + </span>][<span class="branchCov" title="Branch 2 was taken 1 time"> + </span><span class="branchCov" title="Branch 3 was taken 2 times"> + </span>]:<span class="lineCov">       3010 :     if (size &gt; 512*1024*1024) {</span>
+<span class="lineNum">         </span>        [<span class="branchCov" title="Branch 4 was taken 1 time"> + </span><span class="branchCov" title="Branch 5 was taken 6 times"> + </span>]
+<span class="lineNum">      39 </span>                :<span class="lineCov">          2 :         addReplyError(c,&quot;string exceeds maximum allowed size (512MB)&quot;);</span>
+<span class="lineNum">      40 </span>                :            :         return REDIS_ERR;
+<span class="lineNum">      41 </span>                :            :     }
+<span class="lineNum">      42 </span>                :            :     return REDIS_OK;
+<span class="lineNum">      43 </span>                :            : }
+<span class="lineNum">      44 </span>                :            : 
+<span class="lineNum">      45 </span>                :            : /* The setGenericCommand() function implements the SET operation with different
+<span class="lineNum">      46 </span>                :            :  * options and variants. This function is called in order to implement the
+<span class="lineNum">      47 </span>                :            :  * following commands: SET, SETEX, PSETEX, SETNX.
+<span class="lineNum">      48 </span>                :            :  *
+<span class="lineNum">      49 </span>                :            :  * 'flags' changes the behavior of the command (NX or XX, see belove).
+<span class="lineNum">      50 </span>                :            :  *
+<span class="lineNum">      51 </span>                :            :  * 'expire' represents an expire to set in form of a Redis object as passed
+<span class="lineNum">      52 </span>                :            :  * by the user. It is interpreted according to the specified 'unit'.
+<span class="lineNum">      53 </span>                :            :  *
+<span class="lineNum">      54 </span>                :            :  * 'ok_reply' and 'abort_reply' is what the function will reply to the client
+<span class="lineNum">      55 </span>                :            :  * if the operation is performed, or when it is not because of NX or
+<span class="lineNum">      56 </span>                :            :  * XX flags.
+<span class="lineNum">      57 </span>                :            :  *
+<span class="lineNum">      58 </span>                :            :  * If ok_reply is NULL &quot;+OK&quot; is used.
+<span class="lineNum">      59 </span>                :            :  * If abort_reply is NULL, &quot;$-1&quot; is used. */
+<span class="lineNum">      60 </span>                :            : 
+<span class="lineNum">      61 </span>                :            : #define REDIS_SET_NO_FLAGS 0
+<span class="lineNum">      62 </span>                :            : #define REDIS_SET_NX (1&lt;&lt;0)     /* Set if key not exists. */
+<a name="63"><span class="lineNum">      63 </span>                :            : #define REDIS_SET_XX (1&lt;&lt;1)     /* Set if key exists. */</a>
+<span class="lineNum">      64 </span>                :            : 
+<span class="lineNum">      65 </span>                :<span class="lineCov">    3103279 : void setGenericCommand(redisClient *c, int flags, robj *key, robj *val, robj *expire, int unit, robj *ok_reply, robj *abort_reply) {</span>
+<span class="lineNum">      66 </span>                :<span class="lineCov">    3103279 :     long long milliseconds = 0; /* initialized to avoid any harmness warning */</span>
+<span class="lineNum">      67 </span>                :            : 
+<span class="lineNum">      68 </span>        [<span class="branchCov" title="Branch 0 was taken 19261 times"> + </span><span class="branchCov" title="Branch 1 was taken 3084018 times"> + </span>]:<span class="lineCov">    3103279 :     if (expire) {</span>
+<span class="lineNum">      69 </span>        [<span class="branchCov" title="Branch 1 was taken 19261 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">      19261 :         if (getLongLongFromObjectOrReply(c, expire, &amp;milliseconds, NULL) != REDIS_OK)</span>
+<span class="lineNum">      70 </span>                :            :             return;
+<span class="lineNum">      71 </span>        [<span class="branchCov" title="Branch 0 was taken 1 time"> + </span><span class="branchCov" title="Branch 1 was taken 19260 times"> + </span>]:<span class="lineCov">      19261 :         if (milliseconds &lt;= 0) {</span>
+<span class="lineNum">      72 </span>                :<span class="lineCov">          1 :             addReplyError(c,&quot;invalid expire time in SETEX&quot;);</span>
+<span class="lineNum">      73 </span>                :<span class="lineCov">          1 :             return;</span>
+<span class="lineNum">      74 </span>                :            :         }
+<span class="lineNum">      75 </span>        [<span class="branchCov" title="Branch 0 was taken 19246 times"> + </span><span class="branchCov" title="Branch 1 was taken 14 times"> + </span>]:<span class="lineCov">      19260 :         if (unit == UNIT_SECONDS) milliseconds *= 1000;</span>
+<span class="lineNum">      76 </span>                :            :     }
+<span class="lineNum">      77 </span>                :            : 
+<span class="lineNum">      78 </span>[<span class="branchCov" title="Branch 0 was taken 6 times"> + </span><span class="branchCov" title="Branch 1 was taken 3103272 times"> + </span>][<span class="branchCov" title="Branch 3 was taken 3 times"> + </span><span class="branchCov" title="Branch 4 was taken 3 times"> + </span>]:<span class="lineCov">    3103278 :     if ((flags &amp; REDIS_SET_NX &amp;&amp; lookupKeyWrite(c-&gt;db,key) != NULL) ||</span>
+<span class="lineNum">         </span>        [<span class="branchCov" title="Branch 5 was taken 3 times"> + </span><span class="branchCov" title="Branch 6 was taken 3103272 times"> + </span>]
+<span class="lineNum">      79 </span>        [<span class="branchCov" title="Branch 1 was taken 1 time"> + </span><span class="branchCov" title="Branch 2 was taken 2 times"> + </span>]:<span class="lineCov">          3 :         (flags &amp; REDIS_SET_XX &amp;&amp; lookupKeyWrite(c-&gt;db,key) == NULL))</span>
+<span class="lineNum">      80 </span>                :            :     {
+<span class="lineNum">      81 </span>        [<span class="branchCov" title="Branch 0 was taken 2 times"> + </span><span class="branchCov" title="Branch 1 was taken 2 times"> + </span>]:<span class="lineCov">          4 :         addReply(c, abort_reply ? abort_reply : shared.nullbulk);</span>
+<span class="lineNum">      82 </span>                :<span class="lineCov">          4 :         return;</span>
+<span class="lineNum">      83 </span>                :            :     }
+<span class="lineNum">      84 </span>                :<span class="lineCov">    3103274 :     setKey(c-&gt;db,key,val);</span>
+<span class="lineNum">      85 </span>                :<span class="lineCov">    3103274 :     server.dirty++;</span>
+<span class="lineNum">      86 </span>        [<span class="branchCov" title="Branch 0 was taken 19260 times"> + </span><span class="branchCov" title="Branch 1 was taken 3084014 times"> + </span>]:<span class="lineCov">    3103274 :     if (expire) setExpire(c-&gt;db,key,mstime()+milliseconds);</span>
+<span class="lineNum">      87 </span>                :<span class="lineCov">    3103274 :     notifyKeyspaceEvent(REDIS_NOTIFY_STRING,&quot;set&quot;,key,c-&gt;db-&gt;id);</span>
+<span class="lineNum">      88 </span>        [<span class="branchCov" title="Branch 0 was taken 19260 times"> + </span><span class="branchCov" title="Branch 1 was taken 3084014 times"> + </span>]:<span class="lineCov">    3103274 :     if (expire) notifyKeyspaceEvent(REDIS_NOTIFY_GENERIC,</span>
+<span class="lineNum">      89 </span>                :<span class="lineCov">      19260 :         &quot;expire&quot;,key,c-&gt;db-&gt;id);</span>
+<span class="lineNum">      90 </span>        [<span class="branchCov" title="Branch 0 was taken 3103272 times"> + </span><span class="branchCov" title="Branch 1 was taken 2 times"> + </span>]:<span class="lineCov">    3103279 :     addReply(c, ok_reply ? ok_reply : shared.ok);</span>
+<span class="lineNum">      91 </span>                :            : }
+<a name="92"><span class="lineNum">      92 </span>                :            : </a>
+<span class="lineNum">      93 </span>                :            : /* SET key value [NX] [XX] [EX &lt;seconds&gt;] [PX &lt;milliseconds&gt;] */
+<span class="lineNum">      94 </span>                :<span class="lineCov">    3084018 : void setCommand(redisClient *c) {</span>
+<span class="lineNum">      95 </span>                :            :     int j;
+<span class="lineNum">      96 </span>                :<span class="lineCov">    3084018 :     robj *expire = NULL;</span>
+<span class="lineNum">      97 </span>                :<span class="lineCov">    3084018 :     int unit = UNIT_SECONDS;</span>
+<span class="lineNum">      98 </span>                :<span class="lineCov">    3084018 :     int flags = REDIS_SET_NO_FLAGS;</span>
+<span class="lineNum">      99 </span>                :            : 
+<span class="lineNum">     100 </span>        [<span class="branchCov" title="Branch 0 was taken 9 times"> + </span><span class="branchCov" title="Branch 1 was taken 3084017 times"> + </span>]:<span class="lineCov">    3084026 :     for (j = 3; j &lt; c-&gt;argc; j++) {</span>
+<span class="lineNum">     101 </span>                :<span class="lineCov">          9 :         char *a = c-&gt;argv[j]-&gt;ptr;</span>
+<span class="lineNum">     102 </span>        [<span class="branchCov" title="Branch 0 was taken 4 times"> + </span><span class="branchCov" title="Branch 1 was taken 5 times"> + </span>]:<span class="lineCov">          9 :         robj *next = (j == c-&gt;argc-1) ? NULL : c-&gt;argv[j+1];</span>
+<span class="lineNum">     103 </span>                :            : 
+<span class="lineNum">     104 </span>[<span class="branchCov" title="Branch 0 was taken 3 times"> + </span><span class="branchCov" title="Branch 1 was taken 6 times"> + </span>][<span class="branchCov" title="Branch 2 was taken 2 times"> + </span><span class="branchCov" title="Branch 3 was taken 1 time"> + </span>]:<span class="lineCov">          9 :         if ((a[0] == 'n' || a[0] == 'N') &amp;&amp;</span>
+<span class="lineNum">     105 </span>        [<span class="branchCov" title="Branch 0 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">          2 :             (a[1] == 'x' || a[1] == 'X') &amp;&amp; a[2] == '\0') {</span>
+<span class="lineNum">     106 </span>                :<span class="lineCov">          2 :             flags |= REDIS_SET_NX;</span>
+<span class="lineNum">     107 </span>[<span class="branchCov" title="Branch 0 was taken 3 times"> + </span><span class="branchCov" title="Branch 1 was taken 4 times"> + </span>][<span class="branchCov" title="Branch 2 was taken 3 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">          7 :         } else if ((a[0] == 'x' || a[0] == 'X') &amp;&amp;</span>
+<span class="lineNum">     108 </span>        [<span class="branchCov" title="Branch 0 was taken 3 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">          3 :                    (a[1] == 'x' || a[1] == 'X') &amp;&amp; a[2] == '\0') {</span>
+<span class="lineNum">     109 </span>                :<span class="lineCov">          3 :             flags |= REDIS_SET_XX;</span>
+<span class="lineNum">     110 </span>[<span class="branchCov" title="Branch 0 was taken 1 time"> + </span><span class="branchCov" title="Branch 1 was taken 3 times"> + </span>][<span class="branchCov" title="Branch 2 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">          4 :         } else if ((a[0] == 'e' || a[0] == 'E') &amp;&amp;</span>
+<span class="lineNum">     111 </span>        [<span class="branchCov" title="Branch 0 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">          1 :                    (a[1] == 'x' || a[1] == 'X') &amp;&amp; a[2] == '\0' &amp;&amp; next) {</span>
+<span class="lineNum">     112 </span>                :<span class="lineCov">          1 :             unit = UNIT_SECONDS;</span>
+<span class="lineNum">     113 </span>                :<span class="lineCov">          1 :             expire = next;</span>
+<span class="lineNum">     114 </span>                :<span class="lineCov">          1 :             j++;</span>
+<span class="lineNum">     115 </span>[<span class="branchCov" title="Branch 0 was taken 2 times"> + </span><span class="branchCov" title="Branch 1 was taken 1 time"> + </span>][<span class="branchCov" title="Branch 2 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">          3 :         } else if ((a[0] == 'p' || a[0] == 'P') &amp;&amp;</span>
+<span class="lineNum">     116 </span>        [<span class="branchCov" title="Branch 0 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">          2 :                    (a[1] == 'x' || a[1] == 'X') &amp;&amp; a[2] == '\0' &amp;&amp; next) {</span>
+<span class="lineNum">     117 </span>                :<span class="lineCov">          2 :             unit = UNIT_MILLISECONDS;</span>
+<span class="lineNum">     118 </span>                :<span class="lineCov">          2 :             expire = next;</span>
+<span class="lineNum">     119 </span>                :<span class="lineCov">          2 :             j++;</span>
+<span class="lineNum">     120 </span>                :            :         } else {
+<span class="lineNum">     121 </span>                :<span class="lineCov">          1 :             addReply(c,shared.syntaxerr);</span>
+<span class="lineNum">     122 </span>                :<span class="lineCov">    3084018 :             return;</span>
+<span class="lineNum">     123 </span>                :            :         }
+<span class="lineNum">     124 </span>                :            :     }
+<span class="lineNum">     125 </span>                :            : 
+<span class="lineNum">     126 </span>                :<span class="lineCov">    3084017 :     c-&gt;argv[2] = tryObjectEncoding(c-&gt;argv[2]);</span>
+<span class="lineNum">     127 </span>                :<span class="lineCov">    3084017 :     setGenericCommand(c,flags,c-&gt;argv[1],c-&gt;argv[2],expire,unit,NULL,NULL);</span>
+<a name="128"><span class="lineNum">     128 </span>                :            : }</a>
+<span class="lineNum">     129 </span>                :            : 
+<span class="lineNum">     130 </span>                :<span class="lineCov">          4 : void setnxCommand(redisClient *c) {</span>
+<span class="lineNum">     131 </span>                :<span class="lineCov">          4 :     c-&gt;argv[2] = tryObjectEncoding(c-&gt;argv[2]);</span>
+<span class="lineNum">     132 </span>                :<span class="lineCov">          4 :     setGenericCommand(c,REDIS_SET_NX,c-&gt;argv[1],c-&gt;argv[2],NULL,0,shared.cone,shared.czero);</span>
+<a name="133"><span class="lineNum">     133 </span>                :<span class="lineCov">          4 : }</span></a>
+<span class="lineNum">     134 </span>                :            : 
+<span class="lineNum">     135 </span>                :<span class="lineCov">      19246 : void setexCommand(redisClient *c) {</span>
+<span class="lineNum">     136 </span>                :<span class="lineCov">      19246 :     c-&gt;argv[3] = tryObjectEncoding(c-&gt;argv[3]);</span>
+<span class="lineNum">     137 </span>                :<span class="lineCov">      19246 :     setGenericCommand(c,REDIS_SET_NO_FLAGS,c-&gt;argv[1],c-&gt;argv[3],c-&gt;argv[2],UNIT_SECONDS,NULL,NULL);</span>
+<a name="138"><span class="lineNum">     138 </span>                :<span class="lineCov">      19246 : }</span></a>
+<span class="lineNum">     139 </span>                :            : 
+<span class="lineNum">     140 </span>                :<span class="lineCov">         12 : void psetexCommand(redisClient *c) {</span>
+<span class="lineNum">     141 </span>                :<span class="lineCov">         12 :     c-&gt;argv[3] = tryObjectEncoding(c-&gt;argv[3]);</span>
+<span class="lineNum">     142 </span>                :<span class="lineCov">         12 :     setGenericCommand(c,REDIS_SET_NO_FLAGS,c-&gt;argv[1],c-&gt;argv[3],c-&gt;argv[2],UNIT_MILLISECONDS,NULL,NULL);</span>
+<a name="143"><span class="lineNum">     143 </span>                :<span class="lineCov">         12 : }</span></a>
+<span class="lineNum">     144 </span>                :            : 
+<span class="lineNum">     145 </span>                :<span class="lineCov">     125217 : int getGenericCommand(redisClient *c) {</span>
+<span class="lineNum">     146 </span>                :            :     robj *o;
+<span class="lineNum">     147 </span>                :            : 
+<span class="lineNum">     148 </span>        [<span class="branchCov" title="Branch 1 was taken 125194 times"> + </span><span class="branchCov" title="Branch 2 was taken 23 times"> + </span>]:<span class="lineCov">     125217 :     if ((o = lookupKeyReadOrReply(c,c-&gt;argv[1],shared.nullbulk)) == NULL)</span>
+<span class="lineNum">     149 </span>                :            :         return REDIS_OK;
+<span class="lineNum">     150 </span>                :            : 
+<span class="lineNum">     151 </span>        [<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchCov" title="Branch 1 was taken 125194 times"> + </span>]:<span class="lineCov">     125194 :     if (o-&gt;type != REDIS_STRING) {</span>
+<span class="lineNum">     152 </span>                :<span class="lineNoCov">          0 :         addReply(c,shared.wrongtypeerr);</span>
+<span class="lineNum">     153 </span>                :<span class="lineNoCov">          0 :         return REDIS_ERR;</span>
+<span class="lineNum">     154 </span>                :            :     } else {
+<span class="lineNum">     155 </span>                :<span class="lineCov">     125194 :         addReplyBulk(c,o);</span>
+<span class="lineNum">     156 </span>                :<span class="lineCov">     125217 :         return REDIS_OK;</span>
+<span class="lineNum">     157 </span>                :            :     }
+<a name="158"><span class="lineNum">     158 </span>                :            : }</a>
+<span class="lineNum">     159 </span>                :            : 
+<span class="lineNum">     160 </span>                :<span class="lineCov">     125215 : void getCommand(redisClient *c) {</span>
+<span class="lineNum">     161 </span>                :<span class="lineCov">     125215 :     getGenericCommand(c);</span>
+<a name="162"><span class="lineNum">     162 </span>                :<span class="lineCov">     125215 : }</span></a>
+<span class="lineNum">     163 </span>                :            : 
+<span class="lineNum">     164 </span>                :<span class="lineCov">          2 : void getsetCommand(redisClient *c) {</span>
+<span class="lineNum">     165 </span>        [<span class="branchCov" title="Branch 1 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          4 :     if (getGenericCommand(c) == REDIS_ERR) return;</span>
+<span class="lineNum">     166 </span>                :<span class="lineCov">          2 :     c-&gt;argv[2] = tryObjectEncoding(c-&gt;argv[2]);</span>
+<span class="lineNum">     167 </span>                :<span class="lineCov">          2 :     setKey(c-&gt;db,c-&gt;argv[1],c-&gt;argv[2]);</span>
+<span class="lineNum">     168 </span>                :<span class="lineCov">          2 :     notifyKeyspaceEvent(REDIS_NOTIFY_STRING,&quot;set&quot;,c-&gt;argv[1],c-&gt;db-&gt;id);</span>
+<span class="lineNum">     169 </span>                :<span class="lineCov">          2 :     server.dirty++;</span>
+<span class="lineNum">     170 </span>                :            : }
+<span class="lineNum">     171 </span>                :            : 
+<span class="lineNum">     172 </span>                :<span class="lineCov">         15 : void setrangeCommand(redisClient *c) {</span>
+<span class="lineNum">     173 </span>                :            :     robj *o;
+<span class="lineNum">     174 </span>                :            :     long offset;
+<span class="lineNum">     175 </span>                :<span class="lineCov">         15 :     sds value = c-&gt;argv[3]-&gt;ptr;</span>
+<span class="lineNum">     176 </span>                :            : 
+<span class="lineNum">     177 </span>        [<span class="branchCov" title="Branch 1 was taken 15 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">         15 :     if (getLongFromObjectOrReply(c,c-&gt;argv[2],&amp;offset,NULL) != REDIS_OK)</span>
+<span class="lineNum">     178 </span>                :            :         return;
+<span class="lineNum">     179 </span>                :            : 
+<span class="lineNum">     180 </span>        [<span class="branchCov" title="Branch 0 was taken 1 time"> + </span><span class="branchCov" title="Branch 1 was taken 14 times"> + </span>]:<span class="lineCov">         15 :     if (offset &lt; 0) {</span>
+<span class="lineNum">     181 </span>                :<span class="lineCov">          1 :         addReplyError(c,&quot;offset is out of range&quot;);</span>
+<span class="lineNum">     182 </span>                :<span class="lineCov">          1 :         return;</span>
+<span class="lineNum">     183 </span>                :            :     }
+<span class="lineNum">     184 </span>                :            : 
+<span class="lineNum">     185 </span>                :<span class="lineCov">         14 :     o = lookupKeyWrite(c-&gt;db,c-&gt;argv[1]);</span>
+<span class="lineNum">     186 </span>        [<span class="branchCov" title="Branch 0 was taken 4 times"> + </span><span class="branchCov" title="Branch 1 was taken 10 times"> + </span>]:<span class="lineCov">         14 :     if (o == NULL) {</span>
+<span class="lineNum">     187 </span>                :            :         /* Return 0 when setting nothing on a non-existing string */
+<span class="lineNum">     188 </span>        [<span class="branchCov" title="Branch 0 was taken 1 time"> + </span><span class="branchCov" title="Branch 1 was taken 3 times"> + </span>]:<span class="lineCov">          4 :         if (sdslen(value) == 0) {</span>
+<span class="lineNum">     189 </span>                :<span class="lineCov">          1 :             addReply(c,shared.czero);</span>
+<span class="lineNum">     190 </span>                :<span class="lineCov">          1 :             return;</span>
+<span class="lineNum">     191 </span>                :            :         }
+<span class="lineNum">     192 </span>                :            : 
+<span class="lineNum">     193 </span>                :            :         /* Return when the resulting string exceeds allowed size */
+<span class="lineNum">     194 </span>        [<span class="branchCov" title="Branch 0 was taken 2 times"> + </span><span class="branchCov" title="Branch 1 was taken 1 time"> + </span>]:<span class="lineCov">          3 :         if (checkStringLength(c,offset+sdslen(value)) != REDIS_OK)</span>
+<span class="lineNum">     195 </span>                :            :             return;
+<span class="lineNum">     196 </span>                :            : 
+<span class="lineNum">     197 </span>                :<span class="lineCov">          2 :         o = createObject(REDIS_STRING,sdsempty());</span>
+<span class="lineNum">     198 </span>                :<span class="lineCov">          2 :         dbAdd(c-&gt;db,c-&gt;argv[1],o);</span>
+<span class="lineNum">     199 </span>                :            :     } else {
+<span class="lineNum">     200 </span>                :            :         size_t olen;
+<span class="lineNum">     201 </span>                :            : 
+<span class="lineNum">     202 </span>                :            :         /* Key exists, check type */
+<span class="lineNum">     203 </span>        [<span class="branchCov" title="Branch 1 was taken 9 times"> + </span><span class="branchCov" title="Branch 2 was taken 1 time"> + </span>]:<span class="lineCov">         10 :         if (checkType(c,o,REDIS_STRING))</span>
+<span class="lineNum">     204 </span>                :            :             return;
+<span class="lineNum">     205 </span>                :            : 
+<span class="lineNum">     206 </span>                :            :         /* Return existing string length when setting nothing */
+<span class="lineNum">     207 </span>                :<span class="lineCov">          9 :         olen = stringObjectLen(o);</span>
+<span class="lineNum">     208 </span>        [<span class="branchCov" title="Branch 0 was taken 2 times"> + </span><span class="branchCov" title="Branch 1 was taken 7 times"> + </span>]:<span class="lineCov">          9 :         if (sdslen(value) == 0) {</span>
+<span class="lineNum">     209 </span>                :<span class="lineCov">          2 :             addReplyLongLong(c,olen);</span>
+<span class="lineNum">     210 </span>                :<span class="lineCov">          2 :             return;</span>
+<span class="lineNum">     211 </span>                :            :         }
+<span class="lineNum">     212 </span>                :            : 
+<span class="lineNum">     213 </span>                :            :         /* Return when the resulting string exceeds allowed size */
+<span class="lineNum">     214 </span>        [<span class="branchCov" title="Branch 0 was taken 6 times"> + </span><span class="branchCov" title="Branch 1 was taken 1 time"> + </span>]:<span class="lineCov">          7 :         if (checkStringLength(c,offset+sdslen(value)) != REDIS_OK)</span>
+<span class="lineNum">     215 </span>                :            :             return;
+<span class="lineNum">     216 </span>                :            : 
+<span class="lineNum">     217 </span>                :            :         /* Create a copy when the object is shared or encoded. */
+<span class="lineNum">     218 </span>        [<span class="branchCov" title="Branch 0 was taken 6 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">          6 :         if (o-&gt;refcount != 1 || o-&gt;encoding != REDIS_ENCODING_RAW) {</span>
+<span class="lineNum">     219 </span>                :<span class="lineCov">          6 :             robj *decoded = getDecodedObject(o);</span>
+<span class="lineNum">     220 </span>                :<span class="lineCov">          6 :             o = createRawStringObject(decoded-&gt;ptr, sdslen(decoded-&gt;ptr));</span>
+<span class="lineNum">     221 </span>                :<span class="lineCov">          6 :             decrRefCount(decoded);</span>
+<span class="lineNum">     222 </span>                :<span class="lineCov">          6 :             dbOverwrite(c-&gt;db,c-&gt;argv[1],o);</span>
+<span class="lineNum">     223 </span>                :            :         }
+<span class="lineNum">     224 </span>                :            :     }
+<span class="lineNum">     225 </span>                :            : 
+<span class="lineNum">     226 </span>        [<span class="branchCov" title="Branch 0 was taken 8 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">          8 :     if (sdslen(value) &gt; 0) {</span>
+<span class="lineNum">     227 </span>                :<span class="lineCov">          8 :         o-&gt;ptr = sdsgrowzero(o-&gt;ptr,offset+sdslen(value));</span>
+<span class="lineNum">     228 </span>                :<span class="lineCov">          8 :         memcpy((char*)o-&gt;ptr+offset,value,sdslen(value));</span>
+<span class="lineNum">     229 </span>                :<span class="lineCov">          8 :         signalModifiedKey(c-&gt;db,c-&gt;argv[1]);</span>
+<span class="lineNum">     230 </span>                :<span class="lineCov">          8 :         notifyKeyspaceEvent(REDIS_NOTIFY_STRING,</span>
+<span class="lineNum">     231 </span>                :<span class="lineCov">         16 :             &quot;setrange&quot;,c-&gt;argv[1],c-&gt;db-&gt;id);</span>
+<span class="lineNum">     232 </span>                :<span class="lineCov">          8 :         server.dirty++;</span>
+<span class="lineNum">     233 </span>                :            :     }
+<span class="lineNum">     234 </span>                :<span class="lineCov">         15 :     addReplyLongLong(c,sdslen(o-&gt;ptr));</span>
+<a name="235"><span class="lineNum">     235 </span>                :            : }</a>
+<span class="lineNum">     236 </span>                :            : 
+<span class="lineNum">     237 </span>                :<span class="lineCov">       1013 : void getrangeCommand(redisClient *c) {</span>
+<span class="lineNum">     238 </span>                :            :     robj *o;
+<span class="lineNum">     239 </span>                :            :     long start, end;
+<span class="lineNum">     240 </span>                :            :     char *str, llbuf[32];
+<span class="lineNum">     241 </span>                :            :     size_t strlen;
+<span class="lineNum">     242 </span>                :            : 
+<span class="lineNum">     243 </span>        [<span class="branchCov" title="Branch 1 was taken 1013 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">       1013 :     if (getLongFromObjectOrReply(c,c-&gt;argv[2],&amp;start,NULL) != REDIS_OK)</span>
+<span class="lineNum">     244 </span>                :            :         return;
+<span class="lineNum">     245 </span>        [<span class="branchCov" title="Branch 1 was taken 1013 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">       1013 :     if (getLongFromObjectOrReply(c,c-&gt;argv[3],&amp;end,NULL) != REDIS_OK)</span>
+<span class="lineNum">     246 </span>                :            :         return;
+<span class="lineNum">     247 </span>  [<span class="branchCov" title="Branch 1 was taken 1012 times"> + </span><span class="branchCov" title="Branch 2 was taken 1 time"> + </span><span class="branchCov" title="Branch 3 was taken 1012 times"> + </span><span class="branchNoCov" title="Branch 4 was not taken"> - </span>]:<span class="lineCov">       2025 :     if ((o = lookupKeyReadOrReply(c,c-&gt;argv[1],shared.emptybulk)) == NULL ||</span>
+<span class="lineNum">     248 </span>                :<span class="lineCov">       1012 :         checkType(c,o,REDIS_STRING)) return;</span>
+<span class="lineNum">     249 </span>                :            : 
+<span class="lineNum">     250 </span>        [<span class="branchCov" title="Branch 0 was taken 6 times"> + </span><span class="branchCov" title="Branch 1 was taken 1006 times"> + </span>]:<span class="lineCov">       1012 :     if (o-&gt;encoding == REDIS_ENCODING_INT) {</span>
+<span class="lineNum">     251 </span>                :<span class="lineCov">          6 :         str = llbuf;</span>
+<span class="lineNum">     252 </span>                :<span class="lineCov">          6 :         strlen = ll2string(llbuf,sizeof(llbuf),(long)o-&gt;ptr);</span>
+<span class="lineNum">     253 </span>                :            :     } else {
+<span class="lineNum">     254 </span>                :<span class="lineCov">       1006 :         str = o-&gt;ptr;</span>
+<span class="lineNum">     255 </span>                :<span class="lineCov">       1006 :         strlen = sdslen(str);</span>
+<span class="lineNum">     256 </span>                :            :     }
+<span class="lineNum">     257 </span>                :            : 
+<span class="lineNum">     258 </span>                :            :     /* Convert negative indexes */
+<span class="lineNum">     259 </span>        [<span class="branchCov" title="Branch 0 was taken 4 times"> + </span><span class="branchCov" title="Branch 1 was taken 1008 times"> + </span>]:<span class="lineCov">       1012 :     if (start &lt; 0) start = strlen+start;</span>
+<span class="lineNum">     260 </span>        [<span class="branchCov" title="Branch 0 was taken 4 times"> + </span><span class="branchCov" title="Branch 1 was taken 1008 times"> + </span>]:<span class="lineCov">       1012 :     if (end &lt; 0) end = strlen+end;</span>
+<span class="lineNum">     261 </span>        [<span class="branchCov" title="Branch 0 was taken 2 times"> + </span><span class="branchCov" title="Branch 1 was taken 1010 times"> + </span>]:<span class="lineCov">       1012 :     if (start &lt; 0) start = 0;</span>
+<span class="lineNum">     262 </span>        [<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchCov" title="Branch 1 was taken 1012 times"> + </span>]:<span class="lineCov">       1012 :     if (end &lt; 0) end = 0;</span>
+<span class="lineNum">     263 </span>        [<span class="branchCov" title="Branch 0 was taken 645 times"> + </span><span class="branchCov" title="Branch 1 was taken 367 times"> + </span>]:<span class="lineCov">       1012 :     if ((unsigned)end &gt;= strlen) end = strlen-1;</span>
+<span class="lineNum">     264 </span>                :            : 
+<span class="lineNum">     265 </span>                :            :     /* Precondition: end &gt;= 0 &amp;&amp; end &lt; strlen, so the only condition where
+<span class="lineNum">     266 </span>                :            :      * nothing can be returned is: start &gt; end. */
+<span class="lineNum">     267 </span>        [<span class="branchCov" title="Branch 0 was taken 749 times"> + </span><span class="branchCov" title="Branch 1 was taken 263 times"> + </span>]:<span class="lineCov">       1012 :     if (start &gt; end) {</span>
+<span class="lineNum">     268 </span>                :<span class="lineCov">        749 :         addReply(c,shared.emptybulk);</span>
+<span class="lineNum">     269 </span>                :            :     } else {
+<span class="lineNum">     270 </span>                :<span class="lineCov">       1013 :         addReplyBulkCBuffer(c,(char*)str+start,end-start+1);</span>
+<span class="lineNum">     271 </span>                :            :     }
+<a name="272"><span class="lineNum">     272 </span>                :            : }</a>
+<span class="lineNum">     273 </span>                :            : 
+<span class="lineNum">     274 </span>                :<span class="lineCov">          6 : void mgetCommand(redisClient *c) {</span>
+<span class="lineNum">     275 </span>                :            :     int j;
+<span class="lineNum">     276 </span>                :            : 
+<span class="lineNum">     277 </span>                :<span class="lineCov">          6 :     addReplyMultiBulkLen(c,c-&gt;argc-1);</span>
+<span class="lineNum">     278 </span>        [<span class="branchCov" title="Branch 1 was taken 18 times"> + </span><span class="branchCov" title="Branch 2 was taken 6 times"> + </span>]:<span class="lineCov">         24 :     for (j = 1; j &lt; c-&gt;argc; j++) {</span>
+<span class="lineNum">     279 </span>                :<span class="lineCov">         18 :         robj *o = lookupKeyRead(c-&gt;db,c-&gt;argv[j]);</span>
+<span class="lineNum">     280 </span>        [<span class="branchCov" title="Branch 0 was taken 8 times"> + </span><span class="branchCov" title="Branch 1 was taken 10 times"> + </span>]:<span class="lineCov">         18 :         if (o == NULL) {</span>
+<span class="lineNum">     281 </span>                :<span class="lineCov">          8 :             addReply(c,shared.nullbulk);</span>
+<span class="lineNum">     282 </span>                :            :         } else {
+<span class="lineNum">     283 </span>        [<span class="branchCov" title="Branch 0 was taken 1 time"> + </span><span class="branchCov" title="Branch 1 was taken 9 times"> + </span>]:<span class="lineCov">         10 :             if (o-&gt;type != REDIS_STRING) {</span>
+<span class="lineNum">     284 </span>                :<span class="lineCov">          1 :                 addReply(c,shared.nullbulk);</span>
+<span class="lineNum">     285 </span>                :            :             } else {
+<span class="lineNum">     286 </span>                :<span class="lineCov">          9 :                 addReplyBulk(c,o);</span>
+<span class="lineNum">     287 </span>                :            :             }
+<span class="lineNum">     288 </span>                :            :         }
+<span class="lineNum">     289 </span>                :            :     }
+<a name="290"><span class="lineNum">     290 </span>                :<span class="lineCov">          6 : }</span></a>
+<span class="lineNum">     291 </span>                :            : 
+<span class="lineNum">     292 </span>                :<span class="lineCov">        205 : void msetGenericCommand(redisClient *c, int nx) {</span>
+<span class="lineNum">     293 </span>                :<span class="lineCov">        205 :     int j, busykeys = 0;</span>
+<span class="lineNum">     294 </span>                :            : 
+<span class="lineNum">     295 </span>        [<span class="branchCov" title="Branch 0 was taken 1 time"> + </span><span class="branchCov" title="Branch 1 was taken 204 times"> + </span>]:<span class="lineCov">        205 :     if ((c-&gt;argc % 2) == 0) {</span>
+<span class="lineNum">     296 </span>                :<span class="lineCov">          1 :         addReplyError(c,&quot;wrong number of arguments for MSET&quot;);</span>
+<span class="lineNum">     297 </span>                :<span class="lineCov">          1 :         return;</span>
+<span class="lineNum">     298 </span>                :            :     }
+<span class="lineNum">     299 </span>                :            :     /* Handle the NX flag. The MSETNX semantic is to return zero and don't
+<span class="lineNum">     300 </span>                :            :      * set nothing at all if at least one already key exists. */
+<span class="lineNum">     301 </span>        [<span class="branchCov" title="Branch 0 was taken 2 times"> + </span><span class="branchCov" title="Branch 1 was taken 202 times"> + </span>]:<span class="lineCov">        204 :     if (nx) {</span>
+<span class="lineNum">     302 </span>        [<span class="branchCov" title="Branch 0 was taken 5 times"> + </span><span class="branchCov" title="Branch 1 was taken 2 times"> + </span>]:<span class="lineCov">          7 :         for (j = 1; j &lt; c-&gt;argc; j += 2) {</span>
+<span class="lineNum">     303 </span>        [<span class="branchCov" title="Branch 1 was taken 1 time"> + </span><span class="branchCov" title="Branch 2 was taken 4 times"> + </span>]:<span class="lineCov">          5 :             if (lookupKeyWrite(c-&gt;db,c-&gt;argv[j]) != NULL) {</span>
+<span class="lineNum">     304 </span>                :<span class="lineCov">          1 :                 busykeys++;</span>
+<span class="lineNum">     305 </span>                :            :             }
+<span class="lineNum">     306 </span>                :            :         }
+<span class="lineNum">     307 </span>        [<span class="branchCov" title="Branch 0 was taken 1 time"> + </span><span class="branchCov" title="Branch 1 was taken 1 time"> + </span>]:<span class="lineCov">        204 :         if (busykeys) {</span>
+<span class="lineNum">     308 </span>                :<span class="lineCov">          1 :             addReply(c, shared.czero);</span>
+<span class="lineNum">     309 </span>                :<span class="lineCov">          1 :             return;</span>
+<span class="lineNum">     310 </span>                :            :         }
+<span class="lineNum">     311 </span>                :            :     }
+<span class="lineNum">     312 </span>                :            : 
+<span class="lineNum">     313 </span>        [<span class="branchCov" title="Branch 0 was taken 200009 times"> + </span><span class="branchCov" title="Branch 1 was taken 203 times"> + </span>]:<span class="lineCov">     200212 :     for (j = 1; j &lt; c-&gt;argc; j += 2) {</span>
+<span class="lineNum">     314 </span>                :<span class="lineCov">     200009 :         c-&gt;argv[j+1] = tryObjectEncoding(c-&gt;argv[j+1]);</span>
+<span class="lineNum">     315 </span>                :<span class="lineCov">     200009 :         setKey(c-&gt;db,c-&gt;argv[j],c-&gt;argv[j+1]);</span>
+<span class="lineNum">     316 </span>                :<span class="lineCov">     200009 :         notifyKeyspaceEvent(REDIS_NOTIFY_STRING,&quot;set&quot;,c-&gt;argv[j],c-&gt;db-&gt;id);</span>
+<span class="lineNum">     317 </span>                :            :     }
+<span class="lineNum">     318 </span>                :<span class="lineCov">        203 :     server.dirty += (c-&gt;argc-1)/2;</span>
+<span class="lineNum">     319 </span>        [<span class="branchCov" title="Branch 0 was taken 1 time"> + </span><span class="branchCov" title="Branch 1 was taken 202 times"> + </span>]:<span class="lineCov">        205 :     addReply(c, nx ? shared.cone : shared.ok);</span>
+<a name="320"><span class="lineNum">     320 </span>                :            : }</a>
+<span class="lineNum">     321 </span>                :            : 
+<span class="lineNum">     322 </span>                :<span class="lineCov">        203 : void msetCommand(redisClient *c) {</span>
+<span class="lineNum">     323 </span>                :<span class="lineCov">        203 :     msetGenericCommand(c,0);</span>
+<a name="324"><span class="lineNum">     324 </span>                :<span class="lineCov">        203 : }</span></a>
+<span class="lineNum">     325 </span>                :            : 
+<span class="lineNum">     326 </span>                :<span class="lineCov">          2 : void msetnxCommand(redisClient *c) {</span>
+<span class="lineNum">     327 </span>                :<span class="lineCov">          2 :     msetGenericCommand(c,1);</span>
+<a name="328"><span class="lineNum">     328 </span>                :<span class="lineCov">          2 : }</span></a>
+<span class="lineNum">     329 </span>                :            : 
+<span class="lineNum">     330 </span>                :<span class="lineCov">     317040 : void incrDecrCommand(redisClient *c, long long incr) {</span>
+<span class="lineNum">     331 </span>                :            :     long long value, oldvalue;
+<span class="lineNum">     332 </span>                :            :     robj *o, *new;
+<span class="lineNum">     333 </span>                :            : 
+<span class="lineNum">     334 </span>                :<span class="lineCov">     317040 :     o = lookupKeyWrite(c-&gt;db,c-&gt;argv[1]);</span>
+<span class="lineNum">     335 </span>[<span class="branchCov" title="Branch 0 was taken 211367 times"> + </span><span class="branchCov" title="Branch 1 was taken 105673 times"> + </span>][<span class="branchCov" title="Branch 3 was taken 211366 times"> + </span><span class="branchCov" title="Branch 4 was taken 1 time"> + </span>]:<span class="lineCov">     317040 :     if (o != NULL &amp;&amp; checkType(c,o,REDIS_STRING)) return;</span>
+<span class="lineNum">     336 </span>        [<span class="branchCov" title="Branch 1 was taken 317034 times"> + </span><span class="branchCov" title="Branch 2 was taken 5 times"> + </span>]:<span class="lineCov">     317039 :     if (getLongLongFromObjectOrReply(c,o,&amp;value,NULL) != REDIS_OK) return;</span>
+<span class="lineNum">     337 </span>                :            : 
+<span class="lineNum">     338 </span>                :<span class="lineCov">     317034 :     oldvalue = value;</span>
+<span class="lineNum">     339 </span>[<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchCov" title="Branch 1 was taken 317034 times"> + </span>][<span class="branchNoExec" title="Branch 2 was not executed"> # </span><span class="branchNoExec" title="Branch 3 was not executed"> # </span>]:<span class="lineCov">     317034 :     if ((incr &lt; 0 &amp;&amp; oldvalue &lt; 0 &amp;&amp; incr &lt; (LLONG_MIN-oldvalue)) ||</span>
+<span class="lineNum">         </span>        [<span class="branchCov" title="Branch 4 was taken 211354 times"> + </span><span class="branchCov" title="Branch 5 was taken 105680 times"> + </span>]
+<span class="lineNum">     340 </span>        [<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchCov" title="Branch 1 was taken 211354 times"> + </span>]:<span class="lineCov">     211354 :         (incr &gt; 0 &amp;&amp; oldvalue &gt; 0 &amp;&amp; incr &gt; (LLONG_MAX-oldvalue))) {</span>
+<span class="lineNum">     341 </span>                :<span class="lineNoCov">          0 :         addReplyError(c,&quot;increment or decrement would overflow&quot;);</span>
+<span class="lineNum">     342 </span>                :<span class="lineNoCov">          0 :         return;</span>
+<span class="lineNum">     343 </span>                :            :     }
+<span class="lineNum">     344 </span>                :<span class="lineCov">     317034 :     value += incr;</span>
+<span class="lineNum">     345 </span>                :<span class="lineCov">     317034 :     new = createStringObjectFromLongLong(value);</span>
+<span class="lineNum">     346 </span>        [<span class="branchCov" title="Branch 0 was taken 211361 times"> + </span><span class="branchCov" title="Branch 1 was taken 105673 times"> + </span>]:<span class="lineCov">     317034 :     if (o)</span>
+<span class="lineNum">     347 </span>                :<span class="lineCov">     211361 :         dbOverwrite(c-&gt;db,c-&gt;argv[1],new);</span>
+<span class="lineNum">     348 </span>                :            :     else
+<span class="lineNum">     349 </span>                :<span class="lineCov">     105673 :         dbAdd(c-&gt;db,c-&gt;argv[1],new);</span>
+<span class="lineNum">     350 </span>                :<span class="lineCov">     317034 :     signalModifiedKey(c-&gt;db,c-&gt;argv[1]);</span>
+<span class="lineNum">     351 </span>                :<span class="lineCov">     317034 :     notifyKeyspaceEvent(REDIS_NOTIFY_STRING,&quot;incrby&quot;,c-&gt;argv[1],c-&gt;db-&gt;id);</span>
+<span class="lineNum">     352 </span>                :<span class="lineCov">     317034 :     server.dirty++;</span>
+<span class="lineNum">     353 </span>                :<span class="lineCov">     317034 :     addReply(c,shared.colon);</span>
+<span class="lineNum">     354 </span>                :<span class="lineCov">     317034 :     addReply(c,new);</span>
+<span class="lineNum">     355 </span>                :<span class="lineCov">     317040 :     addReply(c,shared.crlf);</span>
+<a name="356"><span class="lineNum">     356 </span>                :            : }</a>
+<span class="lineNum">     357 </span>                :            : 
+<span class="lineNum">     358 </span>                :<span class="lineCov">     317032 : void incrCommand(redisClient *c) {</span>
+<span class="lineNum">     359 </span>                :<span class="lineCov">     317032 :     incrDecrCommand(c,1);</span>
+<a name="360"><span class="lineNum">     360 </span>                :<span class="lineCov">     317032 : }</span></a>
+<span class="lineNum">     361 </span>                :            : 
+<span class="lineNum">     362 </span>                :<span class="lineCov">          6 : void decrCommand(redisClient *c) {</span>
+<span class="lineNum">     363 </span>                :<span class="lineCov">          6 :     incrDecrCommand(c,-1);</span>
+<a name="364"><span class="lineNum">     364 </span>                :<span class="lineCov">          6 : }</span></a>
+<span class="lineNum">     365 </span>                :            : 
+<span class="lineNum">     366 </span>                :<span class="lineCov">          1 : void incrbyCommand(redisClient *c) {</span>
+<span class="lineNum">     367 </span>                :            :     long long incr;
+<span class="lineNum">     368 </span>                :            : 
+<span class="lineNum">     369 </span>        [<span class="branchCov" title="Branch 1 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          2 :     if (getLongLongFromObjectOrReply(c, c-&gt;argv[2], &amp;incr, NULL) != REDIS_OK) return;</span>
+<span class="lineNum">     370 </span>                :<span class="lineCov">          1 :     incrDecrCommand(c,incr);</span>
+<a name="371"><span class="lineNum">     371 </span>                :            : }</a>
+<span class="lineNum">     372 </span>                :            : 
+<span class="lineNum">     373 </span>                :<span class="lineCov">          1 : void decrbyCommand(redisClient *c) {</span>
+<span class="lineNum">     374 </span>                :            :     long long incr;
+<span class="lineNum">     375 </span>                :            : 
+<span class="lineNum">     376 </span>        [<span class="branchCov" title="Branch 1 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          2 :     if (getLongLongFromObjectOrReply(c, c-&gt;argv[2], &amp;incr, NULL) != REDIS_OK) return;</span>
+<span class="lineNum">     377 </span>                :<span class="lineCov">          1 :     incrDecrCommand(c,-incr);</span>
+<a name="378"><span class="lineNum">     378 </span>                :            : }</a>
+<span class="lineNum">     379 </span>                :            : 
+<span class="lineNum">     380 </span>                :<span class="lineCov">         11 : void incrbyfloatCommand(redisClient *c) {</span>
+<span class="lineNum">     381 </span>                :            :     long double incr, value;
+<span class="lineNum">     382 </span>                :            :     robj *o, *new, *aux;
+<span class="lineNum">     383 </span>                :            : 
+<span class="lineNum">     384 </span>                :<span class="lineCov">         11 :     o = lookupKeyWrite(c-&gt;db,c-&gt;argv[1]);</span>
+<span class="lineNum">     385 </span>[<span class="branchCov" title="Branch 0 was taken 10 times"> + </span><span class="branchCov" title="Branch 1 was taken 1 time"> + </span>][<span class="branchCov" title="Branch 3 was taken 9 times"> + </span><span class="branchCov" title="Branch 4 was taken 1 time"> + </span>]:<span class="lineCov">         11 :     if (o != NULL &amp;&amp; checkType(c,o,REDIS_STRING)) return;</span>
+<span class="lineNum">     386 </span>  [<span class="branchCov" title="Branch 1 was taken 7 times"> + </span><span class="branchCov" title="Branch 2 was taken 3 times"> + </span><span class="branchCov" title="Branch 3 was taken 7 times"> + </span><span class="branchNoCov" title="Branch 4 was not taken"> - </span>]:<span class="lineCov">         17 :     if (getLongDoubleFromObjectOrReply(c,o,&amp;value,NULL) != REDIS_OK ||</span>
+<span class="lineNum">     387 </span>                :<span class="lineCov">          7 :         getLongDoubleFromObjectOrReply(c,c-&gt;argv[2],&amp;incr,NULL) != REDIS_OK)</span>
+<span class="lineNum">     388 </span>                :            :         return;
+<span class="lineNum">     389 </span>                :            : 
+<span class="lineNum">     390 </span>                :<span class="lineCov">          7 :     value += incr;</span>
+<span class="lineNum">     391 </span>[<span class="branchCov" title="Branch 1 was taken 7 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 4 was taken 1 time"> + </span><span class="branchCov" title="Branch 5 was taken 6 times"> + </span>]:<span class="lineCov">          7 :     if (isnan(value) || isinf(value)) {</span>
+<span class="lineNum">     392 </span>                :<span class="lineCov">          1 :         addReplyError(c,&quot;increment would produce NaN or Infinity&quot;);</span>
+<span class="lineNum">     393 </span>                :<span class="lineCov">          1 :         return;</span>
+<span class="lineNum">     394 </span>                :            :     }
+<span class="lineNum">     395 </span>                :<span class="lineCov">          6 :     new = createStringObjectFromLongDouble(value);</span>
+<span class="lineNum">     396 </span>        [<span class="branchCov" title="Branch 0 was taken 5 times"> + </span><span class="branchCov" title="Branch 1 was taken 1 time"> + </span>]:<span class="lineCov">          6 :     if (o)</span>
+<span class="lineNum">     397 </span>                :<span class="lineCov">          5 :         dbOverwrite(c-&gt;db,c-&gt;argv[1],new);</span>
+<span class="lineNum">     398 </span>                :            :     else
+<span class="lineNum">     399 </span>                :<span class="lineCov">          1 :         dbAdd(c-&gt;db,c-&gt;argv[1],new);</span>
+<span class="lineNum">     400 </span>                :<span class="lineCov">          6 :     signalModifiedKey(c-&gt;db,c-&gt;argv[1]);</span>
+<span class="lineNum">     401 </span>                :<span class="lineCov">          6 :     notifyKeyspaceEvent(REDIS_NOTIFY_STRING,&quot;incrbyfloat&quot;,c-&gt;argv[1],c-&gt;db-&gt;id);</span>
+<span class="lineNum">     402 </span>                :<span class="lineCov">          6 :     server.dirty++;</span>
+<span class="lineNum">     403 </span>                :<span class="lineCov">          6 :     addReplyBulk(c,new);</span>
+<span class="lineNum">     404 </span>                :            : 
+<span class="lineNum">     405 </span>                :            :     /* Always replicate INCRBYFLOAT as a SET command with the final value
+<span class="lineNum">     406 </span>                :            :      * in order to make sure that differences in float precision or formatting
+<span class="lineNum">     407 </span>                :            :      * will not create differences in replicas or after an AOF restart. */
+<span class="lineNum">     408 </span>                :<span class="lineCov">          6 :     aux = createStringObject(&quot;SET&quot;,3);</span>
+<span class="lineNum">     409 </span>                :<span class="lineCov">          6 :     rewriteClientCommandArgument(c,0,aux);</span>
+<span class="lineNum">     410 </span>                :<span class="lineCov">          6 :     decrRefCount(aux);</span>
+<span class="lineNum">     411 </span>                :<span class="lineCov">         11 :     rewriteClientCommandArgument(c,2,new);</span>
+<span class="lineNum">     412 </span>                :            : }
+<span class="lineNum">     413 </span>                :            : 
+<span class="lineNum">     414 </span>                :<span class="lineCov">       3005 : void appendCommand(redisClient *c) {</span>
+<span class="lineNum">     415 </span>                :            :     size_t totlen;
+<span class="lineNum">     416 </span>                :            :     robj *o, *append;
+<span class="lineNum">     417 </span>                :            : 
+<span class="lineNum">     418 </span>                :<span class="lineCov">       3005 :     o = lookupKeyWrite(c-&gt;db,c-&gt;argv[1]);</span>
+<span class="lineNum">     419 </span>        [<span class="branchCov" title="Branch 0 was taken 5 times"> + </span><span class="branchCov" title="Branch 1 was taken 3000 times"> + </span>]:<span class="lineCov">       3005 :     if (o == NULL) {</span>
+<span class="lineNum">     420 </span>                :            :         /* Create the key */
+<span class="lineNum">     421 </span>                :<span class="lineCov">          5 :         c-&gt;argv[2] = tryObjectEncoding(c-&gt;argv[2]);</span>
+<span class="lineNum">     422 </span>                :<span class="lineCov">          5 :         dbAdd(c-&gt;db,c-&gt;argv[1],c-&gt;argv[2]);</span>
+<span class="lineNum">     423 </span>                :<span class="lineCov">          5 :         incrRefCount(c-&gt;argv[2]);</span>
+<span class="lineNum">     424 </span>                :<span class="lineCov">          5 :         totlen = stringObjectLen(c-&gt;argv[2]);</span>
+<span class="lineNum">     425 </span>                :            :     } else {
+<span class="lineNum">     426 </span>                :            :         /* Key exists, check type */
+<span class="lineNum">     427 </span>        [<span class="branchCov" title="Branch 1 was taken 3000 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">       3000 :         if (checkType(c,o,REDIS_STRING))</span>
+<span class="lineNum">     428 </span>                :            :             return;
+<span class="lineNum">     429 </span>                :            : 
+<span class="lineNum">     430 </span>                :            :         /* &quot;append&quot; is an argument, so always an sds */
+<span class="lineNum">     431 </span>                :<span class="lineCov">       3000 :         append = c-&gt;argv[2];</span>
+<span class="lineNum">     432 </span>                :<span class="lineCov">       3000 :         totlen = stringObjectLen(o)+sdslen(append-&gt;ptr);</span>
+<span class="lineNum">     433 </span>        [<span class="branchCov" title="Branch 0 was taken 3000 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">       3000 :         if (checkStringLength(c,totlen) != REDIS_OK)</span>
+<span class="lineNum">     434 </span>                :            :             return;
+<span class="lineNum">     435 </span>                :            : 
+<span class="lineNum">     436 </span>                :            :         /* If the object is shared or encoded, we have to make a copy */
+<span class="lineNum">     437 </span>        [<span class="branchCov" title="Branch 0 was taken 6 times"> + </span><span class="branchCov" title="Branch 1 was taken 2994 times"> + </span>]:<span class="lineCov">       3000 :         if (o-&gt;refcount != 1 || o-&gt;encoding != REDIS_ENCODING_RAW) {</span>
+<span class="lineNum">     438 </span>                :<span class="lineCov">          6 :             robj *decoded = getDecodedObject(o);</span>
+<span class="lineNum">     439 </span>                :<span class="lineCov">          6 :             o = createRawStringObject(decoded-&gt;ptr, sdslen(decoded-&gt;ptr));</span>
+<span class="lineNum">     440 </span>                :<span class="lineCov">          6 :             decrRefCount(decoded);</span>
+<span class="lineNum">     441 </span>                :<span class="lineCov">          6 :             dbOverwrite(c-&gt;db,c-&gt;argv[1],o);</span>
+<span class="lineNum">     442 </span>                :            :         }
+<span class="lineNum">     443 </span>                :            : 
+<span class="lineNum">     444 </span>                :            :         /* Append the value */
+<span class="lineNum">     445 </span>                :<span class="lineCov">       3000 :         o-&gt;ptr = sdscatlen(o-&gt;ptr,append-&gt;ptr,sdslen(append-&gt;ptr));</span>
+<span class="lineNum">     446 </span>                :<span class="lineCov">       3000 :         totlen = sdslen(o-&gt;ptr);</span>
+<span class="lineNum">     447 </span>                :            :     }
+<span class="lineNum">     448 </span>                :<span class="lineCov">       3005 :     signalModifiedKey(c-&gt;db,c-&gt;argv[1]);</span>
+<span class="lineNum">     449 </span>                :<span class="lineCov">       3005 :     notifyKeyspaceEvent(REDIS_NOTIFY_STRING,&quot;append&quot;,c-&gt;argv[1],c-&gt;db-&gt;id);</span>
+<span class="lineNum">     450 </span>                :<span class="lineCov">       3005 :     server.dirty++;</span>
+<span class="lineNum">     451 </span>                :<span class="lineCov">       3005 :     addReplyLongLong(c,totlen);</span>
+<a name="452"><span class="lineNum">     452 </span>                :            : }</a>
+<span class="lineNum">     453 </span>                :            : 
+<span class="lineNum">     454 </span>                :<span class="lineCov">          3 : void strlenCommand(redisClient *c) {</span>
+<span class="lineNum">     455 </span>                :            :     robj *o;
+<span class="lineNum">     456 </span>  [<span class="branchCov" title="Branch 1 was taken 2 times"> + </span><span class="branchCov" title="Branch 2 was taken 1 time"> + </span><span class="branchCov" title="Branch 3 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 4 was not taken"> - </span>]:<span class="lineCov">          5 :     if ((o = lookupKeyReadOrReply(c,c-&gt;argv[1],shared.czero)) == NULL ||</span>
+<span class="lineNum">     457 </span>                :<span class="lineCov">          5 :         checkType(c,o,REDIS_STRING)) return;</span>
+<span class="lineNum">     458 </span>                :<span class="lineCov">          2 :     addReplyLongLong(c,stringObjectLen(o));</span>
+<span class="lineNum">     459 </span>                :            : }
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.9</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

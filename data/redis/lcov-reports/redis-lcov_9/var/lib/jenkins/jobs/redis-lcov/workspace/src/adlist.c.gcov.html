@@ -1,0 +1,435 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - redis-lcov_9.info - /var/lib/jenkins/jobs/redis-lcov/workspace/src/adlist.c</title>
+  <link rel="stylesheet" type="text/css" href="../../../../../../../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../../../../../../../index.html">top level</a> - <a href="index.html">var/lib/jenkins/jobs/redis-lcov/workspace/src</a> - adlist.c<span style="font-size: 80%;"> (source / <a href="adlist.c.func.html">functions</a>)</span></td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">redis-lcov_9.info</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">126</td>
+            <td class="headerCovTableEntry">139</td>
+            <td class="headerCovTableEntryHi">90.6 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2013-08-26</td>
+            <td></td>
+            <td class="headerItem">Functions:</td>
+            <td class="headerCovTableEntry">13</td>
+            <td class="headerCovTableEntry">15</td>
+            <td class="headerCovTableEntryMed">86.7 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Legend:</td>
+            <td class="headerValueLeg">            Lines:
+            <span class="coverLegendCov">hit</span>
+            <span class="coverLegendNoCov">not hit</span>
+            | Branches:
+            <span class="coverLegendCov">+</span> taken
+            <span class="coverLegendNoCov">-</span> not taken
+            <span class="coverLegendNoCov">#</span> not executed
+</td>
+            <td></td>
+            <td class="headerItem">Branches:</td>
+            <td class="headerCovTableEntry">64</td>
+            <td class="headerCovTableEntry">78</td>
+            <td class="headerCovTableEntryMed">82.1 %</td>
+          </tr>
+          <tr><td><img src="../../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">           Branch data     Line data    Source code</pre>
+<pre class="source">
+<a name="1"><span class="lineNum">       1 </span>                :            : /* adlist.c - A generic doubly linked list implementation</a>
+<span class="lineNum">       2 </span>                :            :  *
+<span class="lineNum">       3 </span>                :            :  * Copyright (c) 2006-2010, Salvatore Sanfilippo &lt;antirez at gmail dot com&gt;
+<span class="lineNum">       4 </span>                :            :  * All rights reserved.
+<span class="lineNum">       5 </span>                :            :  *
+<span class="lineNum">       6 </span>                :            :  * Redistribution and use in source and binary forms, with or without
+<span class="lineNum">       7 </span>                :            :  * modification, are permitted provided that the following conditions are met:
+<span class="lineNum">       8 </span>                :            :  *
+<span class="lineNum">       9 </span>                :            :  *   * Redistributions of source code must retain the above copyright notice,
+<span class="lineNum">      10 </span>                :            :  *     this list of conditions and the following disclaimer.
+<span class="lineNum">      11 </span>                :            :  *   * Redistributions in binary form must reproduce the above copyright
+<span class="lineNum">      12 </span>                :            :  *     notice, this list of conditions and the following disclaimer in the
+<span class="lineNum">      13 </span>                :            :  *     documentation and/or other materials provided with the distribution.
+<span class="lineNum">      14 </span>                :            :  *   * Neither the name of Redis nor the names of its contributors may be used
+<span class="lineNum">      15 </span>                :            :  *     to endorse or promote products derived from this software without
+<span class="lineNum">      16 </span>                :            :  *     specific prior written permission.
+<span class="lineNum">      17 </span>                :            :  *
+<span class="lineNum">      18 </span>                :            :  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS &quot;AS IS&quot;
+<span class="lineNum">      19 </span>                :            :  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+<span class="lineNum">      20 </span>                :            :  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+<span class="lineNum">      21 </span>                :            :  * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+<span class="lineNum">      22 </span>                :            :  * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+<span class="lineNum">      23 </span>                :            :  * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+<span class="lineNum">      24 </span>                :            :  * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+<span class="lineNum">      25 </span>                :            :  * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+<span class="lineNum">      26 </span>                :            :  * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+<span class="lineNum">      27 </span>                :            :  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+<span class="lineNum">      28 </span>                :            :  * POSSIBILITY OF SUCH DAMAGE.
+<span class="lineNum">      29 </span>                :            :  */
+<span class="lineNum">      30 </span>                :            : 
+<span class="lineNum">      31 </span>                :            : 
+<span class="lineNum">      32 </span>                :            : #include &lt;stdlib.h&gt;
+<span class="lineNum">      33 </span>                :            : #include &quot;adlist.h&quot;
+<span class="lineNum">      34 </span>                :            : #include &quot;zmalloc.h&quot;
+<span class="lineNum">      35 </span>                :            : 
+<span class="lineNum">      36 </span>                :            : /* Create a new list. The created list can be freed with
+<span class="lineNum">      37 </span>                :            :  * AlFreeList(), but private value of every node need to be freed
+<span class="lineNum">      38 </span>                :            :  * by the user before to call AlFreeList().
+<a name="39"><span class="lineNum">      39 </span>                :            :  *</a>
+<span class="lineNum">      40 </span>                :            :  * On error, NULL is returned. Otherwise the pointer to the new list. */
+<span class="lineNum">      41 </span>                :<span class="lineCov">      17634 : list *listCreate(void)</span>
+<span class="lineNum">      42 </span>                :            : {
+<span class="lineNum">      43 </span>                :            :     struct list *list;
+<span class="lineNum">      44 </span>                :            : 
+<span class="lineNum">      45 </span>        [<span class="branchCov" title="Branch 1 was taken 17634 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">      17634 :     if ((list = zmalloc(sizeof(*list))) == NULL)</span>
+<span class="lineNum">      46 </span>                :            :         return NULL;
+<span class="lineNum">      47 </span>                :<span class="lineCov">      17634 :     list-&gt;head = list-&gt;tail = NULL;</span>
+<span class="lineNum">      48 </span>                :<span class="lineCov">      17634 :     list-&gt;len = 0;</span>
+<span class="lineNum">      49 </span>                :<span class="lineCov">      17634 :     list-&gt;dup = NULL;</span>
+<span class="lineNum">      50 </span>                :<span class="lineCov">      17634 :     list-&gt;free = NULL;</span>
+<span class="lineNum">      51 </span>                :<span class="lineCov">      17634 :     list-&gt;match = NULL;</span>
+<span class="lineNum">      52 </span>                :<span class="lineCov">      17634 :     return list;</span>
+<span class="lineNum">      53 </span>                :            : }
+<span class="lineNum">      54 </span>                :            : 
+<span class="lineNum">      55 </span>                :            : /* Free the whole list.
+<a name="56"><span class="lineNum">      56 </span>                :            :  *</a>
+<span class="lineNum">      57 </span>                :            :  * This function can't fail. */
+<span class="lineNum">      58 </span>                :<span class="lineCov">       9598 : void listRelease(list *list)</span>
+<span class="lineNum">      59 </span>                :            : {
+<span class="lineNum">      60 </span>                :            :     unsigned long len;
+<span class="lineNum">      61 </span>                :            :     listNode *current, *next;
+<span class="lineNum">      62 </span>                :            : 
+<span class="lineNum">      63 </span>                :<span class="lineCov">       9598 :     current = list-&gt;head;</span>
+<span class="lineNum">      64 </span>                :<span class="lineCov">       9598 :     len = list-&gt;len;</span>
+<span class="lineNum">      65 </span>        [<span class="branchCov" title="Branch 0 was taken 301027 times"> + </span><span class="branchCov" title="Branch 1 was taken 9598 times"> + </span>]:<span class="lineCov">     310625 :     while(len--) {</span>
+<span class="lineNum">      66 </span>                :<span class="lineCov">     301027 :         next = current-&gt;next;</span>
+<span class="lineNum">      67 </span>        [<span class="branchCov" title="Branch 0 was taken 201842 times"> + </span><span class="branchCov" title="Branch 1 was taken 99185 times"> + </span>]:<span class="lineCov">     301027 :         if (list-&gt;free) list-&gt;free(current-&gt;value);</span>
+<span class="lineNum">      68 </span>                :<span class="lineCov">     301027 :         zfree(current);</span>
+<span class="lineNum">      69 </span>                :<span class="lineCov">     301027 :         current = next;</span>
+<span class="lineNum">      70 </span>                :            :     }
+<span class="lineNum">      71 </span>                :<span class="lineCov">       9598 :     zfree(list);</span>
+<span class="lineNum">      72 </span>                :<span class="lineCov">       9598 : }</span>
+<span class="lineNum">      73 </span>                :            : 
+<span class="lineNum">      74 </span>                :            : /* Add a new node to the list, to head, contaning the specified 'value'
+<span class="lineNum">      75 </span>                :            :  * pointer as value.
+<span class="lineNum">      76 </span>                :            :  *
+<span class="lineNum">      77 </span>                :            :  * On error, NULL is returned and no operation is performed (i.e. the
+<a name="78"><span class="lineNum">      78 </span>                :            :  * list remains unaltered).</a>
+<span class="lineNum">      79 </span>                :            :  * On success the 'list' pointer you pass to the function is returned. */
+<span class="lineNum">      80 </span>                :<span class="lineCov">     172827 : list *listAddNodeHead(list *list, void *value)</span>
+<span class="lineNum">      81 </span>                :            : {
+<span class="lineNum">      82 </span>                :            :     listNode *node;
+<span class="lineNum">      83 </span>                :            : 
+<span class="lineNum">      84 </span>        [<span class="branchCov" title="Branch 1 was taken 172827 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">     172827 :     if ((node = zmalloc(sizeof(*node))) == NULL)</span>
+<span class="lineNum">      85 </span>                :            :         return NULL;
+<span class="lineNum">      86 </span>                :<span class="lineCov">     172827 :     node-&gt;value = value;</span>
+<span class="lineNum">      87 </span>        [<span class="branchCov" title="Branch 0 was taken 10339 times"> + </span><span class="branchCov" title="Branch 1 was taken 162488 times"> + </span>]:<span class="lineCov">     172827 :     if (list-&gt;len == 0) {</span>
+<span class="lineNum">      88 </span>                :<span class="lineCov">      10339 :         list-&gt;head = list-&gt;tail = node;</span>
+<span class="lineNum">      89 </span>                :<span class="lineCov">      10339 :         node-&gt;prev = node-&gt;next = NULL;</span>
+<span class="lineNum">      90 </span>                :            :     } else {
+<span class="lineNum">      91 </span>                :<span class="lineCov">     162488 :         node-&gt;prev = NULL;</span>
+<span class="lineNum">      92 </span>                :<span class="lineCov">     162488 :         node-&gt;next = list-&gt;head;</span>
+<span class="lineNum">      93 </span>                :<span class="lineCov">     162488 :         list-&gt;head-&gt;prev = node;</span>
+<span class="lineNum">      94 </span>                :<span class="lineCov">     162488 :         list-&gt;head = node;</span>
+<span class="lineNum">      95 </span>                :            :     }
+<span class="lineNum">      96 </span>                :<span class="lineCov">     172827 :     list-&gt;len++;</span>
+<span class="lineNum">      97 </span>                :<span class="lineCov">     172827 :     return list;</span>
+<span class="lineNum">      98 </span>                :            : }
+<span class="lineNum">      99 </span>                :            : 
+<span class="lineNum">     100 </span>                :            : /* Add a new node to the list, to tail, containing the specified 'value'
+<span class="lineNum">     101 </span>                :            :  * pointer as value.
+<span class="lineNum">     102 </span>                :            :  *
+<span class="lineNum">     103 </span>                :            :  * On error, NULL is returned and no operation is performed (i.e. the
+<a name="104"><span class="lineNum">     104 </span>                :            :  * list remains unaltered).</a>
+<span class="lineNum">     105 </span>                :            :  * On success the 'list' pointer you pass to the function is returned. */
+<span class="lineNum">     106 </span>                :<span class="lineCov">     317829 : list *listAddNodeTail(list *list, void *value)</span>
+<span class="lineNum">     107 </span>                :            : {
+<span class="lineNum">     108 </span>                :            :     listNode *node;
+<span class="lineNum">     109 </span>                :            : 
+<span class="lineNum">     110 </span>        [<span class="branchCov" title="Branch 1 was taken 317829 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">     317829 :     if ((node = zmalloc(sizeof(*node))) == NULL)</span>
+<span class="lineNum">     111 </span>                :            :         return NULL;
+<span class="lineNum">     112 </span>                :<span class="lineCov">     317829 :     node-&gt;value = value;</span>
+<span class="lineNum">     113 </span>        [<span class="branchCov" title="Branch 0 was taken 5426 times"> + </span><span class="branchCov" title="Branch 1 was taken 312403 times"> + </span>]:<span class="lineCov">     317829 :     if (list-&gt;len == 0) {</span>
+<span class="lineNum">     114 </span>                :<span class="lineCov">       5426 :         list-&gt;head = list-&gt;tail = node;</span>
+<span class="lineNum">     115 </span>                :<span class="lineCov">       5426 :         node-&gt;prev = node-&gt;next = NULL;</span>
+<span class="lineNum">     116 </span>                :            :     } else {
+<span class="lineNum">     117 </span>                :<span class="lineCov">     312403 :         node-&gt;prev = list-&gt;tail;</span>
+<span class="lineNum">     118 </span>                :<span class="lineCov">     312403 :         node-&gt;next = NULL;</span>
+<span class="lineNum">     119 </span>                :<span class="lineCov">     312403 :         list-&gt;tail-&gt;next = node;</span>
+<span class="lineNum">     120 </span>                :<span class="lineCov">     312403 :         list-&gt;tail = node;</span>
+<span class="lineNum">     121 </span>                :            :     }
+<span class="lineNum">     122 </span>                :<span class="lineCov">     317829 :     list-&gt;len++;</span>
+<span class="lineNum">     123 </span>                :<span class="lineCov">     317829 :     return list;</span>
+<a name="124"><span class="lineNum">     124 </span>                :            : }</a>
+<span class="lineNum">     125 </span>                :            : 
+<span class="lineNum">     126 </span>                :<span class="lineCov">          7 : list *listInsertNode(list *list, listNode *old_node, void *value, int after) {</span>
+<span class="lineNum">     127 </span>                :            :     listNode *node;
+<span class="lineNum">     128 </span>                :            : 
+<span class="lineNum">     129 </span>        [<span class="branchCov" title="Branch 1 was taken 7 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          7 :     if ((node = zmalloc(sizeof(*node))) == NULL)</span>
+<span class="lineNum">     130 </span>                :            :         return NULL;
+<span class="lineNum">     131 </span>                :<span class="lineCov">          7 :     node-&gt;value = value;</span>
+<span class="lineNum">     132 </span>        [<span class="branchCov" title="Branch 0 was taken 3 times"> + </span><span class="branchCov" title="Branch 1 was taken 4 times"> + </span>]:<span class="lineCov">          7 :     if (after) {</span>
+<span class="lineNum">     133 </span>                :<span class="lineCov">          3 :         node-&gt;prev = old_node;</span>
+<span class="lineNum">     134 </span>                :<span class="lineCov">          3 :         node-&gt;next = old_node-&gt;next;</span>
+<span class="lineNum">     135 </span>        [<span class="branchCov" title="Branch 0 was taken 2 times"> + </span><span class="branchCov" title="Branch 1 was taken 1 time"> + </span>]:<span class="lineCov">          3 :         if (list-&gt;tail == old_node) {</span>
+<span class="lineNum">     136 </span>                :<span class="lineCov">          2 :             list-&gt;tail = node;</span>
+<span class="lineNum">     137 </span>                :            :         }
+<span class="lineNum">     138 </span>                :            :     } else {
+<span class="lineNum">     139 </span>                :<span class="lineCov">          4 :         node-&gt;next = old_node;</span>
+<span class="lineNum">     140 </span>                :<span class="lineCov">          4 :         node-&gt;prev = old_node-&gt;prev;</span>
+<span class="lineNum">     141 </span>        [<span class="branchCov" title="Branch 0 was taken 3 times"> + </span><span class="branchCov" title="Branch 1 was taken 1 time"> + </span>]:<span class="lineCov">          4 :         if (list-&gt;head == old_node) {</span>
+<span class="lineNum">     142 </span>                :<span class="lineCov">          3 :             list-&gt;head = node;</span>
+<span class="lineNum">     143 </span>                :            :         }
+<span class="lineNum">     144 </span>                :            :     }
+<span class="lineNum">     145 </span>        [<span class="branchCov" title="Branch 0 was taken 4 times"> + </span><span class="branchCov" title="Branch 1 was taken 3 times"> + </span>]:<span class="lineCov">          7 :     if (node-&gt;prev != NULL) {</span>
+<span class="lineNum">     146 </span>                :<span class="lineCov">          4 :         node-&gt;prev-&gt;next = node;</span>
+<span class="lineNum">     147 </span>                :            :     }
+<span class="lineNum">     148 </span>        [<span class="branchCov" title="Branch 0 was taken 5 times"> + </span><span class="branchCov" title="Branch 1 was taken 2 times"> + </span>]:<span class="lineCov">          7 :     if (node-&gt;next != NULL) {</span>
+<span class="lineNum">     149 </span>                :<span class="lineCov">          5 :         node-&gt;next-&gt;prev = node;</span>
+<span class="lineNum">     150 </span>                :            :     }
+<span class="lineNum">     151 </span>                :<span class="lineCov">          7 :     list-&gt;len++;</span>
+<span class="lineNum">     152 </span>                :<span class="lineCov">          7 :     return list;</span>
+<span class="lineNum">     153 </span>                :            : }
+<span class="lineNum">     154 </span>                :            : 
+<span class="lineNum">     155 </span>                :            : /* Remove the specified node from the specified list.
+<span class="lineNum">     156 </span>                :            :  * It's up to the caller to free the private value of the node.
+<a name="157"><span class="lineNum">     157 </span>                :            :  *</a>
+<span class="lineNum">     158 </span>                :            :  * This function can't fail. */
+<span class="lineNum">     159 </span>                :<span class="lineCov">      46064 : void listDelNode(list *list, listNode *node)</span>
+<span class="lineNum">     160 </span>                :            : {
+<span class="lineNum">     161 </span>        [<span class="branchCov" title="Branch 0 was taken 7751 times"> + </span><span class="branchCov" title="Branch 1 was taken 38313 times"> + </span>]:<span class="lineCov">      46064 :     if (node-&gt;prev)</span>
+<span class="lineNum">     162 </span>                :<span class="lineCov">       7751 :         node-&gt;prev-&gt;next = node-&gt;next;</span>
+<span class="lineNum">     163 </span>                :            :     else
+<span class="lineNum">     164 </span>                :<span class="lineCov">      38313 :         list-&gt;head = node-&gt;next;</span>
+<span class="lineNum">     165 </span>        [<span class="branchCov" title="Branch 0 was taken 28515 times"> + </span><span class="branchCov" title="Branch 1 was taken 17549 times"> + </span>]:<span class="lineCov">      46064 :     if (node-&gt;next)</span>
+<span class="lineNum">     166 </span>                :<span class="lineCov">      28515 :         node-&gt;next-&gt;prev = node-&gt;prev;</span>
+<span class="lineNum">     167 </span>                :            :     else
+<span class="lineNum">     168 </span>                :<span class="lineCov">      17549 :         list-&gt;tail = node-&gt;prev;</span>
+<span class="lineNum">     169 </span>        [<span class="branchCov" title="Branch 0 was taken 45109 times"> + </span><span class="branchCov" title="Branch 1 was taken 955 times"> + </span>]:<span class="lineCov">      46064 :     if (list-&gt;free) list-&gt;free(node-&gt;value);</span>
+<span class="lineNum">     170 </span>                :<span class="lineCov">      46064 :     zfree(node);</span>
+<span class="lineNum">     171 </span>                :<span class="lineCov">      46064 :     list-&gt;len--;</span>
+<span class="lineNum">     172 </span>                :<span class="lineCov">      46064 : }</span>
+<span class="lineNum">     173 </span>                :            : 
+<span class="lineNum">     174 </span>                :            : /* Returns a list iterator 'iter'. After the initialization every
+<span class="lineNum">     175 </span>                :            :  * call to listNext() will return the next element of the list.
+<a name="176"><span class="lineNum">     176 </span>                :            :  *</a>
+<span class="lineNum">     177 </span>                :            :  * This function can't fail. */
+<span class="lineNum">     178 </span>                :<span class="lineCov">        509 : listIter *listGetIterator(list *list, int direction)</span>
+<span class="lineNum">     179 </span>                :            : {
+<span class="lineNum">     180 </span>                :            :     listIter *iter;
+<span class="lineNum">     181 </span>                :            :     
+<span class="lineNum">     182 </span>        [<span class="branchCov" title="Branch 1 was taken 509 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">        509 :     if ((iter = zmalloc(sizeof(*iter))) == NULL) return NULL;</span>
+<span class="lineNum">     183 </span>        [<span class="branchCov" title="Branch 0 was taken 509 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">        509 :     if (direction == AL_START_HEAD)</span>
+<span class="lineNum">     184 </span>                :<span class="lineCov">        509 :         iter-&gt;next = list-&gt;head;</span>
+<span class="lineNum">     185 </span>                :            :     else
+<span class="lineNum">     186 </span>                :<span class="lineNoCov">          0 :         iter-&gt;next = list-&gt;tail;</span>
+<span class="lineNum">     187 </span>                :<span class="lineCov">        509 :     iter-&gt;direction = direction;</span>
+<span class="lineNum">     188 </span>                :<span class="lineCov">        509 :     return iter;</span>
+<span class="lineNum">     189 </span>                :            : }
+<a name="190"><span class="lineNum">     190 </span>                :            : </a>
+<a name="191"><span class="lineNum">     191 </span>                :            : /* Release the iterator memory */</a>
+<span class="lineNum">     192 </span>                :<span class="lineNoCov">          0 : void listReleaseIterator(listIter *iter) {</span>
+<span class="lineNum">     193 </span>                :<span class="lineCov">        509 :     zfree(iter);</span>
+<span class="lineNum">     194 </span>                :<span class="lineNoCov">          0 : }</span>
+<a name="195"><span class="lineNum">     195 </span>                :            : </a>
+<span class="lineNum">     196 </span>                :            : /* Create an iterator in the list private iterator structure */
+<span class="lineNum">     197 </span>                :<span class="lineCov">    1482466 : void listRewind(list *list, listIter *li) {</span>
+<span class="lineNum">     198 </span>                :<span class="lineCov">    1482466 :     li-&gt;next = list-&gt;head;</span>
+<span class="lineNum">     199 </span>                :<span class="lineCov">    1482466 :     li-&gt;direction = AL_START_HEAD;</span>
+<a name="200"><span class="lineNum">     200 </span>                :<span class="lineCov">    1482466 : }</span></a>
+<span class="lineNum">     201 </span>                :            : 
+<span class="lineNum">     202 </span>                :<span class="lineNoCov">          0 : void listRewindTail(list *list, listIter *li) {</span>
+<span class="lineNum">     203 </span>                :<span class="lineNoCov">          0 :     li-&gt;next = list-&gt;tail;</span>
+<span class="lineNum">     204 </span>                :<span class="lineNoCov">          0 :     li-&gt;direction = AL_START_TAIL;</span>
+<span class="lineNum">     205 </span>                :<span class="lineNoCov">          0 : }</span>
+<span class="lineNum">     206 </span>                :            : 
+<span class="lineNum">     207 </span>                :            : /* Return the next element of an iterator.
+<span class="lineNum">     208 </span>                :            :  * It's valid to remove the currently returned element using
+<span class="lineNum">     209 </span>                :            :  * listDelNode(), but not to remove other elements.
+<span class="lineNum">     210 </span>                :            :  *
+<span class="lineNum">     211 </span>                :            :  * The function returns a pointer to the next element of the list,
+<span class="lineNum">     212 </span>                :            :  * or NULL if there are no more elements, so the classical usage patter
+<span class="lineNum">     213 </span>                :            :  * is:
+<span class="lineNum">     214 </span>                :            :  *
+<span class="lineNum">     215 </span>                :            :  * iter = listGetIterator(list,&lt;direction&gt;);
+<span class="lineNum">     216 </span>                :            :  * while ((node = listNext(iter)) != NULL) {
+<span class="lineNum">     217 </span>                :            :  *     doSomethingWith(listNodeValue(node));
+<span class="lineNum">     218 </span>                :            :  * }
+<a name="219"><span class="lineNum">     219 </span>                :            :  *</a>
+<span class="lineNum">     220 </span>                :            :  * */
+<span class="lineNum">     221 </span>                :<span class="lineCov">    4357206 : listNode *listNext(listIter *iter)</span>
+<span class="lineNum">     222 </span>                :            : {
+<span class="lineNum">     223 </span>                :<span class="lineCov">    4358309 :     listNode *current = iter-&gt;next;</span>
+<span class="lineNum">     224 </span>                :            : 
+<span class="lineNum">     225 </span>[<span class="branchCov" title="Branch 0 was taken 766 times"> + </span><span class="branchCov" title="Branch 1 was taken 23 times"> + </span>][<span class="branchCov" title="Branch 2 was taken 312 times"> + </span><span class="branchCov" title="Branch 3 was taken 2 times"> + </span>]:<span class="lineCov">    4358309 :     if (current != NULL) {</span>
+<span class="lineNum">         </span>        [<span class="branchCov" title="Branch 4 was taken 2874749 times"> + </span><span class="branchCov" title="Branch 5 was taken 1482457 times"> + </span>]
+<span class="lineNum">     226 </span>[<span class="branchCov" title="Branch 0 was taken 766 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>][<span class="branchCov" title="Branch 2 was taken 312 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">    2875827 :         if (iter-&gt;direction == AL_START_HEAD)</span>
+<span class="lineNum">         </span>        [<span class="branchCov" title="Branch 4 was taken 2874749 times"> + </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>]
+<span class="lineNum">     227 </span>                :<span class="lineCov">    2875827 :             iter-&gt;next = current-&gt;next;</span>
+<span class="lineNum">     228 </span>                :            :         else
+<span class="lineNum">     229 </span>                :<span class="lineNoCov">          0 :             iter-&gt;next = current-&gt;prev;</span>
+<span class="lineNum">     230 </span>                :            :     }
+<span class="lineNum">     231 </span>                :<span class="lineCov">    4357206 :     return current;</span>
+<span class="lineNum">     232 </span>                :            : }
+<span class="lineNum">     233 </span>                :            : 
+<span class="lineNum">     234 </span>                :            : /* Duplicate the whole list. On out of memory NULL is returned.
+<span class="lineNum">     235 </span>                :            :  * On success a copy of the original list is returned.
+<span class="lineNum">     236 </span>                :            :  *
+<span class="lineNum">     237 </span>                :            :  * The 'Dup' method set with listSetDupMethod() function is used
+<span class="lineNum">     238 </span>                :            :  * to copy the node value. Otherwise the same pointer value of
+<span class="lineNum">     239 </span>                :            :  * the original node is used as value of the copied node.
+<span class="lineNum">     240 </span>                :            :  *
+<span class="lineNum">     241 </span>                :            :  * The original list both on success or error is never modified. */
+<span class="lineNum">     242 </span>                :<span class="lineCov">          2 : list *listDup(list *orig)</span>
+<span class="lineNum">     243 </span>                :            : {
+<span class="lineNum">     244 </span>                :            :     list *copy;
+<span class="lineNum">     245 </span>                :            :     listIter *iter;
+<span class="lineNum">     246 </span>                :            :     listNode *node;
+<span class="lineNum">     247 </span>                :            : 
+<span class="lineNum">     248 </span>        [<span class="branchCov" title="Branch 1 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          2 :     if ((copy = listCreate()) == NULL)</span>
+<span class="lineNum">     249 </span>                :            :         return NULL;
+<span class="lineNum">     250 </span>                :<span class="lineCov">          2 :     copy-&gt;dup = orig-&gt;dup;</span>
+<span class="lineNum">     251 </span>                :<span class="lineCov">          2 :     copy-&gt;free = orig-&gt;free;</span>
+<span class="lineNum">     252 </span>                :<span class="lineCov">          2 :     copy-&gt;match = orig-&gt;match;</span>
+<span class="lineNum">     253 </span>                :<span class="lineCov">          2 :     iter = listGetIterator(orig, AL_START_HEAD);</span>
+<span class="lineNum">     254 </span>        [<span class="branchCov" title="Branch 0 was taken 312 times"> + </span><span class="branchCov" title="Branch 1 was taken 2 times"> + </span>]:<span class="lineCov">        316 :     while((node = listNext(iter)) != NULL) {</span>
+<span class="lineNum">     255 </span>                :            :         void *value;
+<span class="lineNum">     256 </span>                :            : 
+<span class="lineNum">     257 </span>        [<span class="branchCov" title="Branch 0 was taken 312 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">        312 :         if (copy-&gt;dup) {</span>
+<span class="lineNum">     258 </span>                :<span class="lineCov">        312 :             value = copy-&gt;dup(node-&gt;value);</span>
+<span class="lineNum">     259 </span>        [<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchCov" title="Branch 1 was taken 312 times"> + </span>]:<span class="lineCov">        312 :             if (value == NULL) {</span>
+<span class="lineNum">     260 </span>                :<span class="lineNoCov">          0 :                 listRelease(copy);</span>
+<span class="lineNum">     261 </span>                :            :                 listReleaseIterator(iter);
+<span class="lineNum">     262 </span>                :<span class="lineNoCov">          0 :                 return NULL;</span>
+<span class="lineNum">     263 </span>                :            :             }
+<span class="lineNum">     264 </span>                :            :         } else
+<span class="lineNum">     265 </span>                :<span class="lineNoCov">          0 :             value = node-&gt;value;</span>
+<span class="lineNum">     266 </span>        [<span class="branchNoCov" title="Branch 1 was not taken"> - </span><span class="branchCov" title="Branch 2 was taken 312 times"> + </span>]:<span class="lineCov">        312 :         if (listAddNodeTail(copy, value) == NULL) {</span>
+<span class="lineNum">     267 </span>                :<span class="lineNoCov">          0 :             listRelease(copy);</span>
+<span class="lineNum">     268 </span>                :            :             listReleaseIterator(iter);
+<span class="lineNum">     269 </span>                :<span class="lineNoCov">          0 :             return NULL;</span>
+<span class="lineNum">     270 </span>                :            :         }
+<span class="lineNum">     271 </span>                :            :     }
+<span class="lineNum">     272 </span>                :            :     listReleaseIterator(iter);
+<span class="lineNum">     273 </span>                :<span class="lineCov">          2 :     return copy;</span>
+<span class="lineNum">     274 </span>                :            : }
+<span class="lineNum">     275 </span>                :            : 
+<span class="lineNum">     276 </span>                :            : /* Search the list for a node matching a given key.
+<span class="lineNum">     277 </span>                :            :  * The match is performed using the 'match' method
+<span class="lineNum">     278 </span>                :            :  * set with listSetMatchMethod(). If no 'match' method
+<span class="lineNum">     279 </span>                :            :  * is set, the 'value' pointer of every node is directly
+<span class="lineNum">     280 </span>                :            :  * compared with the 'key' pointer.
+<span class="lineNum">     281 </span>                :            :  *
+<span class="lineNum">     282 </span>                :            :  * On success the first matching node pointer is returned
+<span class="lineNum">     283 </span>                :            :  * (search starts from head). If no matching node exists
+<span class="lineNum">     284 </span>                :            :  * NULL is returned. */
+<span class="lineNum">     285 </span>                :<span class="lineCov">        507 : listNode *listSearchKey(list *list, void *key)</span>
+<span class="lineNum">     286 </span>                :            : {
+<span class="lineNum">     287 </span>                :            :     listIter *iter;
+<span class="lineNum">     288 </span>                :            :     listNode *node;
+<span class="lineNum">     289 </span>                :            : 
+<span class="lineNum">     290 </span>                :<span class="lineCov">        507 :     iter = listGetIterator(list, AL_START_HEAD);</span>
+<span class="lineNum">     291 </span>        [<span class="branchCov" title="Branch 0 was taken 766 times"> + </span><span class="branchCov" title="Branch 1 was taken 23 times"> + </span>]:<span class="lineCov">       1296 :     while((node = listNext(iter)) != NULL) {</span>
+<span class="lineNum">     292 </span>        [<span class="branchCov" title="Branch 0 was taken 44 times"> + </span><span class="branchCov" title="Branch 1 was taken 722 times"> + </span>]:<span class="lineCov">        766 :         if (list-&gt;match) {</span>
+<span class="lineNum">     293 </span>        [<span class="branchCov" title="Branch 1 was taken 40 times"> + </span><span class="branchCov" title="Branch 2 was taken 4 times"> + </span>]:<span class="lineCov">         44 :             if (list-&gt;match(node-&gt;value, key)) {</span>
+<span class="lineNum">     294 </span>                :            :                 listReleaseIterator(iter);
+<span class="lineNum">     295 </span>                :<span class="lineCov">         40 :                 return node;</span>
+<span class="lineNum">     296 </span>                :            :             }
+<span class="lineNum">     297 </span>                :            :         } else {
+<span class="lineNum">     298 </span>        [<span class="branchCov" title="Branch 0 was taken 444 times"> + </span><span class="branchCov" title="Branch 1 was taken 278 times"> + </span>]:<span class="lineCov">        722 :             if (key == node-&gt;value) {</span>
+<span class="lineNum">     299 </span>                :            :                 listReleaseIterator(iter);
+<span class="lineNum">     300 </span>                :<span class="lineCov">        726 :                 return node;</span>
+<span class="lineNum">     301 </span>                :            :             }
+<span class="lineNum">     302 </span>                :            :         }
+<span class="lineNum">     303 </span>                :            :     }
+<span class="lineNum">     304 </span>                :            :     listReleaseIterator(iter);
+<span class="lineNum">     305 </span>                :<span class="lineCov">        507 :     return NULL;</span>
+<span class="lineNum">     306 </span>                :            : }
+<span class="lineNum">     307 </span>                :            : 
+<span class="lineNum">     308 </span>                :            : /* Return the element at the specified zero-based index
+<span class="lineNum">     309 </span>                :            :  * where 0 is the head, 1 is the element next to head
+<span class="lineNum">     310 </span>                :            :  * and so on. Negative integers are used in order to count
+<a name="311"><span class="lineNum">     311 </span>                :            :  * from the tail, -1 is the last element, -2 the penultimate</a>
+<span class="lineNum">     312 </span>                :            :  * and so on. If the index is out of range NULL is returned. */
+<span class="lineNum">     313 </span>                :<span class="lineCov">      40871 : listNode *listIndex(list *list, long index) {</span>
+<span class="lineNum">     314 </span>                :            :     listNode *n;
+<span class="lineNum">     315 </span>                :            : 
+<span class="lineNum">     316 </span>        [<span class="branchCov" title="Branch 0 was taken 2004 times"> + </span><span class="branchCov" title="Branch 1 was taken 38867 times"> + </span>]:<span class="lineCov">      40871 :     if (index &lt; 0) {</span>
+<span class="lineNum">     317 </span>                :<span class="lineCov">       2004 :         index = (-index)-1;</span>
+<span class="lineNum">     318 </span>                :<span class="lineCov">       2004 :         n = list-&gt;tail;</span>
+<span class="lineNum">     319 </span>[<span class="branchCov" title="Branch 0 was taken 500862 times"> + </span><span class="branchCov" title="Branch 1 was taken 2004 times"> + </span>][<span class="branchCov" title="Branch 2 was taken 500862 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">     502866 :         while(index-- &amp;&amp; n) n = n-&gt;prev;</span>
+<span class="lineNum">     320 </span>                :            :     } else {
+<span class="lineNum">     321 </span>                :<span class="lineCov">      38867 :         n = list-&gt;head;</span>
+<span class="lineNum">     322 </span>[<span class="branchCov" title="Branch 0 was taken 4261674 times"> + </span><span class="branchCov" title="Branch 1 was taken 38866 times"> + </span>][<span class="branchCov" title="Branch 2 was taken 4261673 times"> + </span><span class="branchCov" title="Branch 3 was taken 1 time"> + </span>]:<span class="lineCov">    4300540 :         while(index-- &amp;&amp; n) n = n-&gt;next;</span>
+<span class="lineNum">     323 </span>                :            :     }
+<span class="lineNum">     324 </span>                :<span class="lineCov">      40871 :     return n;</span>
+<span class="lineNum">     325 </span>                :            : }
+<a name="326"><span class="lineNum">     326 </span>                :            : </a>
+<span class="lineNum">     327 </span>                :            : /* Rotate the list removing the tail node and inserting it to the head. */
+<span class="lineNum">     328 </span>                :<span class="lineCov">      17892 : void listRotate(list *list) {</span>
+<span class="lineNum">     329 </span>                :<span class="lineCov">      17892 :     listNode *tail = list-&gt;tail;</span>
+<span class="lineNum">     330 </span>                :            : 
+<span class="lineNum">     331 </span>        [<span class="branchCov" title="Branch 0 was taken 14012 times"> + </span><span class="branchCov" title="Branch 1 was taken 3880 times"> + </span>]:<span class="lineCov">      31904 :     if (listLength(list) &lt;= 1) return;</span>
+<span class="lineNum">     332 </span>                :            : 
+<span class="lineNum">     333 </span>                :            :     /* Detach current tail */
+<span class="lineNum">     334 </span>                :<span class="lineCov">      14012 :     list-&gt;tail = tail-&gt;prev;</span>
+<span class="lineNum">     335 </span>                :<span class="lineCov">      14012 :     list-&gt;tail-&gt;next = NULL;</span>
+<span class="lineNum">     336 </span>                :            :     /* Move it as head */
+<span class="lineNum">     337 </span>                :<span class="lineCov">      14012 :     list-&gt;head-&gt;prev = tail;</span>
+<span class="lineNum">     338 </span>                :<span class="lineCov">      14012 :     tail-&gt;prev = NULL;</span>
+<span class="lineNum">     339 </span>                :<span class="lineCov">      14012 :     tail-&gt;next = list-&gt;head;</span>
+<span class="lineNum">     340 </span>                :<span class="lineCov">      14012 :     list-&gt;head = tail;</span>
+<span class="lineNum">     341 </span>                :            : }
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.9</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

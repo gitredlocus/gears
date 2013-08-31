@@ -1,0 +1,415 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - redis-lcov_9.info - /var/lib/jenkins/jobs/redis-lcov/workspace/src/multi.c</title>
+  <link rel="stylesheet" type="text/css" href="../../../../../../../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../../../../../../../index.html">top level</a> - <a href="index.html">var/lib/jenkins/jobs/redis-lcov/workspace/src</a> - multi.c<span style="font-size: 80%;"> (source / <a href="multi.c.func.html">functions</a>)</span></td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">redis-lcov_9.info</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">141</td>
+            <td class="headerCovTableEntry">144</td>
+            <td class="headerCovTableEntryHi">97.9 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2013-08-26</td>
+            <td></td>
+            <td class="headerItem">Functions:</td>
+            <td class="headerCovTableEntry">15</td>
+            <td class="headerCovTableEntry">15</td>
+            <td class="headerCovTableEntryHi">100.0 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Legend:</td>
+            <td class="headerValueLeg">            Lines:
+            <span class="coverLegendCov">hit</span>
+            <span class="coverLegendNoCov">not hit</span>
+            | Branches:
+            <span class="coverLegendCov">+</span> taken
+            <span class="coverLegendNoCov">-</span> not taken
+            <span class="coverLegendNoCov">#</span> not executed
+</td>
+            <td></td>
+            <td class="headerItem">Branches:</td>
+            <td class="headerCovTableEntry">55</td>
+            <td class="headerCovTableEntry">66</td>
+            <td class="headerCovTableEntryMed">83.3 %</td>
+          </tr>
+          <tr><td><img src="../../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">           Branch data     Line data    Source code</pre>
+<pre class="source">
+<a name="1"><span class="lineNum">       1 </span>                :            : /*</a>
+<span class="lineNum">       2 </span>                :            :  * Copyright (c) 2009-2012, Salvatore Sanfilippo &lt;antirez at gmail dot com&gt;
+<span class="lineNum">       3 </span>                :            :  * All rights reserved.
+<span class="lineNum">       4 </span>                :            :  *
+<span class="lineNum">       5 </span>                :            :  * Redistribution and use in source and binary forms, with or without
+<span class="lineNum">       6 </span>                :            :  * modification, are permitted provided that the following conditions are met:
+<span class="lineNum">       7 </span>                :            :  *
+<span class="lineNum">       8 </span>                :            :  *   * Redistributions of source code must retain the above copyright notice,
+<span class="lineNum">       9 </span>                :            :  *     this list of conditions and the following disclaimer.
+<span class="lineNum">      10 </span>                :            :  *   * Redistributions in binary form must reproduce the above copyright
+<span class="lineNum">      11 </span>                :            :  *     notice, this list of conditions and the following disclaimer in the
+<span class="lineNum">      12 </span>                :            :  *     documentation and/or other materials provided with the distribution.
+<span class="lineNum">      13 </span>                :            :  *   * Neither the name of Redis nor the names of its contributors may be used
+<span class="lineNum">      14 </span>                :            :  *     to endorse or promote products derived from this software without
+<span class="lineNum">      15 </span>                :            :  *     specific prior written permission.
+<span class="lineNum">      16 </span>                :            :  *
+<span class="lineNum">      17 </span>                :            :  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS &quot;AS IS&quot;
+<span class="lineNum">      18 </span>                :            :  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+<span class="lineNum">      19 </span>                :            :  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+<span class="lineNum">      20 </span>                :            :  * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+<span class="lineNum">      21 </span>                :            :  * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+<span class="lineNum">      22 </span>                :            :  * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+<span class="lineNum">      23 </span>                :            :  * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+<span class="lineNum">      24 </span>                :            :  * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+<span class="lineNum">      25 </span>                :            :  * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+<span class="lineNum">      26 </span>                :            :  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+<span class="lineNum">      27 </span>                :            :  * POSSIBILITY OF SUCH DAMAGE.
+<span class="lineNum">      28 </span>                :            :  */
+<span class="lineNum">      29 </span>                :            : 
+<span class="lineNum">      30 </span>                :            : #include &quot;redis.h&quot;
+<span class="lineNum">      31 </span>                :            : 
+<span class="lineNum">      32 </span>                :            : /* ================================ MULTI/EXEC ============================== */
+<a name="33"><span class="lineNum">      33 </span>                :            : </a>
+<a name="34"><span class="lineNum">      34 </span>                :            : /* Client state initialization for MULTI/EXEC */</a>
+<span class="lineNum">      35 </span>                :<span class="lineCov">        824 : void initClientMultiState(redisClient *c) {</span>
+<span class="lineNum">      36 </span>                :<span class="lineCov">       1009 :     c-&gt;mstate.commands = NULL;</span>
+<span class="lineNum">      37 </span>                :<span class="lineCov">       1009 :     c-&gt;mstate.count = 0;</span>
+<span class="lineNum">      38 </span>                :<span class="lineCov">        824 : }</span>
+<a name="39"><span class="lineNum">      39 </span>                :            : </a>
+<span class="lineNum">      40 </span>                :            : /* Release all the resources associated with MULTI/EXEC state */
+<span class="lineNum">      41 </span>                :<span class="lineCov">        590 : void freeClientMultiState(redisClient *c) {</span>
+<span class="lineNum">      42 </span>                :            :     int j;
+<span class="lineNum">      43 </span>                :            : 
+<span class="lineNum">      44 </span>        [<span class="branchCov" title="Branch 0 was taken 222 times"> + </span><span class="branchCov" title="Branch 1 was taken 590 times"> + </span>]:<span class="lineCov">        812 :     for (j = 0; j &lt; c-&gt;mstate.count; j++) {</span>
+<span class="lineNum">      45 </span>                :            :         int i;
+<span class="lineNum">      46 </span>                :<span class="lineCov">        222 :         multiCmd *mc = c-&gt;mstate.commands+j;</span>
+<span class="lineNum">      47 </span>                :            : 
+<span class="lineNum">      48 </span>        [<span class="branchCov" title="Branch 0 was taken 453 times"> + </span><span class="branchCov" title="Branch 1 was taken 222 times"> + </span>]:<span class="lineCov">        675 :         for (i = 0; i &lt; mc-&gt;argc; i++)</span>
+<span class="lineNum">      49 </span>                :<span class="lineCov">        453 :             decrRefCount(mc-&gt;argv[i]);</span>
+<span class="lineNum">      50 </span>                :<span class="lineCov">        222 :         zfree(mc-&gt;argv);</span>
+<span class="lineNum">      51 </span>                :            :     }
+<span class="lineNum">      52 </span>                :<span class="lineCov">        590 :     zfree(c-&gt;mstate.commands);</span>
+<span class="lineNum">      53 </span>                :<span class="lineCov">        590 : }</span>
+<a name="54"><span class="lineNum">      54 </span>                :            : </a>
+<span class="lineNum">      55 </span>                :            : /* Add a new command into the MULTI commands queue */
+<span class="lineNum">      56 </span>                :<span class="lineCov">        225 : void queueMultiCommand(redisClient *c) {</span>
+<span class="lineNum">      57 </span>                :            :     multiCmd *mc;
+<span class="lineNum">      58 </span>                :            :     int j;
+<span class="lineNum">      59 </span>                :            : 
+<span class="lineNum">      60 </span>                :<span class="lineCov">        225 :     c-&gt;mstate.commands = zrealloc(c-&gt;mstate.commands,</span>
+<span class="lineNum">      61 </span>                :<span class="lineCov">        225 :             sizeof(multiCmd)*(c-&gt;mstate.count+1));</span>
+<span class="lineNum">      62 </span>                :<span class="lineCov">        225 :     mc = c-&gt;mstate.commands+c-&gt;mstate.count;</span>
+<span class="lineNum">      63 </span>                :<span class="lineCov">        225 :     mc-&gt;cmd = c-&gt;cmd;</span>
+<span class="lineNum">      64 </span>                :<span class="lineCov">        225 :     mc-&gt;argc = c-&gt;argc;</span>
+<span class="lineNum">      65 </span>                :<span class="lineCov">        225 :     mc-&gt;argv = zmalloc(sizeof(robj*)*c-&gt;argc);</span>
+<span class="lineNum">      66 </span>                :<span class="lineCov">        225 :     memcpy(mc-&gt;argv,c-&gt;argv,sizeof(robj*)*c-&gt;argc);</span>
+<span class="lineNum">      67 </span>        [<span class="branchCov" title="Branch 0 was taken 454 times"> + </span><span class="branchCov" title="Branch 1 was taken 225 times"> + </span>]:<span class="lineCov">        679 :     for (j = 0; j &lt; c-&gt;argc; j++)</span>
+<span class="lineNum">      68 </span>                :<span class="lineCov">        454 :         incrRefCount(mc-&gt;argv[j]);</span>
+<span class="lineNum">      69 </span>                :<span class="lineCov">        225 :     c-&gt;mstate.count++;</span>
+<span class="lineNum">      70 </span>                :<span class="lineCov">        225 : }</span>
+<span class="lineNum">      71 </span>                :            : 
+<span class="lineNum">      72 </span>                :<span class="lineCov">        185 : void discardTransaction(redisClient *c) {</span>
+<span class="lineNum">      73 </span>                :<span class="lineCov">        185 :     freeClientMultiState(c);</span>
+<span class="lineNum">      74 </span>                :            :     initClientMultiState(c);
+<span class="lineNum">      75 </span>                :<span class="lineCov">        185 :     c-&gt;flags &amp;= ~(REDIS_MULTI|REDIS_DIRTY_CAS|REDIS_DIRTY_EXEC);;</span>
+<span class="lineNum">      76 </span>                :<span class="lineCov">        185 :     unwatchAllKeys(c);</span>
+<span class="lineNum">      77 </span>                :<span class="lineCov">        185 : }</span>
+<span class="lineNum">      78 </span>                :            : 
+<a name="79"><span class="lineNum">      79 </span>                :            : /* Flag the transacation as DIRTY_EXEC so that EXEC will fail.</a>
+<span class="lineNum">      80 </span>                :            :  * Should be called every time there is an error while queueing a command. */
+<span class="lineNum">      81 </span>                :<span class="lineCov">       2136 : void flagTransaction(redisClient *c) {</span>
+<span class="lineNum">      82 </span>        [<span class="branchCov" title="Branch 0 was taken 15 times"> + </span><span class="branchCov" title="Branch 1 was taken 2121 times"> + </span>]:<span class="lineCov">       2136 :     if (c-&gt;flags &amp; REDIS_MULTI)</span>
+<span class="lineNum">      83 </span>                :<span class="lineCov">         15 :         c-&gt;flags |= REDIS_DIRTY_EXEC;</span>
+<a name="84"><span class="lineNum">      84 </span>                :<span class="lineCov">       2136 : }</span></a>
+<span class="lineNum">      85 </span>                :            : 
+<span class="lineNum">      86 </span>                :<span class="lineCov">        192 : void multiCommand(redisClient *c) {</span>
+<span class="lineNum">      87 </span>        [<span class="branchCov" title="Branch 0 was taken 5 times"> + </span><span class="branchCov" title="Branch 1 was taken 187 times"> + </span>]:<span class="lineCov">        192 :     if (c-&gt;flags &amp; REDIS_MULTI) {</span>
+<span class="lineNum">      88 </span>                :<span class="lineCov">          5 :         addReplyError(c,&quot;MULTI calls can not be nested&quot;);</span>
+<span class="lineNum">      89 </span>                :<span class="lineCov">        192 :         return;</span>
+<span class="lineNum">      90 </span>                :            :     }
+<span class="lineNum">      91 </span>                :<span class="lineCov">        187 :     c-&gt;flags |= REDIS_MULTI;</span>
+<span class="lineNum">      92 </span>                :<span class="lineCov">        187 :     addReply(c,shared.ok);</span>
+<a name="93"><span class="lineNum">      93 </span>                :            : }</a>
+<span class="lineNum">      94 </span>                :            : 
+<span class="lineNum">      95 </span>                :<span class="lineCov">         15 : void discardCommand(redisClient *c) {</span>
+<span class="lineNum">      96 </span>        [<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchCov" title="Branch 1 was taken 15 times"> + </span>]:<span class="lineCov">         15 :     if (!(c-&gt;flags &amp; REDIS_MULTI)) {</span>
+<span class="lineNum">      97 </span>                :<span class="lineNoCov">          0 :         addReplyError(c,&quot;DISCARD without MULTI&quot;);</span>
+<span class="lineNum">      98 </span>                :<span class="lineCov">         15 :         return;</span>
+<span class="lineNum">      99 </span>                :            :     }
+<span class="lineNum">     100 </span>                :<span class="lineCov">         15 :     discardTransaction(c);</span>
+<span class="lineNum">     101 </span>                :<span class="lineCov">         15 :     addReply(c,shared.ok);</span>
+<span class="lineNum">     102 </span>                :            : }
+<span class="lineNum">     103 </span>                :            : 
+<a name="104"><span class="lineNum">     104 </span>                :            : /* Send a MULTI command to all the slaves and AOF file. Check the execCommand</a>
+<span class="lineNum">     105 </span>                :            :  * implementation for more information. */
+<span class="lineNum">     106 </span>                :<span class="lineCov">         31 : void execCommandPropagateMulti(redisClient *c) {</span>
+<span class="lineNum">     107 </span>                :<span class="lineCov">         31 :     robj *multistring = createStringObject(&quot;MULTI&quot;,5);</span>
+<span class="lineNum">     108 </span>                :            : 
+<span class="lineNum">     109 </span>                :<span class="lineCov">         31 :     propagate(server.multiCommand,c-&gt;db-&gt;id,&amp;multistring,1,</span>
+<span class="lineNum">     110 </span>                :            :               REDIS_PROPAGATE_AOF|REDIS_PROPAGATE_REPL);
+<span class="lineNum">     111 </span>                :<span class="lineCov">         31 :     decrRefCount(multistring);</span>
+<a name="112"><span class="lineNum">     112 </span>                :<span class="lineCov">         31 : }</span></a>
+<span class="lineNum">     113 </span>                :            : 
+<span class="lineNum">     114 </span>                :<span class="lineCov">        171 : void execCommand(redisClient *c) {</span>
+<span class="lineNum">     115 </span>                :            :     int j;
+<span class="lineNum">     116 </span>                :            :     robj **orig_argv;
+<span class="lineNum">     117 </span>                :            :     int orig_argc;
+<span class="lineNum">     118 </span>                :            :     struct redisCommand *orig_cmd;
+<span class="lineNum">     119 </span>                :<span class="lineCov">        171 :     int must_propagate = 0; /* Need to propagate MULTI/EXEC to AOF / slaves? */</span>
+<span class="lineNum">     120 </span>                :            : 
+<span class="lineNum">     121 </span>        [<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchCov" title="Branch 1 was taken 171 times"> + </span>]:<span class="lineCov">        171 :     if (!(c-&gt;flags &amp; REDIS_MULTI)) {</span>
+<span class="lineNum">     122 </span>                :<span class="lineNoCov">          0 :         addReplyError(c,&quot;EXEC without MULTI&quot;);</span>
+<span class="lineNum">     123 </span>                :<span class="lineCov">        170 :         return;</span>
+<span class="lineNum">     124 </span>                :            :     }
+<span class="lineNum">     125 </span>                :            : 
+<span class="lineNum">     126 </span>                :            :     /* Check if we need to abort the EXEC because:
+<span class="lineNum">     127 </span>                :            :      * 1) Some WATCHed key was touched.
+<span class="lineNum">     128 </span>                :            :      * 2) There was a previous error while queueing commands.
+<span class="lineNum">     129 </span>                :            :      * A failed EXEC in the first case returns a multi bulk nil object
+<span class="lineNum">     130 </span>                :            :      * (technically it is not an error but a special behavior), while
+<span class="lineNum">     131 </span>                :            :      * in the second an EXECABORT error is returned. */
+<span class="lineNum">     132 </span>        [<span class="branchCov" title="Branch 0 was taken 51 times"> + </span><span class="branchCov" title="Branch 1 was taken 120 times"> + </span>]:<span class="lineCov">        171 :     if (c-&gt;flags &amp; (REDIS_DIRTY_CAS|REDIS_DIRTY_EXEC)) {</span>
+<span class="lineNum">     133 </span>        [<span class="branchCov" title="Branch 0 was taken 15 times"> + </span><span class="branchCov" title="Branch 1 was taken 36 times"> + </span>]:<span class="lineCov">         51 :         addReply(c, c-&gt;flags &amp; REDIS_DIRTY_EXEC ? shared.execaborterr :</span>
+<span class="lineNum">     134 </span>                :            :                                                   shared.nullmultibulk);
+<span class="lineNum">     135 </span>                :<span class="lineCov">         51 :         discardTransaction(c);</span>
+<span class="lineNum">     136 </span>                :<span class="lineCov">         51 :         goto handle_monitor;</span>
+<span class="lineNum">     137 </span>                :            :     }
+<span class="lineNum">     138 </span>                :            : 
+<span class="lineNum">     139 </span>                :            :     /* Exec all the queued commands */
+<span class="lineNum">     140 </span>                :<span class="lineCov">        120 :     unwatchAllKeys(c); /* Unwatch ASAP otherwise we'll waste CPU cycles */</span>
+<span class="lineNum">     141 </span>                :<span class="lineCov">        120 :     orig_argv = c-&gt;argv;</span>
+<span class="lineNum">     142 </span>                :<span class="lineCov">        120 :     orig_argc = c-&gt;argc;</span>
+<span class="lineNum">     143 </span>                :<span class="lineCov">        120 :     orig_cmd = c-&gt;cmd;</span>
+<span class="lineNum">     144 </span>                :<span class="lineCov">        120 :     addReplyMultiBulkLen(c,c-&gt;mstate.count);</span>
+<span class="lineNum">     145 </span>        [<span class="branchCov" title="Branch 1 was taken 152 times"> + </span><span class="branchCov" title="Branch 2 was taken 119 times"> + </span>]:<span class="lineCov">        271 :     for (j = 0; j &lt; c-&gt;mstate.count; j++) {</span>
+<span class="lineNum">     146 </span>                :<span class="lineCov">        152 :         c-&gt;argc = c-&gt;mstate.commands[j].argc;</span>
+<span class="lineNum">     147 </span>                :<span class="lineCov">        152 :         c-&gt;argv = c-&gt;mstate.commands[j].argv;</span>
+<span class="lineNum">     148 </span>                :<span class="lineCov">        152 :         c-&gt;cmd = c-&gt;mstate.commands[j].cmd;</span>
+<span class="lineNum">     149 </span>                :            : 
+<span class="lineNum">     150 </span>                :            :         /* Propagate a MULTI request once we encounter the first write op.
+<span class="lineNum">     151 </span>                :            :          * This way we'll deliver the MULTI/..../EXEC block as a whole and
+<span class="lineNum">     152 </span>                :            :          * both the AOF and the replication link will have the same consistency
+<span class="lineNum">     153 </span>                :            :          * and atomicity guarantees. */
+<span class="lineNum">     154 </span>[<span class="branchCov" title="Branch 0 was taken 140 times"> + </span><span class="branchCov" title="Branch 1 was taken 12 times"> + </span>][<span class="branchCov" title="Branch 2 was taken 31 times"> + </span><span class="branchCov" title="Branch 3 was taken 109 times"> + </span>]:<span class="lineCov">        152 :         if (!must_propagate &amp;&amp; !(c-&gt;cmd-&gt;flags &amp; REDIS_CMD_READONLY)) {</span>
+<span class="lineNum">     155 </span>                :<span class="lineCov">         31 :             execCommandPropagateMulti(c);</span>
+<span class="lineNum">     156 </span>                :<span class="lineCov">         31 :             must_propagate = 1;</span>
+<span class="lineNum">     157 </span>                :            :         }
+<span class="lineNum">     158 </span>                :            : 
+<span class="lineNum">     159 </span>                :<span class="lineCov">        152 :         call(c,REDIS_CALL_FULL);</span>
+<span class="lineNum">     160 </span>                :            : 
+<span class="lineNum">     161 </span>                :            :         /* Commands may alter argc/argv, restore mstate. */
+<span class="lineNum">     162 </span>                :<span class="lineCov">        151 :         c-&gt;mstate.commands[j].argc = c-&gt;argc;</span>
+<span class="lineNum">     163 </span>                :<span class="lineCov">        151 :         c-&gt;mstate.commands[j].argv = c-&gt;argv;</span>
+<span class="lineNum">     164 </span>                :<span class="lineCov">        151 :         c-&gt;mstate.commands[j].cmd = c-&gt;cmd;</span>
+<span class="lineNum">     165 </span>                :            :     }
+<span class="lineNum">     166 </span>                :<span class="lineCov">        119 :     c-&gt;argv = orig_argv;</span>
+<span class="lineNum">     167 </span>                :<span class="lineCov">        119 :     c-&gt;argc = orig_argc;</span>
+<span class="lineNum">     168 </span>                :<span class="lineCov">        119 :     c-&gt;cmd = orig_cmd;</span>
+<span class="lineNum">     169 </span>                :<span class="lineCov">        119 :     discardTransaction(c);</span>
+<span class="lineNum">     170 </span>                :            :     /* Make sure the EXEC command will be propagated as well if MULTI
+<span class="lineNum">     171 </span>                :            :      * was already propagated. */
+<span class="lineNum">     172 </span>        [<span class="branchCov" title="Branch 0 was taken 31 times"> + </span><span class="branchCov" title="Branch 1 was taken 88 times"> + </span>]:<span class="lineCov">        119 :     if (must_propagate) server.dirty++;</span>
+<span class="lineNum">     173 </span>                :            : 
+<span class="lineNum">     174 </span>                :            : handle_monitor:
+<span class="lineNum">     175 </span>                :            :     /* Send EXEC to clients waiting data from MONITOR. We do it here
+<span class="lineNum">     176 </span>                :            :      * since the natural order of commands execution is actually:
+<span class="lineNum">     177 </span>                :            :      * MUTLI, EXEC, ... commands inside transaction ...
+<span class="lineNum">     178 </span>                :            :      * Instead EXEC is flagged as REDIS_CMD_SKIP_MONITOR in the command
+<span class="lineNum">     179 </span>                :            :      * table, and we do it here with correct ordering. */
+<span class="lineNum">     180 </span>[<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchCov" title="Branch 1 was taken 170 times"> + </span>][<span class="branchNoExec" title="Branch 2 was not executed"> # </span><span class="branchNoExec" title="Branch 3 was not executed"> # </span>]:<span class="lineCov">        170 :     if (listLength(server.monitors) &amp;&amp; !server.loading)</span>
+<span class="lineNum">     181 </span>                :<span class="lineNoCov">          0 :         replicationFeedMonitors(c,server.monitors,c-&gt;db-&gt;id,c-&gt;argv,c-&gt;argc);</span>
+<span class="lineNum">     182 </span>                :            : }
+<span class="lineNum">     183 </span>                :            : 
+<span class="lineNum">     184 </span>                :            : /* ===================== WATCH (CAS alike for MULTI/EXEC) ===================
+<span class="lineNum">     185 </span>                :            :  *
+<span class="lineNum">     186 </span>                :            :  * The implementation uses a per-DB hash table mapping keys to list of clients
+<span class="lineNum">     187 </span>                :            :  * WATCHing those keys, so that given a key that is going to be modified
+<span class="lineNum">     188 </span>                :            :  * we can mark all the associated clients as dirty.
+<span class="lineNum">     189 </span>                :            :  *
+<span class="lineNum">     190 </span>                :            :  * Also every client contains a list of WATCHed keys so that's possible to
+<span class="lineNum">     191 </span>                :            :  * un-watch such keys when the client is freed or when UNWATCH is called. */
+<span class="lineNum">     192 </span>                :            : 
+<span class="lineNum">     193 </span>                :            : /* In the client-&gt;watched_keys list we need to use watchedKey structures
+<span class="lineNum">     194 </span>                :            :  * as in order to identify a key in Redis we need both the key name and the
+<span class="lineNum">     195 </span>                :            :  * DB */
+<span class="lineNum">     196 </span>                :            : typedef struct watchedKey {
+<span class="lineNum">     197 </span>                :            :     robj *key;
+<span class="lineNum">     198 </span>                :            :     redisDb *db;
+<span class="lineNum">     199 </span>                :            : } watchedKey;
+<a name="200"><span class="lineNum">     200 </span>                :            : </a>
+<span class="lineNum">     201 </span>                :            : /* Watch for the specified key */
+<span class="lineNum">     202 </span>                :<span class="lineCov">        117 : void watchForKey(redisClient *c, robj *key) {</span>
+<span class="lineNum">     203 </span>                :<span class="lineCov">        117 :     list *clients = NULL;</span>
+<span class="lineNum">     204 </span>                :            :     listIter li;
+<span class="lineNum">     205 </span>                :            :     listNode *ln;
+<span class="lineNum">     206 </span>                :            :     watchedKey *wk;
+<span class="lineNum">     207 </span>                :            : 
+<span class="lineNum">     208 </span>                :            :     /* Check if we are already watching for this key */
+<span class="lineNum">     209 </span>                :<span class="lineCov">        117 :     listRewind(c-&gt;watched_keys,&amp;li);</span>
+<span class="lineNum">     210 </span>        [<span class="branchCov" title="Branch 1 was taken 80 times"> + </span><span class="branchCov" title="Branch 2 was taken 117 times"> + </span>]:<span class="lineCov">        314 :     while((ln = listNext(&amp;li))) {</span>
+<span class="lineNum">     211 </span>                :<span class="lineCov">         80 :         wk = listNodeValue(ln);</span>
+<span class="lineNum">     212 </span>[<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchCov" title="Branch 1 was taken 80 times"> + </span>][<span class="branchCov" title="Branch 3 was taken 80 times"> + </span><span class="branchNoCov" title="Branch 4 was not taken"> - </span>]:<span class="lineCov">        197 :         if (wk-&gt;db == c-&gt;db &amp;&amp; equalStringObjects(key,wk-&gt;key))</span>
+<span class="lineNum">     213 </span>                :<span class="lineCov">        117 :             return; /* Key already watched */</span>
+<span class="lineNum">     214 </span>                :            :     }
+<span class="lineNum">     215 </span>                :            :     /* This key is not already watched in this DB. Let's add it */
+<span class="lineNum">     216 </span>                :<span class="lineCov">        117 :     clients = dictFetchValue(c-&gt;db-&gt;watched_keys,key);</span>
+<span class="lineNum">     217 </span>        [<span class="branchCov" title="Branch 0 was taken 117 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">        117 :     if (!clients) { </span>
+<span class="lineNum">     218 </span>                :<span class="lineCov">        117 :         clients = listCreate();</span>
+<span class="lineNum">     219 </span>                :<span class="lineCov">        117 :         dictAdd(c-&gt;db-&gt;watched_keys,key,clients);</span>
+<span class="lineNum">     220 </span>                :<span class="lineCov">        117 :         incrRefCount(key);</span>
+<span class="lineNum">     221 </span>                :            :     }
+<span class="lineNum">     222 </span>                :<span class="lineCov">        117 :     listAddNodeTail(clients,c);</span>
+<span class="lineNum">     223 </span>                :            :     /* Add the new key to the list of keys watched by this client */
+<span class="lineNum">     224 </span>                :<span class="lineCov">        117 :     wk = zmalloc(sizeof(*wk));</span>
+<span class="lineNum">     225 </span>                :<span class="lineCov">        117 :     wk-&gt;key = key;</span>
+<span class="lineNum">     226 </span>                :<span class="lineCov">        117 :     wk-&gt;db = c-&gt;db;</span>
+<span class="lineNum">     227 </span>                :<span class="lineCov">        117 :     incrRefCount(key);</span>
+<span class="lineNum">     228 </span>                :<span class="lineCov">        117 :     listAddNodeTail(c-&gt;watched_keys,wk);</span>
+<span class="lineNum">     229 </span>                :            : }
+<span class="lineNum">     230 </span>                :            : 
+<a name="231"><span class="lineNum">     231 </span>                :            : /* Unwatch all the keys watched by this client. To clean the EXEC dirty</a>
+<span class="lineNum">     232 </span>                :            :  * flag is up to the caller. */
+<span class="lineNum">     233 </span>                :<span class="lineCov">        544 : void unwatchAllKeys(redisClient *c) {</span>
+<span class="lineNum">     234 </span>                :            :     listIter li;
+<span class="lineNum">     235 </span>                :            :     listNode *ln;
+<span class="lineNum">     236 </span>                :            : 
+<span class="lineNum">     237 </span>        [<span class="branchCov" title="Branch 0 was taken 82 times"> + </span><span class="branchCov" title="Branch 1 was taken 462 times"> + </span>]:<span class="lineCov">        626 :     if (listLength(c-&gt;watched_keys) == 0) return;</span>
+<span class="lineNum">     238 </span>                :<span class="lineCov">         82 :     listRewind(c-&gt;watched_keys,&amp;li);</span>
+<span class="lineNum">     239 </span>        [<span class="branchCov" title="Branch 1 was taken 117 times"> + </span><span class="branchCov" title="Branch 2 was taken 82 times"> + </span>]:<span class="lineCov">        199 :     while((ln = listNext(&amp;li))) {</span>
+<span class="lineNum">     240 </span>                :            :         list *clients;
+<span class="lineNum">     241 </span>                :            :         watchedKey *wk;
+<span class="lineNum">     242 </span>                :            : 
+<span class="lineNum">     243 </span>                :            :         /* Lookup the watched key -&gt; clients list and remove the client
+<span class="lineNum">     244 </span>                :            :          * from the list */
+<span class="lineNum">     245 </span>                :<span class="lineCov">        117 :         wk = listNodeValue(ln);</span>
+<span class="lineNum">     246 </span>                :<span class="lineCov">        117 :         clients = dictFetchValue(wk-&gt;db-&gt;watched_keys, wk-&gt;key);</span>
+<span class="lineNum">     247 </span>        [<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchCov" title="Branch 1 was taken 117 times"> + </span>]:<span class="lineCov">        117 :         redisAssertWithInfo(c,NULL,clients != NULL);</span>
+<span class="lineNum">     248 </span>                :<span class="lineCov">        117 :         listDelNode(clients,listSearchKey(clients,c));</span>
+<span class="lineNum">     249 </span>                :            :         /* Kill the entry at all if this was the only client */
+<span class="lineNum">     250 </span>        [<span class="branchCov" title="Branch 0 was taken 117 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">        117 :         if (listLength(clients) == 0)</span>
+<span class="lineNum">     251 </span>                :<span class="lineCov">        117 :             dictDelete(wk-&gt;db-&gt;watched_keys, wk-&gt;key);</span>
+<span class="lineNum">     252 </span>                :            :         /* Remove this watched key from the client-&gt;watched list */
+<span class="lineNum">     253 </span>                :<span class="lineCov">        117 :         listDelNode(c-&gt;watched_keys,ln);</span>
+<span class="lineNum">     254 </span>                :<span class="lineCov">        117 :         decrRefCount(wk-&gt;key);</span>
+<span class="lineNum">     255 </span>                :<span class="lineCov">        117 :         zfree(wk);</span>
+<span class="lineNum">     256 </span>                :            :     }
+<span class="lineNum">     257 </span>                :            : }
+<span class="lineNum">     258 </span>                :            : 
+<a name="259"><span class="lineNum">     259 </span>                :            : /* &quot;Touch&quot; a key, so that if this key is being WATCHed by some client the</a>
+<span class="lineNum">     260 </span>                :            :  * next EXEC will fail. */
+<span class="lineNum">     261 </span>                :<span class="lineCov">    4365577 : void touchWatchedKey(redisDb *db, robj *key) {</span>
+<span class="lineNum">     262 </span>                :            :     list *clients;
+<span class="lineNum">     263 </span>                :            :     listIter li;
+<span class="lineNum">     264 </span>                :            :     listNode *ln;
+<span class="lineNum">     265 </span>                :            : 
+<span class="lineNum">     266 </span>        [<span class="branchCov" title="Branch 0 was taken 42 times"> + </span><span class="branchCov" title="Branch 1 was taken 4365535 times"> + </span>]:<span class="lineCov">    4365577 :     if (dictSize(db-&gt;watched_keys) == 0) return;</span>
+<span class="lineNum">     267 </span>                :<span class="lineCov">         42 :     clients = dictFetchValue(db-&gt;watched_keys, key);</span>
+<span class="lineNum">     268 </span>        [<span class="branchCov" title="Branch 0 was taken 41 times"> + </span><span class="branchCov" title="Branch 1 was taken 1 time"> + </span>]:<span class="lineCov">         42 :     if (!clients) return;</span>
+<span class="lineNum">     269 </span>                :            : 
+<span class="lineNum">     270 </span>                :            :     /* Mark all the clients watching this key as REDIS_DIRTY_CAS */
+<span class="lineNum">     271 </span>                :            :     /* Check if we are already watching for this key */
+<span class="lineNum">     272 </span>                :<span class="lineCov">         41 :     listRewind(clients,&amp;li);</span>
+<span class="lineNum">     273 </span>        [<span class="branchCov" title="Branch 1 was taken 41 times"> + </span><span class="branchCov" title="Branch 2 was taken 41 times"> + </span>]:<span class="lineCov">    4365618 :     while((ln = listNext(&amp;li))) {</span>
+<span class="lineNum">     274 </span>                :<span class="lineCov">         41 :         redisClient *c = listNodeValue(ln);</span>
+<span class="lineNum">     275 </span>                :            : 
+<span class="lineNum">     276 </span>                :<span class="lineCov">         41 :         c-&gt;flags |= REDIS_DIRTY_CAS;</span>
+<span class="lineNum">     277 </span>                :            :     }
+<span class="lineNum">     278 </span>                :            : }
+<span class="lineNum">     279 </span>                :            : 
+<span class="lineNum">     280 </span>                :            : /* On FLUSHDB or FLUSHALL all the watched keys that are present before the
+<span class="lineNum">     281 </span>                :            :  * flush but will be deleted as effect of the flushing operation should
+<a name="282"><span class="lineNum">     282 </span>                :            :  * be touched. &quot;dbid&quot; is the DB that's getting the flush. -1 if it is</a>
+<span class="lineNum">     283 </span>                :            :  * a FLUSHALL operation (all the DBs flushed). */
+<span class="lineNum">     284 </span>                :<span class="lineCov">        310 : void touchWatchedKeysOnFlush(int dbid) {</span>
+<span class="lineNum">     285 </span>                :            :     listIter li1, li2;
+<span class="lineNum">     286 </span>                :            :     listNode *ln;
+<span class="lineNum">     287 </span>                :            : 
+<span class="lineNum">     288 </span>                :            :     /* For every client, check all the waited keys */
+<span class="lineNum">     289 </span>                :<span class="lineCov">        310 :     listRewind(server.clients,&amp;li1);</span>
+<span class="lineNum">     290 </span>        [<span class="branchCov" title="Branch 1 was taken 312 times"> + </span><span class="branchCov" title="Branch 2 was taken 310 times"> + </span>]:<span class="lineCov">        622 :     while((ln = listNext(&amp;li1))) {</span>
+<span class="lineNum">     291 </span>                :<span class="lineCov">        312 :         redisClient *c = listNodeValue(ln);</span>
+<span class="lineNum">     292 </span>                :<span class="lineCov">        312 :         listRewind(c-&gt;watched_keys,&amp;li2);</span>
+<span class="lineNum">     293 </span>        [<span class="branchCov" title="Branch 1 was taken 20 times"> + </span><span class="branchCov" title="Branch 2 was taken 312 times"> + </span>]:<span class="lineCov">        332 :         while((ln = listNext(&amp;li2))) {</span>
+<span class="lineNum">     294 </span>                :<span class="lineCov">         20 :             watchedKey *wk = listNodeValue(ln);</span>
+<span class="lineNum">     295 </span>                :            : 
+<span class="lineNum">     296 </span>                :            :             /* For every watched key matching the specified DB, if the
+<span class="lineNum">     297 </span>                :            :              * key exists, mark the client as dirty, as the key will be
+<span class="lineNum">     298 </span>                :            :              * removed. */
+<span class="lineNum">     299 </span>[<span class="branchCov" title="Branch 0 was taken 10 times"> + </span><span class="branchCov" title="Branch 1 was taken 10 times"> + </span>][<span class="branchCov" title="Branch 2 was taken 10 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">         20 :             if (dbid == -1 || wk-&gt;db-&gt;id == dbid) {</span>
+<span class="lineNum">     300 </span>        [<span class="branchCov" title="Branch 1 was taken 10 times"> + </span><span class="branchCov" title="Branch 2 was taken 10 times"> + </span>]:<span class="lineCov">         20 :                 if (dictFind(wk-&gt;db-&gt;dict, wk-&gt;key-&gt;ptr) != NULL)</span>
+<span class="lineNum">     301 </span>                :<span class="lineCov">         20 :                     c-&gt;flags |= REDIS_DIRTY_CAS;</span>
+<span class="lineNum">     302 </span>                :            :             }
+<span class="lineNum">     303 </span>                :            :         }
+<span class="lineNum">     304 </span>                :            :     }
+<a name="305"><span class="lineNum">     305 </span>                :<span class="lineCov">        310 : }</span></a>
+<span class="lineNum">     306 </span>                :            : 
+<span class="lineNum">     307 </span>                :<span class="lineCov">         92 : void watchCommand(redisClient *c) {</span>
+<span class="lineNum">     308 </span>                :            :     int j;
+<span class="lineNum">     309 </span>                :            : 
+<span class="lineNum">     310 </span>        [<span class="branchCov" title="Branch 0 was taken 87 times"> + </span><span class="branchCov" title="Branch 1 was taken 5 times"> + </span>]:<span class="lineCov">         92 :     if (c-&gt;flags &amp; REDIS_MULTI) {</span>
+<span class="lineNum">     311 </span>                :<span class="lineCov">          5 :         addReplyError(c,&quot;WATCH inside MULTI is not allowed&quot;);</span>
+<span class="lineNum">     312 </span>                :<span class="lineCov">         92 :         return;</span>
+<span class="lineNum">     313 </span>                :            :     }
+<span class="lineNum">     314 </span>        [<span class="branchCov" title="Branch 0 was taken 117 times"> + </span><span class="branchCov" title="Branch 1 was taken 87 times"> + </span>]:<span class="lineCov">        204 :     for (j = 1; j &lt; c-&gt;argc; j++)</span>
+<span class="lineNum">     315 </span>                :<span class="lineCov">        117 :         watchForKey(c,c-&gt;argv[j]);</span>
+<span class="lineNum">     316 </span>                :<span class="lineCov">         87 :     addReply(c,shared.ok);</span>
+<a name="317"><span class="lineNum">     317 </span>                :            : }</a>
+<span class="lineNum">     318 </span>                :            : 
+<span class="lineNum">     319 </span>                :<span class="lineCov">         10 : void unwatchCommand(redisClient *c) {</span>
+<span class="lineNum">     320 </span>                :<span class="lineCov">         10 :     unwatchAllKeys(c);</span>
+<span class="lineNum">     321 </span>                :<span class="lineCov">         10 :     c-&gt;flags &amp;= (~REDIS_DIRTY_CAS);</span>
+<span class="lineNum">     322 </span>                :<span class="lineCov">         10 :     addReply(c,shared.ok);</span>
+<span class="lineNum">     323 </span>                :<span class="lineCov">         10 : }</span>
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.9</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

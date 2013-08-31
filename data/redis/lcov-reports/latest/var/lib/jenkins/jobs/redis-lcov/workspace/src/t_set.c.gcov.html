@@ -1,0 +1,1000 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - redis-lcov_9.info - /var/lib/jenkins/jobs/redis-lcov/workspace/src/t_set.c</title>
+  <link rel="stylesheet" type="text/css" href="../../../../../../../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../../../../../../../index.html">top level</a> - <a href="index.html">var/lib/jenkins/jobs/redis-lcov/workspace/src</a> - t_set.c<span style="font-size: 80%;"> (source / <a href="t_set.c.func.html">functions</a>)</span></td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">redis-lcov_9.info</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">421</td>
+            <td class="headerCovTableEntry">430</td>
+            <td class="headerCovTableEntryHi">97.9 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2013-08-26</td>
+            <td></td>
+            <td class="headerItem">Functions:</td>
+            <td class="headerCovTableEntry">29</td>
+            <td class="headerCovTableEntry">29</td>
+            <td class="headerCovTableEntryHi">100.0 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Legend:</td>
+            <td class="headerValueLeg">            Lines:
+            <span class="coverLegendCov">hit</span>
+            <span class="coverLegendNoCov">not hit</span>
+            | Branches:
+            <span class="coverLegendCov">+</span> taken
+            <span class="coverLegendNoCov">-</span> not taken
+            <span class="coverLegendNoCov">#</span> not executed
+</td>
+            <td></td>
+            <td class="headerItem">Branches:</td>
+            <td class="headerCovTableEntry">269</td>
+            <td class="headerCovTableEntry">306</td>
+            <td class="headerCovTableEntryMed">87.9 %</td>
+          </tr>
+          <tr><td><img src="../../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">           Branch data     Line data    Source code</pre>
+<pre class="source">
+<a name="1"><span class="lineNum">       1 </span>                :            : /*</a>
+<span class="lineNum">       2 </span>                :            :  * Copyright (c) 2009-2012, Salvatore Sanfilippo &lt;antirez at gmail dot com&gt;
+<span class="lineNum">       3 </span>                :            :  * All rights reserved.
+<span class="lineNum">       4 </span>                :            :  *
+<span class="lineNum">       5 </span>                :            :  * Redistribution and use in source and binary forms, with or without
+<span class="lineNum">       6 </span>                :            :  * modification, are permitted provided that the following conditions are met:
+<span class="lineNum">       7 </span>                :            :  *
+<span class="lineNum">       8 </span>                :            :  *   * Redistributions of source code must retain the above copyright notice,
+<span class="lineNum">       9 </span>                :            :  *     this list of conditions and the following disclaimer.
+<span class="lineNum">      10 </span>                :            :  *   * Redistributions in binary form must reproduce the above copyright
+<span class="lineNum">      11 </span>                :            :  *     notice, this list of conditions and the following disclaimer in the
+<span class="lineNum">      12 </span>                :            :  *     documentation and/or other materials provided with the distribution.
+<span class="lineNum">      13 </span>                :            :  *   * Neither the name of Redis nor the names of its contributors may be used
+<span class="lineNum">      14 </span>                :            :  *     to endorse or promote products derived from this software without
+<span class="lineNum">      15 </span>                :            :  *     specific prior written permission.
+<span class="lineNum">      16 </span>                :            :  *
+<span class="lineNum">      17 </span>                :            :  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS &quot;AS IS&quot;
+<span class="lineNum">      18 </span>                :            :  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+<span class="lineNum">      19 </span>                :            :  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+<span class="lineNum">      20 </span>                :            :  * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+<span class="lineNum">      21 </span>                :            :  * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+<span class="lineNum">      22 </span>                :            :  * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+<span class="lineNum">      23 </span>                :            :  * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+<span class="lineNum">      24 </span>                :            :  * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+<span class="lineNum">      25 </span>                :            :  * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+<span class="lineNum">      26 </span>                :            :  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+<span class="lineNum">      27 </span>                :            :  * POSSIBILITY OF SUCH DAMAGE.
+<span class="lineNum">      28 </span>                :            :  */
+<span class="lineNum">      29 </span>                :            : 
+<span class="lineNum">      30 </span>                :            : #include &quot;redis.h&quot;
+<span class="lineNum">      31 </span>                :            : 
+<span class="lineNum">      32 </span>                :            : /*-----------------------------------------------------------------------------
+<span class="lineNum">      33 </span>                :            :  * Set Commands
+<span class="lineNum">      34 </span>                :            :  *----------------------------------------------------------------------------*/
+<span class="lineNum">      35 </span>                :            : 
+<span class="lineNum">      36 </span>                :            : void sunionDiffGenericCommand(redisClient *c, robj **setkeys, int setnum, robj *dstkey, int op);
+<span class="lineNum">      37 </span>                :            : 
+<span class="lineNum">      38 </span>                :            : /* Factory method to return a set that *can* hold &quot;value&quot;. When the object has
+<a name="39"><span class="lineNum">      39 </span>                :            :  * an integer-encodable value, an intset will be returned. Otherwise a regular</a>
+<span class="lineNum">      40 </span>                :            :  * hash table. */
+<span class="lineNum">      41 </span>                :<span class="lineCov">      55273 : robj *setTypeCreate(robj *value) {</span>
+<span class="lineNum">      42 </span>        [<span class="branchCov" title="Branch 1 was taken 41643 times"> + </span><span class="branchCov" title="Branch 2 was taken 13630 times"> + </span>]:<span class="lineCov">      55273 :     if (isObjectRepresentableAsLongLong(value,NULL) == REDIS_OK)</span>
+<span class="lineNum">      43 </span>                :<span class="lineCov">      41643 :         return createIntsetObject();</span>
+<span class="lineNum">      44 </span>                :<span class="lineCov">      55273 :     return createSetObject();</span>
+<a name="45"><span class="lineNum">      45 </span>                :            : }</a>
+<span class="lineNum">      46 </span>                :            : 
+<span class="lineNum">      47 </span>                :<span class="lineCov">     208718 : int setTypeAdd(robj *subject, robj *value) {</span>
+<span class="lineNum">      48 </span>                :            :     long long llval;
+<span class="lineNum">      49 </span>        [<span class="branchCov" title="Branch 0 was taken 107791 times"> + </span><span class="branchCov" title="Branch 1 was taken 100927 times"> + </span>]:<span class="lineCov">     208718 :     if (subject-&gt;encoding == REDIS_ENCODING_HT) {</span>
+<span class="lineNum">      50 </span>        [<span class="branchCov" title="Branch 1 was taken 103343 times"> + </span><span class="branchCov" title="Branch 2 was taken 4448 times"> + </span>]:<span class="lineCov">     107791 :         if (dictAdd(subject-&gt;ptr,value,NULL) == DICT_OK) {</span>
+<span class="lineNum">      51 </span>                :<span class="lineCov">     103343 :             incrRefCount(value);</span>
+<span class="lineNum">      52 </span>                :<span class="lineCov">     208718 :             return 1;</span>
+<span class="lineNum">      53 </span>                :            :         }
+<span class="lineNum">      54 </span>        [<span class="branchCov" title="Branch 0 was taken 100927 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">     100927 :     } else if (subject-&gt;encoding == REDIS_ENCODING_INTSET) {</span>
+<span class="lineNum">      55 </span>        [<span class="branchCov" title="Branch 1 was taken 94303 times"> + </span><span class="branchCov" title="Branch 2 was taken 6624 times"> + </span>]:<span class="lineCov">     100927 :         if (isObjectRepresentableAsLongLong(value,&amp;llval) == REDIS_OK) {</span>
+<span class="lineNum">      56 </span>                :<span class="lineCov">      94303 :             uint8_t success = 0;</span>
+<span class="lineNum">      57 </span>                :<span class="lineCov">      94303 :             subject-&gt;ptr = intsetAdd(subject-&gt;ptr,llval,&amp;success);</span>
+<span class="lineNum">      58 </span>        [<span class="branchCov" title="Branch 0 was taken 84041 times"> + </span><span class="branchCov" title="Branch 1 was taken 10262 times"> + </span>]:<span class="lineCov">      94303 :             if (success) {</span>
+<span class="lineNum">      59 </span>                :            :                 /* Convert to regular set when the intset contains
+<span class="lineNum">      60 </span>                :            :                  * too many entries. */
+<span class="lineNum">      61 </span>        [<span class="branchCov" title="Branch 1 was taken 34 times"> + </span><span class="branchCov" title="Branch 2 was taken 84007 times"> + </span>]:<span class="lineCov">      84041 :                 if (intsetLen(subject-&gt;ptr) &gt; server.set_max_intset_entries)</span>
+<span class="lineNum">      62 </span>                :<span class="lineCov">         34 :                     setTypeConvert(subject,REDIS_ENCODING_HT);</span>
+<span class="lineNum">      63 </span>                :            :                 return 1;
+<span class="lineNum">      64 </span>                :            :             }
+<span class="lineNum">      65 </span>                :            :         } else {
+<span class="lineNum">      66 </span>                :            :             /* Failed to get integer from object, convert to regular set. */
+<span class="lineNum">      67 </span>                :<span class="lineCov">       6624 :             setTypeConvert(subject,REDIS_ENCODING_HT);</span>
+<span class="lineNum">      68 </span>                :            : 
+<span class="lineNum">      69 </span>                :            :             /* The set *was* an intset and this value is not integer
+<span class="lineNum">      70 </span>                :            :              * encodable, so dictAdd should always work. */
+<span class="lineNum">      71 </span>        [<span class="branchNoCov" title="Branch 1 was not taken"> - </span><span class="branchCov" title="Branch 2 was taken 6624 times"> + </span>]:<span class="lineCov">       6624 :             redisAssertWithInfo(NULL,value,dictAdd(subject-&gt;ptr,value,NULL) == DICT_OK);</span>
+<span class="lineNum">      72 </span>                :<span class="lineCov">       6624 :             incrRefCount(value);</span>
+<span class="lineNum">      73 </span>                :<span class="lineCov">       6624 :             return 1;</span>
+<span class="lineNum">      74 </span>                :            :         }
+<span class="lineNum">      75 </span>                :            :     } else {
+<span class="lineNum">      76 </span>                :<span class="lineNoCov">          0 :         redisPanic(&quot;Unknown set encoding&quot;);</span>
+<span class="lineNum">      77 </span>                :            :     }
+<span class="lineNum">      78 </span>                :            :     return 0;
+<a name="79"><span class="lineNum">      79 </span>                :            : }</a>
+<span class="lineNum">      80 </span>                :            : 
+<span class="lineNum">      81 </span>                :<span class="lineCov">      27164 : int setTypeRemove(robj *setobj, robj *value) {</span>
+<span class="lineNum">      82 </span>                :            :     long long llval;
+<span class="lineNum">      83 </span>        [<span class="branchCov" title="Branch 0 was taken 11616 times"> + </span><span class="branchCov" title="Branch 1 was taken 15548 times"> + </span>]:<span class="lineCov">      27164 :     if (setobj-&gt;encoding == REDIS_ENCODING_HT) {</span>
+<span class="lineNum">      84 </span>        [<span class="branchCov" title="Branch 1 was taken 9939 times"> + </span><span class="branchCov" title="Branch 2 was taken 1677 times"> + </span>]:<span class="lineCov">      11616 :         if (dictDelete(setobj-&gt;ptr,value) == DICT_OK) {</span>
+<span class="lineNum">      85 </span>        [<span class="branchCov" title="Branch 1 was taken 275 times"> + </span><span class="branchCov" title="Branch 2 was taken 9664 times"> + </span>]:<span class="lineCov">       9939 :             if (htNeedsResize(setobj-&gt;ptr)) dictResize(setobj-&gt;ptr);</span>
+<span class="lineNum">      86 </span>                :            :             return 1;
+<span class="lineNum">      87 </span>                :            :         }
+<span class="lineNum">      88 </span>        [<span class="branchCov" title="Branch 0 was taken 15548 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">      15548 :     } else if (setobj-&gt;encoding == REDIS_ENCODING_INTSET) {</span>
+<span class="lineNum">      89 </span>        [<span class="branchCov" title="Branch 1 was taken 15082 times"> + </span><span class="branchCov" title="Branch 2 was taken 466 times"> + </span>]:<span class="lineCov">      15548 :         if (isObjectRepresentableAsLongLong(value,&amp;llval) == REDIS_OK) {</span>
+<span class="lineNum">      90 </span>                :            :             int success;
+<span class="lineNum">      91 </span>                :<span class="lineCov">      15082 :             setobj-&gt;ptr = intsetRemove(setobj-&gt;ptr,llval,&amp;success);</span>
+<span class="lineNum">      92 </span>        [<span class="branchCov" title="Branch 0 was taken 1264 times"> + </span><span class="branchCov" title="Branch 1 was taken 13818 times"> + </span>]:<span class="lineCov">      15082 :             if (success) return 1;</span>
+<span class="lineNum">      93 </span>                :            :         }
+<span class="lineNum">      94 </span>                :            :     } else {
+<span class="lineNum">      95 </span>                :<span class="lineNoCov">          0 :         redisPanic(&quot;Unknown set encoding&quot;);</span>
+<span class="lineNum">      96 </span>                :            :     }
+<span class="lineNum">      97 </span>                :<span class="lineCov">      27164 :     return 0;</span>
+<a name="98"><span class="lineNum">      98 </span>                :            : }</a>
+<span class="lineNum">      99 </span>                :            : 
+<span class="lineNum">     100 </span>                :<span class="lineCov">      36868 : int setTypeIsMember(robj *subject, robj *value) {</span>
+<span class="lineNum">     101 </span>                :            :     long long llval;
+<span class="lineNum">     102 </span>        [<span class="branchCov" title="Branch 0 was taken 28850 times"> + </span><span class="branchCov" title="Branch 1 was taken 8018 times"> + </span>]:<span class="lineCov">      36868 :     if (subject-&gt;encoding == REDIS_ENCODING_HT) {</span>
+<span class="lineNum">     103 </span>                :<span class="lineCov">      28850 :         return dictFind((dict*)subject-&gt;ptr,value) != NULL;</span>
+<span class="lineNum">     104 </span>        [<span class="branchCov" title="Branch 0 was taken 8018 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">       8018 :     } else if (subject-&gt;encoding == REDIS_ENCODING_INTSET) {</span>
+<span class="lineNum">     105 </span>        [<span class="branchCov" title="Branch 1 was taken 5274 times"> + </span><span class="branchCov" title="Branch 2 was taken 2744 times"> + </span>]:<span class="lineCov">       8018 :         if (isObjectRepresentableAsLongLong(value,&amp;llval) == REDIS_OK) {</span>
+<span class="lineNum">     106 </span>                :<span class="lineCov">       5274 :             return intsetFind((intset*)subject-&gt;ptr,llval);</span>
+<span class="lineNum">     107 </span>                :            :         }
+<span class="lineNum">     108 </span>                :            :     } else {
+<span class="lineNum">     109 </span>                :<span class="lineCov">      36868 :         redisPanic(&quot;Unknown set encoding&quot;);</span>
+<span class="lineNum">     110 </span>                :            :     }
+<span class="lineNum">     111 </span>                :            :     return 0;
+<a name="112"><span class="lineNum">     112 </span>                :            : }</a>
+<span class="lineNum">     113 </span>                :            : 
+<span class="lineNum">     114 </span>                :<span class="lineCov">     164648 : setTypeIterator *setTypeInitIterator(robj *subject) {</span>
+<span class="lineNum">     115 </span>                :<span class="lineCov">     164648 :     setTypeIterator *si = zmalloc(sizeof(setTypeIterator));</span>
+<span class="lineNum">     116 </span>                :<span class="lineCov">     164648 :     si-&gt;subject = subject;</span>
+<span class="lineNum">     117 </span>                :<span class="lineCov">     164648 :     si-&gt;encoding = subject-&gt;encoding;</span>
+<span class="lineNum">     118 </span>        [<span class="branchCov" title="Branch 0 was taken 44484 times"> + </span><span class="branchCov" title="Branch 1 was taken 120164 times"> + </span>]:<span class="lineCov">     164648 :     if (si-&gt;encoding == REDIS_ENCODING_HT) {</span>
+<span class="lineNum">     119 </span>                :<span class="lineCov">      44484 :         si-&gt;di = dictGetIterator(subject-&gt;ptr);</span>
+<span class="lineNum">     120 </span>        [<span class="branchCov" title="Branch 0 was taken 120164 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">     120164 :     } else if (si-&gt;encoding == REDIS_ENCODING_INTSET) {</span>
+<span class="lineNum">     121 </span>                :<span class="lineCov">     120164 :         si-&gt;ii = 0;</span>
+<span class="lineNum">     122 </span>                :            :     } else {
+<span class="lineNum">     123 </span>                :<span class="lineNoCov">          0 :         redisPanic(&quot;Unknown set encoding&quot;);</span>
+<span class="lineNum">     124 </span>                :            :     }
+<span class="lineNum">     125 </span>                :<span class="lineCov">     164648 :     return si;</span>
+<a name="126"><span class="lineNum">     126 </span>                :            : }</a>
+<span class="lineNum">     127 </span>                :            : 
+<span class="lineNum">     128 </span>                :<span class="lineCov">     164648 : void setTypeReleaseIterator(setTypeIterator *si) {</span>
+<span class="lineNum">     129 </span>        [<span class="branchCov" title="Branch 0 was taken 44484 times"> + </span><span class="branchCov" title="Branch 1 was taken 120164 times"> + </span>]:<span class="lineCov">     164648 :     if (si-&gt;encoding == REDIS_ENCODING_HT)</span>
+<span class="lineNum">     130 </span>                :<span class="lineCov">      44484 :         dictReleaseIterator(si-&gt;di);</span>
+<span class="lineNum">     131 </span>                :<span class="lineCov">     164648 :     zfree(si);</span>
+<span class="lineNum">     132 </span>                :<span class="lineCov">     164648 : }</span>
+<span class="lineNum">     133 </span>                :            : 
+<span class="lineNum">     134 </span>                :            : /* Move to the next entry in the set. Returns the object at the current
+<span class="lineNum">     135 </span>                :            :  * position.
+<span class="lineNum">     136 </span>                :            :  *
+<span class="lineNum">     137 </span>                :            :  * Since set elements can be internally be stored as redis objects or
+<span class="lineNum">     138 </span>                :            :  * simple arrays of integers, setTypeNext returns the encoding of the
+<span class="lineNum">     139 </span>                :            :  * set object you are iterating, and will populate the appropriate pointer
+<span class="lineNum">     140 </span>                :            :  * (eobj) or (llobj) accordingly.
+<span class="lineNum">     141 </span>                :            :  *
+<span class="lineNum">     142 </span>                :            :  * When there are no longer elements -1 is returned.
+<a name="143"><span class="lineNum">     143 </span>                :            :  * Returned objects ref count is not incremented, so this function is</a>
+<span class="lineNum">     144 </span>                :            :  * copy on write friendly. */
+<span class="lineNum">     145 </span>                :<span class="lineCov">     489830 : int setTypeNext(setTypeIterator *si, robj **objele, int64_t *llele) {</span>
+<span class="lineNum">     146 </span>        [<span class="branchCov" title="Branch 0 was taken 211447 times"> + </span><span class="branchCov" title="Branch 1 was taken 278383 times"> + </span>]:<span class="lineCov">     489830 :     if (si-&gt;encoding == REDIS_ENCODING_HT) {</span>
+<span class="lineNum">     147 </span>                :<span class="lineCov">     211447 :         dictEntry *de = dictNext(si-&gt;di);</span>
+<span class="lineNum">     148 </span>        [<span class="branchCov" title="Branch 0 was taken 166963 times"> + </span><span class="branchCov" title="Branch 1 was taken 44484 times"> + </span>]:<span class="lineCov">     211447 :         if (de == NULL) return -1;</span>
+<span class="lineNum">     149 </span>                :<span class="lineCov">     166963 :         *objele = dictGetKey(de);</span>
+<span class="lineNum">     150 </span>        [<span class="branchCov" title="Branch 0 was taken 278383 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">     278383 :     } else if (si-&gt;encoding == REDIS_ENCODING_INTSET) {</span>
+<span class="lineNum">     151 </span>        [<span class="branchCov" title="Branch 1 was taken 158219 times"> + </span><span class="branchCov" title="Branch 2 was taken 120164 times"> + </span>]:<span class="lineCov">     278383 :         if (!intsetGet(si-&gt;subject-&gt;ptr,si-&gt;ii++,llele))</span>
+<span class="lineNum">     152 </span>                :            :             return -1;
+<span class="lineNum">     153 </span>                :            :     }
+<span class="lineNum">     154 </span>                :<span class="lineCov">     489830 :     return si-&gt;encoding;</span>
+<span class="lineNum">     155 </span>                :            : }
+<span class="lineNum">     156 </span>                :            : 
+<span class="lineNum">     157 </span>                :            : /* The not copy on write friendly version but easy to use version
+<span class="lineNum">     158 </span>                :            :  * of setTypeNext() is setTypeNextObject(), returning new objects
+<span class="lineNum">     159 </span>                :            :  * or incrementing the ref count of returned objects. So if you don't
+<span class="lineNum">     160 </span>                :            :  * retain a pointer to this object you should call decrRefCount() against it.
+<span class="lineNum">     161 </span>                :            :  *
+<a name="162"><span class="lineNum">     162 </span>                :            :  * This function is the way to go for write operations where COW is not</a>
+<span class="lineNum">     163 </span>                :            :  * an issue as the result will be anyway of incrementing the ref count. */
+<span class="lineNum">     164 </span>                :<span class="lineCov">     427203 : robj *setTypeNextObject(setTypeIterator *si) {</span>
+<span class="lineNum">     165 </span>                :            :     int64_t intele;
+<span class="lineNum">     166 </span>                :            :     robj *objele;
+<span class="lineNum">     167 </span>                :            :     int encoding;
+<span class="lineNum">     168 </span>                :            : 
+<span class="lineNum">     169 </span>                :<span class="lineCov">     427203 :     encoding = setTypeNext(si,&amp;objele,&amp;intele);</span>
+<span class="lineNum">     170 </span>  [<span class="branchCov" title="Branch 0 was taken 123493 times"> + </span><span class="branchCov" title="Branch 1 was taken 157378 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span><span class="branchCov" title="Branch 3 was taken 146332 times"> + </span>]:<span class="lineCov">     427203 :     switch(encoding) {</span>
+<span class="lineNum">     171 </span>                :            :         case -1:    return NULL;
+<span class="lineNum">     172 </span>                :            :         case REDIS_ENCODING_INTSET:
+<span class="lineNum">     173 </span>                :<span class="lineCov">     123493 :             return createStringObjectFromLongLong(intele);</span>
+<span class="lineNum">     174 </span>                :            :         case REDIS_ENCODING_HT:
+<span class="lineNum">     175 </span>                :<span class="lineCov">     157378 :             incrRefCount(objele);</span>
+<span class="lineNum">     176 </span>                :<span class="lineCov">     157378 :             return objele;</span>
+<span class="lineNum">     177 </span>                :            :         default:
+<span class="lineNum">     178 </span>                :<span class="lineCov">     427203 :             redisPanic(&quot;Unsupported encoding&quot;);</span>
+<span class="lineNum">     179 </span>                :            :     }
+<span class="lineNum">     180 </span>                :            :     return NULL; /* just to suppress warnings */
+<span class="lineNum">     181 </span>                :            : }
+<span class="lineNum">     182 </span>                :            : 
+<span class="lineNum">     183 </span>                :            : /* Return random element from a non empty set.
+<span class="lineNum">     184 </span>                :            :  * The returned element can be a int64_t value if the set is encoded
+<span class="lineNum">     185 </span>                :            :  * as an &quot;intset&quot; blob of integers, or a redis object if the set
+<span class="lineNum">     186 </span>                :            :  * is a regular set.
+<span class="lineNum">     187 </span>                :            :  *
+<span class="lineNum">     188 </span>                :            :  * The caller provides both pointers to be populated with the right
+<span class="lineNum">     189 </span>                :            :  * object. The return value of the function is the object-&gt;encoding
+<span class="lineNum">     190 </span>                :            :  * field of the object and is used by the caller to check if the
+<span class="lineNum">     191 </span>                :            :  * int64_t pointer or the redis object pointer was populated.
+<span class="lineNum">     192 </span>                :            :  *
+<span class="lineNum">     193 </span>                :            :  * When an object is returned (the set was a real set) the ref count
+<a name="194"><span class="lineNum">     194 </span>                :            :  * of the object is not incremented so this function can be considered</a>
+<span class="lineNum">     195 </span>                :            :  * copy on write friendly. */
+<span class="lineNum">     196 </span>                :<span class="lineCov">      10484 : int setTypeRandomElement(robj *setobj, robj **objele, int64_t *llele) {</span>
+<span class="lineNum">     197 </span>        [<span class="branchCov" title="Branch 0 was taken 6513 times"> + </span><span class="branchCov" title="Branch 1 was taken 3971 times"> + </span>]:<span class="lineCov">      10484 :     if (setobj-&gt;encoding == REDIS_ENCODING_HT) {</span>
+<span class="lineNum">     198 </span>                :<span class="lineCov">       6513 :         dictEntry *de = dictGetRandomKey(setobj-&gt;ptr);</span>
+<span class="lineNum">     199 </span>                :<span class="lineCov">       6513 :         *objele = dictGetKey(de);</span>
+<span class="lineNum">     200 </span>        [<span class="branchCov" title="Branch 0 was taken 3971 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">       3971 :     } else if (setobj-&gt;encoding == REDIS_ENCODING_INTSET) {</span>
+<span class="lineNum">     201 </span>                :<span class="lineCov">       3971 :         *llele = intsetRandom(setobj-&gt;ptr);</span>
+<span class="lineNum">     202 </span>                :            :     } else {
+<span class="lineNum">     203 </span>                :<span class="lineNoCov">          0 :         redisPanic(&quot;Unknown set encoding&quot;);</span>
+<span class="lineNum">     204 </span>                :            :     }
+<span class="lineNum">     205 </span>                :<span class="lineCov">      10484 :     return setobj-&gt;encoding;</span>
+<a name="206"><span class="lineNum">     206 </span>                :            : }</a>
+<span class="lineNum">     207 </span>                :            : 
+<span class="lineNum">     208 </span>                :<span class="lineCov">     109230 : unsigned long setTypeSize(robj *subject) {</span>
+<span class="lineNum">     209 </span>        [<span class="branchCov" title="Branch 0 was taken 35255 times"> + </span><span class="branchCov" title="Branch 1 was taken 73975 times"> + </span>]:<span class="lineCov">     109230 :     if (subject-&gt;encoding == REDIS_ENCODING_HT) {</span>
+<span class="lineNum">     210 </span>                :<span class="lineCov">      35255 :         return dictSize((dict*)subject-&gt;ptr);</span>
+<span class="lineNum">     211 </span>        [<span class="branchCov" title="Branch 0 was taken 73975 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">      73975 :     } else if (subject-&gt;encoding == REDIS_ENCODING_INTSET) {</span>
+<span class="lineNum">     212 </span>                :<span class="lineCov">      73975 :         return intsetLen((intset*)subject-&gt;ptr);</span>
+<span class="lineNum">     213 </span>                :            :     } else {
+<span class="lineNum">     214 </span>                :<span class="lineCov">     109230 :         redisPanic(&quot;Unknown set encoding&quot;);</span>
+<span class="lineNum">     215 </span>                :            :     }
+<span class="lineNum">     216 </span>                :            : }
+<span class="lineNum">     217 </span>                :            : 
+<span class="lineNum">     218 </span>                :            : /* Convert the set to specified encoding. The resulting dict (when converting
+<a name="219"><span class="lineNum">     219 </span>                :            :  * to a hash table) is presized to hold the number of elements in the original</a>
+<span class="lineNum">     220 </span>                :            :  * set. */
+<span class="lineNum">     221 </span>                :<span class="lineCov">      11081 : void setTypeConvert(robj *setobj, int enc) {</span>
+<span class="lineNum">     222 </span>                :            :     setTypeIterator *si;
+<span class="lineNum">     223 </span>        [<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchCov" title="Branch 1 was taken 11081 times"> + </span>]:<span class="lineCov">      11081 :     redisAssertWithInfo(NULL,setobj,setobj-&gt;type == REDIS_SET &amp;&amp;</span>
+<span class="lineNum">     224 </span>                :            :                              setobj-&gt;encoding == REDIS_ENCODING_INTSET);
+<span class="lineNum">     225 </span>                :            : 
+<span class="lineNum">     226 </span>        [<span class="branchCov" title="Branch 0 was taken 11081 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">      11081 :     if (enc == REDIS_ENCODING_HT) {</span>
+<span class="lineNum">     227 </span>                :            :         int64_t intele;
+<span class="lineNum">     228 </span>                :<span class="lineCov">      11081 :         dict *d = dictCreate(&amp;setDictType,NULL);</span>
+<span class="lineNum">     229 </span>                :            :         robj *element;
+<span class="lineNum">     230 </span>                :            : 
+<span class="lineNum">     231 </span>                :            :         /* Presize the dict to avoid rehashing */
+<span class="lineNum">     232 </span>                :<span class="lineCov">      11081 :         dictExpand(d,intsetLen(setobj-&gt;ptr));</span>
+<span class="lineNum">     233 </span>                :            : 
+<span class="lineNum">     234 </span>                :            :         /* To add the elements we extract integers and create redis objects */
+<span class="lineNum">     235 </span>                :<span class="lineCov">      11081 :         si = setTypeInitIterator(setobj);</span>
+<span class="lineNum">     236 </span>        [<span class="branchCov" title="Branch 1 was taken 23811 times"> + </span><span class="branchCov" title="Branch 2 was taken 11081 times"> + </span>]:<span class="lineCov">      34892 :         while (setTypeNext(si,NULL,&amp;intele) != -1) {</span>
+<span class="lineNum">     237 </span>                :<span class="lineCov">      23811 :             element = createStringObjectFromLongLong(intele);</span>
+<span class="lineNum">     238 </span>        [<span class="branchNoCov" title="Branch 1 was not taken"> - </span><span class="branchCov" title="Branch 2 was taken 23811 times"> + </span>]:<span class="lineCov">      23811 :             redisAssertWithInfo(NULL,element,dictAdd(d,element,NULL) == DICT_OK);</span>
+<span class="lineNum">     239 </span>                :            :         }
+<span class="lineNum">     240 </span>                :<span class="lineCov">      11081 :         setTypeReleaseIterator(si);</span>
+<span class="lineNum">     241 </span>                :            : 
+<span class="lineNum">     242 </span>                :<span class="lineCov">      11081 :         setobj-&gt;encoding = REDIS_ENCODING_HT;</span>
+<span class="lineNum">     243 </span>                :<span class="lineCov">      11081 :         zfree(setobj-&gt;ptr);</span>
+<span class="lineNum">     244 </span>                :<span class="lineCov">      11081 :         setobj-&gt;ptr = d;</span>
+<span class="lineNum">     245 </span>                :            :     } else {
+<span class="lineNum">     246 </span>                :<span class="lineNoCov">          0 :         redisPanic(&quot;Unsupported set conversion&quot;);</span>
+<span class="lineNum">     247 </span>                :            :     }
+<a name="248"><span class="lineNum">     248 </span>                :<span class="lineCov">      11081 : }</span></a>
+<span class="lineNum">     249 </span>                :            : 
+<span class="lineNum">     250 </span>                :<span class="lineCov">     153238 : void saddCommand(redisClient *c) {</span>
+<span class="lineNum">     251 </span>                :            :     robj *set;
+<span class="lineNum">     252 </span>                :<span class="lineCov">     153238 :     int j, added = 0;</span>
+<span class="lineNum">     253 </span>                :            : 
+<span class="lineNum">     254 </span>                :<span class="lineCov">     153238 :     set = lookupKeyWrite(c-&gt;db,c-&gt;argv[1]);</span>
+<span class="lineNum">     255 </span>        [<span class="branchCov" title="Branch 0 was taken 55271 times"> + </span><span class="branchCov" title="Branch 1 was taken 97967 times"> + </span>]:<span class="lineCov">     153238 :     if (set == NULL) {</span>
+<span class="lineNum">     256 </span>                :<span class="lineCov">      55271 :         set = setTypeCreate(c-&gt;argv[2]);</span>
+<span class="lineNum">     257 </span>                :<span class="lineCov">      55271 :         dbAdd(c-&gt;db,c-&gt;argv[1],set);</span>
+<span class="lineNum">     258 </span>                :            :     } else {
+<span class="lineNum">     259 </span>        [<span class="branchCov" title="Branch 0 was taken 1 time"> + </span><span class="branchCov" title="Branch 1 was taken 97966 times"> + </span>]:<span class="lineCov">      97967 :         if (set-&gt;type != REDIS_SET) {</span>
+<span class="lineNum">     260 </span>                :<span class="lineCov">          1 :             addReply(c,shared.wrongtypeerr);</span>
+<span class="lineNum">     261 </span>                :<span class="lineCov">     153238 :             return;</span>
+<span class="lineNum">     262 </span>                :            :         }
+<span class="lineNum">     263 </span>                :            :     }
+<span class="lineNum">     264 </span>                :            : 
+<span class="lineNum">     265 </span>        [<span class="branchCov" title="Branch 0 was taken 176274 times"> + </span><span class="branchCov" title="Branch 1 was taken 153237 times"> + </span>]:<span class="lineCov">     329511 :     for (j = 2; j &lt; c-&gt;argc; j++) {</span>
+<span class="lineNum">     266 </span>                :<span class="lineCov">     176274 :         c-&gt;argv[j] = tryObjectEncoding(c-&gt;argv[j]);</span>
+<span class="lineNum">     267 </span>        [<span class="branchCov" title="Branch 1 was taken 161642 times"> + </span><span class="branchCov" title="Branch 2 was taken 14632 times"> + </span>]:<span class="lineCov">     176274 :         if (setTypeAdd(set,c-&gt;argv[j])) added++;</span>
+<span class="lineNum">     268 </span>                :            :     }
+<span class="lineNum">     269 </span>        [<span class="branchCov" title="Branch 0 was taken 138608 times"> + </span><span class="branchCov" title="Branch 1 was taken 14629 times"> + </span>]:<span class="lineCov">     153237 :     if (added) {</span>
+<span class="lineNum">     270 </span>                :<span class="lineCov">     138608 :         signalModifiedKey(c-&gt;db,c-&gt;argv[1]);</span>
+<span class="lineNum">     271 </span>                :<span class="lineCov">     138608 :         notifyKeyspaceEvent(REDIS_NOTIFY_SET,&quot;sadd&quot;,c-&gt;argv[1],c-&gt;db-&gt;id);</span>
+<span class="lineNum">     272 </span>                :            :     }
+<span class="lineNum">     273 </span>                :<span class="lineCov">     153237 :     server.dirty += added;</span>
+<span class="lineNum">     274 </span>                :<span class="lineCov">     153237 :     addReplyLongLong(c,added);</span>
+<a name="275"><span class="lineNum">     275 </span>                :            : }</a>
+<span class="lineNum">     276 </span>                :            : 
+<span class="lineNum">     277 </span>                :<span class="lineCov">      21041 : void sremCommand(redisClient *c) {</span>
+<span class="lineNum">     278 </span>                :            :     robj *set;
+<span class="lineNum">     279 </span>                :<span class="lineCov">      21041 :     int j, deleted = 0, keyremoved = 0;</span>
+<span class="lineNum">     280 </span>                :            : 
+<span class="lineNum">     281 </span>  [<span class="branchCov" title="Branch 1 was taken 21041 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span><span class="branchCov" title="Branch 3 was taken 21041 times"> + </span><span class="branchNoCov" title="Branch 4 was not taken"> - </span>]:<span class="lineCov">      42082 :     if ((set = lookupKeyWriteOrReply(c,c-&gt;argv[1],shared.czero)) == NULL ||</span>
+<span class="lineNum">     282 </span>                :<span class="lineCov">      42082 :         checkType(c,set,REDIS_SET)) return;</span>
+<span class="lineNum">     283 </span>                :            : 
+<span class="lineNum">     284 </span>        [<span class="branchCov" title="Branch 0 was taken 21048 times"> + </span><span class="branchCov" title="Branch 1 was taken 2674 times"> + </span>]:<span class="lineCov">      23722 :     for (j = 2; j &lt; c-&gt;argc; j++) {</span>
+<span class="lineNum">     285 </span>        [<span class="branchCov" title="Branch 1 was taken 18375 times"> + </span><span class="branchCov" title="Branch 2 was taken 2673 times"> + </span>]:<span class="lineCov">      21048 :         if (setTypeRemove(set,c-&gt;argv[j])) {</span>
+<span class="lineNum">     286 </span>                :<span class="lineCov">      18375 :             deleted++;</span>
+<span class="lineNum">     287 </span>        [<span class="branchCov" title="Branch 1 was taken 18367 times"> + </span><span class="branchCov" title="Branch 2 was taken 8 times"> + </span>]:<span class="lineCov">      18375 :             if (setTypeSize(set) == 0) {</span>
+<span class="lineNum">     288 </span>                :<span class="lineCov">      18367 :                 dbDelete(c-&gt;db,c-&gt;argv[1]);</span>
+<span class="lineNum">     289 </span>                :<span class="lineCov">      18367 :                 keyremoved = 1;</span>
+<span class="lineNum">     290 </span>                :<span class="lineCov">      18367 :                 break;</span>
+<span class="lineNum">     291 </span>                :            :             }
+<span class="lineNum">     292 </span>                :            :         }
+<span class="lineNum">     293 </span>                :            :     }
+<span class="lineNum">     294 </span>        [<span class="branchCov" title="Branch 0 was taken 18372 times"> + </span><span class="branchCov" title="Branch 1 was taken 2669 times"> + </span>]:<span class="lineCov">      21041 :     if (deleted) {</span>
+<span class="lineNum">     295 </span>                :<span class="lineCov">      18372 :         signalModifiedKey(c-&gt;db,c-&gt;argv[1]);</span>
+<span class="lineNum">     296 </span>                :<span class="lineCov">      18372 :         notifyKeyspaceEvent(REDIS_NOTIFY_SET,&quot;srem&quot;,c-&gt;argv[1],c-&gt;db-&gt;id);</span>
+<span class="lineNum">     297 </span>        [<span class="branchCov" title="Branch 0 was taken 18367 times"> + </span><span class="branchCov" title="Branch 1 was taken 5 times"> + </span>]:<span class="lineCov">      18372 :         if (keyremoved)</span>
+<span class="lineNum">     298 </span>                :<span class="lineCov">      18367 :             notifyKeyspaceEvent(REDIS_NOTIFY_GENERIC,&quot;del&quot;,c-&gt;argv[1],</span>
+<span class="lineNum">     299 </span>                :<span class="lineCov">      18367 :                                 c-&gt;db-&gt;id);</span>
+<span class="lineNum">     300 </span>                :<span class="lineCov">      18372 :         server.dirty += deleted;</span>
+<span class="lineNum">     301 </span>                :            :     }
+<span class="lineNum">     302 </span>                :<span class="lineCov">      21041 :     addReplyLongLong(c,deleted);</span>
+<a name="303"><span class="lineNum">     303 </span>                :            : }</a>
+<span class="lineNum">     304 </span>                :            : 
+<span class="lineNum">     305 </span>                :<span class="lineCov">         10 : void smoveCommand(redisClient *c) {</span>
+<span class="lineNum">     306 </span>                :            :     robj *srcset, *dstset, *ele;
+<span class="lineNum">     307 </span>                :<span class="lineCov">         10 :     srcset = lookupKeyWrite(c-&gt;db,c-&gt;argv[1]);</span>
+<span class="lineNum">     308 </span>                :<span class="lineCov">         10 :     dstset = lookupKeyWrite(c-&gt;db,c-&gt;argv[2]);</span>
+<span class="lineNum">     309 </span>                :<span class="lineCov">         10 :     ele = c-&gt;argv[3] = tryObjectEncoding(c-&gt;argv[3]);</span>
+<span class="lineNum">     310 </span>                :            : 
+<span class="lineNum">     311 </span>                :            :     /* If the source key does not exist return 0 */
+<span class="lineNum">     312 </span>        [<span class="branchCov" title="Branch 0 was taken 1 time"> + </span><span class="branchCov" title="Branch 1 was taken 9 times"> + </span>]:<span class="lineCov">         10 :     if (srcset == NULL) {</span>
+<span class="lineNum">     313 </span>                :<span class="lineCov">          1 :         addReply(c,shared.czero);</span>
+<span class="lineNum">     314 </span>                :<span class="lineCov">          1 :         return;</span>
+<span class="lineNum">     315 </span>                :            :     }
+<span class="lineNum">     316 </span>                :            : 
+<span class="lineNum">     317 </span>                :            :     /* If the source key has the wrong type, or the destination key
+<span class="lineNum">     318 </span>                :            :      * is set and has the wrong type, return with an error. */
+<span class="lineNum">     319 </span>[<span class="branchCov" title="Branch 1 was taken 8 times"> + </span><span class="branchCov" title="Branch 2 was taken 1 time"> + </span>][<span class="branchCov" title="Branch 3 was taken 6 times"> + </span><span class="branchCov" title="Branch 4 was taken 2 times"> + </span>]:<span class="lineCov">          9 :     if (checkType(c,srcset,REDIS_SET) ||</span>
+<span class="lineNum">     320 </span>        [<span class="branchCov" title="Branch 1 was taken 5 times"> + </span><span class="branchCov" title="Branch 2 was taken 1 time"> + </span>]:<span class="lineCov">          6 :         (dstset &amp;&amp; checkType(c,dstset,REDIS_SET))) return;</span>
+<span class="lineNum">     321 </span>                :            : 
+<span class="lineNum">     322 </span>                :            :     /* If srcset and dstset are equal, SMOVE is a no-op */
+<span class="lineNum">     323 </span>        [<span class="branchCov" title="Branch 0 was taken 1 time"> + </span><span class="branchCov" title="Branch 1 was taken 6 times"> + </span>]:<span class="lineCov">          7 :     if (srcset == dstset) {</span>
+<span class="lineNum">     324 </span>                :<span class="lineCov">          1 :         addReply(c,shared.cone);</span>
+<span class="lineNum">     325 </span>                :<span class="lineCov">          1 :         return;</span>
+<span class="lineNum">     326 </span>                :            :     }
+<span class="lineNum">     327 </span>                :            : 
+<span class="lineNum">     328 </span>                :            :     /* If the element cannot be removed from the src set, return 0. */
+<span class="lineNum">     329 </span>        [<span class="branchCov" title="Branch 1 was taken 1 time"> + </span><span class="branchCov" title="Branch 2 was taken 5 times"> + </span>]:<span class="lineCov">          6 :     if (!setTypeRemove(srcset,ele)) {</span>
+<span class="lineNum">     330 </span>                :<span class="lineCov">          1 :         addReply(c,shared.czero);</span>
+<span class="lineNum">     331 </span>                :<span class="lineCov">          1 :         return;</span>
+<span class="lineNum">     332 </span>                :            :     }
+<span class="lineNum">     333 </span>                :<span class="lineCov">          5 :     notifyKeyspaceEvent(REDIS_NOTIFY_SET,&quot;srem&quot;,c-&gt;argv[1],c-&gt;db-&gt;id);</span>
+<span class="lineNum">     334 </span>                :            : 
+<span class="lineNum">     335 </span>                :            :     /* Remove the src set from the database when empty */
+<span class="lineNum">     336 </span>        [<span class="branchNoCov" title="Branch 1 was not taken"> - </span><span class="branchCov" title="Branch 2 was taken 5 times"> + </span>]:<span class="lineCov">          5 :     if (setTypeSize(srcset) == 0) {</span>
+<span class="lineNum">     337 </span>                :<span class="lineNoCov">          0 :         dbDelete(c-&gt;db,c-&gt;argv[1]);</span>
+<span class="lineNum">     338 </span>                :<span class="lineNoCov">          0 :         notifyKeyspaceEvent(REDIS_NOTIFY_GENERIC,&quot;del&quot;,c-&gt;argv[1],c-&gt;db-&gt;id);</span>
+<span class="lineNum">     339 </span>                :            :     }
+<span class="lineNum">     340 </span>                :<span class="lineCov">          5 :     signalModifiedKey(c-&gt;db,c-&gt;argv[1]);</span>
+<span class="lineNum">     341 </span>                :<span class="lineCov">          5 :     signalModifiedKey(c-&gt;db,c-&gt;argv[2]);</span>
+<span class="lineNum">     342 </span>                :<span class="lineCov">          5 :     server.dirty++;</span>
+<span class="lineNum">     343 </span>                :            : 
+<span class="lineNum">     344 </span>                :            :     /* Create the destination set when it doesn't exist */
+<span class="lineNum">     345 </span>        [<span class="branchCov" title="Branch 0 was taken 2 times"> + </span><span class="branchCov" title="Branch 1 was taken 3 times"> + </span>]:<span class="lineCov">          5 :     if (!dstset) {</span>
+<span class="lineNum">     346 </span>                :<span class="lineCov">          2 :         dstset = setTypeCreate(ele);</span>
+<span class="lineNum">     347 </span>                :<span class="lineCov">          2 :         dbAdd(c-&gt;db,c-&gt;argv[2],dstset);</span>
+<span class="lineNum">     348 </span>                :            :     }
+<span class="lineNum">     349 </span>                :            : 
+<span class="lineNum">     350 </span>                :            :     /* An extra key has changed when ele was successfully added to dstset */
+<span class="lineNum">     351 </span>        [<span class="branchCov" title="Branch 1 was taken 5 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          5 :     if (setTypeAdd(dstset,ele)) {</span>
+<span class="lineNum">     352 </span>                :<span class="lineCov">          5 :         server.dirty++;</span>
+<span class="lineNum">     353 </span>                :<span class="lineCov">          5 :         notifyKeyspaceEvent(REDIS_NOTIFY_SET,&quot;sadd&quot;,c-&gt;argv[2],c-&gt;db-&gt;id);</span>
+<span class="lineNum">     354 </span>                :            :     }
+<span class="lineNum">     355 </span>                :<span class="lineCov">         10 :     addReply(c,shared.cone);</span>
+<a name="356"><span class="lineNum">     356 </span>                :            : }</a>
+<span class="lineNum">     357 </span>                :            : 
+<span class="lineNum">     358 </span>                :<span class="lineCov">          7 : void sismemberCommand(redisClient *c) {</span>
+<span class="lineNum">     359 </span>                :            :     robj *set;
+<span class="lineNum">     360 </span>                :            : 
+<span class="lineNum">     361 </span>  [<span class="branchCov" title="Branch 1 was taken 7 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span><span class="branchCov" title="Branch 3 was taken 7 times"> + </span><span class="branchNoCov" title="Branch 4 was not taken"> - </span>]:<span class="lineCov">         14 :     if ((set = lookupKeyReadOrReply(c,c-&gt;argv[1],shared.czero)) == NULL ||</span>
+<span class="lineNum">     362 </span>                :<span class="lineCov">         14 :         checkType(c,set,REDIS_SET)) return;</span>
+<span class="lineNum">     363 </span>                :            : 
+<span class="lineNum">     364 </span>                :<span class="lineCov">          7 :     c-&gt;argv[2] = tryObjectEncoding(c-&gt;argv[2]);</span>
+<span class="lineNum">     365 </span>        [<span class="branchCov" title="Branch 1 was taken 5 times"> + </span><span class="branchCov" title="Branch 2 was taken 2 times"> + </span>]:<span class="lineCov">          7 :     if (setTypeIsMember(set,c-&gt;argv[2]))</span>
+<span class="lineNum">     366 </span>                :<span class="lineCov">          5 :         addReply(c,shared.cone);</span>
+<span class="lineNum">     367 </span>                :            :     else
+<span class="lineNum">     368 </span>                :<span class="lineCov">          2 :         addReply(c,shared.czero);</span>
+<a name="369"><span class="lineNum">     369 </span>                :            : }</a>
+<span class="lineNum">     370 </span>                :            : 
+<span class="lineNum">     371 </span>                :<span class="lineCov">         25 : void scardCommand(redisClient *c) {</span>
+<span class="lineNum">     372 </span>                :            :     robj *o;
+<span class="lineNum">     373 </span>                :            : 
+<span class="lineNum">     374 </span>  [<span class="branchCov" title="Branch 1 was taken 3 times"> + </span><span class="branchCov" title="Branch 2 was taken 22 times"> + </span><span class="branchCov" title="Branch 3 was taken 3 times"> + </span><span class="branchNoCov" title="Branch 4 was not taken"> - </span>]:<span class="lineCov">         28 :     if ((o = lookupKeyReadOrReply(c,c-&gt;argv[1],shared.czero)) == NULL ||</span>
+<span class="lineNum">     375 </span>                :<span class="lineCov">         28 :         checkType(c,o,REDIS_SET)) return;</span>
+<span class="lineNum">     376 </span>                :            : 
+<span class="lineNum">     377 </span>                :<span class="lineCov">          3 :     addReplyLongLong(c,setTypeSize(o));</span>
+<a name="378"><span class="lineNum">     378 </span>                :            : }</a>
+<span class="lineNum">     379 </span>                :            : 
+<span class="lineNum">     380 </span>                :<span class="lineCov">       8483 : void spopCommand(redisClient *c) {</span>
+<span class="lineNum">     381 </span>                :            :     robj *set, *ele, *aux;
+<span class="lineNum">     382 </span>                :            :     int64_t llele;
+<span class="lineNum">     383 </span>                :            :     int encoding;
+<span class="lineNum">     384 </span>                :            : 
+<span class="lineNum">     385 </span>  [<span class="branchCov" title="Branch 1 was taken 8483 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span><span class="branchCov" title="Branch 3 was taken 8483 times"> + </span><span class="branchNoCov" title="Branch 4 was not taken"> - </span>]:<span class="lineCov">      16966 :     if ((set = lookupKeyWriteOrReply(c,c-&gt;argv[1],shared.nullbulk)) == NULL ||</span>
+<span class="lineNum">     386 </span>                :<span class="lineCov">      16966 :         checkType(c,set,REDIS_SET)) return;</span>
+<span class="lineNum">     387 </span>                :            : 
+<span class="lineNum">     388 </span>                :<span class="lineCov">       8483 :     encoding = setTypeRandomElement(set,&amp;ele,&amp;llele);</span>
+<span class="lineNum">     389 </span>        [<span class="branchCov" title="Branch 0 was taken 3106 times"> + </span><span class="branchCov" title="Branch 1 was taken 5377 times"> + </span>]:<span class="lineCov">       8483 :     if (encoding == REDIS_ENCODING_INTSET) {</span>
+<span class="lineNum">     390 </span>                :<span class="lineCov">       3106 :         ele = createStringObjectFromLongLong(llele);</span>
+<span class="lineNum">     391 </span>                :<span class="lineCov">       3106 :         set-&gt;ptr = intsetRemove(set-&gt;ptr,llele,NULL);</span>
+<span class="lineNum">     392 </span>                :            :     } else {
+<span class="lineNum">     393 </span>                :<span class="lineCov">       5377 :         incrRefCount(ele);</span>
+<span class="lineNum">     394 </span>                :<span class="lineCov">       5377 :         setTypeRemove(set,ele);</span>
+<span class="lineNum">     395 </span>                :            :     }
+<span class="lineNum">     396 </span>                :<span class="lineCov">       8483 :     notifyKeyspaceEvent(REDIS_NOTIFY_SET,&quot;spop&quot;,c-&gt;argv[1],c-&gt;db-&gt;id);</span>
+<span class="lineNum">     397 </span>                :            : 
+<span class="lineNum">     398 </span>                :            :     /* Replicate/AOF this command as an SREM operation */
+<span class="lineNum">     399 </span>                :<span class="lineCov">       8483 :     aux = createStringObject(&quot;SREM&quot;,4);</span>
+<span class="lineNum">     400 </span>                :<span class="lineCov">       8483 :     rewriteClientCommandVector(c,3,aux,c-&gt;argv[1],ele);</span>
+<span class="lineNum">     401 </span>                :<span class="lineCov">       8483 :     decrRefCount(ele);</span>
+<span class="lineNum">     402 </span>                :<span class="lineCov">       8483 :     decrRefCount(aux);</span>
+<span class="lineNum">     403 </span>                :            : 
+<span class="lineNum">     404 </span>                :<span class="lineCov">       8483 :     addReplyBulk(c,ele);</span>
+<span class="lineNum">     405 </span>        [<span class="branchCov" title="Branch 1 was taken 27 times"> + </span><span class="branchCov" title="Branch 2 was taken 8456 times"> + </span>]:<span class="lineCov">       8483 :     if (setTypeSize(set) == 0) {</span>
+<span class="lineNum">     406 </span>                :<span class="lineCov">         27 :         dbDelete(c-&gt;db,c-&gt;argv[1]);</span>
+<span class="lineNum">     407 </span>                :<span class="lineCov">         27 :         notifyKeyspaceEvent(REDIS_NOTIFY_GENERIC,&quot;del&quot;,c-&gt;argv[1],c-&gt;db-&gt;id);</span>
+<span class="lineNum">     408 </span>                :            :     }
+<span class="lineNum">     409 </span>                :<span class="lineCov">       8483 :     signalModifiedKey(c-&gt;db,c-&gt;argv[1]);</span>
+<span class="lineNum">     410 </span>                :<span class="lineCov">       8483 :     server.dirty++;</span>
+<span class="lineNum">     411 </span>                :            : }
+<span class="lineNum">     412 </span>                :            : 
+<span class="lineNum">     413 </span>                :            : /* handle the &quot;SRANDMEMBER key &lt;count&gt;&quot; variant. The normal version of the
+<span class="lineNum">     414 </span>                :            :  * command is handled by the srandmemberCommand() function itself. */
+<span class="lineNum">     415 </span>                :            : 
+<span class="lineNum">     416 </span>                :            : /* How many times bigger should be the set compared to the requested size
+<span class="lineNum">     417 </span>                :            :  * for us to don't use the &quot;remove elements&quot; strategy? Read later in the
+<span class="lineNum">     418 </span>                :            :  * implementation for more info. */
+<a name="419"><span class="lineNum">     419 </span>                :            : #define SRANDMEMBER_SUB_STRATEGY_MUL 3</a>
+<span class="lineNum">     420 </span>                :            : 
+<span class="lineNum">     421 </span>                :<span class="lineCov">        172 : void srandmemberWithCountCommand(redisClient *c) {</span>
+<span class="lineNum">     422 </span>                :            :     long l;
+<span class="lineNum">     423 </span>                :            :     unsigned long count, size;
+<span class="lineNum">     424 </span>                :<span class="lineCov">        172 :     int uniq = 1;</span>
+<span class="lineNum">     425 </span>                :            :     robj *set, *ele;
+<span class="lineNum">     426 </span>                :            :     int64_t llele;
+<span class="lineNum">     427 </span>                :            :     int encoding;
+<span class="lineNum">     428 </span>                :            : 
+<span class="lineNum">     429 </span>                :            :     dict *d;
+<span class="lineNum">     430 </span>                :            : 
+<span class="lineNum">     431 </span>        [<span class="branchCov" title="Branch 1 was taken 172 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">        172 :     if (getLongFromObjectOrReply(c,c-&gt;argv[2],&amp;l,NULL) != REDIS_OK) return;</span>
+<span class="lineNum">     432 </span>        [<span class="branchCov" title="Branch 0 was taken 11 times"> + </span><span class="branchCov" title="Branch 1 was taken 161 times"> + </span>]:<span class="lineCov">        172 :     if (l &gt;= 0) {</span>
+<span class="lineNum">     433 </span>                :<span class="lineCov">         11 :         count = (unsigned) l;</span>
+<span class="lineNum">     434 </span>                :            :     } else {
+<span class="lineNum">     435 </span>                :            :         /* A negative count means: return the same elements multiple times
+<span class="lineNum">     436 </span>                :            :          * (i.e. don't remove the extracted element after every extraction). */
+<span class="lineNum">     437 </span>                :<span class="lineCov">        161 :         count = -l;</span>
+<span class="lineNum">     438 </span>                :<span class="lineCov">        161 :         uniq = 0;</span>
+<span class="lineNum">     439 </span>                :            :     }
+<span class="lineNum">     440 </span>                :            : 
+<span class="lineNum">     441 </span>        [<span class="branchCov" title="Branch 1 was taken 171 times"> + </span><span class="branchCov" title="Branch 2 was taken 1 time"> + </span>]:<span class="lineCov">        172 :     if ((set = lookupKeyReadOrReply(c,c-&gt;argv[1],shared.emptymultibulk))</span>
+<span class="lineNum">     442 </span>        [<span class="branchCov" title="Branch 1 was taken 171 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">        171 :         == NULL || checkType(c,set,REDIS_SET)) return;</span>
+<span class="lineNum">     443 </span>                :<span class="lineCov">        171 :     size = setTypeSize(set);</span>
+<span class="lineNum">     444 </span>                :            : 
+<span class="lineNum">     445 </span>                :            :     /* If count is zero, serve it ASAP to avoid special cases later. */
+<span class="lineNum">     446 </span>        [<span class="branchCov" title="Branch 0 was taken 2 times"> + </span><span class="branchCov" title="Branch 1 was taken 169 times"> + </span>]:<span class="lineCov">        171 :     if (count == 0) {</span>
+<span class="lineNum">     447 </span>                :<span class="lineCov">          2 :         addReply(c,shared.emptymultibulk);</span>
+<span class="lineNum">     448 </span>                :<span class="lineCov">          2 :         return;</span>
+<span class="lineNum">     449 </span>                :            :     }
+<span class="lineNum">     450 </span>                :            : 
+<span class="lineNum">     451 </span>                :            :     /* CASE 1: The count was negative, so the extraction method is just:
+<span class="lineNum">     452 </span>                :            :      * &quot;return N random elements&quot; sampling the whole set every time.
+<span class="lineNum">     453 </span>                :            :      * This case is trivial and can be served without auxiliary data
+<span class="lineNum">     454 </span>                :            :      * structures. */
+<span class="lineNum">     455 </span>        [<span class="branchCov" title="Branch 0 was taken 161 times"> + </span><span class="branchCov" title="Branch 1 was taken 8 times"> + </span>]:<span class="lineCov">        169 :     if (!uniq) {</span>
+<span class="lineNum">     456 </span>                :<span class="lineCov">        161 :         addReplyMultiBulkLen(c,count);</span>
+<span class="lineNum">     457 </span>        [<span class="branchCov" title="Branch 0 was taken 1790 times"> + </span><span class="branchCov" title="Branch 1 was taken 161 times"> + </span>]:<span class="lineCov">       1951 :         while(count--) {</span>
+<span class="lineNum">     458 </span>                :<span class="lineCov">       1790 :             encoding = setTypeRandomElement(set,&amp;ele,&amp;llele);</span>
+<span class="lineNum">     459 </span>        [<span class="branchCov" title="Branch 0 was taken 760 times"> + </span><span class="branchCov" title="Branch 1 was taken 1030 times"> + </span>]:<span class="lineCov">       1790 :             if (encoding == REDIS_ENCODING_INTSET) {</span>
+<span class="lineNum">     460 </span>                :<span class="lineCov">        760 :                 addReplyBulkLongLong(c,llele);</span>
+<span class="lineNum">     461 </span>                :            :             } else {
+<span class="lineNum">     462 </span>                :<span class="lineCov">       1790 :                 addReplyBulk(c,ele);</span>
+<span class="lineNum">     463 </span>                :            :             }
+<span class="lineNum">     464 </span>                :            :         }
+<span class="lineNum">     465 </span>                :            :         return;
+<span class="lineNum">     466 </span>                :            :     }
+<span class="lineNum">     467 </span>                :            : 
+<span class="lineNum">     468 </span>                :            :     /* CASE 2:
+<span class="lineNum">     469 </span>                :            :      * The number of requested elements is greater than the number of
+<span class="lineNum">     470 </span>                :            :      * elements inside the set: simply return the whole set. */
+<span class="lineNum">     471 </span>        [<span class="branchCov" title="Branch 0 was taken 4 times"> + </span><span class="branchCov" title="Branch 1 was taken 4 times"> + </span>]:<span class="lineCov">          8 :     if (count &gt;= size) {</span>
+<span class="lineNum">     472 </span>                :<span class="lineCov">          4 :         sunionDiffGenericCommand(c,c-&gt;argv+1,1,NULL,REDIS_OP_UNION);</span>
+<span class="lineNum">     473 </span>                :<span class="lineCov">          4 :         return;</span>
+<span class="lineNum">     474 </span>                :            :     }
+<span class="lineNum">     475 </span>                :            : 
+<span class="lineNum">     476 </span>                :            :     /* For CASE 3 and CASE 4 we need an auxiliary dictionary. */
+<span class="lineNum">     477 </span>                :<span class="lineCov">          4 :     d = dictCreate(&amp;setDictType,NULL);</span>
+<span class="lineNum">     478 </span>                :            : 
+<span class="lineNum">     479 </span>                :            :     /* CASE 3:
+<span class="lineNum">     480 </span>                :            :      * The number of elements inside the set is not greater than
+<span class="lineNum">     481 </span>                :            :      * SRANDMEMBER_SUB_STRATEGY_MUL times the number of requested elements.
+<span class="lineNum">     482 </span>                :            :      * In this case we create a set from scratch with all the elements, and
+<span class="lineNum">     483 </span>                :            :      * subtract random elements to reach the requested number of elements.
+<span class="lineNum">     484 </span>                :            :      *
+<span class="lineNum">     485 </span>                :            :      * This is done because if the number of requsted elements is just
+<span class="lineNum">     486 </span>                :            :      * a bit less than the number of elements in the set, the natural approach
+<span class="lineNum">     487 </span>                :            :      * used into CASE 3 is highly inefficient. */
+<span class="lineNum">     488 </span>        [<span class="branchCov" title="Branch 0 was taken 2 times"> + </span><span class="branchCov" title="Branch 1 was taken 2 times"> + </span>]:<span class="lineCov">          4 :     if (count*SRANDMEMBER_SUB_STRATEGY_MUL &gt; size) {</span>
+<span class="lineNum">     489 </span>                :            :         setTypeIterator *si;
+<span class="lineNum">     490 </span>                :            : 
+<span class="lineNum">     491 </span>                :            :         /* Add all the elements into the temporary dictionary. */
+<span class="lineNum">     492 </span>                :<span class="lineCov">          2 :         si = setTypeInitIterator(set);</span>
+<span class="lineNum">     493 </span>        [<span class="branchCov" title="Branch 1 was taken 100 times"> + </span><span class="branchCov" title="Branch 2 was taken 2 times"> + </span>]:<span class="lineCov">        102 :         while((encoding = setTypeNext(si,&amp;ele,&amp;llele)) != -1) {</span>
+<span class="lineNum">     494 </span>                :<span class="lineCov">        100 :             int retval = DICT_ERR;</span>
+<span class="lineNum">     495 </span>                :            : 
+<span class="lineNum">     496 </span>        [<span class="branchCov" title="Branch 0 was taken 50 times"> + </span><span class="branchCov" title="Branch 1 was taken 50 times"> + </span>]:<span class="lineCov">        100 :             if (encoding == REDIS_ENCODING_INTSET) {</span>
+<span class="lineNum">     497 </span>                :<span class="lineCov">         50 :                 retval = dictAdd(d,createStringObjectFromLongLong(llele),NULL);</span>
+<span class="lineNum">     498 </span>                :            :             } else {
+<span class="lineNum">     499 </span>                :<span class="lineCov">         50 :                 retval = dictAdd(d,dupStringObject(ele),NULL);</span>
+<span class="lineNum">     500 </span>                :            :             }
+<span class="lineNum">     501 </span>        [<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchCov" title="Branch 1 was taken 100 times"> + </span>]:<span class="lineCov">        100 :             redisAssert(retval == DICT_OK);</span>
+<span class="lineNum">     502 </span>                :            :         }
+<span class="lineNum">     503 </span>                :<span class="lineCov">          2 :         setTypeReleaseIterator(si);</span>
+<span class="lineNum">     504 </span>        [<span class="branchCov" title="Branch 0 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">          2 :         redisAssert(dictSize(d) == size);</span>
+<span class="lineNum">     505 </span>                :            : 
+<span class="lineNum">     506 </span>                :            :         /* Remove random elements to reach the right count. */
+<span class="lineNum">     507 </span>        [<span class="branchCov" title="Branch 0 was taken 10 times"> + </span><span class="branchCov" title="Branch 1 was taken 2 times"> + </span>]:<span class="lineCov">         12 :         while(size &gt; count) {</span>
+<span class="lineNum">     508 </span>                :            :             dictEntry *de;
+<span class="lineNum">     509 </span>                :            : 
+<span class="lineNum">     510 </span>                :<span class="lineCov">         10 :             de = dictGetRandomKey(d);</span>
+<span class="lineNum">     511 </span>                :<span class="lineCov">         10 :             dictDelete(d,dictGetKey(de));</span>
+<span class="lineNum">     512 </span>                :<span class="lineCov">         10 :             size--;</span>
+<span class="lineNum">     513 </span>                :            :         }
+<span class="lineNum">     514 </span>                :            :     }
+<span class="lineNum">     515 </span>                :            :     
+<span class="lineNum">     516 </span>                :            :     /* CASE 4: We have a big set compared to the requested number of elements.
+<span class="lineNum">     517 </span>                :            :      * In this case we can simply get random elements from the set and add
+<span class="lineNum">     518 </span>                :            :      * to the temporary set, trying to eventually get enough unique elements
+<span class="lineNum">     519 </span>                :            :      * to reach the specified count. */
+<span class="lineNum">     520 </span>                :            :     else {
+<span class="lineNum">     521 </span>                :            :         unsigned long added = 0;
+<span class="lineNum">     522 </span>                :            : 
+<span class="lineNum">     523 </span>        [<span class="branchCov" title="Branch 0 was taken 11 times"> + </span><span class="branchCov" title="Branch 1 was taken 2 times"> + </span>]:<span class="lineCov">         13 :         while(added &lt; count) {</span>
+<span class="lineNum">     524 </span>                :<span class="lineCov">         11 :             encoding = setTypeRandomElement(set,&amp;ele,&amp;llele);</span>
+<span class="lineNum">     525 </span>        [<span class="branchCov" title="Branch 0 was taken 5 times"> + </span><span class="branchCov" title="Branch 1 was taken 6 times"> + </span>]:<span class="lineCov">         11 :             if (encoding == REDIS_ENCODING_INTSET) {</span>
+<span class="lineNum">     526 </span>                :<span class="lineCov">          5 :                 ele = createStringObjectFromLongLong(llele);</span>
+<span class="lineNum">     527 </span>                :            :             } else {
+<span class="lineNum">     528 </span>                :<span class="lineCov">          6 :                 ele = dupStringObject(ele);</span>
+<span class="lineNum">     529 </span>                :            :             }
+<span class="lineNum">     530 </span>                :            :             /* Try to add the object to the dictionary. If it already exists
+<span class="lineNum">     531 </span>                :            :              * free it, otherwise increment the number of objects we have
+<span class="lineNum">     532 </span>                :            :              * in the result dictionary. */
+<span class="lineNum">     533 </span>        [<span class="branchCov" title="Branch 1 was taken 10 times"> + </span><span class="branchCov" title="Branch 2 was taken 1 time"> + </span>]:<span class="lineCov">         11 :             if (dictAdd(d,ele,NULL) == DICT_OK)</span>
+<span class="lineNum">     534 </span>                :<span class="lineCov">         10 :                 added++;</span>
+<span class="lineNum">     535 </span>                :            :             else
+<span class="lineNum">     536 </span>                :<span class="lineCov">         11 :                 decrRefCount(ele);</span>
+<span class="lineNum">     537 </span>                :            :         }
+<span class="lineNum">     538 </span>                :            :     }
+<span class="lineNum">     539 </span>                :            : 
+<span class="lineNum">     540 </span>                :            :     /* CASE 3 &amp; 4: send the result to the user. */
+<span class="lineNum">     541 </span>                :            :     {
+<span class="lineNum">     542 </span>                :            :         dictIterator *di;
+<span class="lineNum">     543 </span>                :            :         dictEntry *de;
+<span class="lineNum">     544 </span>                :            : 
+<span class="lineNum">     545 </span>                :<span class="lineCov">          4 :         addReplyMultiBulkLen(c,count);</span>
+<span class="lineNum">     546 </span>                :<span class="lineCov">          4 :         di = dictGetIterator(d);</span>
+<span class="lineNum">     547 </span>        [<span class="branchCov" title="Branch 1 was taken 100 times"> + </span><span class="branchCov" title="Branch 2 was taken 4 times"> + </span>]:<span class="lineCov">        104 :         while((de = dictNext(di)) != NULL)</span>
+<span class="lineNum">     548 </span>                :<span class="lineCov">        100 :             addReplyBulk(c,dictGetKey(de));</span>
+<span class="lineNum">     549 </span>                :<span class="lineCov">          4 :         dictReleaseIterator(di);</span>
+<span class="lineNum">     550 </span>                :<span class="lineCov">        172 :         dictRelease(d);</span>
+<span class="lineNum">     551 </span>                :            :     }
+<a name="552"><span class="lineNum">     552 </span>                :            : }</a>
+<span class="lineNum">     553 </span>                :            : 
+<span class="lineNum">     554 </span>                :<span class="lineCov">        372 : void srandmemberCommand(redisClient *c) {</span>
+<span class="lineNum">     555 </span>                :            :     robj *set, *ele;
+<span class="lineNum">     556 </span>                :            :     int64_t llele;
+<span class="lineNum">     557 </span>                :            :     int encoding;
+<span class="lineNum">     558 </span>                :            : 
+<span class="lineNum">     559 </span>        [<span class="branchCov" title="Branch 0 was taken 172 times"> + </span><span class="branchCov" title="Branch 1 was taken 200 times"> + </span>]:<span class="lineCov">        372 :     if (c-&gt;argc == 3) {</span>
+<span class="lineNum">     560 </span>                :<span class="lineCov">        172 :         srandmemberWithCountCommand(c);</span>
+<span class="lineNum">     561 </span>                :<span class="lineCov">        172 :         return;</span>
+<span class="lineNum">     562 </span>        [<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchCov" title="Branch 1 was taken 200 times"> + </span>]:<span class="lineCov">        200 :     } else if (c-&gt;argc &gt; 3) {</span>
+<span class="lineNum">     563 </span>                :<span class="lineNoCov">          0 :         addReply(c,shared.syntaxerr);</span>
+<span class="lineNum">     564 </span>                :<span class="lineNoCov">          0 :         return;</span>
+<span class="lineNum">     565 </span>                :            :     }
+<span class="lineNum">     566 </span>                :            : 
+<span class="lineNum">     567 </span>  [<span class="branchCov" title="Branch 1 was taken 200 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span><span class="branchCov" title="Branch 3 was taken 200 times"> + </span><span class="branchNoCov" title="Branch 4 was not taken"> - </span>]:<span class="lineCov">        400 :     if ((set = lookupKeyReadOrReply(c,c-&gt;argv[1],shared.nullbulk)) == NULL ||</span>
+<span class="lineNum">     568 </span>                :<span class="lineCov">        200 :         checkType(c,set,REDIS_SET)) return;</span>
+<span class="lineNum">     569 </span>                :            : 
+<span class="lineNum">     570 </span>                :<span class="lineCov">        200 :     encoding = setTypeRandomElement(set,&amp;ele,&amp;llele);</span>
+<span class="lineNum">     571 </span>        [<span class="branchCov" title="Branch 0 was taken 100 times"> + </span><span class="branchCov" title="Branch 1 was taken 100 times"> + </span>]:<span class="lineCov">        200 :     if (encoding == REDIS_ENCODING_INTSET) {</span>
+<span class="lineNum">     572 </span>                :<span class="lineCov">        100 :         addReplyBulkLongLong(c,llele);</span>
+<span class="lineNum">     573 </span>                :            :     } else {
+<span class="lineNum">     574 </span>                :<span class="lineCov">        372 :         addReplyBulk(c,ele);</span>
+<span class="lineNum">     575 </span>                :            :     }
+<a name="576"><span class="lineNum">     576 </span>                :            : }</a>
+<span class="lineNum">     577 </span>                :            : 
+<span class="lineNum">     578 </span>                :<span class="lineCov">       7171 : int qsortCompareSetsByCardinality(const void *s1, const void *s2) {</span>
+<span class="lineNum">     579 </span>                :<span class="lineCov">       7171 :     return setTypeSize(*(robj**)s1)-setTypeSize(*(robj**)s2);</span>
+<span class="lineNum">     580 </span>                :            : }
+<span class="lineNum">     581 </span>                :            : 
+<a name="582"><span class="lineNum">     582 </span>                :            : /* This is used by SDIFF and in this case we can receive NULL that should</a>
+<span class="lineNum">     583 </span>                :            :  * be handled as empty sets. */
+<span class="lineNum">     584 </span>                :<span class="lineCov">        795 : int qsortCompareSetsByRevCardinality(const void *s1, const void *s2) {</span>
+<span class="lineNum">     585 </span>                :<span class="lineCov">        795 :     robj *o1 = *(robj**)s1, *o2 = *(robj**)s2;</span>
+<span class="lineNum">     586 </span>                :            : 
+<span class="lineNum">     587 </span>[<span class="branchCov" title="Branch 0 was taken 788 times"> + </span><span class="branchCov" title="Branch 1 was taken 7 times"> + </span>][<span class="branchCov" title="Branch 3 was taken 789 times"> + </span><span class="branchCov" title="Branch 4 was taken 6 times"> + </span>]:<span class="lineCov">        795 :     return  (o2 ? setTypeSize(o2) : 0) - (o1 ? setTypeSize(o1) : 0);</span>
+<a name="588"><span class="lineNum">     588 </span>                :            : }</a>
+<span class="lineNum">     589 </span>                :            : 
+<span class="lineNum">     590 </span>                :<span class="lineCov">       7236 : void sinterGenericCommand(redisClient *c, robj **setkeys, unsigned long setnum, robj *dstkey) {</span>
+<span class="lineNum">     591 </span>                :<span class="lineCov">       7236 :     robj **sets = zmalloc(sizeof(robj*)*setnum);</span>
+<span class="lineNum">     592 </span>                :            :     setTypeIterator *si;
+<span class="lineNum">     593 </span>                :<span class="lineCov">       7236 :     robj *eleobj, *dstset = NULL;</span>
+<span class="lineNum">     594 </span>                :            :     int64_t intobj;
+<span class="lineNum">     595 </span>                :<span class="lineCov">       7236 :     void *replylen = NULL;</span>
+<span class="lineNum">     596 </span>                :<span class="lineCov">       7236 :     unsigned long j, cardinality = 0;</span>
+<span class="lineNum">     597 </span>                :            :     int encoding;
+<span class="lineNum">     598 </span>                :            : 
+<span class="lineNum">     599 </span>        [<span class="branchCov" title="Branch 1 was taken 14405 times"> + </span><span class="branchCov" title="Branch 2 was taken 7233 times"> + </span>]:<span class="lineCov">      21638 :     for (j = 0; j &lt; setnum; j++) {</span>
+<span class="lineNum">     600 </span>                :<span class="lineCov">      14405 :         robj *setobj = dstkey ?</span>
+<span class="lineNum">     601 </span>        [<span class="branchCov" title="Branch 0 was taken 14319 times"> + </span><span class="branchCov" title="Branch 1 was taken 86 times"> + </span>]:<span class="lineCov">      14405 :             lookupKeyWrite(c-&gt;db,setkeys[j]) :</span>
+<span class="lineNum">     602 </span>                :<span class="lineCov">         86 :             lookupKeyRead(c-&gt;db,setkeys[j]);</span>
+<span class="lineNum">     603 </span>        [<span class="branchCov" title="Branch 0 was taken 2 times"> + </span><span class="branchCov" title="Branch 1 was taken 14403 times"> + </span>]:<span class="lineCov">      14405 :         if (!setobj) {</span>
+<span class="lineNum">     604 </span>                :<span class="lineCov">          2 :             zfree(sets);</span>
+<span class="lineNum">     605 </span>        [<span class="branchCov" title="Branch 0 was taken 1 time"> + </span><span class="branchCov" title="Branch 1 was taken 1 time"> + </span>]:<span class="lineCov">          2 :             if (dstkey) {</span>
+<span class="lineNum">     606 </span>        [<span class="branchCov" title="Branch 1 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          1 :                 if (dbDelete(c-&gt;db,dstkey)) {</span>
+<span class="lineNum">     607 </span>                :<span class="lineCov">          1 :                     signalModifiedKey(c-&gt;db,dstkey);</span>
+<span class="lineNum">     608 </span>                :<span class="lineCov">          1 :                     server.dirty++;</span>
+<span class="lineNum">     609 </span>                :            :                 }
+<span class="lineNum">     610 </span>                :<span class="lineCov">          1 :                 addReply(c,shared.czero);</span>
+<span class="lineNum">     611 </span>                :            :             } else {
+<span class="lineNum">     612 </span>                :<span class="lineCov">          1 :                 addReply(c,shared.emptymultibulk);</span>
+<span class="lineNum">     613 </span>                :            :             }
+<span class="lineNum">     614 </span>                :            :             return;
+<span class="lineNum">     615 </span>                :            :         }
+<span class="lineNum">     616 </span>        [<span class="branchCov" title="Branch 1 was taken 1 time"> + </span><span class="branchCov" title="Branch 2 was taken 14402 times"> + </span>]:<span class="lineCov">      14403 :         if (checkType(c,setobj,REDIS_SET)) {</span>
+<span class="lineNum">     617 </span>                :<span class="lineCov">          1 :             zfree(sets);</span>
+<span class="lineNum">     618 </span>                :<span class="lineCov">          1 :             return;</span>
+<span class="lineNum">     619 </span>                :            :         }
+<span class="lineNum">     620 </span>                :<span class="lineCov">      14402 :         sets[j] = setobj;</span>
+<span class="lineNum">     621 </span>                :            :     }
+<span class="lineNum">     622 </span>                :            :     /* Sort sets from the smallest to largest, this will improve our
+<span class="lineNum">     623 </span>                :            :      * algorithm's performance */
+<span class="lineNum">     624 </span>                :<span class="lineCov">       7233 :     qsort(sets,setnum,sizeof(robj*),qsortCompareSetsByCardinality);</span>
+<span class="lineNum">     625 </span>                :            : 
+<span class="lineNum">     626 </span>                :            :     /* The first thing we should output is the total number of elements...
+<span class="lineNum">     627 </span>                :            :      * since this is a multi-bulk write, but at this stage we don't know
+<span class="lineNum">     628 </span>                :            :      * the intersection set size, so we use a trick, append an empty object
+<span class="lineNum">     629 </span>                :            :      * to the output list and save the pointer to later modify it with the
+<span class="lineNum">     630 </span>                :            :      * right length */
+<span class="lineNum">     631 </span>        [<span class="branchCov" title="Branch 0 was taken 75 times"> + </span><span class="branchCov" title="Branch 1 was taken 7158 times"> + </span>]:<span class="lineCov">       7233 :     if (!dstkey) {</span>
+<span class="lineNum">     632 </span>                :<span class="lineCov">         75 :         replylen = addDeferredMultiBulkLength(c);</span>
+<span class="lineNum">     633 </span>                :            :     } else {
+<span class="lineNum">     634 </span>                :            :         /* If we have a target key where to store the resulting set
+<span class="lineNum">     635 </span>                :            :          * create this key with an empty set inside */
+<span class="lineNum">     636 </span>                :<span class="lineCov">       7158 :         dstset = createIntsetObject();</span>
+<span class="lineNum">     637 </span>                :            :     }
+<span class="lineNum">     638 </span>                :            : 
+<span class="lineNum">     639 </span>                :            :     /* Iterate all the elements of the first (smallest) set, and test
+<span class="lineNum">     640 </span>                :            :      * the element against all the other sets, if at least one set does
+<span class="lineNum">     641 </span>                :            :      * not include the element it is discarded */
+<span class="lineNum">     642 </span>                :<span class="lineCov">       7233 :     si = setTypeInitIterator(sets[0]);</span>
+<span class="lineNum">     643 </span>        [<span class="branchCov" title="Branch 1 was taken 20400 times"> + </span><span class="branchCov" title="Branch 2 was taken 7233 times"> + </span>]:<span class="lineCov">      34866 :     while((encoding = setTypeNext(si,&amp;eleobj,&amp;intobj)) != -1) {</span>
+<span class="lineNum">     644 </span>        [<span class="branchCov" title="Branch 0 was taken 8482 times"> + </span><span class="branchCov" title="Branch 1 was taken 12024 times"> + </span>]:<span class="lineCov">      20506 :         for (j = 1; j &lt; setnum; j++) {</span>
+<span class="lineNum">     645 </span>        [<span class="branchCov" title="Branch 0 was taken 39 times"> + </span><span class="branchCov" title="Branch 1 was taken 8443 times"> + </span>]:<span class="lineCov">       8482 :             if (sets[j] == sets[0]) continue;</span>
+<span class="lineNum">     646 </span>        [<span class="branchCov" title="Branch 0 was taken 6044 times"> + </span><span class="branchCov" title="Branch 1 was taken 2399 times"> + </span>]:<span class="lineCov">       8443 :             if (encoding == REDIS_ENCODING_INTSET) {</span>
+<span class="lineNum">     647 </span>                :            :                 /* intset with intset is simple... and fast */
+<span class="lineNum">     648 </span>  [<span class="branchCov" title="Branch 0 was taken 4475 times"> + </span><span class="branchCov" title="Branch 1 was taken 1569 times"> + </span><span class="branchCov" title="Branch 2 was taken 34 times"> + </span><span class="branchCov" title="Branch 3 was taken 4441 times"> + </span>]:<span class="lineCov">      10519 :                 if (sets[j]-&gt;encoding == REDIS_ENCODING_INTSET &amp;&amp;</span>
+<span class="lineNum">     649 </span>                :<span class="lineCov">       4475 :                     !intsetFind((intset*)sets[j]-&gt;ptr,intobj))</span>
+<span class="lineNum">     650 </span>                :            :                 {
+<span class="lineNum">     651 </span>                :            :                     break;
+<span class="lineNum">     652 </span>                :            :                 /* in order to compare an integer with an object we
+<span class="lineNum">     653 </span>                :            :                  * have to use the generic function, creating an object
+<span class="lineNum">     654 </span>                :            :                  * for this */
+<span class="lineNum">     655 </span>        [<span class="branchCov" title="Branch 0 was taken 1569 times"> + </span><span class="branchCov" title="Branch 1 was taken 34 times"> + </span>]:<span class="lineCov">       1603 :                 } else if (sets[j]-&gt;encoding == REDIS_ENCODING_HT) {</span>
+<span class="lineNum">     656 </span>                :<span class="lineCov">       1569 :                     eleobj = createStringObjectFromLongLong(intobj);</span>
+<span class="lineNum">     657 </span>        [<span class="branchCov" title="Branch 1 was taken 1566 times"> + </span><span class="branchCov" title="Branch 2 was taken 3 times"> + </span>]:<span class="lineCov">       1569 :                     if (!setTypeIsMember(sets[j],eleobj)) {</span>
+<span class="lineNum">     658 </span>                :<span class="lineCov">       1566 :                         decrRefCount(eleobj);</span>
+<span class="lineNum">     659 </span>                :<span class="lineCov">       1566 :                         break;</span>
+<span class="lineNum">     660 </span>                :            :                     }
+<span class="lineNum">     661 </span>                :<span class="lineCov">          3 :                     decrRefCount(eleobj);</span>
+<span class="lineNum">     662 </span>                :            :                 }
+<span class="lineNum">     663 </span>        [<span class="branchCov" title="Branch 0 was taken 2399 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">       2399 :             } else if (encoding == REDIS_ENCODING_HT) {</span>
+<span class="lineNum">     664 </span>                :            :                 /* Optimization... if the source object is integer
+<span class="lineNum">     665 </span>                :            :                  * encoded AND the target set is an intset, we can get
+<span class="lineNum">     666 </span>                :            :                  * a much faster path. */
+<span class="lineNum">     667 </span>[<span class="branchCov" title="Branch 0 was taken 674 times"> + </span><span class="branchCov" title="Branch 1 was taken 1725 times"> + </span>][<span class="branchCov" title="Branch 2 was taken 36 times"> + </span><span class="branchCov" title="Branch 3 was taken 638 times"> + </span>]:<span class="lineCov">       2399 :                 if (eleobj-&gt;encoding == REDIS_ENCODING_INT &amp;&amp;</span>
+<span class="lineNum">     668 </span>        [<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchCov" title="Branch 1 was taken 36 times"> + </span>]:<span class="lineCov">         36 :                     sets[j]-&gt;encoding == REDIS_ENCODING_INTSET &amp;&amp;</span>
+<span class="lineNum">     669 </span>                :<span class="lineCov">         36 :                     !intsetFind((intset*)sets[j]-&gt;ptr,(long)eleobj-&gt;ptr))</span>
+<span class="lineNum">     670 </span>                :            :                 {
+<span class="lineNum">     671 </span>                :            :                     break;
+<span class="lineNum">     672 </span>                :            :                 /* else... object to object check is easy as we use the
+<span class="lineNum">     673 </span>                :            :                  * type agnostic API here. */
+<span class="lineNum">     674 </span>        [<span class="branchCov" title="Branch 1 was taken 30 times"> + </span><span class="branchCov" title="Branch 2 was taken 2333 times"> + </span>]:<span class="lineCov">       2363 :                 } else if (!setTypeIsMember(sets[j],eleobj)) {</span>
+<span class="lineNum">     675 </span>                :            :                     break;
+<span class="lineNum">     676 </span>                :            :                 }
+<span class="lineNum">     677 </span>                :            :             }
+<span class="lineNum">     678 </span>                :            :         }
+<span class="lineNum">     679 </span>                :            : 
+<span class="lineNum">     680 </span>                :            :         /* Only take action when all sets contain the member */
+<span class="lineNum">     681 </span>        [<span class="branchCov" title="Branch 0 was taken 12024 times"> + </span><span class="branchCov" title="Branch 1 was taken 8376 times"> + </span>]:<span class="lineCov">      20400 :         if (j == setnum) {</span>
+<span class="lineNum">     682 </span>        [<span class="branchCov" title="Branch 0 was taken 11951 times"> + </span><span class="branchCov" title="Branch 1 was taken 73 times"> + </span>]:<span class="lineCov">      12024 :             if (!dstkey) {</span>
+<span class="lineNum">     683 </span>        [<span class="branchCov" title="Branch 0 was taken 7132 times"> + </span><span class="branchCov" title="Branch 1 was taken 4819 times"> + </span>]:<span class="lineCov">      11951 :                 if (encoding == REDIS_ENCODING_HT)</span>
+<span class="lineNum">     684 </span>                :<span class="lineCov">       7132 :                     addReplyBulk(c,eleobj);</span>
+<span class="lineNum">     685 </span>                :            :                 else
+<span class="lineNum">     686 </span>                :<span class="lineCov">       4819 :                     addReplyBulkLongLong(c,intobj);</span>
+<span class="lineNum">     687 </span>                :<span class="lineCov">      11951 :                 cardinality++;</span>
+<span class="lineNum">     688 </span>                :            :             } else {
+<span class="lineNum">     689 </span>        [<span class="branchCov" title="Branch 0 was taken 39 times"> + </span><span class="branchCov" title="Branch 1 was taken 34 times"> + </span>]:<span class="lineCov">         73 :                 if (encoding == REDIS_ENCODING_INTSET) {</span>
+<span class="lineNum">     690 </span>                :<span class="lineCov">         39 :                     eleobj = createStringObjectFromLongLong(intobj);</span>
+<span class="lineNum">     691 </span>                :<span class="lineCov">         39 :                     setTypeAdd(dstset,eleobj);</span>
+<span class="lineNum">     692 </span>                :<span class="lineCov">         39 :                     decrRefCount(eleobj);</span>
+<span class="lineNum">     693 </span>                :            :                 } else {
+<span class="lineNum">     694 </span>                :<span class="lineCov">      19257 :                     setTypeAdd(dstset,eleobj);</span>
+<span class="lineNum">     695 </span>                :            :                 }
+<span class="lineNum">     696 </span>                :            :             }
+<span class="lineNum">     697 </span>                :            :         }
+<span class="lineNum">     698 </span>                :            :     }
+<span class="lineNum">     699 </span>                :<span class="lineCov">       7233 :     setTypeReleaseIterator(si);</span>
+<span class="lineNum">     700 </span>                :            : 
+<span class="lineNum">     701 </span>        [<span class="branchCov" title="Branch 0 was taken 7158 times"> + </span><span class="branchCov" title="Branch 1 was taken 75 times"> + </span>]:<span class="lineCov">       7233 :     if (dstkey) {</span>
+<span class="lineNum">     702 </span>                :            :         /* Store the resulting set into the target, if the intersection
+<span class="lineNum">     703 </span>                :            :          * is not an empty set. */
+<span class="lineNum">     704 </span>                :<span class="lineCov">       7158 :         int deleted = dbDelete(c-&gt;db,dstkey);</span>
+<span class="lineNum">     705 </span>        [<span class="branchCov" title="Branch 1 was taken 49 times"> + </span><span class="branchCov" title="Branch 2 was taken 7109 times"> + </span>]:<span class="lineCov">       7158 :         if (setTypeSize(dstset) &gt; 0) {</span>
+<span class="lineNum">     706 </span>                :<span class="lineCov">         49 :             dbAdd(c-&gt;db,dstkey,dstset);</span>
+<span class="lineNum">     707 </span>                :<span class="lineCov">         49 :             addReplyLongLong(c,setTypeSize(dstset));</span>
+<span class="lineNum">     708 </span>                :<span class="lineCov">         49 :             notifyKeyspaceEvent(REDIS_NOTIFY_SET,&quot;sinterstore&quot;,</span>
+<span class="lineNum">     709 </span>                :<span class="lineCov">         49 :                 dstkey,c-&gt;db-&gt;id);</span>
+<span class="lineNum">     710 </span>                :            :         } else {
+<span class="lineNum">     711 </span>                :<span class="lineCov">       7109 :             decrRefCount(dstset);</span>
+<span class="lineNum">     712 </span>                :<span class="lineCov">       7109 :             addReply(c,shared.czero);</span>
+<span class="lineNum">     713 </span>        [<span class="branchCov" title="Branch 0 was taken 850 times"> + </span><span class="branchCov" title="Branch 1 was taken 6259 times"> + </span>]:<span class="lineCov">       7109 :             if (deleted)</span>
+<span class="lineNum">     714 </span>                :<span class="lineCov">        850 :                 notifyKeyspaceEvent(REDIS_NOTIFY_GENERIC,&quot;del&quot;,</span>
+<span class="lineNum">     715 </span>                :<span class="lineCov">        850 :                     dstkey,c-&gt;db-&gt;id);</span>
+<span class="lineNum">     716 </span>                :            :         }
+<span class="lineNum">     717 </span>                :<span class="lineCov">       7158 :         signalModifiedKey(c-&gt;db,dstkey);</span>
+<span class="lineNum">     718 </span>                :<span class="lineCov">       7158 :         server.dirty++;</span>
+<span class="lineNum">     719 </span>                :            :     } else {
+<span class="lineNum">     720 </span>                :<span class="lineCov">         75 :         setDeferredMultiBulkLength(c,replylen,cardinality);</span>
+<span class="lineNum">     721 </span>                :            :     }
+<span class="lineNum">     722 </span>                :<span class="lineCov">       7236 :     zfree(sets);</span>
+<a name="723"><span class="lineNum">     723 </span>                :            : }</a>
+<span class="lineNum">     724 </span>                :            : 
+<span class="lineNum">     725 </span>                :<span class="lineCov">         77 : void sinterCommand(redisClient *c) {</span>
+<span class="lineNum">     726 </span>                :<span class="lineCov">         77 :     sinterGenericCommand(c,c-&gt;argv+1,c-&gt;argc-1,NULL);</span>
+<a name="727"><span class="lineNum">     727 </span>                :<span class="lineCov">         77 : }</span></a>
+<span class="lineNum">     728 </span>                :            : 
+<span class="lineNum">     729 </span>                :<span class="lineCov">       7159 : void sinterstoreCommand(redisClient *c) {</span>
+<span class="lineNum">     730 </span>                :<span class="lineCov">       7159 :     sinterGenericCommand(c,c-&gt;argv+2,c-&gt;argc-2,c-&gt;argv[1]);</span>
+<span class="lineNum">     731 </span>                :<span class="lineCov">       7159 : }</span>
+<span class="lineNum">     732 </span>                :            : 
+<span class="lineNum">     733 </span>                :            : #define REDIS_OP_UNION 0
+<span class="lineNum">     734 </span>                :            : #define REDIS_OP_DIFF 1
+<a name="735"><span class="lineNum">     735 </span>                :            : #define REDIS_OP_INTER 2</a>
+<span class="lineNum">     736 </span>                :            : 
+<span class="lineNum">     737 </span>                :<span class="lineCov">      14643 : void sunionDiffGenericCommand(redisClient *c, robj **setkeys, int setnum, robj *dstkey, int op) {</span>
+<span class="lineNum">     738 </span>                :<span class="lineCov">      14643 :     robj **sets = zmalloc(sizeof(robj*)*setnum);</span>
+<span class="lineNum">     739 </span>                :            :     setTypeIterator *si;
+<span class="lineNum">     740 </span>                :<span class="lineCov">      14643 :     robj *ele, *dstset = NULL;</span>
+<span class="lineNum">     741 </span>                :<span class="lineCov">      14643 :     int j, cardinality = 0;</span>
+<span class="lineNum">     742 </span>                :<span class="lineCov">      14643 :     int diff_algo = 1;</span>
+<span class="lineNum">     743 </span>                :            : 
+<span class="lineNum">     744 </span>        [<span class="branchCov" title="Branch 1 was taken 29705 times"> + </span><span class="branchCov" title="Branch 2 was taken 14642 times"> + </span>]:<span class="lineCov">      44347 :     for (j = 0; j &lt; setnum; j++) {</span>
+<span class="lineNum">     745 </span>                :<span class="lineCov">      29705 :         robj *setobj = dstkey ?</span>
+<span class="lineNum">     746 </span>        [<span class="branchCov" title="Branch 0 was taken 29060 times"> + </span><span class="branchCov" title="Branch 1 was taken 645 times"> + </span>]:<span class="lineCov">      29705 :             lookupKeyWrite(c-&gt;db,setkeys[j]) :</span>
+<span class="lineNum">     747 </span>                :<span class="lineCov">        645 :             lookupKeyRead(c-&gt;db,setkeys[j]);</span>
+<span class="lineNum">     748 </span>        [<span class="branchCov" title="Branch 0 was taken 13 times"> + </span><span class="branchCov" title="Branch 1 was taken 29692 times"> + </span>]:<span class="lineCov">      29705 :         if (!setobj) {</span>
+<span class="lineNum">     749 </span>                :<span class="lineCov">         13 :             sets[j] = NULL;</span>
+<span class="lineNum">     750 </span>                :<span class="lineCov">         13 :             continue;</span>
+<span class="lineNum">     751 </span>                :            :         }
+<span class="lineNum">     752 </span>        [<span class="branchCov" title="Branch 1 was taken 1 time"> + </span><span class="branchCov" title="Branch 2 was taken 29691 times"> + </span>]:<span class="lineCov">      29692 :         if (checkType(c,setobj,REDIS_SET)) {</span>
+<span class="lineNum">     753 </span>                :<span class="lineCov">          1 :             zfree(sets);</span>
+<span class="lineNum">     754 </span>                :<span class="lineCov">      14643 :             return;</span>
+<span class="lineNum">     755 </span>                :            :         }
+<span class="lineNum">     756 </span>                :<span class="lineCov">      29691 :         sets[j] = setobj;</span>
+<span class="lineNum">     757 </span>                :            :     }
+<span class="lineNum">     758 </span>                :            : 
+<span class="lineNum">     759 </span>                :            :     /* Select what DIFF algorithm to use.
+<span class="lineNum">     760 </span>                :            :      *
+<span class="lineNum">     761 </span>                :            :      * Algorithm 1 is O(N*M) where N is the size of the element first set
+<span class="lineNum">     762 </span>                :            :      * and M the total number of sets.
+<span class="lineNum">     763 </span>                :            :      *
+<span class="lineNum">     764 </span>                :            :      * Algorithm 2 is O(N) where N is the total number of elements in all
+<span class="lineNum">     765 </span>                :            :      * the sets.
+<span class="lineNum">     766 </span>                :            :      *
+<span class="lineNum">     767 </span>                :            :      * We compute what is the best bet with the current input here. */
+<span class="lineNum">     768 </span>[<span class="branchCov" title="Branch 0 was taken 7308 times"> + </span><span class="branchCov" title="Branch 1 was taken 7334 times"> + </span>][<span class="branchCov" title="Branch 2 was taken 7306 times"> + </span><span class="branchCov" title="Branch 3 was taken 2 times"> + </span>]:<span class="lineCov">      14642 :     if (op == REDIS_OP_DIFF &amp;&amp; sets[0]) {</span>
+<span class="lineNum">     769 </span>                :            :         long long algo_one_work = 0, algo_two_work = 0;
+<span class="lineNum">     770 </span>                :            : 
+<span class="lineNum">     771 </span>        [<span class="branchCov" title="Branch 0 was taken 15024 times"> + </span><span class="branchCov" title="Branch 1 was taken 7306 times"> + </span>]:<span class="lineCov">      22330 :         for (j = 0; j &lt; setnum; j++) {</span>
+<span class="lineNum">     772 </span>        [<span class="branchCov" title="Branch 0 was taken 5 times"> + </span><span class="branchCov" title="Branch 1 was taken 15019 times"> + </span>]:<span class="lineCov">      15024 :             if (sets[j] == NULL) continue;</span>
+<span class="lineNum">     773 </span>                :            : 
+<span class="lineNum">     774 </span>                :<span class="lineCov">      15019 :             algo_one_work += setTypeSize(sets[0]);</span>
+<span class="lineNum">     775 </span>                :<span class="lineCov">      15019 :             algo_two_work += setTypeSize(sets[j]);</span>
+<span class="lineNum">     776 </span>                :            :         }
+<span class="lineNum">     777 </span>                :            : 
+<span class="lineNum">     778 </span>                :            :         /* Algorithm 1 has better constant times and performs less operations
+<span class="lineNum">     779 </span>                :            :          * if there are elements in common. Give it some advantage. */
+<span class="lineNum">     780 </span>                :<span class="lineCov">       7306 :         algo_one_work /= 2;</span>
+<span class="lineNum">     781 </span>        [<span class="branchCov" title="Branch 0 was taken 3 times"> + </span><span class="branchCov" title="Branch 1 was taken 7303 times"> + </span>]:<span class="lineCov">       7306 :         diff_algo = (algo_one_work &lt;= algo_two_work) ? 1 : 2;</span>
+<span class="lineNum">     782 </span>                :            : 
+<span class="lineNum">     783 </span>        [<span class="branchCov" title="Branch 0 was taken 7301 times"> + </span><span class="branchCov" title="Branch 1 was taken 5 times"> + </span>]:<span class="lineCov">       7306 :         if (diff_algo == 1 &amp;&amp; setnum &gt; 1) {</span>
+<span class="lineNum">     784 </span>                :            :             /* With algorithm 1 it is better to order the sets to subtract
+<span class="lineNum">     785 </span>                :            :              * by decreasing size, so that we are more likely to find
+<span class="lineNum">     786 </span>                :            :              * duplicated elements ASAP. */
+<span class="lineNum">     787 </span>                :<span class="lineCov">       7301 :             qsort(sets+1,setnum-1,sizeof(robj*),</span>
+<span class="lineNum">     788 </span>                :            :                 qsortCompareSetsByRevCardinality);
+<span class="lineNum">     789 </span>                :            :         }
+<span class="lineNum">     790 </span>                :            :     }
+<span class="lineNum">     791 </span>                :            : 
+<span class="lineNum">     792 </span>                :            :     /* We need a temp set object to store our union. If the dstkey
+<span class="lineNum">     793 </span>                :            :      * is not NULL (that is, we are inside an SUNIONSTORE operation) then
+<span class="lineNum">     794 </span>                :            :      * this set object will be the resulting object to set into the target key*/
+<span class="lineNum">     795 </span>                :<span class="lineCov">      14642 :     dstset = createIntsetObject();</span>
+<span class="lineNum">     796 </span>                :            : 
+<span class="lineNum">     797 </span>        [<span class="branchCov" title="Branch 0 was taken 7334 times"> + </span><span class="branchCov" title="Branch 1 was taken 7308 times"> + </span>]:<span class="lineCov">      14642 :     if (op == REDIS_OP_UNION) {</span>
+<span class="lineNum">     798 </span>                :            :         /* Union is trivial, just add every element of every set to the
+<span class="lineNum">     799 </span>                :            :          * temporary set. */
+<span class="lineNum">     800 </span>        [<span class="branchCov" title="Branch 0 was taken 14668 times"> + </span><span class="branchCov" title="Branch 1 was taken 7334 times"> + </span>]:<span class="lineCov">      22002 :         for (j = 0; j &lt; setnum; j++) {</span>
+<span class="lineNum">     801 </span>        [<span class="branchCov" title="Branch 0 was taken 6 times"> + </span><span class="branchCov" title="Branch 1 was taken 14662 times"> + </span>]:<span class="lineCov">      14668 :             if (!sets[j]) continue; /* non existing keys are like empty sets */</span>
+<span class="lineNum">     802 </span>                :            : 
+<span class="lineNum">     803 </span>                :<span class="lineCov">      14662 :             si = setTypeInitIterator(sets[j]);</span>
+<span class="lineNum">     804 </span>        [<span class="branchCov" title="Branch 1 was taken 19403 times"> + </span><span class="branchCov" title="Branch 2 was taken 14662 times"> + </span>]:<span class="lineCov">      34065 :             while((ele = setTypeNextObject(si)) != NULL) {</span>
+<span class="lineNum">     805 </span>        [<span class="branchCov" title="Branch 1 was taken 19325 times"> + </span><span class="branchCov" title="Branch 2 was taken 78 times"> + </span>]:<span class="lineCov">      19403 :                 if (setTypeAdd(dstset,ele)) cardinality++;</span>
+<span class="lineNum">     806 </span>                :<span class="lineCov">      19403 :                 decrRefCount(ele);</span>
+<span class="lineNum">     807 </span>                :            :             }
+<span class="lineNum">     808 </span>                :<span class="lineCov">      14662 :             setTypeReleaseIterator(si);</span>
+<span class="lineNum">     809 </span>                :            :         }
+<span class="lineNum">     810 </span>[<span class="branchCov" title="Branch 0 was taken 7308 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>][<span class="branchCov" title="Branch 2 was taken 7303 times"> + </span><span class="branchCov" title="Branch 3 was taken 5 times"> + </span>]:<span class="lineCov">       7308 :     } else if (op == REDIS_OP_DIFF &amp;&amp; sets[0] &amp;&amp; diff_algo == 1) {</span>
+<span class="lineNum">     811 </span>                :            :         /* DIFF Algorithm 1:
+<span class="lineNum">     812 </span>                :            :          *
+<span class="lineNum">     813 </span>                :            :          * We perform the diff by iterating all the elements of the first set,
+<span class="lineNum">     814 </span>                :            :          * and only adding it to the target set if the element does not exist
+<span class="lineNum">     815 </span>                :            :          * into all the other sets.
+<span class="lineNum">     816 </span>                :            :          *
+<span class="lineNum">     817 </span>                :            :          * This way we perform at max N*M operations, where N is the size of
+<span class="lineNum">     818 </span>                :            :          * the first set, and M the number of sets. */
+<span class="lineNum">     819 </span>                :<span class="lineCov">       7303 :         si = setTypeInitIterator(sets[0]);</span>
+<span class="lineNum">     820 </span>        [<span class="branchCov" title="Branch 1 was taken 13992 times"> + </span><span class="branchCov" title="Branch 2 was taken 7303 times"> + </span>]:<span class="lineCov">      21295 :         while((ele = setTypeNextObject(si)) != NULL) {</span>
+<span class="lineNum">     821 </span>        [<span class="branchCov" title="Branch 0 was taken 33054 times"> + </span><span class="branchCov" title="Branch 1 was taken 12719 times"> + </span>]:<span class="lineCov">      45773 :             for (j = 1; j &lt; setnum; j++) {</span>
+<span class="lineNum">     822 </span>        [<span class="branchCov" title="Branch 0 was taken 125 times"> + </span><span class="branchCov" title="Branch 1 was taken 32929 times"> + </span>]:<span class="lineCov">      33054 :                 if (!sets[j]) continue; /* no key is an empty set. */</span>
+<span class="lineNum">     823 </span>        [<span class="branchCov" title="Branch 1 was taken 31656 times"> + </span><span class="branchCov" title="Branch 2 was taken 1273 times"> + </span>]:<span class="lineCov">      32929 :                 if (setTypeIsMember(sets[j],ele)) break;</span>
+<span class="lineNum">     824 </span>                :            :             }
+<span class="lineNum">     825 </span>        [<span class="branchCov" title="Branch 0 was taken 12719 times"> + </span><span class="branchCov" title="Branch 1 was taken 1273 times"> + </span>]:<span class="lineCov">      13992 :             if (j == setnum) {</span>
+<span class="lineNum">     826 </span>                :            :                 /* There is no other set with this element. Add it. */
+<span class="lineNum">     827 </span>                :<span class="lineCov">      12719 :                 setTypeAdd(dstset,ele);</span>
+<span class="lineNum">     828 </span>                :<span class="lineCov">      12719 :                 cardinality++;</span>
+<span class="lineNum">     829 </span>                :            :             }
+<span class="lineNum">     830 </span>                :<span class="lineCov">      13992 :             decrRefCount(ele);</span>
+<span class="lineNum">     831 </span>                :            :         }
+<span class="lineNum">     832 </span>                :<span class="lineCov">       7303 :         setTypeReleaseIterator(si);</span>
+<span class="lineNum">     833 </span>[<span class="branchCov" title="Branch 0 was taken 5 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>][<span class="branchCov" title="Branch 2 was taken 3 times"> + </span><span class="branchCov" title="Branch 3 was taken 2 times"> + </span>]:<span class="lineCov">          5 :     } else if (op == REDIS_OP_DIFF &amp;&amp; sets[0] &amp;&amp; diff_algo == 2) {</span>
+<span class="lineNum">     834 </span>                :            :         /* DIFF Algorithm 2:
+<span class="lineNum">     835 </span>                :            :          *
+<span class="lineNum">     836 </span>                :            :          * Add all the elements of the first set to the auxiliary set.
+<span class="lineNum">     837 </span>                :            :          * Then remove all the elements of all the next sets from it.
+<span class="lineNum">     838 </span>                :            :          *
+<span class="lineNum">     839 </span>                :            :          * This is O(N) where N is the sum of all the elements in every
+<span class="lineNum">     840 </span>                :            :          * set. */
+<span class="lineNum">     841 </span>        [<span class="branchCov" title="Branch 0 was taken 25 times"> + </span><span class="branchCov" title="Branch 1 was taken 3 times"> + </span>]:<span class="lineCov">         28 :         for (j = 0; j &lt; setnum; j++) {</span>
+<span class="lineNum">     842 </span>        [<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchCov" title="Branch 1 was taken 25 times"> + </span>]:<span class="lineCov">         25 :             if (!sets[j]) continue; /* non existing keys are like empty sets */</span>
+<span class="lineNum">     843 </span>                :            : 
+<span class="lineNum">     844 </span>                :<span class="lineCov">         25 :             si = setTypeInitIterator(sets[j]);</span>
+<span class="lineNum">     845 </span>        [<span class="branchCov" title="Branch 1 was taken 977 times"> + </span><span class="branchCov" title="Branch 2 was taken 25 times"> + </span>]:<span class="lineCov">       1002 :             while((ele = setTypeNextObject(si)) != NULL) {</span>
+<span class="lineNum">     846 </span>        [<span class="branchCov" title="Branch 0 was taken 244 times"> + </span><span class="branchCov" title="Branch 1 was taken 733 times"> + </span>]:<span class="lineCov">        977 :                 if (j == 0) {</span>
+<span class="lineNum">     847 </span>        [<span class="branchCov" title="Branch 1 was taken 244 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">        244 :                     if (setTypeAdd(dstset,ele)) cardinality++;</span>
+<span class="lineNum">     848 </span>                :            :                 } else {
+<span class="lineNum">     849 </span>        [<span class="branchNoCov" title="Branch 1 was not taken"> - </span><span class="branchCov" title="Branch 2 was taken 733 times"> + </span>]:<span class="lineCov">        733 :                     if (setTypeRemove(dstset,ele)) cardinality--;</span>
+<span class="lineNum">     850 </span>                :            :                 }
+<span class="lineNum">     851 </span>                :<span class="lineCov">        977 :                 decrRefCount(ele);</span>
+<span class="lineNum">     852 </span>                :            :             }
+<span class="lineNum">     853 </span>                :<span class="lineCov">         25 :             setTypeReleaseIterator(si);</span>
+<span class="lineNum">     854 </span>                :            : 
+<span class="lineNum">     855 </span>                :            :             /* Exit if result set is empty as any additional removal
+<span class="lineNum">     856 </span>                :            :              * of elements will have no effect. */
+<span class="lineNum">     857 </span>        [<span class="branchCov" title="Branch 0 was taken 25 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">         25 :             if (cardinality == 0) break;</span>
+<span class="lineNum">     858 </span>                :            :         }
+<span class="lineNum">     859 </span>                :            :     }
+<span class="lineNum">     860 </span>                :            : 
+<span class="lineNum">     861 </span>                :            :     /* Output the content of the resulting set, if not in STORE mode */
+<span class="lineNum">     862 </span>        [<span class="branchCov" title="Branch 0 was taken 113 times"> + </span><span class="branchCov" title="Branch 1 was taken 14529 times"> + </span>]:<span class="lineCov">      14642 :     if (!dstkey) {</span>
+<span class="lineNum">     863 </span>                :<span class="lineCov">        113 :         addReplyMultiBulkLen(c,cardinality);</span>
+<span class="lineNum">     864 </span>                :<span class="lineCov">        113 :         si = setTypeInitIterator(dstset);</span>
+<span class="lineNum">     865 </span>        [<span class="branchCov" title="Branch 1 was taken 6927 times"> + </span><span class="branchCov" title="Branch 2 was taken 113 times"> + </span>]:<span class="lineCov">       7040 :         while((ele = setTypeNextObject(si)) != NULL) {</span>
+<span class="lineNum">     866 </span>                :<span class="lineCov">       6927 :             addReplyBulk(c,ele);</span>
+<span class="lineNum">     867 </span>                :<span class="lineCov">       6927 :             decrRefCount(ele);</span>
+<span class="lineNum">     868 </span>                :            :         }
+<span class="lineNum">     869 </span>                :<span class="lineCov">        113 :         setTypeReleaseIterator(si);</span>
+<span class="lineNum">     870 </span>                :<span class="lineCov">        113 :         decrRefCount(dstset);</span>
+<span class="lineNum">     871 </span>                :            :     } else {
+<span class="lineNum">     872 </span>                :            :         /* If we have a target key where to store the resulting set
+<span class="lineNum">     873 </span>                :            :          * create this key with the result set inside */
+<span class="lineNum">     874 </span>                :<span class="lineCov">      14529 :         int deleted = dbDelete(c-&gt;db,dstkey);</span>
+<span class="lineNum">     875 </span>        [<span class="branchCov" title="Branch 1 was taken 14477 times"> + </span><span class="branchCov" title="Branch 2 was taken 52 times"> + </span>]:<span class="lineCov">      14529 :         if (setTypeSize(dstset) &gt; 0) {</span>
+<span class="lineNum">     876 </span>                :<span class="lineCov">      14477 :             dbAdd(c-&gt;db,dstkey,dstset);</span>
+<span class="lineNum">     877 </span>                :<span class="lineCov">      14477 :             addReplyLongLong(c,setTypeSize(dstset));</span>
+<span class="lineNum">     878 </span>        [<span class="branchCov" title="Branch 0 was taken 7152 times"> + </span><span class="branchCov" title="Branch 1 was taken 7325 times"> + </span>]:<span class="lineCov">      14477 :             notifyKeyspaceEvent(REDIS_NOTIFY_SET,</span>
+<span class="lineNum">     879 </span>                :            :                 op == REDIS_OP_UNION ? &quot;sunionstore&quot; : &quot;sdiffstore&quot;,
+<span class="lineNum">     880 </span>                :<span class="lineCov">      14477 :                 dstkey,c-&gt;db-&gt;id);</span>
+<span class="lineNum">     881 </span>                :            :         } else {
+<span class="lineNum">     882 </span>                :<span class="lineCov">         52 :             decrRefCount(dstset);</span>
+<span class="lineNum">     883 </span>                :<span class="lineCov">         52 :             addReply(c,shared.czero);</span>
+<span class="lineNum">     884 </span>        [<span class="branchCov" title="Branch 0 was taken 4 times"> + </span><span class="branchCov" title="Branch 1 was taken 48 times"> + </span>]:<span class="lineCov">         52 :             if (deleted)</span>
+<span class="lineNum">     885 </span>                :<span class="lineCov">          4 :                 notifyKeyspaceEvent(REDIS_NOTIFY_GENERIC,&quot;del&quot;,</span>
+<span class="lineNum">     886 </span>                :<span class="lineCov">          4 :                     dstkey,c-&gt;db-&gt;id);</span>
+<span class="lineNum">     887 </span>                :            :         }
+<span class="lineNum">     888 </span>                :<span class="lineCov">      14529 :         signalModifiedKey(c-&gt;db,dstkey);</span>
+<span class="lineNum">     889 </span>                :<span class="lineCov">      14529 :         server.dirty++;</span>
+<span class="lineNum">     890 </span>                :            :     }
+<span class="lineNum">     891 </span>                :<span class="lineCov">      14642 :     zfree(sets);</span>
+<a name="892"><span class="lineNum">     892 </span>                :            : }</a>
+<span class="lineNum">     893 </span>                :            : 
+<span class="lineNum">     894 </span>                :<span class="lineCov">          5 : void sunionCommand(redisClient *c) {</span>
+<span class="lineNum">     895 </span>                :<span class="lineCov">          5 :     sunionDiffGenericCommand(c,c-&gt;argv+1,c-&gt;argc-1,NULL,REDIS_OP_UNION);</span>
+<a name="896"><span class="lineNum">     896 </span>                :<span class="lineCov">          5 : }</span></a>
+<span class="lineNum">     897 </span>                :            : 
+<span class="lineNum">     898 </span>                :<span class="lineCov">       7326 : void sunionstoreCommand(redisClient *c) {</span>
+<span class="lineNum">     899 </span>                :<span class="lineCov">       7326 :     sunionDiffGenericCommand(c,c-&gt;argv+2,c-&gt;argc-2,c-&gt;argv[1],REDIS_OP_UNION);</span>
+<a name="900"><span class="lineNum">     900 </span>                :<span class="lineCov">       7326 : }</span></a>
+<span class="lineNum">     901 </span>                :            : 
+<span class="lineNum">     902 </span>                :<span class="lineCov">        105 : void sdiffCommand(redisClient *c) {</span>
+<span class="lineNum">     903 </span>                :<span class="lineCov">        105 :     sunionDiffGenericCommand(c,c-&gt;argv+1,c-&gt;argc-1,NULL,REDIS_OP_DIFF);</span>
+<a name="904"><span class="lineNum">     904 </span>                :<span class="lineCov">        105 : }</span></a>
+<span class="lineNum">     905 </span>                :            : 
+<span class="lineNum">     906 </span>                :<span class="lineCov">       7203 : void sdiffstoreCommand(redisClient *c) {</span>
+<span class="lineNum">     907 </span>                :<span class="lineCov">       7203 :     sunionDiffGenericCommand(c,c-&gt;argv+2,c-&gt;argc-2,c-&gt;argv[1],REDIS_OP_DIFF);</span>
+<span class="lineNum">     908 </span>                :<span class="lineCov">       7203 : }</span>
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.9</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

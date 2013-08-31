@@ -1,0 +1,854 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - redis-lcov_9.info - /var/lib/jenkins/jobs/redis-lcov/workspace/src/t_hash.c</title>
+  <link rel="stylesheet" type="text/css" href="../../../../../../../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../../../../../../../index.html">top level</a> - <a href="index.html">var/lib/jenkins/jobs/redis-lcov/workspace/src</a> - t_hash.c<span style="font-size: 80%;"> (source / <a href="t_hash.c.func.html">functions</a>)</span></td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">redis-lcov_9.info</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">378</td>
+            <td class="headerCovTableEntry">396</td>
+            <td class="headerCovTableEntryHi">95.5 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2013-08-26</td>
+            <td></td>
+            <td class="headerItem">Functions:</td>
+            <td class="headerCovTableEntry">34</td>
+            <td class="headerCovTableEntry">34</td>
+            <td class="headerCovTableEntryHi">100.0 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Legend:</td>
+            <td class="headerValueLeg">            Lines:
+            <span class="coverLegendCov">hit</span>
+            <span class="coverLegendNoCov">not hit</span>
+            | Branches:
+            <span class="coverLegendCov">+</span> taken
+            <span class="coverLegendNoCov">-</span> not taken
+            <span class="coverLegendNoCov">#</span> not executed
+</td>
+            <td></td>
+            <td class="headerItem">Branches:</td>
+            <td class="headerCovTableEntry">192</td>
+            <td class="headerCovTableEntry">246</td>
+            <td class="headerCovTableEntryMed">78.0 %</td>
+          </tr>
+          <tr><td><img src="../../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">           Branch data     Line data    Source code</pre>
+<pre class="source">
+<a name="1"><span class="lineNum">       1 </span>                :            : /*</a>
+<span class="lineNum">       2 </span>                :            :  * Copyright (c) 2009-2012, Salvatore Sanfilippo &lt;antirez at gmail dot com&gt;
+<span class="lineNum">       3 </span>                :            :  * All rights reserved.
+<span class="lineNum">       4 </span>                :            :  *
+<span class="lineNum">       5 </span>                :            :  * Redistribution and use in source and binary forms, with or without
+<span class="lineNum">       6 </span>                :            :  * modification, are permitted provided that the following conditions are met:
+<span class="lineNum">       7 </span>                :            :  *
+<span class="lineNum">       8 </span>                :            :  *   * Redistributions of source code must retain the above copyright notice,
+<span class="lineNum">       9 </span>                :            :  *     this list of conditions and the following disclaimer.
+<span class="lineNum">      10 </span>                :            :  *   * Redistributions in binary form must reproduce the above copyright
+<span class="lineNum">      11 </span>                :            :  *     notice, this list of conditions and the following disclaimer in the
+<span class="lineNum">      12 </span>                :            :  *     documentation and/or other materials provided with the distribution.
+<span class="lineNum">      13 </span>                :            :  *   * Neither the name of Redis nor the names of its contributors may be used
+<span class="lineNum">      14 </span>                :            :  *     to endorse or promote products derived from this software without
+<span class="lineNum">      15 </span>                :            :  *     specific prior written permission.
+<span class="lineNum">      16 </span>                :            :  *
+<span class="lineNum">      17 </span>                :            :  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS &quot;AS IS&quot;
+<span class="lineNum">      18 </span>                :            :  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+<span class="lineNum">      19 </span>                :            :  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+<span class="lineNum">      20 </span>                :            :  * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+<span class="lineNum">      21 </span>                :            :  * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+<span class="lineNum">      22 </span>                :            :  * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+<span class="lineNum">      23 </span>                :            :  * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+<span class="lineNum">      24 </span>                :            :  * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+<span class="lineNum">      25 </span>                :            :  * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+<span class="lineNum">      26 </span>                :            :  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+<span class="lineNum">      27 </span>                :            :  * POSSIBILITY OF SUCH DAMAGE.
+<span class="lineNum">      28 </span>                :            :  */
+<span class="lineNum">      29 </span>                :            : 
+<span class="lineNum">      30 </span>                :            : #include &quot;redis.h&quot;
+<span class="lineNum">      31 </span>                :            : #include &lt;math.h&gt;
+<span class="lineNum">      32 </span>                :            : 
+<span class="lineNum">      33 </span>                :            : /*-----------------------------------------------------------------------------
+<span class="lineNum">      34 </span>                :            :  * Hash type API
+<span class="lineNum">      35 </span>                :            :  *----------------------------------------------------------------------------*/
+<span class="lineNum">      36 </span>                :            : 
+<span class="lineNum">      37 </span>                :            : /* Check the length of a number of objects to see if we need to convert a
+<a name="38"><span class="lineNum">      38 </span>                :            :  * ziplist to a real hash. Note that we only check string encoded objects</a>
+<span class="lineNum">      39 </span>                :            :  * as their string length can be queried in constant time. */
+<span class="lineNum">      40 </span>                :<span class="lineCov">     141561 : void hashTypeTryConversion(robj *o, robj **argv, int start, int end) {</span>
+<span class="lineNum">      41 </span>                :            :     int i;
+<span class="lineNum">      42 </span>                :            : 
+<span class="lineNum">      43 </span>        [<span class="branchCov" title="Branch 0 was taken 107280 times"> + </span><span class="branchCov" title="Branch 1 was taken 34281 times"> + </span>]:<span class="lineCov">     248841 :     if (o-&gt;encoding != REDIS_ENCODING_ZIPLIST) return;</span>
+<span class="lineNum">      44 </span>                :            : 
+<span class="lineNum">      45 </span>        [<span class="branchCov" title="Branch 0 was taken 222468 times"> + </span><span class="branchCov" title="Branch 1 was taken 88293 times"> + </span>]:<span class="lineCov">     310761 :     for (i = start; i &lt;= end; i++) {</span>
+<span class="lineNum">      46 </span>[<span class="branchCov" title="Branch 0 was taken 222468 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>][<span class="branchCov" title="Branch 2 was taken 18987 times"> + </span><span class="branchCov" title="Branch 3 was taken 203481 times"> + </span>]:<span class="lineCov">     222468 :         if (sdsEncodedObject(argv[i]) &amp;&amp;</span>
+<span class="lineNum">      47 </span>                :<span class="lineCov">     444936 :             sdslen(argv[i]-&gt;ptr) &gt; server.hash_max_ziplist_value)</span>
+<span class="lineNum">      48 </span>                :            :         {
+<span class="lineNum">      49 </span>                :<span class="lineCov">      18987 :             hashTypeConvert(o, REDIS_ENCODING_HT);</span>
+<span class="lineNum">      50 </span>                :<span class="lineCov">      18987 :             break;</span>
+<span class="lineNum">      51 </span>                :            :         }
+<span class="lineNum">      52 </span>                :            :     }
+<span class="lineNum">      53 </span>                :            : }
+<a name="54"><span class="lineNum">      54 </span>                :            : </a>
+<span class="lineNum">      55 </span>                :            : /* Encode given objects in-place when the hash uses a dict. */
+<span class="lineNum">      56 </span>                :<span class="lineCov">     157935 : void hashTypeTryObjectEncoding(robj *subject, robj **o1, robj **o2) {</span>
+<span class="lineNum">      57 </span>        [<span class="branchCov" title="Branch 0 was taken 61396 times"> + </span><span class="branchCov" title="Branch 1 was taken 96539 times"> + </span>]:<span class="lineCov">     157935 :     if (subject-&gt;encoding == REDIS_ENCODING_HT) {</span>
+<span class="lineNum">      58 </span>        [<span class="branchCov" title="Branch 0 was taken 61396 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">      61396 :         if (o1) *o1 = tryObjectEncoding(*o1);</span>
+<span class="lineNum">      59 </span>        [<span class="branchCov" title="Branch 0 was taken 61376 times"> + </span><span class="branchCov" title="Branch 1 was taken 20 times"> + </span>]:<span class="lineCov">      61396 :         if (o2) *o2 = tryObjectEncoding(*o2);</span>
+<span class="lineNum">      60 </span>                :            :     }
+<span class="lineNum">      61 </span>                :<span class="lineCov">     157935 : }</span>
+<span class="lineNum">      62 </span>                :            : 
+<a name="63"><span class="lineNum">      63 </span>                :            : /* Get the value from a ziplist encoded hash, identified by field.</a>
+<span class="lineNum">      64 </span>                :            :  * Returns -1 when the field cannot be found. */
+<span class="lineNum">      65 </span>                :<span class="lineCov">      32132 : int hashTypeGetFromZiplist(robj *o, robj *field,</span>
+<span class="lineNum">      66 </span>                :            :                            unsigned char **vstr,
+<span class="lineNum">      67 </span>                :            :                            unsigned int *vlen,
+<span class="lineNum">      68 </span>                :            :                            long long *vll)
+<span class="lineNum">      69 </span>                :            : {
+<span class="lineNum">      70 </span>                :<span class="lineCov">      32132 :     unsigned char *zl, *fptr = NULL, *vptr = NULL;</span>
+<span class="lineNum">      71 </span>                :            :     int ret;
+<span class="lineNum">      72 </span>                :            : 
+<span class="lineNum">      73 </span>        [<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchCov" title="Branch 1 was taken 32132 times"> + </span>]:<span class="lineCov">      32132 :     redisAssert(o-&gt;encoding == REDIS_ENCODING_ZIPLIST);</span>
+<span class="lineNum">      74 </span>                :            : 
+<span class="lineNum">      75 </span>                :<span class="lineCov">      32132 :     field = getDecodedObject(field);</span>
+<span class="lineNum">      76 </span>                :            : 
+<span class="lineNum">      77 </span>                :<span class="lineCov">      32132 :     zl = o-&gt;ptr;</span>
+<span class="lineNum">      78 </span>                :<span class="lineCov">      32132 :     fptr = ziplistIndex(zl, ZIPLIST_HEAD);</span>
+<span class="lineNum">      79 </span>        [<span class="branchCov" title="Branch 0 was taken 32130 times"> + </span><span class="branchCov" title="Branch 1 was taken 2 times"> + </span>]:<span class="lineCov">      32132 :     if (fptr != NULL) {</span>
+<span class="lineNum">      80 </span>                :<span class="lineCov">      32130 :         fptr = ziplistFind(fptr, field-&gt;ptr, sdslen(field-&gt;ptr), 1);</span>
+<span class="lineNum">      81 </span>        [<span class="branchCov" title="Branch 0 was taken 32124 times"> + </span><span class="branchCov" title="Branch 1 was taken 6 times"> + </span>]:<span class="lineCov">      32130 :         if (fptr != NULL) {</span>
+<span class="lineNum">      82 </span>                :            :             /* Grab pointer to the value (fptr points to the field) */
+<span class="lineNum">      83 </span>                :<span class="lineCov">      32124 :             vptr = ziplistNext(zl, fptr);</span>
+<span class="lineNum">      84 </span>        [<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchCov" title="Branch 1 was taken 32124 times"> + </span>]:<span class="lineCov">      32124 :             redisAssert(vptr != NULL);</span>
+<span class="lineNum">      85 </span>                :            :         }
+<span class="lineNum">      86 </span>                :            :     }
+<span class="lineNum">      87 </span>                :            : 
+<span class="lineNum">      88 </span>                :<span class="lineCov">      32132 :     decrRefCount(field);</span>
+<span class="lineNum">      89 </span>                :            : 
+<span class="lineNum">      90 </span>        [<span class="branchCov" title="Branch 0 was taken 32124 times"> + </span><span class="branchCov" title="Branch 1 was taken 8 times"> + </span>]:<span class="lineCov">      32132 :     if (vptr != NULL) {</span>
+<span class="lineNum">      91 </span>                :<span class="lineCov">      32124 :         ret = ziplistGet(vptr, vstr, vlen, vll);</span>
+<span class="lineNum">      92 </span>        [<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchCov" title="Branch 1 was taken 32124 times"> + </span>]:<span class="lineCov">      32132 :         redisAssert(ret);</span>
+<span class="lineNum">      93 </span>                :            :         return 0;
+<span class="lineNum">      94 </span>                :            :     }
+<span class="lineNum">      95 </span>                :            : 
+<span class="lineNum">      96 </span>                :            :     return -1;
+<span class="lineNum">      97 </span>                :            : }
+<span class="lineNum">      98 </span>                :            : 
+<a name="99"><span class="lineNum">      99 </span>                :            : /* Get the value from a hash table encoded hash, identified by field.</a>
+<span class="lineNum">     100 </span>                :            :  * Returns -1 when the field cannot be found. */
+<span class="lineNum">     101 </span>                :<span class="lineCov">      10476 : int hashTypeGetFromHashTable(robj *o, robj *field, robj **value) {</span>
+<span class="lineNum">     102 </span>                :            :     dictEntry *de;
+<span class="lineNum">     103 </span>                :            : 
+<span class="lineNum">     104 </span>        [<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchCov" title="Branch 1 was taken 10476 times"> + </span>]:<span class="lineCov">      10476 :     redisAssert(o-&gt;encoding == REDIS_ENCODING_HT);</span>
+<span class="lineNum">     105 </span>                :            : 
+<span class="lineNum">     106 </span>                :<span class="lineCov">      10476 :     de = dictFind(o-&gt;ptr, field);</span>
+<span class="lineNum">     107 </span>        [<span class="branchCov" title="Branch 0 was taken 10466 times"> + </span><span class="branchCov" title="Branch 1 was taken 10 times"> + </span>]:<span class="lineCov">      10476 :     if (de == NULL) return -1;</span>
+<span class="lineNum">     108 </span>                :<span class="lineCov">      10466 :     *value = dictGetVal(de);</span>
+<span class="lineNum">     109 </span>                :<span class="lineCov">      10476 :     return 0;</span>
+<span class="lineNum">     110 </span>                :            : }
+<span class="lineNum">     111 </span>                :            : 
+<span class="lineNum">     112 </span>                :            : /* Higher level function of hashTypeGet*() that always returns a Redis
+<span class="lineNum">     113 </span>                :            :  * object (either new or with refcount incremented), so that the caller
+<span class="lineNum">     114 </span>                :            :  * can retain a reference or call decrRefCount after the usage.
+<span class="lineNum">     115 </span>                :            :  *
+<a name="116"><span class="lineNum">     116 </span>                :            :  * The lower level function can prevent copy on write so it is</a>
+<span class="lineNum">     117 </span>                :            :  * the preferred way of doing read operations. */
+<span class="lineNum">     118 </span>                :<span class="lineCov">      32097 : robj *hashTypeGetObject(robj *o, robj *field) {</span>
+<span class="lineNum">     119 </span>                :<span class="lineCov">      32097 :     robj *value = NULL;</span>
+<span class="lineNum">     120 </span>                :            : 
+<span class="lineNum">     121 </span>        [<span class="branchCov" title="Branch 0 was taken 32069 times"> + </span><span class="branchCov" title="Branch 1 was taken 28 times"> + </span>]:<span class="lineCov">      32097 :     if (o-&gt;encoding == REDIS_ENCODING_ZIPLIST) {</span>
+<span class="lineNum">     122 </span>                :<span class="lineCov">      32069 :         unsigned char *vstr = NULL;</span>
+<span class="lineNum">     123 </span>                :<span class="lineCov">      32069 :         unsigned int vlen = UINT_MAX;</span>
+<span class="lineNum">     124 </span>                :<span class="lineCov">      32069 :         long long vll = LLONG_MAX;</span>
+<span class="lineNum">     125 </span>                :            : 
+<span class="lineNum">     126 </span>        [<span class="branchCov" title="Branch 1 was taken 32067 times"> + </span><span class="branchCov" title="Branch 2 was taken 2 times"> + </span>]:<span class="lineCov">      32069 :         if (hashTypeGetFromZiplist(o, field, &amp;vstr, &amp;vlen, &amp;vll) == 0) {</span>
+<span class="lineNum">     127 </span>        [<span class="branchCov" title="Branch 0 was taken 16690 times"> + </span><span class="branchCov" title="Branch 1 was taken 15377 times"> + </span>]:<span class="lineCov">      32067 :             if (vstr) {</span>
+<span class="lineNum">     128 </span>                :<span class="lineCov">      16690 :                 value = createStringObject((char*)vstr, vlen);</span>
+<span class="lineNum">     129 </span>                :            :             } else {
+<span class="lineNum">     130 </span>                :<span class="lineCov">      15377 :                 value = createStringObjectFromLongLong(vll);</span>
+<span class="lineNum">     131 </span>                :            :             }
+<span class="lineNum">     132 </span>                :            :         }
+<span class="lineNum">     133 </span>                :            : 
+<span class="lineNum">     134 </span>        [<span class="branchCov" title="Branch 0 was taken 28 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">         28 :     } else if (o-&gt;encoding == REDIS_ENCODING_HT) {</span>
+<span class="lineNum">     135 </span>                :            :         robj *aux;
+<span class="lineNum">     136 </span>                :            : 
+<span class="lineNum">     137 </span>        [<span class="branchCov" title="Branch 1 was taken 24 times"> + </span><span class="branchCov" title="Branch 2 was taken 4 times"> + </span>]:<span class="lineCov">         28 :         if (hashTypeGetFromHashTable(o, field, &amp;aux) == 0) {</span>
+<span class="lineNum">     138 </span>                :<span class="lineCov">         24 :             incrRefCount(aux);</span>
+<span class="lineNum">     139 </span>                :<span class="lineCov">         24 :             value = aux;</span>
+<span class="lineNum">     140 </span>                :            :         }
+<span class="lineNum">     141 </span>                :            :     } else {
+<span class="lineNum">     142 </span>                :<span class="lineNoCov">          0 :         redisPanic(&quot;Unknown hash encoding&quot;);</span>
+<span class="lineNum">     143 </span>                :            :     }
+<span class="lineNum">     144 </span>                :<span class="lineCov">      32097 :     return value;</span>
+<span class="lineNum">     145 </span>                :            : }
+<span class="lineNum">     146 </span>                :            : 
+<a name="147"><span class="lineNum">     147 </span>                :            : /* Test if the specified field exists in the given hash. Returns 1 if the field</a>
+<span class="lineNum">     148 </span>                :            :  * exists, and 0 when it doesn't. */
+<span class="lineNum">     149 </span>                :<span class="lineCov">          8 : int hashTypeExists(robj *o, robj *field) {</span>
+<span class="lineNum">     150 </span>        [<span class="branchCov" title="Branch 0 was taken 4 times"> + </span><span class="branchCov" title="Branch 1 was taken 4 times"> + </span>]:<span class="lineCov">          8 :     if (o-&gt;encoding == REDIS_ENCODING_ZIPLIST) {</span>
+<span class="lineNum">     151 </span>                :<span class="lineCov">          4 :         unsigned char *vstr = NULL;</span>
+<span class="lineNum">     152 </span>                :<span class="lineCov">          4 :         unsigned int vlen = UINT_MAX;</span>
+<span class="lineNum">     153 </span>                :<span class="lineCov">          4 :         long long vll = LLONG_MAX;</span>
+<span class="lineNum">     154 </span>                :            : 
+<span class="lineNum">     155 </span>        [<span class="branchCov" title="Branch 1 was taken 2 times"> + </span><span class="branchCov" title="Branch 2 was taken 2 times"> + </span>]:<span class="lineCov">          4 :         if (hashTypeGetFromZiplist(o, field, &amp;vstr, &amp;vlen, &amp;vll) == 0) return 1;</span>
+<span class="lineNum">     156 </span>        [<span class="branchCov" title="Branch 0 was taken 4 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">          4 :     } else if (o-&gt;encoding == REDIS_ENCODING_HT) {</span>
+<span class="lineNum">     157 </span>                :            :         robj *aux;
+<span class="lineNum">     158 </span>                :            : 
+<span class="lineNum">     159 </span>        [<span class="branchCov" title="Branch 1 was taken 2 times"> + </span><span class="branchCov" title="Branch 2 was taken 2 times"> + </span>]:<span class="lineCov">          4 :         if (hashTypeGetFromHashTable(o, field, &amp;aux) == 0) return 1;</span>
+<span class="lineNum">     160 </span>                :            :     } else {
+<span class="lineNum">     161 </span>                :<span class="lineNoCov">          0 :         redisPanic(&quot;Unknown hash encoding&quot;);</span>
+<span class="lineNum">     162 </span>                :            :     }
+<span class="lineNum">     163 </span>                :<span class="lineCov">          8 :     return 0;</span>
+<span class="lineNum">     164 </span>                :            : }
+<span class="lineNum">     165 </span>                :            : 
+<span class="lineNum">     166 </span>                :            : /* Add an element, discard the old if the key already exists.
+<span class="lineNum">     167 </span>                :            :  * Return 0 on insert and 1 on update.
+<a name="168"><span class="lineNum">     168 </span>                :            :  * This function will take care of incrementing the reference count of the</a>
+<span class="lineNum">     169 </span>                :            :  * retained fields and value objects. */
+<span class="lineNum">     170 </span>                :<span class="lineCov">     157935 : int hashTypeSet(robj *o, robj *field, robj *value) {</span>
+<span class="lineNum">     171 </span>                :<span class="lineCov">     157935 :     int update = 0;</span>
+<span class="lineNum">     172 </span>                :            : 
+<span class="lineNum">     173 </span>        [<span class="branchCov" title="Branch 0 was taken 96539 times"> + </span><span class="branchCov" title="Branch 1 was taken 61396 times"> + </span>]:<span class="lineCov">     157935 :     if (o-&gt;encoding == REDIS_ENCODING_ZIPLIST) {</span>
+<span class="lineNum">     174 </span>                :            :         unsigned char *zl, *fptr, *vptr;
+<span class="lineNum">     175 </span>                :            : 
+<span class="lineNum">     176 </span>                :<span class="lineCov">      96539 :         field = getDecodedObject(field);</span>
+<span class="lineNum">     177 </span>                :<span class="lineCov">      96539 :         value = getDecodedObject(value);</span>
+<span class="lineNum">     178 </span>                :            : 
+<span class="lineNum">     179 </span>                :<span class="lineCov">      96539 :         zl = o-&gt;ptr;</span>
+<span class="lineNum">     180 </span>                :<span class="lineCov">      96539 :         fptr = ziplistIndex(zl, ZIPLIST_HEAD);</span>
+<span class="lineNum">     181 </span>        [<span class="branchCov" title="Branch 0 was taken 50032 times"> + </span><span class="branchCov" title="Branch 1 was taken 46507 times"> + </span>]:<span class="lineCov">      96539 :         if (fptr != NULL) {</span>
+<span class="lineNum">     182 </span>                :<span class="lineCov">      50032 :             fptr = ziplistFind(fptr, field-&gt;ptr, sdslen(field-&gt;ptr), 1);</span>
+<span class="lineNum">     183 </span>        [<span class="branchCov" title="Branch 0 was taken 30428 times"> + </span><span class="branchCov" title="Branch 1 was taken 19604 times"> + </span>]:<span class="lineCov">      50032 :             if (fptr != NULL) {</span>
+<span class="lineNum">     184 </span>                :            :                 /* Grab pointer to the value (fptr points to the field) */
+<span class="lineNum">     185 </span>                :<span class="lineCov">      30428 :                 vptr = ziplistNext(zl, fptr);</span>
+<span class="lineNum">     186 </span>        [<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchCov" title="Branch 1 was taken 30428 times"> + </span>]:<span class="lineCov">      30428 :                 redisAssert(vptr != NULL);</span>
+<span class="lineNum">     187 </span>                :<span class="lineCov">      30428 :                 update = 1;</span>
+<span class="lineNum">     188 </span>                :            : 
+<span class="lineNum">     189 </span>                :            :                 /* Delete value */
+<span class="lineNum">     190 </span>                :<span class="lineCov">      30428 :                 zl = ziplistDelete(zl, &amp;vptr);</span>
+<span class="lineNum">     191 </span>                :            : 
+<span class="lineNum">     192 </span>                :            :                 /* Insert new value */
+<span class="lineNum">     193 </span>                :<span class="lineCov">      30428 :                 zl = ziplistInsert(zl, vptr, value-&gt;ptr, sdslen(value-&gt;ptr));</span>
+<span class="lineNum">     194 </span>                :            :             }
+<span class="lineNum">     195 </span>                :            :         }
+<span class="lineNum">     196 </span>                :            : 
+<span class="lineNum">     197 </span>        [<span class="branchCov" title="Branch 0 was taken 66111 times"> + </span><span class="branchCov" title="Branch 1 was taken 30428 times"> + </span>]:<span class="lineCov">      96539 :         if (!update) {</span>
+<span class="lineNum">     198 </span>                :            :             /* Push new field/value pair onto the tail of the ziplist */
+<span class="lineNum">     199 </span>                :<span class="lineCov">      66111 :             zl = ziplistPush(zl, field-&gt;ptr, sdslen(field-&gt;ptr), ZIPLIST_TAIL);</span>
+<span class="lineNum">     200 </span>                :<span class="lineCov">      66111 :             zl = ziplistPush(zl, value-&gt;ptr, sdslen(value-&gt;ptr), ZIPLIST_TAIL);</span>
+<span class="lineNum">     201 </span>                :            :         }
+<span class="lineNum">     202 </span>                :<span class="lineCov">      96539 :         o-&gt;ptr = zl;</span>
+<span class="lineNum">     203 </span>                :<span class="lineCov">      96539 :         decrRefCount(field);</span>
+<span class="lineNum">     204 </span>                :<span class="lineCov">      96539 :         decrRefCount(value);</span>
+<span class="lineNum">     205 </span>                :            : 
+<span class="lineNum">     206 </span>                :            :         /* Check if the ziplist needs to be converted to a hash table */
+<span class="lineNum">     207 </span>        [<span class="branchCov" title="Branch 1 was taken 35 times"> + </span><span class="branchCov" title="Branch 2 was taken 96504 times"> + </span>]:<span class="lineCov">      96539 :         if (hashTypeLength(o) &gt; server.hash_max_ziplist_entries)</span>
+<span class="lineNum">     208 </span>                :<span class="lineCov">         35 :             hashTypeConvert(o, REDIS_ENCODING_HT);</span>
+<span class="lineNum">     209 </span>        [<span class="branchCov" title="Branch 0 was taken 61396 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">      61396 :     } else if (o-&gt;encoding == REDIS_ENCODING_HT) {</span>
+<span class="lineNum">     210 </span>        [<span class="branchCov" title="Branch 1 was taken 50555 times"> + </span><span class="branchCov" title="Branch 2 was taken 10841 times"> + </span>]:<span class="lineCov">      61396 :         if (dictReplace(o-&gt;ptr, field, value)) { /* Insert */</span>
+<span class="lineNum">     211 </span>                :<span class="lineCov">      50555 :             incrRefCount(field);</span>
+<span class="lineNum">     212 </span>                :            :         } else { /* Update */
+<span class="lineNum">     213 </span>                :            :             update = 1;
+<span class="lineNum">     214 </span>                :            :         }
+<span class="lineNum">     215 </span>                :<span class="lineCov">      61396 :         incrRefCount(value);</span>
+<span class="lineNum">     216 </span>                :            :     } else {
+<span class="lineNum">     217 </span>                :<span class="lineNoCov">          0 :         redisPanic(&quot;Unknown hash encoding&quot;);</span>
+<span class="lineNum">     218 </span>                :            :     }
+<span class="lineNum">     219 </span>                :<span class="lineCov">     157935 :     return update;</span>
+<span class="lineNum">     220 </span>                :            : }
+<span class="lineNum">     221 </span>                :            : 
+<a name="222"><span class="lineNum">     222 </span>                :            : /* Delete an element from a hash.</a>
+<span class="lineNum">     223 </span>                :            :  * Return 1 on deleted and 0 on not found. */
+<span class="lineNum">     224 </span>                :<span class="lineCov">      31019 : int hashTypeDelete(robj *o, robj *field) {</span>
+<span class="lineNum">     225 </span>                :<span class="lineCov">      31019 :     int deleted = 0;</span>
+<span class="lineNum">     226 </span>                :            : 
+<span class="lineNum">     227 </span>        [<span class="branchCov" title="Branch 0 was taken 19352 times"> + </span><span class="branchCov" title="Branch 1 was taken 11667 times"> + </span>]:<span class="lineCov">      31019 :     if (o-&gt;encoding == REDIS_ENCODING_ZIPLIST) {</span>
+<span class="lineNum">     228 </span>                :            :         unsigned char *zl, *fptr;
+<span class="lineNum">     229 </span>                :            : 
+<span class="lineNum">     230 </span>                :<span class="lineCov">      19352 :         field = getDecodedObject(field);</span>
+<span class="lineNum">     231 </span>                :            : 
+<span class="lineNum">     232 </span>                :<span class="lineCov">      19352 :         zl = o-&gt;ptr;</span>
+<span class="lineNum">     233 </span>                :<span class="lineCov">      19352 :         fptr = ziplistIndex(zl, ZIPLIST_HEAD);</span>
+<span class="lineNum">     234 </span>        [<span class="branchCov" title="Branch 0 was taken 19352 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">      19352 :         if (fptr != NULL) {</span>
+<span class="lineNum">     235 </span>                :<span class="lineCov">      19352 :             fptr = ziplistFind(fptr, field-&gt;ptr, sdslen(field-&gt;ptr), 1);</span>
+<span class="lineNum">     236 </span>        [<span class="branchCov" title="Branch 0 was taken 18194 times"> + </span><span class="branchCov" title="Branch 1 was taken 1158 times"> + </span>]:<span class="lineCov">      19352 :             if (fptr != NULL) {</span>
+<span class="lineNum">     237 </span>                :<span class="lineCov">      18194 :                 zl = ziplistDelete(zl,&amp;fptr);</span>
+<span class="lineNum">     238 </span>                :<span class="lineCov">      18194 :                 zl = ziplistDelete(zl,&amp;fptr);</span>
+<span class="lineNum">     239 </span>                :<span class="lineCov">      18194 :                 o-&gt;ptr = zl;</span>
+<span class="lineNum">     240 </span>                :<span class="lineCov">      18194 :                 deleted = 1;</span>
+<span class="lineNum">     241 </span>                :            :             }
+<span class="lineNum">     242 </span>                :            :         }
+<span class="lineNum">     243 </span>                :            : 
+<span class="lineNum">     244 </span>                :<span class="lineCov">      19352 :         decrRefCount(field);</span>
+<span class="lineNum">     245 </span>                :            : 
+<span class="lineNum">     246 </span>        [<span class="branchCov" title="Branch 0 was taken 11667 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">      11667 :     } else if (o-&gt;encoding == REDIS_ENCODING_HT) {</span>
+<span class="lineNum">     247 </span>        [<span class="branchCov" title="Branch 1 was taken 9224 times"> + </span><span class="branchCov" title="Branch 2 was taken 2443 times"> + </span>]:<span class="lineCov">      11667 :         if (dictDelete((dict*)o-&gt;ptr, field) == REDIS_OK) {</span>
+<span class="lineNum">     248 </span>                :<span class="lineCov">       9224 :             deleted = 1;</span>
+<span class="lineNum">     249 </span>                :            : 
+<span class="lineNum">     250 </span>                :            :             /* Always check if the dictionary needs a resize after a delete. */
+<span class="lineNum">     251 </span>        [<span class="branchNoCov" title="Branch 1 was not taken"> - </span><span class="branchCov" title="Branch 2 was taken 9224 times"> + </span>]:<span class="lineCov">       9224 :             if (htNeedsResize(o-&gt;ptr)) dictResize(o-&gt;ptr);</span>
+<span class="lineNum">     252 </span>                :            :         }
+<span class="lineNum">     253 </span>                :            : 
+<span class="lineNum">     254 </span>                :            :     } else {
+<span class="lineNum">     255 </span>                :<span class="lineNoCov">          0 :         redisPanic(&quot;Unknown hash encoding&quot;);</span>
+<span class="lineNum">     256 </span>                :            :     }
+<span class="lineNum">     257 </span>                :            : 
+<span class="lineNum">     258 </span>                :<span class="lineCov">      31019 :     return deleted;</span>
+<span class="lineNum">     259 </span>                :            : }
+<a name="260"><span class="lineNum">     260 </span>                :            : </a>
+<span class="lineNum">     261 </span>                :            : /* Return the number of elements in a hash. */
+<span class="lineNum">     262 </span>                :<span class="lineCov">     129482 : unsigned long hashTypeLength(robj *o) {</span>
+<span class="lineNum">     263 </span>                :<span class="lineCov">     129482 :     unsigned long length = ULONG_MAX;</span>
+<span class="lineNum">     264 </span>                :            : 
+<span class="lineNum">     265 </span>        [<span class="branchCov" title="Branch 0 was taken 120216 times"> + </span><span class="branchCov" title="Branch 1 was taken 9266 times"> + </span>]:<span class="lineCov">     129482 :     if (o-&gt;encoding == REDIS_ENCODING_ZIPLIST) {</span>
+<span class="lineNum">     266 </span>                :<span class="lineCov">     120216 :         length = ziplistLen(o-&gt;ptr) / 2;</span>
+<span class="lineNum">     267 </span>        [<span class="branchCov" title="Branch 0 was taken 9266 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">       9266 :     } else if (o-&gt;encoding == REDIS_ENCODING_HT) {</span>
+<span class="lineNum">     268 </span>                :<span class="lineCov">       9266 :         length = dictSize((dict*)o-&gt;ptr);</span>
+<span class="lineNum">     269 </span>                :            :     } else {
+<span class="lineNum">     270 </span>                :<span class="lineNoCov">          0 :         redisPanic(&quot;Unknown hash encoding&quot;);</span>
+<span class="lineNum">     271 </span>                :            :     }
+<span class="lineNum">     272 </span>                :            : 
+<span class="lineNum">     273 </span>                :<span class="lineCov">     129482 :     return length;</span>
+<a name="274"><span class="lineNum">     274 </span>                :            : }</a>
+<span class="lineNum">     275 </span>                :            : 
+<span class="lineNum">     276 </span>                :<span class="lineCov">      88943 : hashTypeIterator *hashTypeInitIterator(robj *subject) {</span>
+<span class="lineNum">     277 </span>                :<span class="lineCov">      88943 :     hashTypeIterator *hi = zmalloc(sizeof(hashTypeIterator));</span>
+<span class="lineNum">     278 </span>                :<span class="lineCov">      88943 :     hi-&gt;subject = subject;</span>
+<span class="lineNum">     279 </span>                :<span class="lineCov">      88943 :     hi-&gt;encoding = subject-&gt;encoding;</span>
+<span class="lineNum">     280 </span>                :            : 
+<span class="lineNum">     281 </span>        [<span class="branchCov" title="Branch 0 was taken 65144 times"> + </span><span class="branchCov" title="Branch 1 was taken 23799 times"> + </span>]:<span class="lineCov">      88943 :     if (hi-&gt;encoding == REDIS_ENCODING_ZIPLIST) {</span>
+<span class="lineNum">     282 </span>                :<span class="lineCov">      65144 :         hi-&gt;fptr = NULL;</span>
+<span class="lineNum">     283 </span>                :<span class="lineCov">      65144 :         hi-&gt;vptr = NULL;</span>
+<span class="lineNum">     284 </span>        [<span class="branchCov" title="Branch 0 was taken 23799 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">      23799 :     } else if (hi-&gt;encoding == REDIS_ENCODING_HT) {</span>
+<span class="lineNum">     285 </span>                :<span class="lineCov">      23799 :         hi-&gt;di = dictGetIterator(subject-&gt;ptr);</span>
+<span class="lineNum">     286 </span>                :            :     } else {
+<span class="lineNum">     287 </span>                :<span class="lineNoCov">          0 :         redisPanic(&quot;Unknown hash encoding&quot;);</span>
+<span class="lineNum">     288 </span>                :            :     }
+<span class="lineNum">     289 </span>                :            : 
+<span class="lineNum">     290 </span>                :<span class="lineCov">      88943 :     return hi;</span>
+<a name="291"><span class="lineNum">     291 </span>                :            : }</a>
+<span class="lineNum">     292 </span>                :            : 
+<span class="lineNum">     293 </span>                :<span class="lineCov">      88943 : void hashTypeReleaseIterator(hashTypeIterator *hi) {</span>
+<span class="lineNum">     294 </span>        [<span class="branchCov" title="Branch 0 was taken 23799 times"> + </span><span class="branchCov" title="Branch 1 was taken 65144 times"> + </span>]:<span class="lineCov">      88943 :     if (hi-&gt;encoding == REDIS_ENCODING_HT) {</span>
+<span class="lineNum">     295 </span>                :<span class="lineCov">      23799 :         dictReleaseIterator(hi-&gt;di);</span>
+<span class="lineNum">     296 </span>                :            :     }
+<span class="lineNum">     297 </span>                :            : 
+<span class="lineNum">     298 </span>                :<span class="lineCov">      88943 :     zfree(hi);</span>
+<span class="lineNum">     299 </span>                :<span class="lineCov">      88943 : }</span>
+<span class="lineNum">     300 </span>                :            : 
+<a name="301"><span class="lineNum">     301 </span>                :            : /* Move to the next entry in the hash. Return REDIS_OK when the next entry</a>
+<span class="lineNum">     302 </span>                :            :  * could be found and REDIS_ERR when the iterator reaches the end. */
+<span class="lineNum">     303 </span>                :<span class="lineCov">     222858 : int hashTypeNext(hashTypeIterator *hi) {</span>
+<span class="lineNum">     304 </span>        [<span class="branchCov" title="Branch 0 was taken 132879 times"> + </span><span class="branchCov" title="Branch 1 was taken 89979 times"> + </span>]:<span class="lineCov">     222858 :     if (hi-&gt;encoding == REDIS_ENCODING_ZIPLIST) {</span>
+<span class="lineNum">     305 </span>                :            :         unsigned char *zl;
+<span class="lineNum">     306 </span>                :            :         unsigned char *fptr, *vptr;
+<span class="lineNum">     307 </span>                :            : 
+<span class="lineNum">     308 </span>                :<span class="lineCov">     132879 :         zl = hi-&gt;subject-&gt;ptr;</span>
+<span class="lineNum">     309 </span>                :<span class="lineCov">     132879 :         fptr = hi-&gt;fptr;</span>
+<span class="lineNum">     310 </span>                :<span class="lineCov">     132879 :         vptr = hi-&gt;vptr;</span>
+<span class="lineNum">     311 </span>                :            : 
+<span class="lineNum">     312 </span>        [<span class="branchCov" title="Branch 0 was taken 65144 times"> + </span><span class="branchCov" title="Branch 1 was taken 67735 times"> + </span>]:<span class="lineCov">     132879 :         if (fptr == NULL) {</span>
+<span class="lineNum">     313 </span>                :            :             /* Initialize cursor */
+<span class="lineNum">     314 </span>        [<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchCov" title="Branch 1 was taken 65144 times"> + </span>]:<span class="lineCov">      65144 :             redisAssert(vptr == NULL);</span>
+<span class="lineNum">     315 </span>                :<span class="lineCov">      65144 :             fptr = ziplistIndex(zl, 0);</span>
+<span class="lineNum">     316 </span>                :            :         } else {
+<span class="lineNum">     317 </span>                :            :             /* Advance cursor */
+<span class="lineNum">     318 </span>        [<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchCov" title="Branch 1 was taken 67735 times"> + </span>]:<span class="lineCov">      67735 :             redisAssert(vptr != NULL);</span>
+<span class="lineNum">     319 </span>                :<span class="lineCov">      67735 :             fptr = ziplistNext(zl, vptr);</span>
+<span class="lineNum">     320 </span>                :            :         }
+<span class="lineNum">     321 </span>        [<span class="branchCov" title="Branch 0 was taken 67735 times"> + </span><span class="branchCov" title="Branch 1 was taken 65144 times"> + </span>]:<span class="lineCov">     132879 :         if (fptr == NULL) return REDIS_ERR;</span>
+<span class="lineNum">     322 </span>                :            : 
+<span class="lineNum">     323 </span>                :            :         /* Grab pointer to the value (fptr points to the field) */
+<span class="lineNum">     324 </span>                :<span class="lineCov">      67735 :         vptr = ziplistNext(zl, fptr);</span>
+<span class="lineNum">     325 </span>        [<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchCov" title="Branch 1 was taken 67735 times"> + </span>]:<span class="lineCov">      67735 :         redisAssert(vptr != NULL);</span>
+<span class="lineNum">     326 </span>                :            : 
+<span class="lineNum">     327 </span>                :            :         /* fptr, vptr now point to the first or next pair */
+<span class="lineNum">     328 </span>                :<span class="lineCov">      67735 :         hi-&gt;fptr = fptr;</span>
+<span class="lineNum">     329 </span>                :<span class="lineCov">      67735 :         hi-&gt;vptr = vptr;</span>
+<span class="lineNum">     330 </span>        [<span class="branchCov" title="Branch 0 was taken 89979 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">      89979 :     } else if (hi-&gt;encoding == REDIS_ENCODING_HT) {</span>
+<span class="lineNum">     331 </span>        [<span class="branchCov" title="Branch 1 was taken 66180 times"> + </span><span class="branchCov" title="Branch 2 was taken 23799 times"> + </span>]:<span class="lineCov">      89979 :         if ((hi-&gt;de = dictNext(hi-&gt;di)) == NULL) return REDIS_ERR;</span>
+<span class="lineNum">     332 </span>                :            :     } else {
+<span class="lineNum">     333 </span>                :<span class="lineNoCov">          0 :         redisPanic(&quot;Unknown hash encoding&quot;);</span>
+<span class="lineNum">     334 </span>                :            :     }
+<span class="lineNum">     335 </span>                :<span class="lineCov">     222858 :     return REDIS_OK;</span>
+<span class="lineNum">     336 </span>                :            : }
+<span class="lineNum">     337 </span>                :            : 
+<a name="338"><span class="lineNum">     338 </span>                :            : /* Get the field or value at iterator cursor, for an iterator on a hash value</a>
+<span class="lineNum">     339 </span>                :            :  * encoded as a ziplist. Prototype is similar to `hashTypeGetFromZiplist`. */
+<span class="lineNum">     340 </span>                :<span class="lineCov">     135454 : void hashTypeCurrentFromZiplist(hashTypeIterator *hi, int what,</span>
+<span class="lineNum">     341 </span>                :            :                                 unsigned char **vstr,
+<span class="lineNum">     342 </span>                :            :                                 unsigned int *vlen,
+<span class="lineNum">     343 </span>                :            :                                 long long *vll)
+<span class="lineNum">     344 </span>                :            : {
+<span class="lineNum">     345 </span>                :            :     int ret;
+<span class="lineNum">     346 </span>                :            : 
+<span class="lineNum">     347 </span>        [<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchCov" title="Branch 1 was taken 135454 times"> + </span>]:<span class="lineCov">     135454 :     redisAssert(hi-&gt;encoding == REDIS_ENCODING_ZIPLIST);</span>
+<span class="lineNum">     348 </span>                :            : 
+<span class="lineNum">     349 </span>        [<span class="branchCov" title="Branch 0 was taken 67727 times"> + </span><span class="branchCov" title="Branch 1 was taken 67727 times"> + </span>]:<span class="lineCov">     135454 :     if (what &amp; REDIS_HASH_KEY) {</span>
+<span class="lineNum">     350 </span>                :<span class="lineCov">      67727 :         ret = ziplistGet(hi-&gt;fptr, vstr, vlen, vll);</span>
+<span class="lineNum">     351 </span>        [<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchCov" title="Branch 1 was taken 67727 times"> + </span>]:<span class="lineCov">      67727 :         redisAssert(ret);</span>
+<span class="lineNum">     352 </span>                :            :     } else {
+<span class="lineNum">     353 </span>                :<span class="lineCov">      67727 :         ret = ziplistGet(hi-&gt;vptr, vstr, vlen, vll);</span>
+<span class="lineNum">     354 </span>        [<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchCov" title="Branch 1 was taken 67727 times"> + </span>]:<span class="lineCov">      67727 :         redisAssert(ret);</span>
+<span class="lineNum">     355 </span>                :            :     }
+<span class="lineNum">     356 </span>                :<span class="lineCov">     135454 : }</span>
+<span class="lineNum">     357 </span>                :            : 
+<a name="358"><span class="lineNum">     358 </span>                :            : /* Get the field or value at iterator cursor, for an iterator on a hash value</a>
+<span class="lineNum">     359 </span>                :            :  * encoded as a ziplist. Prototype is similar to `hashTypeGetFromHashTable`. */
+<span class="lineNum">     360 </span>                :<span class="lineCov">     130312 : void hashTypeCurrentFromHashTable(hashTypeIterator *hi, int what, robj **dst) {</span>
+<span class="lineNum">     361 </span>        [<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchCov" title="Branch 1 was taken 130312 times"> + </span>]:<span class="lineCov">     130312 :     redisAssert(hi-&gt;encoding == REDIS_ENCODING_HT);</span>
+<span class="lineNum">     362 </span>                :            : 
+<span class="lineNum">     363 </span>        [<span class="branchCov" title="Branch 0 was taken 65156 times"> + </span><span class="branchCov" title="Branch 1 was taken 65156 times"> + </span>]:<span class="lineCov">     130312 :     if (what &amp; REDIS_HASH_KEY) {</span>
+<span class="lineNum">     364 </span>                :<span class="lineCov">      65156 :         *dst = dictGetKey(hi-&gt;de);</span>
+<span class="lineNum">     365 </span>                :            :     } else {
+<span class="lineNum">     366 </span>                :<span class="lineCov">      65156 :         *dst = dictGetVal(hi-&gt;de);</span>
+<span class="lineNum">     367 </span>                :            :     }
+<span class="lineNum">     368 </span>                :<span class="lineCov">     130312 : }</span>
+<span class="lineNum">     369 </span>                :            : 
+<span class="lineNum">     370 </span>                :            : /* A non copy-on-write friendly but higher level version of hashTypeCurrent*()
+<a name="371"><span class="lineNum">     371 </span>                :            :  * that returns an object with incremented refcount (or a new object). It is up</a>
+<span class="lineNum">     372 </span>                :            :  * to the caller to decrRefCount() the object if no reference is retained. */
+<span class="lineNum">     373 </span>                :<span class="lineCov">     257702 : robj *hashTypeCurrentObject(hashTypeIterator *hi, int what) {</span>
+<span class="lineNum">     374 </span>                :            :     robj *dst;
+<span class="lineNum">     375 </span>                :            : 
+<span class="lineNum">     376 </span>        [<span class="branchCov" title="Branch 0 was taken 135352 times"> + </span><span class="branchCov" title="Branch 1 was taken 122350 times"> + </span>]:<span class="lineCov">     257702 :     if (hi-&gt;encoding == REDIS_ENCODING_ZIPLIST) {</span>
+<span class="lineNum">     377 </span>                :<span class="lineCov">     135352 :         unsigned char *vstr = NULL;</span>
+<span class="lineNum">     378 </span>                :<span class="lineCov">     135352 :         unsigned int vlen = UINT_MAX;</span>
+<span class="lineNum">     379 </span>                :<span class="lineCov">     135352 :         long long vll = LLONG_MAX;</span>
+<span class="lineNum">     380 </span>                :            : 
+<span class="lineNum">     381 </span>                :<span class="lineCov">     135352 :         hashTypeCurrentFromZiplist(hi, what, &amp;vstr, &amp;vlen, &amp;vll);</span>
+<span class="lineNum">     382 </span>        [<span class="branchCov" title="Branch 0 was taken 30632 times"> + </span><span class="branchCov" title="Branch 1 was taken 104720 times"> + </span>]:<span class="lineCov">     135352 :         if (vstr) {</span>
+<span class="lineNum">     383 </span>                :<span class="lineCov">      30632 :             dst = createStringObject((char*)vstr, vlen);</span>
+<span class="lineNum">     384 </span>                :            :         } else {
+<span class="lineNum">     385 </span>                :<span class="lineCov">     104720 :             dst = createStringObjectFromLongLong(vll);</span>
+<span class="lineNum">     386 </span>                :            :         }
+<span class="lineNum">     387 </span>        [<span class="branchCov" title="Branch 0 was taken 122350 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">     122350 :     } else if (hi-&gt;encoding == REDIS_ENCODING_HT) {</span>
+<span class="lineNum">     388 </span>                :<span class="lineCov">     122350 :         hashTypeCurrentFromHashTable(hi, what, &amp;dst);</span>
+<span class="lineNum">     389 </span>                :<span class="lineCov">     122350 :         incrRefCount(dst);</span>
+<span class="lineNum">     390 </span>                :            :     } else {
+<span class="lineNum">     391 </span>                :<span class="lineNoCov">          0 :         redisPanic(&quot;Unknown hash encoding&quot;);</span>
+<span class="lineNum">     392 </span>                :            :     }
+<span class="lineNum">     393 </span>                :<span class="lineCov">     257702 :     return dst;</span>
+<a name="394"><span class="lineNum">     394 </span>                :            : }</a>
+<span class="lineNum">     395 </span>                :            : 
+<span class="lineNum">     396 </span>                :<span class="lineCov">     141594 : robj *hashTypeLookupWriteOrCreate(redisClient *c, robj *key) {</span>
+<span class="lineNum">     397 </span>                :<span class="lineCov">     141594 :     robj *o = lookupKeyWrite(c-&gt;db,key);</span>
+<span class="lineNum">     398 </span>        [<span class="branchCov" title="Branch 0 was taken 64912 times"> + </span><span class="branchCov" title="Branch 1 was taken 76682 times"> + </span>]:<span class="lineCov">     141594 :     if (o == NULL) {</span>
+<span class="lineNum">     399 </span>                :<span class="lineCov">      64912 :         o = createHashObject();</span>
+<span class="lineNum">     400 </span>                :<span class="lineCov">      64912 :         dbAdd(c-&gt;db,key,o);</span>
+<span class="lineNum">     401 </span>                :            :     } else {
+<span class="lineNum">     402 </span>        [<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchCov" title="Branch 1 was taken 76682 times"> + </span>]:<span class="lineCov">      76682 :         if (o-&gt;type != REDIS_HASH) {</span>
+<span class="lineNum">     403 </span>                :<span class="lineNoCov">          0 :             addReply(c,shared.wrongtypeerr);</span>
+<span class="lineNum">     404 </span>                :<span class="lineNoCov">          0 :             return NULL;</span>
+<span class="lineNum">     405 </span>                :            :         }
+<span class="lineNum">     406 </span>                :            :     }
+<span class="lineNum">     407 </span>                :<span class="lineCov">     141594 :     return o;</span>
+<a name="408"><span class="lineNum">     408 </span>                :            : }</a>
+<span class="lineNum">     409 </span>                :            : 
+<span class="lineNum">     410 </span>                :<span class="lineCov">      21926 : void hashTypeConvertZiplist(robj *o, int enc) {</span>
+<span class="lineNum">     411 </span>        [<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchCov" title="Branch 1 was taken 21926 times"> + </span>]:<span class="lineCov">      21926 :     redisAssert(o-&gt;encoding == REDIS_ENCODING_ZIPLIST);</span>
+<span class="lineNum">     412 </span>                :            : 
+<span class="lineNum">     413 </span>        [<span class="branchCov" title="Branch 0 was taken 21926 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">      21926 :     if (enc == REDIS_ENCODING_ZIPLIST) {</span>
+<span class="lineNum">     414 </span>                :            :         /* Nothing to do... */
+<span class="lineNum">     415 </span>                :            : 
+<span class="lineNum">     416 </span>        [<span class="branchCov" title="Branch 0 was taken 21926 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">      21926 :     } else if (enc == REDIS_ENCODING_HT) {</span>
+<span class="lineNum">     417 </span>                :            :         hashTypeIterator *hi;
+<span class="lineNum">     418 </span>                :            :         dict *dict;
+<span class="lineNum">     419 </span>                :            :         int ret;
+<span class="lineNum">     420 </span>                :            : 
+<span class="lineNum">     421 </span>                :<span class="lineCov">      21926 :         hi = hashTypeInitIterator(o);</span>
+<span class="lineNum">     422 </span>                :<span class="lineCov">      21926 :         dict = dictCreate(&amp;hashDictType, NULL);</span>
+<span class="lineNum">     423 </span>                :            : 
+<span class="lineNum">     424 </span>        [<span class="branchCov" title="Branch 1 was taken 21940 times"> + </span><span class="branchCov" title="Branch 2 was taken 21926 times"> + </span>]:<span class="lineCov">      65792 :         while (hashTypeNext(hi) != REDIS_ERR) {</span>
+<span class="lineNum">     425 </span>                :            :             robj *field, *value;
+<span class="lineNum">     426 </span>                :            : 
+<span class="lineNum">     427 </span>                :<span class="lineCov">      21940 :             field = hashTypeCurrentObject(hi, REDIS_HASH_KEY);</span>
+<span class="lineNum">     428 </span>                :<span class="lineCov">      21940 :             field = tryObjectEncoding(field);</span>
+<span class="lineNum">     429 </span>                :<span class="lineCov">      21940 :             value = hashTypeCurrentObject(hi, REDIS_HASH_VALUE);</span>
+<span class="lineNum">     430 </span>                :<span class="lineCov">      21940 :             value = tryObjectEncoding(value);</span>
+<span class="lineNum">     431 </span>                :<span class="lineCov">      21940 :             ret = dictAdd(dict, field, value);</span>
+<span class="lineNum">     432 </span>        [<span class="branchCov" title="Branch 0 was taken 21940 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">      21940 :             if (ret != DICT_OK) {</span>
+<span class="lineNum">     433 </span>                :<span class="lineNoCov">          0 :                 redisLogHexDump(REDIS_WARNING,&quot;ziplist with dup elements dump&quot;,</span>
+<span class="lineNum">     434 </span>                :<span class="lineNoCov">          0 :                     o-&gt;ptr,ziplistBlobLen(o-&gt;ptr));</span>
+<span class="lineNum">     435 </span>        [<span class="branchNoExec" title="Branch 0 was not executed"> # </span><span class="branchNoExec" title="Branch 1 was not executed"> # </span>]:<span class="lineCov">      21926 :                 redisAssert(ret == DICT_OK);</span>
+<span class="lineNum">     436 </span>                :            :             }
+<span class="lineNum">     437 </span>                :            :         }
+<span class="lineNum">     438 </span>                :            : 
+<span class="lineNum">     439 </span>                :<span class="lineCov">      21926 :         hashTypeReleaseIterator(hi);</span>
+<span class="lineNum">     440 </span>                :<span class="lineCov">      21926 :         zfree(o-&gt;ptr);</span>
+<span class="lineNum">     441 </span>                :            : 
+<span class="lineNum">     442 </span>                :<span class="lineCov">      21926 :         o-&gt;encoding = REDIS_ENCODING_HT;</span>
+<span class="lineNum">     443 </span>                :<span class="lineCov">      21926 :         o-&gt;ptr = dict;</span>
+<span class="lineNum">     444 </span>                :            : 
+<span class="lineNum">     445 </span>                :            :     } else {
+<span class="lineNum">     446 </span>                :<span class="lineNoCov">          0 :         redisPanic(&quot;Unknown hash encoding&quot;);</span>
+<span class="lineNum">     447 </span>                :            :     }
+<a name="448"><span class="lineNum">     448 </span>                :<span class="lineCov">      21926 : }</span></a>
+<span class="lineNum">     449 </span>                :            : 
+<span class="lineNum">     450 </span>                :<span class="lineCov">      21926 : void hashTypeConvert(robj *o, int enc) {</span>
+<span class="lineNum">     451 </span>        [<span class="branchCov" title="Branch 0 was taken 21926 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">      21926 :     if (o-&gt;encoding == REDIS_ENCODING_ZIPLIST) {</span>
+<span class="lineNum">     452 </span>                :<span class="lineCov">      21926 :         hashTypeConvertZiplist(o, enc);</span>
+<span class="lineNum">     453 </span>        [<span class="branchNoExec" title="Branch 0 was not executed"> # </span><span class="branchNoExec" title="Branch 1 was not executed"> # </span>]:<span class="lineNoCov">          0 :     } else if (o-&gt;encoding == REDIS_ENCODING_HT) {</span>
+<span class="lineNum">     454 </span>                :<span class="lineNoCov">          0 :         redisPanic(&quot;Not implemented&quot;);</span>
+<span class="lineNum">     455 </span>                :            :     } else {
+<span class="lineNum">     456 </span>                :<span class="lineNoCov">          0 :         redisPanic(&quot;Unknown hash encoding&quot;);</span>
+<span class="lineNum">     457 </span>                :            :     }
+<span class="lineNum">     458 </span>                :<span class="lineCov">      21926 : }</span>
+<span class="lineNum">     459 </span>                :            : 
+<span class="lineNum">     460 </span>                :            : /*-----------------------------------------------------------------------------
+<span class="lineNum">     461 </span>                :            :  * Hash type commands
+<a name="462"><span class="lineNum">     462 </span>                :            :  *----------------------------------------------------------------------------*/</a>
+<span class="lineNum">     463 </span>                :            : 
+<span class="lineNum">     464 </span>                :<span class="lineCov">     141286 : void hsetCommand(redisClient *c) {</span>
+<span class="lineNum">     465 </span>                :            :     int update;
+<span class="lineNum">     466 </span>                :            :     robj *o;
+<span class="lineNum">     467 </span>                :            : 
+<span class="lineNum">     468 </span>        [<span class="branchCov" title="Branch 1 was taken 141286 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">     282572 :     if ((o = hashTypeLookupWriteOrCreate(c,c-&gt;argv[1])) == NULL) return;</span>
+<span class="lineNum">     469 </span>                :<span class="lineCov">     141286 :     hashTypeTryConversion(o,c-&gt;argv,2,3);</span>
+<span class="lineNum">     470 </span>                :<span class="lineCov">     141286 :     hashTypeTryObjectEncoding(o,&amp;c-&gt;argv[2], &amp;c-&gt;argv[3]);</span>
+<span class="lineNum">     471 </span>                :<span class="lineCov">     141286 :     update = hashTypeSet(o,c-&gt;argv[2],c-&gt;argv[3]);</span>
+<span class="lineNum">     472 </span>        [<span class="branchCov" title="Branch 0 was taken 40219 times"> + </span><span class="branchCov" title="Branch 1 was taken 101067 times"> + </span>]:<span class="lineCov">     141286 :     addReply(c, update ? shared.czero : shared.cone);</span>
+<span class="lineNum">     473 </span>                :<span class="lineCov">     141286 :     signalModifiedKey(c-&gt;db,c-&gt;argv[1]);</span>
+<span class="lineNum">     474 </span>                :<span class="lineCov">     141286 :     notifyKeyspaceEvent(REDIS_NOTIFY_HASH,&quot;hset&quot;,c-&gt;argv[1],c-&gt;db-&gt;id);</span>
+<span class="lineNum">     475 </span>                :<span class="lineCov">     141286 :     server.dirty++;</span>
+<a name="476"><span class="lineNum">     476 </span>                :            : }</a>
+<span class="lineNum">     477 </span>                :            : 
+<span class="lineNum">     478 </span>                :<span class="lineCov">          4 : void hsetnxCommand(redisClient *c) {</span>
+<span class="lineNum">     479 </span>                :            :     robj *o;
+<span class="lineNum">     480 </span>        [<span class="branchCov" title="Branch 1 was taken 4 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          8 :     if ((o = hashTypeLookupWriteOrCreate(c,c-&gt;argv[1])) == NULL) return;</span>
+<span class="lineNum">     481 </span>                :<span class="lineCov">          4 :     hashTypeTryConversion(o,c-&gt;argv,2,3);</span>
+<span class="lineNum">     482 </span>                :            : 
+<span class="lineNum">     483 </span>        [<span class="branchCov" title="Branch 1 was taken 2 times"> + </span><span class="branchCov" title="Branch 2 was taken 2 times"> + </span>]:<span class="lineCov">          4 :     if (hashTypeExists(o, c-&gt;argv[2])) {</span>
+<span class="lineNum">     484 </span>                :<span class="lineCov">          2 :         addReply(c, shared.czero);</span>
+<span class="lineNum">     485 </span>                :            :     } else {
+<span class="lineNum">     486 </span>                :<span class="lineCov">          2 :         hashTypeTryObjectEncoding(o,&amp;c-&gt;argv[2], &amp;c-&gt;argv[3]);</span>
+<span class="lineNum">     487 </span>                :<span class="lineCov">          2 :         hashTypeSet(o,c-&gt;argv[2],c-&gt;argv[3]);</span>
+<span class="lineNum">     488 </span>                :<span class="lineCov">          2 :         addReply(c, shared.cone);</span>
+<span class="lineNum">     489 </span>                :<span class="lineCov">          2 :         signalModifiedKey(c-&gt;db,c-&gt;argv[1]);</span>
+<span class="lineNum">     490 </span>                :<span class="lineCov">          2 :         notifyKeyspaceEvent(REDIS_NOTIFY_HASH,&quot;hset&quot;,c-&gt;argv[1],c-&gt;db-&gt;id);</span>
+<span class="lineNum">     491 </span>                :<span class="lineCov">          2 :         server.dirty++;</span>
+<span class="lineNum">     492 </span>                :            :     }
+<a name="493"><span class="lineNum">     493 </span>                :            : }</a>
+<span class="lineNum">     494 </span>                :            : 
+<span class="lineNum">     495 </span>                :<span class="lineCov">        272 : void hmsetCommand(redisClient *c) {</span>
+<span class="lineNum">     496 </span>                :            :     int i;
+<span class="lineNum">     497 </span>                :            :     robj *o;
+<span class="lineNum">     498 </span>                :            : 
+<span class="lineNum">     499 </span>        [<span class="branchCov" title="Branch 0 was taken 1 time"> + </span><span class="branchCov" title="Branch 1 was taken 271 times"> + </span>]:<span class="lineCov">        272 :     if ((c-&gt;argc % 2) == 1) {</span>
+<span class="lineNum">     500 </span>                :<span class="lineCov">          1 :         addReplyError(c,&quot;wrong number of arguments for HMSET&quot;);</span>
+<span class="lineNum">     501 </span>                :<span class="lineCov">          1 :         return;</span>
+<span class="lineNum">     502 </span>                :            :     }
+<span class="lineNum">     503 </span>                :            : 
+<span class="lineNum">     504 </span>        [<span class="branchCov" title="Branch 1 was taken 271 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">        271 :     if ((o = hashTypeLookupWriteOrCreate(c,c-&gt;argv[1])) == NULL) return;</span>
+<span class="lineNum">     505 </span>                :<span class="lineCov">        271 :     hashTypeTryConversion(o,c-&gt;argv,2,c-&gt;argc-1);</span>
+<span class="lineNum">     506 </span>        [<span class="branchCov" title="Branch 1 was taken 16623 times"> + </span><span class="branchCov" title="Branch 2 was taken 271 times"> + </span>]:<span class="lineCov">      16894 :     for (i = 2; i &lt; c-&gt;argc; i += 2) {</span>
+<span class="lineNum">     507 </span>                :<span class="lineCov">      16623 :         hashTypeTryObjectEncoding(o,&amp;c-&gt;argv[i], &amp;c-&gt;argv[i+1]);</span>
+<span class="lineNum">     508 </span>                :<span class="lineCov">      16623 :         hashTypeSet(o,c-&gt;argv[i],c-&gt;argv[i+1]);</span>
+<span class="lineNum">     509 </span>                :            :     }
+<span class="lineNum">     510 </span>                :<span class="lineCov">        271 :     addReply(c, shared.ok);</span>
+<span class="lineNum">     511 </span>                :<span class="lineCov">        271 :     signalModifiedKey(c-&gt;db,c-&gt;argv[1]);</span>
+<span class="lineNum">     512 </span>                :<span class="lineCov">        271 :     notifyKeyspaceEvent(REDIS_NOTIFY_HASH,&quot;hset&quot;,c-&gt;argv[1],c-&gt;db-&gt;id);</span>
+<span class="lineNum">     513 </span>                :<span class="lineCov">        272 :     server.dirty++;</span>
+<a name="514"><span class="lineNum">     514 </span>                :            : }</a>
+<span class="lineNum">     515 </span>                :            : 
+<span class="lineNum">     516 </span>                :<span class="lineCov">         18 : void hincrbyCommand(redisClient *c) {</span>
+<span class="lineNum">     517 </span>                :            :     long long value, incr, oldvalue;
+<span class="lineNum">     518 </span>                :            :     robj *o, *current, *new;
+<span class="lineNum">     519 </span>                :            : 
+<span class="lineNum">     520 </span>        [<span class="branchCov" title="Branch 1 was taken 18 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">         18 :     if (getLongLongFromObjectOrReply(c,c-&gt;argv[3],&amp;incr,NULL) != REDIS_OK) return;</span>
+<span class="lineNum">     521 </span>        [<span class="branchCov" title="Branch 1 was taken 18 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">         18 :     if ((o = hashTypeLookupWriteOrCreate(c,c-&gt;argv[1])) == NULL) return;</span>
+<span class="lineNum">     522 </span>        [<span class="branchCov" title="Branch 1 was taken 15 times"> + </span><span class="branchCov" title="Branch 2 was taken 3 times"> + </span>]:<span class="lineCov">         18 :     if ((current = hashTypeGetObject(o,c-&gt;argv[2])) != NULL) {</span>
+<span class="lineNum">     523 </span>        [<span class="branchCov" title="Branch 1 was taken 4 times"> + </span><span class="branchCov" title="Branch 2 was taken 11 times"> + </span>]:<span class="lineCov">         15 :         if (getLongLongFromObjectOrReply(c,current,&amp;value,</span>
+<span class="lineNum">     524 </span>                :            :             &quot;hash value is not an integer&quot;) != REDIS_OK) {
+<span class="lineNum">     525 </span>                :<span class="lineCov">          4 :             decrRefCount(current);</span>
+<span class="lineNum">     526 </span>                :<span class="lineCov">          4 :             return;</span>
+<span class="lineNum">     527 </span>                :            :         }
+<span class="lineNum">     528 </span>                :<span class="lineCov">         11 :         decrRefCount(current);</span>
+<span class="lineNum">     529 </span>                :            :     } else {
+<span class="lineNum">     530 </span>                :<span class="lineCov">          3 :         value = 0;</span>
+<span class="lineNum">     531 </span>                :            :     }
+<span class="lineNum">     532 </span>                :            : 
+<span class="lineNum">     533 </span>                :<span class="lineCov">         14 :     oldvalue = value;</span>
+<span class="lineNum">     534 </span>[<span class="branchCov" title="Branch 0 was taken 2 times"> + </span><span class="branchCov" title="Branch 1 was taken 12 times"> + </span>][<span class="branchCov" title="Branch 2 was taken 1 time"> + </span><span class="branchCov" title="Branch 3 was taken 1 time"> + </span>]:<span class="lineCov">         14 :     if ((incr &lt; 0 &amp;&amp; oldvalue &lt; 0 &amp;&amp; incr &lt; (LLONG_MIN-oldvalue)) ||</span>
+<span class="lineNum">         </span>        [<span class="branchCov" title="Branch 4 was taken 9 times"> + </span><span class="branchCov" title="Branch 5 was taken 4 times"> + </span>]
+<span class="lineNum">     535 </span>        [<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchCov" title="Branch 1 was taken 9 times"> + </span>]:<span class="lineCov">          9 :         (incr &gt; 0 &amp;&amp; oldvalue &gt; 0 &amp;&amp; incr &gt; (LLONG_MAX-oldvalue))) {</span>
+<span class="lineNum">     536 </span>                :<span class="lineCov">          1 :         addReplyError(c,&quot;increment or decrement would overflow&quot;);</span>
+<span class="lineNum">     537 </span>                :<span class="lineCov">          1 :         return;</span>
+<span class="lineNum">     538 </span>                :            :     }
+<span class="lineNum">     539 </span>                :<span class="lineCov">         13 :     value += incr;</span>
+<span class="lineNum">     540 </span>                :<span class="lineCov">         13 :     new = createStringObjectFromLongLong(value);</span>
+<span class="lineNum">     541 </span>                :<span class="lineCov">         13 :     hashTypeTryObjectEncoding(o,&amp;c-&gt;argv[2],NULL);</span>
+<span class="lineNum">     542 </span>                :<span class="lineCov">         13 :     hashTypeSet(o,c-&gt;argv[2],new);</span>
+<span class="lineNum">     543 </span>                :<span class="lineCov">         13 :     decrRefCount(new);</span>
+<span class="lineNum">     544 </span>                :<span class="lineCov">         13 :     addReplyLongLong(c,value);</span>
+<span class="lineNum">     545 </span>                :<span class="lineCov">         13 :     signalModifiedKey(c-&gt;db,c-&gt;argv[1]);</span>
+<span class="lineNum">     546 </span>                :<span class="lineCov">         13 :     notifyKeyspaceEvent(REDIS_NOTIFY_HASH,&quot;hincrby&quot;,c-&gt;argv[1],c-&gt;db-&gt;id);</span>
+<span class="lineNum">     547 </span>                :<span class="lineCov">         18 :     server.dirty++;</span>
+<a name="548"><span class="lineNum">     548 </span>                :            : }</a>
+<span class="lineNum">     549 </span>                :            : 
+<span class="lineNum">     550 </span>                :<span class="lineCov">         15 : void hincrbyfloatCommand(redisClient *c) {</span>
+<span class="lineNum">     551 </span>                :            :     double long value, incr;
+<span class="lineNum">     552 </span>                :            :     robj *o, *current, *new, *aux;
+<span class="lineNum">     553 </span>                :            : 
+<span class="lineNum">     554 </span>        [<span class="branchCov" title="Branch 1 was taken 15 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">         15 :     if (getLongDoubleFromObjectOrReply(c,c-&gt;argv[3],&amp;incr,NULL) != REDIS_OK) return;</span>
+<span class="lineNum">     555 </span>        [<span class="branchCov" title="Branch 1 was taken 15 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">         15 :     if ((o = hashTypeLookupWriteOrCreate(c,c-&gt;argv[1])) == NULL) return;</span>
+<span class="lineNum">     556 </span>        [<span class="branchCov" title="Branch 1 was taken 12 times"> + </span><span class="branchCov" title="Branch 2 was taken 3 times"> + </span>]:<span class="lineCov">         15 :     if ((current = hashTypeGetObject(o,c-&gt;argv[2])) != NULL) {</span>
+<span class="lineNum">     557 </span>        [<span class="branchCov" title="Branch 1 was taken 4 times"> + </span><span class="branchCov" title="Branch 2 was taken 8 times"> + </span>]:<span class="lineCov">         12 :         if (getLongDoubleFromObjectOrReply(c,current,&amp;value,</span>
+<span class="lineNum">     558 </span>                :            :             &quot;hash value is not a valid float&quot;) != REDIS_OK) {
+<span class="lineNum">     559 </span>                :<span class="lineCov">          4 :             decrRefCount(current);</span>
+<span class="lineNum">     560 </span>                :<span class="lineCov">          4 :             return;</span>
+<span class="lineNum">     561 </span>                :            :         }
+<span class="lineNum">     562 </span>                :<span class="lineCov">          8 :         decrRefCount(current);</span>
+<span class="lineNum">     563 </span>                :            :     } else {
+<span class="lineNum">     564 </span>                :<span class="lineCov">          3 :         value = 0;</span>
+<span class="lineNum">     565 </span>                :            :     }
+<span class="lineNum">     566 </span>                :            : 
+<span class="lineNum">     567 </span>                :<span class="lineCov">         11 :     value += incr;</span>
+<span class="lineNum">     568 </span>                :<span class="lineCov">         11 :     new = createStringObjectFromLongDouble(value);</span>
+<span class="lineNum">     569 </span>                :<span class="lineCov">         11 :     hashTypeTryObjectEncoding(o,&amp;c-&gt;argv[2],NULL);</span>
+<span class="lineNum">     570 </span>                :<span class="lineCov">         11 :     hashTypeSet(o,c-&gt;argv[2],new);</span>
+<span class="lineNum">     571 </span>                :<span class="lineCov">         11 :     addReplyBulk(c,new);</span>
+<span class="lineNum">     572 </span>                :<span class="lineCov">         11 :     signalModifiedKey(c-&gt;db,c-&gt;argv[1]);</span>
+<span class="lineNum">     573 </span>                :<span class="lineCov">         11 :     notifyKeyspaceEvent(REDIS_NOTIFY_HASH,&quot;hincrbyfloat&quot;,c-&gt;argv[1],c-&gt;db-&gt;id);</span>
+<span class="lineNum">     574 </span>                :<span class="lineCov">         11 :     server.dirty++;</span>
+<span class="lineNum">     575 </span>                :            : 
+<span class="lineNum">     576 </span>                :            :     /* Always replicate HINCRBYFLOAT as an HSET command with the final value
+<span class="lineNum">     577 </span>                :            :      * in order to make sure that differences in float pricision or formatting
+<span class="lineNum">     578 </span>                :            :      * will not create differences in replicas or after an AOF restart. */
+<span class="lineNum">     579 </span>                :<span class="lineCov">         11 :     aux = createStringObject(&quot;HSET&quot;,4);</span>
+<span class="lineNum">     580 </span>                :<span class="lineCov">         11 :     rewriteClientCommandArgument(c,0,aux);</span>
+<span class="lineNum">     581 </span>                :<span class="lineCov">         11 :     decrRefCount(aux);</span>
+<span class="lineNum">     582 </span>                :<span class="lineCov">         11 :     rewriteClientCommandArgument(c,3,new);</span>
+<span class="lineNum">     583 </span>                :<span class="lineCov">         15 :     decrRefCount(new);</span>
+<a name="584"><span class="lineNum">     584 </span>                :            : }</a>
+<span class="lineNum">     585 </span>                :            : 
+<span class="lineNum">     586 </span>                :<span class="lineCov">      10505 : static void addHashFieldToReply(redisClient *c, robj *o, robj *field) {</span>
+<span class="lineNum">     587 </span>                :            :     int ret;
+<span class="lineNum">     588 </span>                :            : 
+<span class="lineNum">     589 </span>        [<span class="branchCov" title="Branch 0 was taken 2 times"> + </span><span class="branchCov" title="Branch 1 was taken 10503 times"> + </span>]:<span class="lineCov">      10505 :     if (o == NULL) {</span>
+<span class="lineNum">     590 </span>                :<span class="lineCov">          2 :         addReply(c, shared.nullbulk);</span>
+<span class="lineNum">     591 </span>                :<span class="lineCov">      10505 :         return;</span>
+<span class="lineNum">     592 </span>                :            :     }
+<span class="lineNum">     593 </span>                :            : 
+<span class="lineNum">     594 </span>        [<span class="branchCov" title="Branch 0 was taken 59 times"> + </span><span class="branchCov" title="Branch 1 was taken 10444 times"> + </span>]:<span class="lineCov">      10503 :     if (o-&gt;encoding == REDIS_ENCODING_ZIPLIST) {</span>
+<span class="lineNum">     595 </span>                :<span class="lineCov">         59 :         unsigned char *vstr = NULL;</span>
+<span class="lineNum">     596 </span>                :<span class="lineCov">         59 :         unsigned int vlen = UINT_MAX;</span>
+<span class="lineNum">     597 </span>                :<span class="lineCov">         59 :         long long vll = LLONG_MAX;</span>
+<span class="lineNum">     598 </span>                :            : 
+<span class="lineNum">     599 </span>                :<span class="lineCov">         59 :         ret = hashTypeGetFromZiplist(o, field, &amp;vstr, &amp;vlen, &amp;vll);</span>
+<span class="lineNum">     600 </span>        [<span class="branchCov" title="Branch 0 was taken 4 times"> + </span><span class="branchCov" title="Branch 1 was taken 55 times"> + </span>]:<span class="lineCov">         59 :         if (ret &lt; 0) {</span>
+<span class="lineNum">     601 </span>                :<span class="lineCov">          4 :             addReply(c, shared.nullbulk);</span>
+<span class="lineNum">     602 </span>                :            :         } else {
+<span class="lineNum">     603 </span>        [<span class="branchCov" title="Branch 0 was taken 22 times"> + </span><span class="branchCov" title="Branch 1 was taken 33 times"> + </span>]:<span class="lineCov">         55 :             if (vstr) {</span>
+<span class="lineNum">     604 </span>                :<span class="lineCov">         22 :                 addReplyBulkCBuffer(c, vstr, vlen);</span>
+<span class="lineNum">     605 </span>                :            :             } else {
+<span class="lineNum">     606 </span>                :<span class="lineCov">         33 :                 addReplyBulkLongLong(c, vll);</span>
+<span class="lineNum">     607 </span>                :            :             }
+<span class="lineNum">     608 </span>                :            :         }
+<span class="lineNum">     609 </span>                :            : 
+<span class="lineNum">     610 </span>        [<span class="branchCov" title="Branch 0 was taken 10444 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">      10444 :     } else if (o-&gt;encoding == REDIS_ENCODING_HT) {</span>
+<span class="lineNum">     611 </span>                :            :         robj *value;
+<span class="lineNum">     612 </span>                :            : 
+<span class="lineNum">     613 </span>                :<span class="lineCov">      10444 :         ret = hashTypeGetFromHashTable(o, field, &amp;value);</span>
+<span class="lineNum">     614 </span>        [<span class="branchCov" title="Branch 0 was taken 4 times"> + </span><span class="branchCov" title="Branch 1 was taken 10440 times"> + </span>]:<span class="lineCov">      10444 :         if (ret &lt; 0) {</span>
+<span class="lineNum">     615 </span>                :<span class="lineCov">          4 :             addReply(c, shared.nullbulk);</span>
+<span class="lineNum">     616 </span>                :            :         } else {
+<span class="lineNum">     617 </span>                :<span class="lineCov">      10440 :             addReplyBulk(c, value);</span>
+<span class="lineNum">     618 </span>                :            :         }
+<span class="lineNum">     619 </span>                :            : 
+<span class="lineNum">     620 </span>                :            :     } else {
+<span class="lineNum">     621 </span>                :<span class="lineNoCov">          0 :         redisPanic(&quot;Unknown hash encoding&quot;);</span>
+<span class="lineNum">     622 </span>                :            :     }
+<a name="623"><span class="lineNum">     623 </span>                :            : }</a>
+<span class="lineNum">     624 </span>                :            : 
+<span class="lineNum">     625 </span>                :<span class="lineCov">       9461 : void hgetCommand(redisClient *c) {</span>
+<span class="lineNum">     626 </span>                :            :     robj *o;
+<span class="lineNum">     627 </span>                :            : 
+<span class="lineNum">     628 </span>  [<span class="branchCov" title="Branch 1 was taken 9461 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span><span class="branchCov" title="Branch 3 was taken 9461 times"> + </span><span class="branchNoCov" title="Branch 4 was not taken"> - </span>]:<span class="lineCov">      18922 :     if ((o = lookupKeyReadOrReply(c,c-&gt;argv[1],shared.nullbulk)) == NULL ||</span>
+<span class="lineNum">     629 </span>                :<span class="lineCov">      18922 :         checkType(c,o,REDIS_HASH)) return;</span>
+<span class="lineNum">     630 </span>                :            : 
+<span class="lineNum">     631 </span>                :<span class="lineCov">       9461 :     addHashFieldToReply(c, o, c-&gt;argv[2]);</span>
+<a name="632"><span class="lineNum">     632 </span>                :            : }</a>
+<span class="lineNum">     633 </span>                :            : 
+<span class="lineNum">     634 </span>                :<span class="lineCov">          9 : void hmgetCommand(redisClient *c) {</span>
+<span class="lineNum">     635 </span>                :            :     robj *o;
+<span class="lineNum">     636 </span>                :            :     int i;
+<span class="lineNum">     637 </span>                :            : 
+<span class="lineNum">     638 </span>                :            :     /* Don't abort when the key cannot be found. Non-existing keys are empty
+<span class="lineNum">     639 </span>                :            :      * hashes, where HMGET should respond with a series of null bulks. */
+<span class="lineNum">     640 </span>                :<span class="lineCov">          9 :     o = lookupKeyRead(c-&gt;db, c-&gt;argv[1]);</span>
+<span class="lineNum">     641 </span>[<span class="branchCov" title="Branch 0 was taken 8 times"> + </span><span class="branchCov" title="Branch 1 was taken 1 time"> + </span>][<span class="branchCov" title="Branch 2 was taken 1 time"> + </span><span class="branchCov" title="Branch 3 was taken 7 times"> + </span>]:<span class="lineCov">          9 :     if (o != NULL &amp;&amp; o-&gt;type != REDIS_HASH) {</span>
+<span class="lineNum">     642 </span>                :<span class="lineCov">          1 :         addReply(c, shared.wrongtypeerr);</span>
+<span class="lineNum">     643 </span>                :<span class="lineCov">          9 :         return;</span>
+<span class="lineNum">     644 </span>                :            :     }
+<span class="lineNum">     645 </span>                :            : 
+<span class="lineNum">     646 </span>                :<span class="lineCov">          8 :     addReplyMultiBulkLen(c, c-&gt;argc-2);</span>
+<span class="lineNum">     647 </span>        [<span class="branchCov" title="Branch 1 was taken 1044 times"> + </span><span class="branchCov" title="Branch 2 was taken 8 times"> + </span>]:<span class="lineCov">       1052 :     for (i = 2; i &lt; c-&gt;argc; i++) {</span>
+<span class="lineNum">     648 </span>                :<span class="lineCov">       1044 :         addHashFieldToReply(c, o, c-&gt;argv[i]);</span>
+<span class="lineNum">     649 </span>                :            :     }
+<a name="650"><span class="lineNum">     650 </span>                :            : }</a>
+<span class="lineNum">     651 </span>                :            : 
+<span class="lineNum">     652 </span>                :<span class="lineCov">      31035 : void hdelCommand(redisClient *c) {</span>
+<span class="lineNum">     653 </span>                :            :     robj *o;
+<span class="lineNum">     654 </span>                :<span class="lineCov">      31035 :     int j, deleted = 0, keyremoved = 0;</span>
+<span class="lineNum">     655 </span>                :            : 
+<span class="lineNum">     656 </span>  [<span class="branchCov" title="Branch 1 was taken 31014 times"> + </span><span class="branchCov" title="Branch 2 was taken 21 times"> + </span><span class="branchCov" title="Branch 3 was taken 31014 times"> + </span><span class="branchNoCov" title="Branch 4 was not taken"> - </span>]:<span class="lineCov">      62049 :     if ((o = lookupKeyWriteOrReply(c,c-&gt;argv[1],shared.czero)) == NULL ||</span>
+<span class="lineNum">     657 </span>                :<span class="lineCov">      62049 :         checkType(c,o,REDIS_HASH)) return;</span>
+<span class="lineNum">     658 </span>                :            : 
+<span class="lineNum">     659 </span>        [<span class="branchCov" title="Branch 0 was taken 31019 times"> + </span><span class="branchCov" title="Branch 1 was taken 3695 times"> + </span>]:<span class="lineCov">      34714 :     for (j = 2; j &lt; c-&gt;argc; j++) {</span>
+<span class="lineNum">     660 </span>        [<span class="branchCov" title="Branch 1 was taken 27418 times"> + </span><span class="branchCov" title="Branch 2 was taken 3601 times"> + </span>]:<span class="lineCov">      31019 :         if (hashTypeDelete(o,c-&gt;argv[j])) {</span>
+<span class="lineNum">     661 </span>                :<span class="lineCov">      27418 :             deleted++;</span>
+<span class="lineNum">     662 </span>        [<span class="branchCov" title="Branch 1 was taken 27319 times"> + </span><span class="branchCov" title="Branch 2 was taken 99 times"> + </span>]:<span class="lineCov">      27418 :             if (hashTypeLength(o) == 0) {</span>
+<span class="lineNum">     663 </span>                :<span class="lineCov">      27319 :                 dbDelete(c-&gt;db,c-&gt;argv[1]);</span>
+<span class="lineNum">     664 </span>                :<span class="lineCov">      27319 :                 keyremoved = 1;</span>
+<span class="lineNum">     665 </span>                :<span class="lineCov">      27319 :                 break;</span>
+<span class="lineNum">     666 </span>                :            :             }
+<span class="lineNum">     667 </span>                :            :         }
+<span class="lineNum">     668 </span>                :            :     }
+<span class="lineNum">     669 </span>        [<span class="branchCov" title="Branch 0 was taken 27415 times"> + </span><span class="branchCov" title="Branch 1 was taken 3599 times"> + </span>]:<span class="lineCov">      31014 :     if (deleted) {</span>
+<span class="lineNum">     670 </span>                :<span class="lineCov">      27415 :         signalModifiedKey(c-&gt;db,c-&gt;argv[1]);</span>
+<span class="lineNum">     671 </span>                :<span class="lineCov">      27415 :         notifyKeyspaceEvent(REDIS_NOTIFY_HASH,&quot;hdel&quot;,c-&gt;argv[1],c-&gt;db-&gt;id);</span>
+<span class="lineNum">     672 </span>        [<span class="branchCov" title="Branch 0 was taken 27319 times"> + </span><span class="branchCov" title="Branch 1 was taken 96 times"> + </span>]:<span class="lineCov">      27415 :         if (keyremoved)</span>
+<span class="lineNum">     673 </span>                :<span class="lineCov">      27319 :             notifyKeyspaceEvent(REDIS_NOTIFY_GENERIC,&quot;del&quot;,c-&gt;argv[1],</span>
+<span class="lineNum">     674 </span>                :<span class="lineCov">      27319 :                                 c-&gt;db-&gt;id);</span>
+<span class="lineNum">     675 </span>                :<span class="lineCov">      27415 :         server.dirty += deleted;</span>
+<span class="lineNum">     676 </span>                :            :     }
+<span class="lineNum">     677 </span>                :<span class="lineCov">      31014 :     addReplyLongLong(c,deleted);</span>
+<a name="678"><span class="lineNum">     678 </span>                :            : }</a>
+<span class="lineNum">     679 </span>                :            : 
+<span class="lineNum">     680 </span>                :<span class="lineCov">         45 : void hlenCommand(redisClient *c) {</span>
+<span class="lineNum">     681 </span>                :            :     robj *o;
+<span class="lineNum">     682 </span>  [<span class="branchCov" title="Branch 1 was taken 45 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span><span class="branchCov" title="Branch 3 was taken 45 times"> + </span><span class="branchNoCov" title="Branch 4 was not taken"> - </span>]:<span class="lineCov">         90 :     if ((o = lookupKeyReadOrReply(c,c-&gt;argv[1],shared.czero)) == NULL ||</span>
+<span class="lineNum">     683 </span>                :<span class="lineCov">         90 :         checkType(c,o,REDIS_HASH)) return;</span>
+<span class="lineNum">     684 </span>                :            : 
+<span class="lineNum">     685 </span>                :<span class="lineCov">         45 :     addReplyLongLong(c,hashTypeLength(o));</span>
+<a name="686"><span class="lineNum">     686 </span>                :            : }</a>
+<span class="lineNum">     687 </span>                :            : 
+<span class="lineNum">     688 </span>                :<span class="lineCov">       4158 : static void addHashIteratorCursorToReply(redisClient *c, hashTypeIterator *hi, int what) {</span>
+<span class="lineNum">     689 </span>        [<span class="branchCov" title="Branch 0 was taken 62 times"> + </span><span class="branchCov" title="Branch 1 was taken 4096 times"> + </span>]:<span class="lineCov">       4158 :     if (hi-&gt;encoding == REDIS_ENCODING_ZIPLIST) {</span>
+<span class="lineNum">     690 </span>                :<span class="lineCov">         62 :         unsigned char *vstr = NULL;</span>
+<span class="lineNum">     691 </span>                :<span class="lineCov">         62 :         unsigned int vlen = UINT_MAX;</span>
+<span class="lineNum">     692 </span>                :<span class="lineCov">         62 :         long long vll = LLONG_MAX;</span>
+<span class="lineNum">     693 </span>                :            : 
+<span class="lineNum">     694 </span>                :<span class="lineCov">         62 :         hashTypeCurrentFromZiplist(hi, what, &amp;vstr, &amp;vlen, &amp;vll);</span>
+<span class="lineNum">     695 </span>        [<span class="branchCov" title="Branch 0 was taken 45 times"> + </span><span class="branchCov" title="Branch 1 was taken 17 times"> + </span>]:<span class="lineCov">         62 :         if (vstr) {</span>
+<span class="lineNum">     696 </span>                :<span class="lineCov">         45 :             addReplyBulkCBuffer(c, vstr, vlen);</span>
+<span class="lineNum">     697 </span>                :            :         } else {
+<span class="lineNum">     698 </span>                :<span class="lineCov">         17 :             addReplyBulkLongLong(c, vll);</span>
+<span class="lineNum">     699 </span>                :            :         }
+<span class="lineNum">     700 </span>                :            : 
+<span class="lineNum">     701 </span>        [<span class="branchCov" title="Branch 0 was taken 4096 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">       4096 :     } else if (hi-&gt;encoding == REDIS_ENCODING_HT) {</span>
+<span class="lineNum">     702 </span>                :            :         robj *value;
+<span class="lineNum">     703 </span>                :            : 
+<span class="lineNum">     704 </span>                :<span class="lineCov">       4096 :         hashTypeCurrentFromHashTable(hi, what, &amp;value);</span>
+<span class="lineNum">     705 </span>                :<span class="lineCov">       4096 :         addReplyBulk(c, value);</span>
+<span class="lineNum">     706 </span>                :            : 
+<span class="lineNum">     707 </span>                :            :     } else {
+<span class="lineNum">     708 </span>                :<span class="lineNoCov">          0 :         redisPanic(&quot;Unknown hash encoding&quot;);</span>
+<span class="lineNum">     709 </span>                :            :     }
+<a name="710"><span class="lineNum">     710 </span>                :<span class="lineCov">       4158 : }</span></a>
+<span class="lineNum">     711 </span>                :            : 
+<span class="lineNum">     712 </span>                :<span class="lineCov">          9 : void genericHgetallCommand(redisClient *c, int flags) {</span>
+<span class="lineNum">     713 </span>                :            :     robj *o;
+<span class="lineNum">     714 </span>                :            :     hashTypeIterator *hi;
+<span class="lineNum">     715 </span>                :<span class="lineCov">          9 :     int multiplier = 0;</span>
+<span class="lineNum">     716 </span>                :<span class="lineCov">          9 :     int length, count = 0;</span>
+<span class="lineNum">     717 </span>                :            : 
+<span class="lineNum">     718 </span>        [<span class="branchCov" title="Branch 1 was taken 9 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          9 :     if ((o = lookupKeyReadOrReply(c,c-&gt;argv[1],shared.emptymultibulk)) == NULL</span>
+<span class="lineNum">     719 </span>        [<span class="branchCov" title="Branch 1 was taken 9 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">         18 :         || checkType(c,o,REDIS_HASH)) return;</span>
+<span class="lineNum">     720 </span>                :            : 
+<span class="lineNum">     721 </span>        [<span class="branchCov" title="Branch 0 was taken 7 times"> + </span><span class="branchCov" title="Branch 1 was taken 2 times"> + </span>]:<span class="lineCov">          9 :     if (flags &amp; REDIS_HASH_KEY) multiplier++;</span>
+<span class="lineNum">     722 </span>        [<span class="branchCov" title="Branch 0 was taken 7 times"> + </span><span class="branchCov" title="Branch 1 was taken 2 times"> + </span>]:<span class="lineCov">          9 :     if (flags &amp; REDIS_HASH_VALUE) multiplier++;</span>
+<span class="lineNum">     723 </span>                :            : 
+<span class="lineNum">     724 </span>                :<span class="lineCov">          9 :     length = hashTypeLength(o) * multiplier;</span>
+<span class="lineNum">     725 </span>                :<span class="lineCov">          9 :     addReplyMultiBulkLen(c, length);</span>
+<span class="lineNum">     726 </span>                :            : 
+<span class="lineNum">     727 </span>                :<span class="lineCov">          9 :     hi = hashTypeInitIterator(o);</span>
+<span class="lineNum">     728 </span>        [<span class="branchCov" title="Branch 1 was taken 3111 times"> + </span><span class="branchCov" title="Branch 2 was taken 9 times"> + </span>]:<span class="lineCov">       3129 :     while (hashTypeNext(hi) != REDIS_ERR) {</span>
+<span class="lineNum">     729 </span>        [<span class="branchCov" title="Branch 0 was taken 2079 times"> + </span><span class="branchCov" title="Branch 1 was taken 1032 times"> + </span>]:<span class="lineCov">       3111 :         if (flags &amp; REDIS_HASH_KEY) {</span>
+<span class="lineNum">     730 </span>                :<span class="lineCov">       2079 :             addHashIteratorCursorToReply(c, hi, REDIS_HASH_KEY);</span>
+<span class="lineNum">     731 </span>                :<span class="lineCov">       2079 :             count++;</span>
+<span class="lineNum">     732 </span>                :            :         }
+<span class="lineNum">     733 </span>        [<span class="branchCov" title="Branch 0 was taken 1032 times"> + </span><span class="branchCov" title="Branch 1 was taken 2079 times"> + </span>]:<span class="lineCov">       3111 :         if (flags &amp; REDIS_HASH_VALUE) {</span>
+<span class="lineNum">     734 </span>                :<span class="lineCov">       2079 :             addHashIteratorCursorToReply(c, hi, REDIS_HASH_VALUE);</span>
+<span class="lineNum">     735 </span>                :<span class="lineCov">       2088 :             count++;</span>
+<span class="lineNum">     736 </span>                :            :         }
+<span class="lineNum">     737 </span>                :            :     }
+<span class="lineNum">     738 </span>                :            : 
+<span class="lineNum">     739 </span>                :<span class="lineCov">          9 :     hashTypeReleaseIterator(hi);</span>
+<span class="lineNum">     740 </span>        [<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchCov" title="Branch 1 was taken 9 times"> + </span>]:<span class="lineCov">          9 :     redisAssert(count == length);</span>
+<a name="741"><span class="lineNum">     741 </span>                :            : }</a>
+<span class="lineNum">     742 </span>                :            : 
+<span class="lineNum">     743 </span>                :<span class="lineCov">          2 : void hkeysCommand(redisClient *c) {</span>
+<span class="lineNum">     744 </span>                :<span class="lineCov">          2 :     genericHgetallCommand(c,REDIS_HASH_KEY);</span>
+<a name="745"><span class="lineNum">     745 </span>                :<span class="lineCov">          2 : }</span></a>
+<span class="lineNum">     746 </span>                :            : 
+<span class="lineNum">     747 </span>                :<span class="lineCov">          2 : void hvalsCommand(redisClient *c) {</span>
+<span class="lineNum">     748 </span>                :<span class="lineCov">          2 :     genericHgetallCommand(c,REDIS_HASH_VALUE);</span>
+<a name="749"><span class="lineNum">     749 </span>                :<span class="lineCov">          2 : }</span></a>
+<span class="lineNum">     750 </span>                :            : 
+<span class="lineNum">     751 </span>                :<span class="lineCov">          5 : void hgetallCommand(redisClient *c) {</span>
+<span class="lineNum">     752 </span>                :<span class="lineCov">          5 :     genericHgetallCommand(c,REDIS_HASH_KEY|REDIS_HASH_VALUE);</span>
+<a name="753"><span class="lineNum">     753 </span>                :<span class="lineCov">          5 : }</span></a>
+<span class="lineNum">     754 </span>                :            : 
+<span class="lineNum">     755 </span>                :<span class="lineCov">          4 : void hexistsCommand(redisClient *c) {</span>
+<span class="lineNum">     756 </span>                :            :     robj *o;
+<span class="lineNum">     757 </span>  [<span class="branchCov" title="Branch 1 was taken 4 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span><span class="branchCov" title="Branch 3 was taken 4 times"> + </span><span class="branchNoCov" title="Branch 4 was not taken"> - </span>]:<span class="lineCov">          8 :     if ((o = lookupKeyReadOrReply(c,c-&gt;argv[1],shared.czero)) == NULL ||</span>
+<span class="lineNum">     758 </span>                :<span class="lineCov">          8 :         checkType(c,o,REDIS_HASH)) return;</span>
+<span class="lineNum">     759 </span>                :            : 
+<span class="lineNum">     760 </span>        [<span class="branchCov" title="Branch 1 was taken 2 times"> + </span><span class="branchCov" title="Branch 2 was taken 2 times"> + </span>]:<span class="lineCov">          4 :     addReply(c, hashTypeExists(o,c-&gt;argv[2]) ? shared.cone : shared.czero);</span>
+<span class="lineNum">     761 </span>                :            : }
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.9</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

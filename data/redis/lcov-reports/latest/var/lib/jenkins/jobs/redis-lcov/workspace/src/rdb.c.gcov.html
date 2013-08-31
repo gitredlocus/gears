@@ -1,0 +1,1327 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - redis-lcov_9.info - /var/lib/jenkins/jobs/redis-lcov/workspace/src/rdb.c</title>
+  <link rel="stylesheet" type="text/css" href="../../../../../../../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../../../../../../../index.html">top level</a> - <a href="index.html">var/lib/jenkins/jobs/redis-lcov/workspace/src</a> - rdb.c<span style="font-size: 80%;"> (source / <a href="rdb.c.func.html">functions</a>)</span></td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">redis-lcov_9.info</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">549</td>
+            <td class="headerCovTableEntry">626</td>
+            <td class="headerCovTableEntryMed">87.7 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2013-08-26</td>
+            <td></td>
+            <td class="headerItem">Functions:</td>
+            <td class="headerCovTableEntry">36</td>
+            <td class="headerCovTableEntry">38</td>
+            <td class="headerCovTableEntryHi">94.7 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Legend:</td>
+            <td class="headerValueLeg">            Lines:
+            <span class="coverLegendCov">hit</span>
+            <span class="coverLegendNoCov">not hit</span>
+            | Branches:
+            <span class="coverLegendCov">+</span> taken
+            <span class="coverLegendNoCov">-</span> not taken
+            <span class="coverLegendNoCov">#</span> not executed
+</td>
+            <td></td>
+            <td class="headerItem">Branches:</td>
+            <td class="headerCovTableEntry">330</td>
+            <td class="headerCovTableEntry">485</td>
+            <td class="headerCovTableEntryLo">68.0 %</td>
+          </tr>
+          <tr><td><img src="../../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">           Branch data     Line data    Source code</pre>
+<pre class="source">
+<a name="1"><span class="lineNum">       1 </span>                :            : /*</a>
+<span class="lineNum">       2 </span>                :            :  * Copyright (c) 2009-2012, Salvatore Sanfilippo &lt;antirez at gmail dot com&gt;
+<span class="lineNum">       3 </span>                :            :  * All rights reserved.
+<span class="lineNum">       4 </span>                :            :  *
+<span class="lineNum">       5 </span>                :            :  * Redistribution and use in source and binary forms, with or without
+<span class="lineNum">       6 </span>                :            :  * modification, are permitted provided that the following conditions are met:
+<span class="lineNum">       7 </span>                :            :  *
+<span class="lineNum">       8 </span>                :            :  *   * Redistributions of source code must retain the above copyright notice,
+<span class="lineNum">       9 </span>                :            :  *     this list of conditions and the following disclaimer.
+<span class="lineNum">      10 </span>                :            :  *   * Redistributions in binary form must reproduce the above copyright
+<span class="lineNum">      11 </span>                :            :  *     notice, this list of conditions and the following disclaimer in the
+<span class="lineNum">      12 </span>                :            :  *     documentation and/or other materials provided with the distribution.
+<span class="lineNum">      13 </span>                :            :  *   * Neither the name of Redis nor the names of its contributors may be used
+<span class="lineNum">      14 </span>                :            :  *     to endorse or promote products derived from this software without
+<span class="lineNum">      15 </span>                :            :  *     specific prior written permission.
+<span class="lineNum">      16 </span>                :            :  *
+<span class="lineNum">      17 </span>                :            :  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS &quot;AS IS&quot;
+<span class="lineNum">      18 </span>                :            :  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+<span class="lineNum">      19 </span>                :            :  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+<span class="lineNum">      20 </span>                :            :  * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+<span class="lineNum">      21 </span>                :            :  * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+<span class="lineNum">      22 </span>                :            :  * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+<span class="lineNum">      23 </span>                :            :  * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+<span class="lineNum">      24 </span>                :            :  * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+<span class="lineNum">      25 </span>                :            :  * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+<span class="lineNum">      26 </span>                :            :  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+<span class="lineNum">      27 </span>                :            :  * POSSIBILITY OF SUCH DAMAGE.
+<span class="lineNum">      28 </span>                :            :  */
+<span class="lineNum">      29 </span>                :            : 
+<span class="lineNum">      30 </span>                :            : #include &quot;redis.h&quot;
+<span class="lineNum">      31 </span>                :            : #include &quot;lzf.h&quot;    /* LZF compression library */
+<span class="lineNum">      32 </span>                :            : #include &quot;zipmap.h&quot;
+<span class="lineNum">      33 </span>                :            : #include &quot;endianconv.h&quot;
+<span class="lineNum">      34 </span>                :            : 
+<span class="lineNum">      35 </span>                :            : #include &lt;math.h&gt;
+<span class="lineNum">      36 </span>                :            : #include &lt;sys/types.h&gt;
+<span class="lineNum">      37 </span>                :            : #include &lt;sys/time.h&gt;
+<span class="lineNum">      38 </span>                :            : #include &lt;sys/resource.h&gt;
+<span class="lineNum">      39 </span>                :            : #include &lt;sys/wait.h&gt;
+<span class="lineNum">      40 </span>                :            : #include &lt;arpa/inet.h&gt;
+<a name="41"><span class="lineNum">      41 </span>                :            : #include &lt;sys/stat.h&gt;</a>
+<span class="lineNum">      42 </span>                :            : 
+<span class="lineNum">      43 </span>                :<span class="lineCov">   19912028 : static int rdbWriteRaw(rio *rdb, void *p, size_t len) {</span>
+<span class="lineNum">      44 </span>[<span class="branchCov" title="Branch 0 was taken 19612108 times"> + </span><span class="branchCov" title="Branch 1 was taken 299920 times"> + </span>][<span class="branchCov" title="Branch 2 was taken 19612108 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">   39524136 :     if (rdb &amp;&amp; rioWrite(rdb,p,len) == 0)</span>
+<span class="lineNum">      45 </span>                :            :         return -1;
+<span class="lineNum">      46 </span>                :<span class="lineCov">   19912028 :     return len;</span>
+<a name="47"><span class="lineNum">      47 </span>                :            : }</a>
+<span class="lineNum">      48 </span>                :            : 
+<span class="lineNum">      49 </span>                :<span class="lineCov">    3825348 : int rdbSaveType(rio *rdb, unsigned char type) {</span>
+<span class="lineNum">      50 </span>                :<span class="lineCov">    3825348 :     return rdbWriteRaw(rdb,&amp;type,1);</span>
+<span class="lineNum">      51 </span>                :            : }
+<span class="lineNum">      52 </span>                :            : 
+<span class="lineNum">      53 </span>                :            : /* Load a &quot;type&quot; in RDB format, that is a one byte unsigned integer.
+<a name="54"><span class="lineNum">      54 </span>                :            :  * This function is not only used to load object types, but also special</a>
+<span class="lineNum">      55 </span>                :            :  * &quot;types&quot; like the end-of-file type, the EXPIRE type, and so forth. */
+<span class="lineNum">      56 </span>                :<span class="lineCov">     623664 : int rdbLoadType(rio *rdb) {</span>
+<span class="lineNum">      57 </span>                :            :     unsigned char type;
+<span class="lineNum">      58 </span>        [<span class="branchCov" title="Branch 1 was taken 623664 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">     623664 :     if (rioRead(rdb,&amp;type,1) == 0) return -1;</span>
+<span class="lineNum">      59 </span>                :<span class="lineCov">     623664 :     return type;</span>
+<a name="60"><span class="lineNum">      60 </span>                :            : }</a>
+<span class="lineNum">      61 </span>                :            : 
+<span class="lineNum">      62 </span>                :<span class="lineNoCov">          0 : time_t rdbLoadTime(rio *rdb) {</span>
+<span class="lineNum">      63 </span>                :            :     int32_t t32;
+<span class="lineNum">      64 </span>        [<span class="branchNoExec" title="Branch 1 was not executed"> # </span><span class="branchNoExec" title="Branch 2 was not executed"> # </span>]:<span class="lineNoCov">          0 :     if (rioRead(rdb,&amp;t32,4) == 0) return -1;</span>
+<span class="lineNum">      65 </span>                :<span class="lineNoCov">          0 :     return (time_t)t32;</span>
+<a name="66"><span class="lineNum">      66 </span>                :            : }</a>
+<span class="lineNum">      67 </span>                :            : 
+<span class="lineNum">      68 </span>                :<span class="lineCov">        500 : int rdbSaveMillisecondTime(rio *rdb, long long t) {</span>
+<span class="lineNum">      69 </span>                :<span class="lineCov">        500 :     int64_t t64 = (int64_t) t;</span>
+<span class="lineNum">      70 </span>                :<span class="lineCov">        500 :     return rdbWriteRaw(rdb,&amp;t64,8);</span>
+<a name="71"><span class="lineNum">      71 </span>                :            : }</a>
+<span class="lineNum">      72 </span>                :            : 
+<span class="lineNum">      73 </span>                :<span class="lineCov">          3 : long long rdbLoadMillisecondTime(rio *rdb) {</span>
+<span class="lineNum">      74 </span>                :            :     int64_t t64;
+<span class="lineNum">      75 </span>        [<span class="branchCov" title="Branch 1 was taken 3 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          3 :     if (rioRead(rdb,&amp;t64,8) == 0) return -1;</span>
+<span class="lineNum">      76 </span>                :<span class="lineCov">          3 :     return (long long)t64;</span>
+<span class="lineNum">      77 </span>                :            : }
+<span class="lineNum">      78 </span>                :            : 
+<span class="lineNum">      79 </span>                :            : /* Saves an encoded length. The first two bits in the first byte are used to
+<a name="80"><span class="lineNum">      80 </span>                :            :  * hold the encoding type. See the REDIS_RDB_* definitions for more information</a>
+<span class="lineNum">      81 </span>                :            :  * on the types of encoding. */
+<span class="lineNum">      82 </span>                :<span class="lineCov">    7700491 : int rdbSaveLen(rio *rdb, uint32_t len) {</span>
+<span class="lineNum">      83 </span>                :            :     unsigned char buf[2];
+<span class="lineNum">      84 </span>                :            :     size_t nwritten;
+<span class="lineNum">      85 </span>                :            : 
+<span class="lineNum">      86 </span>        [<span class="branchCov" title="Branch 0 was taken 7437650 times"> + </span><span class="branchCov" title="Branch 1 was taken 262841 times"> + </span>]:<span class="lineCov">    7700491 :     if (len &lt; (1&lt;&lt;6)) {</span>
+<span class="lineNum">      87 </span>                :            :         /* Save a 6 bit len */
+<span class="lineNum">      88 </span>                :<span class="lineCov">    7437650 :         buf[0] = (len&amp;0xFF)|(REDIS_RDB_6BITLEN&lt;&lt;6);</span>
+<span class="lineNum">      89 </span>        [<span class="branchCov" title="Branch 1 was taken 7437650 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">    7437650 :         if (rdbWriteRaw(rdb,buf,1) == -1) return -1;</span>
+<span class="lineNum">      90 </span>                :            :         nwritten = 1;
+<span class="lineNum">      91 </span>        [<span class="branchCov" title="Branch 0 was taken 262838 times"> + </span><span class="branchCov" title="Branch 1 was taken 3 times"> + </span>]:<span class="lineCov">     262841 :     } else if (len &lt; (1&lt;&lt;14)) {</span>
+<span class="lineNum">      92 </span>                :            :         /* Save a 14 bit len */
+<span class="lineNum">      93 </span>                :<span class="lineCov">     262838 :         buf[0] = ((len&gt;&gt;8)&amp;0xFF)|(REDIS_RDB_14BITLEN&lt;&lt;6);</span>
+<span class="lineNum">      94 </span>                :<span class="lineCov">     262838 :         buf[1] = len&amp;0xFF;</span>
+<span class="lineNum">      95 </span>        [<span class="branchCov" title="Branch 1 was taken 262838 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">     262838 :         if (rdbWriteRaw(rdb,buf,2) == -1) return -1;</span>
+<span class="lineNum">      96 </span>                :            :         nwritten = 2;
+<span class="lineNum">      97 </span>                :            :     } else {
+<span class="lineNum">      98 </span>                :            :         /* Save a 32 bit len */
+<span class="lineNum">      99 </span>                :<span class="lineCov">          3 :         buf[0] = (REDIS_RDB_32BITLEN&lt;&lt;6);</span>
+<span class="lineNum">     100 </span>        [<span class="branchCov" title="Branch 1 was taken 3 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          3 :         if (rdbWriteRaw(rdb,buf,1) == -1) return -1;</span>
+<span class="lineNum">     101 </span>        [<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchCov" title="Branch 1 was taken 3 times"> + </span>]:<span class="lineCov">          3 :         len = htonl(len);</span>
+<span class="lineNum">     102 </span>        [<span class="branchCov" title="Branch 1 was taken 3 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          3 :         if (rdbWriteRaw(rdb,&amp;len,4) == -4) return -1;</span>
+<span class="lineNum">     103 </span>                :            :         nwritten = 1+4;
+<span class="lineNum">     104 </span>                :            :     }
+<span class="lineNum">     105 </span>                :<span class="lineCov">    7700491 :     return nwritten;</span>
+<span class="lineNum">     106 </span>                :            : }
+<span class="lineNum">     107 </span>                :            : 
+<span class="lineNum">     108 </span>                :            : /* Load an encoded length. The &quot;isencoded&quot; argument is set to 1 if the length
+<a name="109"><span class="lineNum">     109 </span>                :            :  * is not actually a length but an &quot;encoding type&quot;. See the REDIS_RDB_ENC_*</a>
+<span class="lineNum">     110 </span>                :            :  * definitions in rdb.h for more information. */
+<span class="lineNum">     111 </span>                :<span class="lineCov">    1399027 : uint32_t rdbLoadLen(rio *rdb, int *isencoded) {</span>
+<span class="lineNum">     112 </span>                :            :     unsigned char buf[2];
+<span class="lineNum">     113 </span>                :            :     uint32_t len;
+<span class="lineNum">     114 </span>                :            :     int type;
+<span class="lineNum">     115 </span>                :            : 
+<span class="lineNum">     116 </span>        [<span class="branchCov" title="Branch 0 was taken 1362605 times"> + </span><span class="branchCov" title="Branch 1 was taken 36422 times"> + </span>]:<span class="lineCov">    1399027 :     if (isencoded) *isencoded = 0;</span>
+<span class="lineNum">     117 </span>        [<span class="branchCov" title="Branch 1 was taken 1399027 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">    1399027 :     if (rioRead(rdb,buf,1) == 0) return REDIS_RDB_LENERR;</span>
+<span class="lineNum">     118 </span>                :<span class="lineCov">    1399027 :     type = (buf[0]&amp;0xC0)&gt;&gt;6;</span>
+<span class="lineNum">     119 </span>        [<span class="branchCov" title="Branch 0 was taken 107612 times"> + </span><span class="branchCov" title="Branch 1 was taken 1291415 times"> + </span>]:<span class="lineCov">    1399027 :     if (type == REDIS_RDB_ENCVAL) {</span>
+<span class="lineNum">     120 </span>                :            :         /* Read a 6 bit encoding type. */
+<span class="lineNum">     121 </span>        [<span class="branchCov" title="Branch 0 was taken 107612 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">     107612 :         if (isencoded) *isencoded = 1;</span>
+<span class="lineNum">     122 </span>                :<span class="lineCov">     107612 :         return buf[0]&amp;0x3F;</span>
+<span class="lineNum">     123 </span>        [<span class="branchCov" title="Branch 0 was taken 1245628 times"> + </span><span class="branchCov" title="Branch 1 was taken 45787 times"> + </span>]:<span class="lineCov">    1291415 :     } else if (type == REDIS_RDB_6BITLEN) {</span>
+<span class="lineNum">     124 </span>                :            :         /* Read a 6 bit len. */
+<span class="lineNum">     125 </span>                :<span class="lineCov">    1245628 :         return buf[0]&amp;0x3F;</span>
+<span class="lineNum">     126 </span>        [<span class="branchCov" title="Branch 0 was taken 45786 times"> + </span><span class="branchCov" title="Branch 1 was taken 1 time"> + </span>]:<span class="lineCov">      45787 :     } else if (type == REDIS_RDB_14BITLEN) {</span>
+<span class="lineNum">     127 </span>                :            :         /* Read a 14 bit len. */
+<span class="lineNum">     128 </span>        [<span class="branchCov" title="Branch 1 was taken 45786 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">      45786 :         if (rioRead(rdb,buf+1,1) == 0) return REDIS_RDB_LENERR;</span>
+<span class="lineNum">     129 </span>                :<span class="lineCov">      45786 :         return ((buf[0]&amp;0x3F)&lt;&lt;8)|buf[1];</span>
+<span class="lineNum">     130 </span>                :            :     } else {
+<span class="lineNum">     131 </span>                :            :         /* Read a 32 bit len. */
+<span class="lineNum">     132 </span>        [<span class="branchCov" title="Branch 1 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          1 :         if (rioRead(rdb,&amp;len,4) == 0) return REDIS_RDB_LENERR;</span>
+<span class="lineNum">     133 </span>        [<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchCov" title="Branch 1 was taken 1 time"> + </span>]:<span class="lineCov">    1399027 :         return ntohl(len);</span>
+<span class="lineNum">     134 </span>                :            :     }
+<span class="lineNum">     135 </span>                :            : }
+<span class="lineNum">     136 </span>                :            : 
+<span class="lineNum">     137 </span>                :            : /* Encodes the &quot;value&quot; argument as integer when it fits in the supported ranges
+<span class="lineNum">     138 </span>                :            :  * for encoded types. If the function successfully encodes the integer, the
+<a name="139"><span class="lineNum">     139 </span>                :            :  * representation is stored in the buffer pointer to by &quot;enc&quot; and the string</a>
+<span class="lineNum">     140 </span>                :            :  * length is returned. Otherwise 0 is returned. */
+<span class="lineNum">     141 </span>                :<span class="lineCov">     700776 : int rdbEncodeInteger(long long value, unsigned char *enc) {</span>
+<span class="lineNum">     142 </span>        [<span class="branchCov" title="Branch 0 was taken 314824 times"> + </span><span class="branchCov" title="Branch 1 was taken 385952 times"> + </span>]:<span class="lineCov">     700776 :     if (value &gt;= -(1&lt;&lt;7) &amp;&amp; value &lt;= (1&lt;&lt;7)-1) {</span>
+<span class="lineNum">     143 </span>                :<span class="lineCov">     314824 :         enc[0] = (REDIS_RDB_ENCVAL&lt;&lt;6)|REDIS_RDB_ENC_INT8;</span>
+<span class="lineNum">     144 </span>                :<span class="lineCov">     314824 :         enc[1] = value&amp;0xFF;</span>
+<span class="lineNum">     145 </span>                :<span class="lineCov">     314824 :         return 2;</span>
+<span class="lineNum">     146 </span>        [<span class="branchCov" title="Branch 0 was taken 121206 times"> + </span><span class="branchCov" title="Branch 1 was taken 264746 times"> + </span>]:<span class="lineCov">     385952 :     } else if (value &gt;= -(1&lt;&lt;15) &amp;&amp; value &lt;= (1&lt;&lt;15)-1) {</span>
+<span class="lineNum">     147 </span>                :<span class="lineCov">     121206 :         enc[0] = (REDIS_RDB_ENCVAL&lt;&lt;6)|REDIS_RDB_ENC_INT16;</span>
+<span class="lineNum">     148 </span>                :<span class="lineCov">     121206 :         enc[1] = value&amp;0xFF;</span>
+<span class="lineNum">     149 </span>                :<span class="lineCov">     121206 :         enc[2] = (value&gt;&gt;8)&amp;0xFF;</span>
+<span class="lineNum">     150 </span>                :<span class="lineCov">     121206 :         return 3;</span>
+<span class="lineNum">     151 </span>        [<span class="branchCov" title="Branch 0 was taken 144012 times"> + </span><span class="branchCov" title="Branch 1 was taken 120734 times"> + </span>]:<span class="lineCov">     264746 :     } else if (value &gt;= -((long long)1&lt;&lt;31) &amp;&amp; value &lt;= ((long long)1&lt;&lt;31)-1) {</span>
+<span class="lineNum">     152 </span>                :<span class="lineCov">     144012 :         enc[0] = (REDIS_RDB_ENCVAL&lt;&lt;6)|REDIS_RDB_ENC_INT32;</span>
+<span class="lineNum">     153 </span>                :<span class="lineCov">     144012 :         enc[1] = value&amp;0xFF;</span>
+<span class="lineNum">     154 </span>                :<span class="lineCov">     144012 :         enc[2] = (value&gt;&gt;8)&amp;0xFF;</span>
+<span class="lineNum">     155 </span>                :<span class="lineCov">     144012 :         enc[3] = (value&gt;&gt;16)&amp;0xFF;</span>
+<span class="lineNum">     156 </span>                :<span class="lineCov">     144012 :         enc[4] = (value&gt;&gt;24)&amp;0xFF;</span>
+<span class="lineNum">     157 </span>                :<span class="lineCov">     700776 :         return 5;</span>
+<span class="lineNum">     158 </span>                :            :     } else {
+<span class="lineNum">     159 </span>                :            :         return 0;
+<span class="lineNum">     160 </span>                :            :     }
+<span class="lineNum">     161 </span>                :            : }
+<span class="lineNum">     162 </span>                :            : 
+<span class="lineNum">     163 </span>                :            : /* Loads an integer-encoded object with the specified encoding type &quot;enctype&quot;.
+<a name="164"><span class="lineNum">     164 </span>                :            :  * If the &quot;encode&quot; argument is set the function may return an integer-encoded</a>
+<span class="lineNum">     165 </span>                :            :  * string object, otherwise it always returns a raw string object. */
+<span class="lineNum">     166 </span>                :<span class="lineCov">      95451 : robj *rdbLoadIntegerObject(rio *rdb, int enctype, int encode) {</span>
+<span class="lineNum">     167 </span>                :            :     unsigned char enc[4];
+<span class="lineNum">     168 </span>                :            :     long long val;
+<span class="lineNum">     169 </span>                :            : 
+<span class="lineNum">     170 </span>        [<span class="branchCov" title="Branch 0 was taken 53396 times"> + </span><span class="branchCov" title="Branch 1 was taken 42055 times"> + </span>]:<span class="lineCov">      95451 :     if (enctype == REDIS_RDB_ENC_INT8) {</span>
+<span class="lineNum">     171 </span>        [<span class="branchCov" title="Branch 1 was taken 53396 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">      53396 :         if (rioRead(rdb,enc,1) == 0) return NULL;</span>
+<span class="lineNum">     172 </span>                :<span class="lineCov">      53396 :         val = (signed char)enc[0];</span>
+<span class="lineNum">     173 </span>        [<span class="branchCov" title="Branch 0 was taken 20967 times"> + </span><span class="branchCov" title="Branch 1 was taken 21088 times"> + </span>]:<span class="lineCov">      42055 :     } else if (enctype == REDIS_RDB_ENC_INT16) {</span>
+<span class="lineNum">     174 </span>                :            :         uint16_t v;
+<span class="lineNum">     175 </span>        [<span class="branchCov" title="Branch 1 was taken 20967 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">      20967 :         if (rioRead(rdb,enc,2) == 0) return NULL;</span>
+<span class="lineNum">     176 </span>                :<span class="lineCov">      20967 :         v = enc[0]|(enc[1]&lt;&lt;8);</span>
+<span class="lineNum">     177 </span>                :<span class="lineCov">      20967 :         val = (int16_t)v;</span>
+<span class="lineNum">     178 </span>        [<span class="branchCov" title="Branch 0 was taken 21088 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">      21088 :     } else if (enctype == REDIS_RDB_ENC_INT32) {</span>
+<span class="lineNum">     179 </span>                :            :         uint32_t v;
+<span class="lineNum">     180 </span>        [<span class="branchCov" title="Branch 1 was taken 21088 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">      21088 :         if (rioRead(rdb,enc,4) == 0) return NULL;</span>
+<span class="lineNum">     181 </span>                :<span class="lineCov">      21088 :         v = enc[0]|(enc[1]&lt;&lt;8)|(enc[2]&lt;&lt;16)|(enc[3]&lt;&lt;24);</span>
+<span class="lineNum">     182 </span>                :<span class="lineCov">      21088 :         val = (int32_t)v;</span>
+<span class="lineNum">     183 </span>                :            :     } else {
+<span class="lineNum">     184 </span>                :<span class="lineNoCov">          0 :         val = 0; /* anti-warning */</span>
+<span class="lineNum">     185 </span>                :<span class="lineNoCov">          0 :         redisPanic(&quot;Unknown RDB integer encoding type&quot;);</span>
+<span class="lineNum">     186 </span>                :            :     }
+<span class="lineNum">     187 </span>        [<span class="branchCov" title="Branch 0 was taken 67936 times"> + </span><span class="branchCov" title="Branch 1 was taken 27515 times"> + </span>]:<span class="lineCov">      95451 :     if (encode)</span>
+<span class="lineNum">     188 </span>                :<span class="lineCov">      67936 :         return createStringObjectFromLongLong(val);</span>
+<span class="lineNum">     189 </span>                :            :     else
+<span class="lineNum">     190 </span>                :<span class="lineCov">      95451 :         return createObject(REDIS_STRING,sdsfromlonglong(val));</span>
+<span class="lineNum">     191 </span>                :            : }
+<span class="lineNum">     192 </span>                :            : 
+<span class="lineNum">     193 </span>                :            : /* String objects in the form &quot;2391&quot; &quot;-100&quot; without any space and with a
+<a name="194"><span class="lineNum">     194 </span>                :            :  * range of values that can fit in an 8, 16 or 32 bit signed value can be</a>
+<span class="lineNum">     195 </span>                :            :  * encoded as integers to save space */
+<span class="lineNum">     196 </span>                :<span class="lineCov">     365456 : int rdbTryIntegerEncoding(char *s, size_t len, unsigned char *enc) {</span>
+<span class="lineNum">     197 </span>                :            :     long long value;
+<span class="lineNum">     198 </span>                :            :     char *endptr, buf[32];
+<span class="lineNum">     199 </span>                :            : 
+<span class="lineNum">     200 </span>                :            :     /* Check if it's possible to encode this value as a number */
+<span class="lineNum">     201 </span>                :<span class="lineCov">     365456 :     value = strtoll(s, &amp;endptr, 10);</span>
+<span class="lineNum">     202 </span>        [<span class="branchCov" title="Branch 0 was taken 170086 times"> + </span><span class="branchCov" title="Branch 1 was taken 195370 times"> + </span>]:<span class="lineCov">     365456 :     if (endptr[0] != '\0') return 0;</span>
+<span class="lineNum">     203 </span>                :<span class="lineCov">     170086 :     ll2string(buf,32,value);</span>
+<span class="lineNum">     204 </span>                :            : 
+<span class="lineNum">     205 </span>                :            :     /* If the number converted back into a string is not identical
+<span class="lineNum">     206 </span>                :            :      * then it's not possible to encode the string as integer */
+<span class="lineNum">     207 </span>[<span class="branchCov" title="Branch 0 was taken 168775 times"> + </span><span class="branchCov" title="Branch 1 was taken 1311 times"> + </span>][<span class="branchCov" title="Branch 2 was taken 168775 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">     170086 :     if (strlen(buf) != len || memcmp(buf,s,len)) return 0;</span>
+<span class="lineNum">     208 </span>                :            : 
+<span class="lineNum">     209 </span>                :<span class="lineCov">     365456 :     return rdbEncodeInteger(value,enc);</span>
+<a name="210"><span class="lineNum">     210 </span>                :            : }</a>
+<span class="lineNum">     211 </span>                :            : 
+<span class="lineNum">     212 </span>                :<span class="lineCov">     314726 : int rdbSaveLzfStringObject(rio *rdb, unsigned char *s, size_t len) {</span>
+<span class="lineNum">     213 </span>                :            :     size_t comprlen, outlen;
+<span class="lineNum">     214 </span>                :            :     unsigned char byte;
+<span class="lineNum">     215 </span>                :<span class="lineCov">     314726 :     int n, nwritten = 0;</span>
+<span class="lineNum">     216 </span>                :            :     void *out;
+<span class="lineNum">     217 </span>                :            : 
+<span class="lineNum">     218 </span>                :            :     /* We require at least four bytes compression for this to be worth it */
+<span class="lineNum">     219 </span>        [<span class="branchCov" title="Branch 0 was taken 314726 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">     314726 :     if (len &lt;= 4) return 0;</span>
+<span class="lineNum">     220 </span>                :<span class="lineCov">     314726 :     outlen = len-4;</span>
+<span class="lineNum">     221 </span>        [<span class="branchCov" title="Branch 1 was taken 314726 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">     314726 :     if ((out = zmalloc(outlen+1)) == NULL) return 0;</span>
+<span class="lineNum">     222 </span>                :<span class="lineCov">     314726 :     comprlen = lzf_compress(s, len, out, outlen);</span>
+<span class="lineNum">     223 </span>        [<span class="branchCov" title="Branch 0 was taken 243620 times"> + </span><span class="branchCov" title="Branch 1 was taken 71106 times"> + </span>]:<span class="lineCov">     314726 :     if (comprlen == 0) {</span>
+<span class="lineNum">     224 </span>                :<span class="lineCov">     243620 :         zfree(out);</span>
+<span class="lineNum">     225 </span>                :<span class="lineCov">     243620 :         return 0;</span>
+<span class="lineNum">     226 </span>                :            :     }
+<span class="lineNum">     227 </span>                :            :     /* Data compressed! Let's save it on disk */
+<span class="lineNum">     228 </span>                :<span class="lineCov">      71106 :     byte = (REDIS_RDB_ENCVAL&lt;&lt;6)|REDIS_RDB_ENC_LZF;</span>
+<span class="lineNum">     229 </span>        [<span class="branchCov" title="Branch 1 was taken 71106 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">      71106 :     if ((n = rdbWriteRaw(rdb,&amp;byte,1)) == -1) goto writeerr;</span>
+<span class="lineNum">     230 </span>                :<span class="lineCov">      71106 :     nwritten += n;</span>
+<span class="lineNum">     231 </span>                :            : 
+<span class="lineNum">     232 </span>        [<span class="branchCov" title="Branch 1 was taken 71106 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">      71106 :     if ((n = rdbSaveLen(rdb,comprlen)) == -1) goto writeerr;</span>
+<span class="lineNum">     233 </span>                :<span class="lineCov">      71106 :     nwritten += n;</span>
+<span class="lineNum">     234 </span>                :            : 
+<span class="lineNum">     235 </span>        [<span class="branchCov" title="Branch 1 was taken 71106 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">      71106 :     if ((n = rdbSaveLen(rdb,len)) == -1) goto writeerr;</span>
+<span class="lineNum">     236 </span>                :<span class="lineCov">      71106 :     nwritten += n;</span>
+<span class="lineNum">     237 </span>                :            : 
+<span class="lineNum">     238 </span>        [<span class="branchCov" title="Branch 1 was taken 71106 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">      71106 :     if ((n = rdbWriteRaw(rdb,out,comprlen)) == -1) goto writeerr;</span>
+<span class="lineNum">     239 </span>                :<span class="lineCov">      71106 :     nwritten += n;</span>
+<span class="lineNum">     240 </span>                :            : 
+<span class="lineNum">     241 </span>                :<span class="lineCov">      71106 :     zfree(out);</span>
+<span class="lineNum">     242 </span>                :<span class="lineCov">      71106 :     return nwritten;</span>
+<span class="lineNum">     243 </span>                :            : 
+<span class="lineNum">     244 </span>                :            : writeerr:
+<span class="lineNum">     245 </span>                :<span class="lineNoCov">          0 :     zfree(out);</span>
+<span class="lineNum">     246 </span>                :<span class="lineCov">     314726 :     return -1;</span>
+<a name="247"><span class="lineNum">     247 </span>                :            : }</a>
+<span class="lineNum">     248 </span>                :            : 
+<span class="lineNum">     249 </span>                :<span class="lineCov">      12161 : robj *rdbLoadLzfStringObject(rio *rdb) {</span>
+<span class="lineNum">     250 </span>                :            :     unsigned int len, clen;
+<span class="lineNum">     251 </span>                :<span class="lineCov">      12161 :     unsigned char *c = NULL;</span>
+<span class="lineNum">     252 </span>                :<span class="lineCov">      12161 :     sds val = NULL;</span>
+<span class="lineNum">     253 </span>                :            : 
+<span class="lineNum">     254 </span>        [<span class="branchCov" title="Branch 1 was taken 12161 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">      12161 :     if ((clen = rdbLoadLen(rdb,NULL)) == REDIS_RDB_LENERR) return NULL;</span>
+<span class="lineNum">     255 </span>        [<span class="branchCov" title="Branch 1 was taken 12161 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">      12161 :     if ((len = rdbLoadLen(rdb,NULL)) == REDIS_RDB_LENERR) return NULL;</span>
+<span class="lineNum">     256 </span>        [<span class="branchCov" title="Branch 1 was taken 12161 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">      12161 :     if ((c = zmalloc(clen)) == NULL) goto err;</span>
+<span class="lineNum">     257 </span>        [<span class="branchCov" title="Branch 1 was taken 12161 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">      12161 :     if ((val = sdsnewlen(NULL,len)) == NULL) goto err;</span>
+<span class="lineNum">     258 </span>        [<span class="branchCov" title="Branch 1 was taken 12161 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">      12161 :     if (rioRead(rdb,c,clen) == 0) goto err;</span>
+<span class="lineNum">     259 </span>        [<span class="branchCov" title="Branch 1 was taken 12161 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">      12161 :     if (lzf_decompress(c,clen,val,len) == 0) goto err;</span>
+<span class="lineNum">     260 </span>                :<span class="lineCov">      12161 :     zfree(c);</span>
+<span class="lineNum">     261 </span>                :<span class="lineCov">      12161 :     return createObject(REDIS_STRING,val);</span>
+<span class="lineNum">     262 </span>                :            : err:
+<span class="lineNum">     263 </span>                :<span class="lineNoCov">          0 :     zfree(c);</span>
+<span class="lineNum">     264 </span>                :<span class="lineNoCov">          0 :     sdsfree(val);</span>
+<span class="lineNum">     265 </span>                :<span class="lineCov">      12161 :     return NULL;</span>
+<span class="lineNum">     266 </span>                :            : }
+<span class="lineNum">     267 </span>                :            : 
+<a name="268"><span class="lineNum">     268 </span>                :            : /* Save a string object as [len][data] on disk. If the object is a string</a>
+<span class="lineNum">     269 </span>                :            :  * representation of an integer value we try to save it in a special form */
+<span class="lineNum">     270 </span>                :<span class="lineCov">    7629585 : int rdbSaveRawString(rio *rdb, unsigned char *s, size_t len) {</span>
+<span class="lineNum">     271 </span>                :            :     int enclen;
+<span class="lineNum">     272 </span>                :<span class="lineCov">    7629585 :     int n, nwritten = 0;</span>
+<span class="lineNum">     273 </span>                :            : 
+<span class="lineNum">     274 </span>                :            :     /* Try integer encoding */
+<span class="lineNum">     275 </span>        [<span class="branchCov" title="Branch 0 was taken 365456 times"> + </span><span class="branchCov" title="Branch 1 was taken 7264129 times"> + </span>]:<span class="lineCov">    7629585 :     if (len &lt;= 11) {</span>
+<span class="lineNum">     276 </span>                :            :         unsigned char buf[5];
+<span class="lineNum">     277 </span>        [<span class="branchCov" title="Branch 1 was taken 129564 times"> + </span><span class="branchCov" title="Branch 2 was taken 235892 times"> + </span>]:<span class="lineCov">     365456 :         if ((enclen = rdbTryIntegerEncoding((char*)s,len,buf)) &gt; 0) {</span>
+<span class="lineNum">     278 </span>        [<span class="branchCov" title="Branch 1 was taken 129564 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">     129564 :             if (rdbWriteRaw(rdb,buf,enclen) == -1) return -1;</span>
+<span class="lineNum">     279 </span>                :<span class="lineCov">     129564 :             return enclen;</span>
+<span class="lineNum">     280 </span>                :            :         }
+<span class="lineNum">     281 </span>                :            :     }
+<span class="lineNum">     282 </span>                :            : 
+<span class="lineNum">     283 </span>                :            :     /* Try LZF compression - under 20 bytes it's unable to compress even
+<span class="lineNum">     284 </span>                :            :      * aaaaaaaaaaaaaaaaaa so skip it */
+<span class="lineNum">     285 </span>        [<span class="branchCov" title="Branch 0 was taken 314726 times"> + </span><span class="branchCov" title="Branch 1 was taken 7185295 times"> + </span>]:<span class="lineCov">    7500021 :     if (server.rdb_compression &amp;&amp; len &gt; 20) {</span>
+<span class="lineNum">     286 </span>                :<span class="lineCov">     314726 :         n = rdbSaveLzfStringObject(rdb,s,len);</span>
+<span class="lineNum">     287 </span>        [<span class="branchCov" title="Branch 0 was taken 314726 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">     314726 :         if (n == -1) return -1;</span>
+<span class="lineNum">     288 </span>        [<span class="branchCov" title="Branch 0 was taken 243620 times"> + </span><span class="branchCov" title="Branch 1 was taken 71106 times"> + </span>]:<span class="lineCov">     314726 :         if (n &gt; 0) return n;</span>
+<span class="lineNum">     289 </span>                :            :         /* Return value of 0 means data can't be compressed, save the old way */
+<span class="lineNum">     290 </span>                :            :     }
+<span class="lineNum">     291 </span>                :            : 
+<span class="lineNum">     292 </span>                :            :     /* Store verbatim */
+<span class="lineNum">     293 </span>        [<span class="branchCov" title="Branch 1 was taken 7428915 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">    7428915 :     if ((n = rdbSaveLen(rdb,len)) == -1) return -1;</span>
+<span class="lineNum">     294 </span>                :<span class="lineCov">    7428915 :     nwritten += n;</span>
+<span class="lineNum">     295 </span>        [<span class="branchCov" title="Branch 0 was taken 7428384 times"> + </span><span class="branchCov" title="Branch 1 was taken 531 times"> + </span>]:<span class="lineCov">    7428915 :     if (len &gt; 0) {</span>
+<span class="lineNum">     296 </span>        [<span class="branchCov" title="Branch 1 was taken 7428384 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">    7428384 :         if (rdbWriteRaw(rdb,s,len) == -1) return -1;</span>
+<span class="lineNum">     297 </span>                :<span class="lineCov">    7428384 :         nwritten += len;</span>
+<span class="lineNum">     298 </span>                :            :     }
+<span class="lineNum">     299 </span>                :<span class="lineCov">    7629585 :     return nwritten;</span>
+<span class="lineNum">     300 </span>                :            : }
+<a name="301"><span class="lineNum">     301 </span>                :            : </a>
+<span class="lineNum">     302 </span>                :            : /* Save a long long value as either an encoded string or a string. */
+<span class="lineNum">     303 </span>                :<span class="lineCov">     532001 : int rdbSaveLongLongAsStringObject(rio *rdb, long long value) {</span>
+<span class="lineNum">     304 </span>                :            :     unsigned char buf[32];
+<span class="lineNum">     305 </span>                :<span class="lineCov">     532001 :     int n, nwritten = 0;</span>
+<span class="lineNum">     306 </span>                :<span class="lineCov">     532001 :     int enclen = rdbEncodeInteger(value,buf);</span>
+<span class="lineNum">     307 </span>        [<span class="branchCov" title="Branch 0 was taken 450478 times"> + </span><span class="branchCov" title="Branch 1 was taken 81523 times"> + </span>]:<span class="lineCov">     532001 :     if (enclen &gt; 0) {</span>
+<span class="lineNum">     308 </span>                :<span class="lineCov">     450478 :         return rdbWriteRaw(rdb,buf,enclen);</span>
+<span class="lineNum">     309 </span>                :            :     } else {
+<span class="lineNum">     310 </span>                :            :         /* Encode as string */
+<span class="lineNum">     311 </span>                :<span class="lineCov">      81523 :         enclen = ll2string((char*)buf,32,value);</span>
+<span class="lineNum">     312 </span>        [<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchCov" title="Branch 1 was taken 81523 times"> + </span>]:<span class="lineCov">      81523 :         redisAssert(enclen &lt; 32);</span>
+<span class="lineNum">     313 </span>        [<span class="branchCov" title="Branch 1 was taken 81523 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">      81523 :         if ((n = rdbSaveLen(rdb,enclen)) == -1) return -1;</span>
+<span class="lineNum">     314 </span>                :<span class="lineCov">      81523 :         nwritten += n;</span>
+<span class="lineNum">     315 </span>        [<span class="branchCov" title="Branch 1 was taken 81523 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">      81523 :         if ((n = rdbWriteRaw(rdb,buf,enclen)) == -1) return -1;</span>
+<span class="lineNum">     316 </span>                :<span class="lineCov">      81523 :         nwritten += n;</span>
+<span class="lineNum">     317 </span>                :            :     }
+<span class="lineNum">     318 </span>                :<span class="lineCov">     532001 :     return nwritten;</span>
+<span class="lineNum">     319 </span>                :            : }
+<a name="320"><span class="lineNum">     320 </span>                :            : </a>
+<span class="lineNum">     321 </span>                :            : /* Like rdbSaveStringObjectRaw() but handle encoded objects */
+<span class="lineNum">     322 </span>                :<span class="lineCov">    8037033 : int rdbSaveStringObject(rio *rdb, robj *obj) {</span>
+<span class="lineNum">     323 </span>                :            :     /* Avoid to decode the object, then encode it again, if the
+<span class="lineNum">     324 </span>                :            :      * object is already integer encoded. */
+<span class="lineNum">     325 </span>        [<span class="branchCov" title="Branch 0 was taken 532001 times"> + </span><span class="branchCov" title="Branch 1 was taken 7505032 times"> + </span>]:<span class="lineCov">    8037033 :     if (obj-&gt;encoding == REDIS_ENCODING_INT) {</span>
+<span class="lineNum">     326 </span>                :<span class="lineCov">     532001 :         return rdbSaveLongLongAsStringObject(rdb,(long)obj-&gt;ptr);</span>
+<span class="lineNum">     327 </span>                :            :     } else {
+<span class="lineNum">     328 </span>        [<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchCov" title="Branch 1 was taken 7505032 times"> + </span>]:<span class="lineCov">    7505032 :         redisAssertWithInfo(NULL,obj,sdsEncodedObject(obj));</span>
+<span class="lineNum">     329 </span>                :<span class="lineCov">    8037033 :         return rdbSaveRawString(rdb,obj-&gt;ptr,sdslen(obj-&gt;ptr));</span>
+<span class="lineNum">     330 </span>                :            :     }
+<a name="331"><span class="lineNum">     331 </span>                :            : }</a>
+<span class="lineNum">     332 </span>                :            : 
+<span class="lineNum">     333 </span>                :<span class="lineCov">    1362605 : robj *rdbGenericLoadStringObject(rio *rdb, int encode) {</span>
+<span class="lineNum">     334 </span>                :            :     int isencoded;
+<span class="lineNum">     335 </span>                :            :     uint32_t len;
+<span class="lineNum">     336 </span>                :            :     sds val;
+<span class="lineNum">     337 </span>                :            : 
+<span class="lineNum">     338 </span>                :<span class="lineCov">    1362605 :     len = rdbLoadLen(rdb,&amp;isencoded);</span>
+<span class="lineNum">     339 </span>        [<span class="branchCov" title="Branch 0 was taken 107612 times"> + </span><span class="branchCov" title="Branch 1 was taken 1254993 times"> + </span>]:<span class="lineCov">    1362605 :     if (isencoded) {</span>
+<span class="lineNum">     340 </span>     [<span class="branchCov" title="Branch 0 was taken 95451 times"> + </span><span class="branchCov" title="Branch 1 was taken 12161 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">     107612 :         switch(len) {</span>
+<span class="lineNum">     341 </span>                :            :         case REDIS_RDB_ENC_INT8:
+<span class="lineNum">     342 </span>                :            :         case REDIS_RDB_ENC_INT16:
+<span class="lineNum">     343 </span>                :            :         case REDIS_RDB_ENC_INT32:
+<span class="lineNum">     344 </span>                :<span class="lineCov">      95451 :             return rdbLoadIntegerObject(rdb,len,encode);</span>
+<span class="lineNum">     345 </span>                :            :         case REDIS_RDB_ENC_LZF:
+<span class="lineNum">     346 </span>                :<span class="lineCov">      12161 :             return rdbLoadLzfStringObject(rdb);</span>
+<span class="lineNum">     347 </span>                :            :         default:
+<span class="lineNum">     348 </span>                :<span class="lineNoCov">          0 :             redisPanic(&quot;Unknown RDB encoding type&quot;);</span>
+<span class="lineNum">     349 </span>                :            :         }
+<span class="lineNum">     350 </span>                :            :     }
+<span class="lineNum">     351 </span>                :            : 
+<span class="lineNum">     352 </span>        [<span class="branchCov" title="Branch 0 was taken 1254993 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">    1254993 :     if (len == REDIS_RDB_LENERR) return NULL;</span>
+<span class="lineNum">     353 </span>                :<span class="lineCov">    1254993 :     val = sdsnewlen(NULL,len);</span>
+<span class="lineNum">     354 </span>[<span class="branchCov" title="Branch 0 was taken 1254956 times"> + </span><span class="branchCov" title="Branch 1 was taken 37 times"> + </span>][<span class="branchNoCov" title="Branch 3 was not taken"> - </span><span class="branchCov" title="Branch 4 was taken 1254956 times"> + </span>]:<span class="lineCov">    1254993 :     if (len &amp;&amp; rioRead(rdb,val,len) == 0) {</span>
+<span class="lineNum">     355 </span>                :<span class="lineNoCov">          0 :         sdsfree(val);</span>
+<span class="lineNum">     356 </span>                :<span class="lineNoCov">          0 :         return NULL;</span>
+<span class="lineNum">     357 </span>                :            :     }
+<span class="lineNum">     358 </span>                :<span class="lineCov">    1362605 :     return createObject(REDIS_STRING,val);</span>
+<a name="359"><span class="lineNum">     359 </span>                :            : }</a>
+<span class="lineNum">     360 </span>                :            : 
+<span class="lineNum">     361 </span>                :<span class="lineCov">     661979 : robj *rdbLoadStringObject(rio *rdb) {</span>
+<span class="lineNum">     362 </span>                :<span class="lineCov">     661979 :     return rdbGenericLoadStringObject(rdb,0);</span>
+<a name="363"><span class="lineNum">     363 </span>                :            : }</a>
+<span class="lineNum">     364 </span>                :            : 
+<span class="lineNum">     365 </span>                :<span class="lineCov">     700626 : robj *rdbLoadEncodedStringObject(rio *rdb) {</span>
+<span class="lineNum">     366 </span>                :<span class="lineCov">     700626 :     return rdbGenericLoadStringObject(rdb,1);</span>
+<span class="lineNum">     367 </span>                :            : }
+<span class="lineNum">     368 </span>                :            : 
+<span class="lineNum">     369 </span>                :            : /* Save a double value. Doubles are saved as strings prefixed by an unsigned
+<span class="lineNum">     370 </span>                :            :  * 8 bit integer specifying the length of the representation.
+<span class="lineNum">     371 </span>                :            :  * This 8 bit integer has special values in order to specify the following
+<span class="lineNum">     372 </span>                :            :  * conditions:
+<span class="lineNum">     373 </span>                :            :  * 253: not a number
+<span class="lineNum">     374 </span>                :            :  * 254: + inf
+<a name="375"><span class="lineNum">     375 </span>                :            :  * 255: - inf</a>
+<span class="lineNum">     376 </span>                :            :  */
+<span class="lineNum">     377 </span>                :<span class="lineCov">     153150 : int rdbSaveDoubleValue(rio *rdb, double val) {</span>
+<span class="lineNum">     378 </span>                :            :     unsigned char buf[128];
+<span class="lineNum">     379 </span>                :            :     int len;
+<span class="lineNum">     380 </span>                :            : 
+<span class="lineNum">     381 </span>        [<span class="branchNoCov" title="Branch 1 was not taken"> - </span><span class="branchCov" title="Branch 2 was taken 153150 times"> + </span>]:<span class="lineCov">     153150 :     if (isnan(val)) {</span>
+<span class="lineNum">     382 </span>                :<span class="lineNoCov">          0 :         buf[0] = 253;</span>
+<span class="lineNum">     383 </span>                :<span class="lineNoCov">          0 :         len = 1;</span>
+<span class="lineNum">     384 </span>        [<span class="branchCov" title="Branch 1 was taken 3867 times"> + </span><span class="branchCov" title="Branch 2 was taken 149283 times"> + </span>]:<span class="lineCov">     153150 :     } else if (!isfinite(val)) {</span>
+<span class="lineNum">     385 </span>                :<span class="lineCov">       3867 :         len = 1;</span>
+<span class="lineNum">     386 </span>        [<span class="branchCov" title="Branch 0 was taken 1999 times"> + </span><span class="branchCov" title="Branch 1 was taken 1868 times"> + </span>]:<span class="lineCov">       3867 :         buf[0] = (val &lt; 0) ? 255 : 254;</span>
+<span class="lineNum">     387 </span>                :            :     } else {
+<span class="lineNum">     388 </span>                :            : #if (DBL_MANT_DIG &gt;= 52) &amp;&amp; (LLONG_MAX == 0x7fffffffffffffffLL)
+<span class="lineNum">     389 </span>                :            :         /* Check if the float is in a safe range to be casted into a
+<span class="lineNum">     390 </span>                :            :          * long long. We are assuming that long long is 64 bit here.
+<span class="lineNum">     391 </span>                :            :          * Also we are assuming that there are no implementations around where
+<span class="lineNum">     392 </span>                :            :          * double has precision &lt; 52 bit.
+<span class="lineNum">     393 </span>                :            :          *
+<span class="lineNum">     394 </span>                :            :          * Under this assumptions we test if a double is inside an interval
+<span class="lineNum">     395 </span>                :            :          * where casting to long long is safe. Then using two castings we
+<span class="lineNum">     396 </span>                :            :          * make sure the decimal part is zero. If all this is true we use
+<span class="lineNum">     397 </span>                :            :          * integer printing function that is much faster. */
+<span class="lineNum">     398 </span>                :            :         double min = -4503599627370495; /* (2^52)-1 */
+<span class="lineNum">     399 </span>                :            :         double max = 4503599627370496; /* -(2^52) */
+<span class="lineNum">     400 </span>                :            :         if (val &gt; min &amp;&amp; val &lt; max &amp;&amp; val == ((double)((long long)val)))
+<span class="lineNum">     401 </span>                :            :             ll2string((char*)buf+1,sizeof(buf),(long long)val);
+<span class="lineNum">     402 </span>                :            :         else
+<span class="lineNum">     403 </span>                :            : #endif
+<span class="lineNum">     404 </span>                :            :             snprintf((char*)buf+1,sizeof(buf)-1,&quot;%.17g&quot;,val);
+<span class="lineNum">     405 </span>                :<span class="lineCov">     149283 :         buf[0] = strlen((char*)buf+1);</span>
+<span class="lineNum">     406 </span>                :<span class="lineCov">     149283 :         len = buf[0]+1;</span>
+<span class="lineNum">     407 </span>                :            :     }
+<span class="lineNum">     408 </span>                :<span class="lineCov">     153150 :     return rdbWriteRaw(rdb,buf,len);</span>
+<span class="lineNum">     409 </span>                :            : }
+<a name="410"><span class="lineNum">     410 </span>                :            : </a>
+<span class="lineNum">     411 </span>                :            : /* For information about double serialization check rdbSaveDoubleValue() */
+<span class="lineNum">     412 </span>                :<span class="lineCov">       5903 : int rdbLoadDoubleValue(rio *rdb, double *val) {</span>
+<span class="lineNum">     413 </span>                :            :     char buf[128];
+<span class="lineNum">     414 </span>                :            :     unsigned char len;
+<span class="lineNum">     415 </span>                :            : 
+<span class="lineNum">     416 </span>        [<span class="branchCov" title="Branch 1 was taken 5903 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">       5903 :     if (rioRead(rdb,&amp;len,1) == 0) return -1;</span>
+<span class="lineNum">     417 </span>  [<span class="branchCov" title="Branch 0 was taken 466 times"> + </span><span class="branchCov" title="Branch 1 was taken 563 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span><span class="branchCov" title="Branch 3 was taken 4874 times"> + </span>]:<span class="lineCov">       5903 :     switch(len) {</span>
+<span class="lineNum">     418 </span>                :<span class="lineCov">        466 :     case 255: *val = R_NegInf; return 0;</span>
+<span class="lineNum">     419 </span>                :<span class="lineCov">        563 :     case 254: *val = R_PosInf; return 0;</span>
+<span class="lineNum">     420 </span>                :<span class="lineNoCov">          0 :     case 253: *val = R_Nan; return 0;</span>
+<span class="lineNum">     421 </span>                :            :     default:
+<span class="lineNum">     422 </span>        [<span class="branchCov" title="Branch 1 was taken 4874 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">       4874 :         if (rioRead(rdb,buf,len) == 0) return -1;</span>
+<span class="lineNum">     423 </span>                :<span class="lineCov">       4874 :         buf[len] = '\0';</span>
+<span class="lineNum">     424 </span>                :<span class="lineCov">       4874 :         sscanf(buf, &quot;%lg&quot;, val);</span>
+<span class="lineNum">     425 </span>                :<span class="lineCov">       5903 :         return 0;</span>
+<span class="lineNum">     426 </span>                :            :     }
+<span class="lineNum">     427 </span>                :            : }
+<a name="428"><span class="lineNum">     428 </span>                :            : </a>
+<span class="lineNum">     429 </span>                :            : /* Save the object type of object &quot;o&quot;. */
+<span class="lineNum">     430 </span>                :<span class="lineCov">    3824329 : int rdbSaveObjectType(rio *rdb, robj *o) {</span>
+<span class="lineNum">     431 </span>  [<span class="branchCov" title="Branch 0 was taken 3655466 times"> + </span><span class="branchCov" title="Branch 1 was taken 24799 times"> + </span><span class="branchCov" title="Branch 2 was taken 57826 times"> + </span><span class="branchCov" title="Branch 3 was taken 54712 times"> + </span> :<span class="lineCov">    3824329 :     switch (o-&gt;type) {</span>
+<span class="lineNum">         </span>         <span class="branchCov" title="Branch 4 was taken 31526 times"> + </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>]
+<span class="lineNum">     432 </span>                :            :     case REDIS_STRING:
+<span class="lineNum">     433 </span>                :<span class="lineCov">    3655466 :         return rdbSaveType(rdb,REDIS_RDB_TYPE_STRING);</span>
+<span class="lineNum">     434 </span>                :            :     case REDIS_LIST:
+<span class="lineNum">     435 </span>        [<span class="branchCov" title="Branch 0 was taken 20005 times"> + </span><span class="branchCov" title="Branch 1 was taken 4794 times"> + </span>]:<span class="lineCov">      24799 :         if (o-&gt;encoding == REDIS_ENCODING_ZIPLIST)</span>
+<span class="lineNum">     436 </span>                :<span class="lineCov">      20005 :             return rdbSaveType(rdb,REDIS_RDB_TYPE_LIST_ZIPLIST);</span>
+<span class="lineNum">     437 </span>        [<span class="branchCov" title="Branch 0 was taken 4794 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">       4794 :         else if (o-&gt;encoding == REDIS_ENCODING_LINKEDLIST)</span>
+<span class="lineNum">     438 </span>                :<span class="lineCov">       4794 :             return rdbSaveType(rdb,REDIS_RDB_TYPE_LIST);</span>
+<span class="lineNum">     439 </span>                :            :         else
+<span class="lineNum">     440 </span>                :<span class="lineNoCov">          0 :             redisPanic(&quot;Unknown list encoding&quot;);</span>
+<span class="lineNum">     441 </span>                :            :     case REDIS_SET:
+<span class="lineNum">     442 </span>        [<span class="branchCov" title="Branch 0 was taken 40887 times"> + </span><span class="branchCov" title="Branch 1 was taken 16939 times"> + </span>]:<span class="lineCov">      57826 :         if (o-&gt;encoding == REDIS_ENCODING_INTSET)</span>
+<span class="lineNum">     443 </span>                :<span class="lineCov">      40887 :             return rdbSaveType(rdb,REDIS_RDB_TYPE_SET_INTSET);</span>
+<span class="lineNum">     444 </span>        [<span class="branchCov" title="Branch 0 was taken 16939 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">      16939 :         else if (o-&gt;encoding == REDIS_ENCODING_HT)</span>
+<span class="lineNum">     445 </span>                :<span class="lineCov">      16939 :             return rdbSaveType(rdb,REDIS_RDB_TYPE_SET);</span>
+<span class="lineNum">     446 </span>                :            :         else
+<span class="lineNum">     447 </span>                :<span class="lineNoCov">          0 :             redisPanic(&quot;Unknown set encoding&quot;);</span>
+<span class="lineNum">     448 </span>                :            :     case REDIS_ZSET:
+<span class="lineNum">     449 </span>        [<span class="branchCov" title="Branch 0 was taken 41556 times"> + </span><span class="branchCov" title="Branch 1 was taken 13156 times"> + </span>]:<span class="lineCov">      54712 :         if (o-&gt;encoding == REDIS_ENCODING_ZIPLIST)</span>
+<span class="lineNum">     450 </span>                :<span class="lineCov">      41556 :             return rdbSaveType(rdb,REDIS_RDB_TYPE_ZSET_ZIPLIST);</span>
+<span class="lineNum">     451 </span>        [<span class="branchCov" title="Branch 0 was taken 13156 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">      13156 :         else if (o-&gt;encoding == REDIS_ENCODING_SKIPLIST)</span>
+<span class="lineNum">     452 </span>                :<span class="lineCov">      13156 :             return rdbSaveType(rdb,REDIS_RDB_TYPE_ZSET);</span>
+<span class="lineNum">     453 </span>                :            :         else
+<span class="lineNum">     454 </span>                :<span class="lineNoCov">          0 :             redisPanic(&quot;Unknown sorted set encoding&quot;);</span>
+<span class="lineNum">     455 </span>                :            :     case REDIS_HASH:
+<span class="lineNum">     456 </span>        [<span class="branchCov" title="Branch 0 was taken 20426 times"> + </span><span class="branchCov" title="Branch 1 was taken 11100 times"> + </span>]:<span class="lineCov">      31526 :         if (o-&gt;encoding == REDIS_ENCODING_ZIPLIST)</span>
+<span class="lineNum">     457 </span>                :<span class="lineCov">      20426 :             return rdbSaveType(rdb,REDIS_RDB_TYPE_HASH_ZIPLIST);</span>
+<span class="lineNum">     458 </span>        [<span class="branchCov" title="Branch 0 was taken 11100 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">      11100 :         else if (o-&gt;encoding == REDIS_ENCODING_HT)</span>
+<span class="lineNum">     459 </span>                :<span class="lineCov">      11100 :             return rdbSaveType(rdb,REDIS_RDB_TYPE_HASH);</span>
+<span class="lineNum">     460 </span>                :            :         else
+<span class="lineNum">     461 </span>                :<span class="lineNoCov">          0 :             redisPanic(&quot;Unknown hash encoding&quot;);</span>
+<span class="lineNum">     462 </span>                :            :     default:
+<span class="lineNum">     463 </span>                :<span class="lineCov">    3824329 :         redisPanic(&quot;Unknown object type&quot;);</span>
+<span class="lineNum">     464 </span>                :            :     }
+<span class="lineNum">     465 </span>                :            :     return -1; /* avoid warning */
+<span class="lineNum">     466 </span>                :            : }
+<span class="lineNum">     467 </span>                :            : 
+<a name="468"><span class="lineNum">     468 </span>                :            : /* Use rdbLoadType() to load a TYPE in RDB format, but returns -1 if the</a>
+<span class="lineNum">     469 </span>                :            :  * type is not specifically a valid Object Type. */
+<span class="lineNum">     470 </span>                :<span class="lineCov">         11 : int rdbLoadObjectType(rio *rdb) {</span>
+<span class="lineNum">     471 </span>                :            :     int type;
+<span class="lineNum">     472 </span>        [<span class="branchCov" title="Branch 1 was taken 11 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">         11 :     if ((type = rdbLoadType(rdb)) == -1) return -1;</span>
+<span class="lineNum">     473 </span>        [<span class="branchCov" title="Branch 0 was taken 11 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">         11 :     if (!rdbIsObjectType(type)) return -1;</span>
+<span class="lineNum">     474 </span>                :<span class="lineCov">         11 :     return type;</span>
+<span class="lineNum">     475 </span>                :            : }
+<a name="476"><span class="lineNum">     476 </span>                :            : </a>
+<span class="lineNum">     477 </span>                :            : /* Save a Redis object. Returns -1 on error, 0 on success. */
+<span class="lineNum">     478 </span>                :<span class="lineCov">    3827726 : int rdbSaveObject(rio *rdb, robj *o) {</span>
+<span class="lineNum">     479 </span>                :<span class="lineCov">    3827726 :     int n, nwritten = 0;</span>
+<span class="lineNum">     480 </span>                :            : 
+<span class="lineNum">     481 </span>        [<span class="branchCov" title="Branch 0 was taken 3655476 times"> + </span><span class="branchCov" title="Branch 1 was taken 172250 times"> + </span>]:<span class="lineCov">    3827726 :     if (o-&gt;type == REDIS_STRING) {</span>
+<span class="lineNum">     482 </span>                :            :         /* Save a string value */
+<span class="lineNum">     483 </span>        [<span class="branchCov" title="Branch 1 was taken 3655476 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">    3655476 :         if ((n = rdbSaveStringObject(rdb,o)) == -1) return -1;</span>
+<span class="lineNum">     484 </span>                :            :         nwritten += n;
+<span class="lineNum">     485 </span>        [<span class="branchCov" title="Branch 0 was taken 24913 times"> + </span><span class="branchCov" title="Branch 1 was taken 147337 times"> + </span>]:<span class="lineCov">     172250 :     } else if (o-&gt;type == REDIS_LIST) {</span>
+<span class="lineNum">     486 </span>                :            :         /* Save a list value */
+<span class="lineNum">     487 </span>        [<span class="branchCov" title="Branch 0 was taken 20065 times"> + </span><span class="branchCov" title="Branch 1 was taken 4848 times"> + </span>]:<span class="lineCov">      24913 :         if (o-&gt;encoding == REDIS_ENCODING_ZIPLIST) {</span>
+<span class="lineNum">     488 </span>                :<span class="lineCov">      20065 :             size_t l = ziplistBlobLen((unsigned char*)o-&gt;ptr);</span>
+<span class="lineNum">     489 </span>                :            : 
+<span class="lineNum">     490 </span>        [<span class="branchCov" title="Branch 1 was taken 20065 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">      20065 :             if ((n = rdbSaveRawString(rdb,o-&gt;ptr,l)) == -1) return -1;</span>
+<span class="lineNum">     491 </span>                :            :             nwritten += n;
+<span class="lineNum">     492 </span>        [<span class="branchCov" title="Branch 0 was taken 4848 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">       4848 :         } else if (o-&gt;encoding == REDIS_ENCODING_LINKEDLIST) {</span>
+<span class="lineNum">     493 </span>                :<span class="lineCov">       4848 :             list *list = o-&gt;ptr;</span>
+<span class="lineNum">     494 </span>                :            :             listIter li;
+<span class="lineNum">     495 </span>                :            :             listNode *ln;
+<span class="lineNum">     496 </span>                :            : 
+<span class="lineNum">     497 </span>        [<span class="branchCov" title="Branch 1 was taken 4848 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">       4848 :             if ((n = rdbSaveLen(rdb,listLength(list))) == -1) return -1;</span>
+<span class="lineNum">     498 </span>                :<span class="lineCov">       4848 :             nwritten += n;</span>
+<span class="lineNum">     499 </span>                :            : 
+<span class="lineNum">     500 </span>                :<span class="lineCov">       4848 :             listRewind(list,&amp;li);</span>
+<span class="lineNum">     501 </span>        [<span class="branchCov" title="Branch 1 was taken 324738 times"> + </span><span class="branchCov" title="Branch 2 was taken 4848 times"> + </span>]:<span class="lineCov">     329586 :             while((ln = listNext(&amp;li))) {</span>
+<span class="lineNum">     502 </span>                :<span class="lineCov">     324738 :                 robj *eleobj = listNodeValue(ln);</span>
+<span class="lineNum">     503 </span>        [<span class="branchCov" title="Branch 1 was taken 324738 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">     324738 :                 if ((n = rdbSaveStringObject(rdb,eleobj)) == -1) return -1;</span>
+<span class="lineNum">     504 </span>                :<span class="lineCov">     324738 :                 nwritten += n;</span>
+<span class="lineNum">     505 </span>                :            :             }
+<span class="lineNum">     506 </span>                :            :         } else {
+<span class="lineNum">     507 </span>                :<span class="lineNoCov">          0 :             redisPanic(&quot;Unknown list encoding&quot;);</span>
+<span class="lineNum">     508 </span>                :            :         }
+<span class="lineNum">     509 </span>        [<span class="branchCov" title="Branch 0 was taken 57883 times"> + </span><span class="branchCov" title="Branch 1 was taken 89454 times"> + </span>]:<span class="lineCov">     147337 :     } else if (o-&gt;type == REDIS_SET) {</span>
+<span class="lineNum">     510 </span>                :            :         /* Save a set value */
+<span class="lineNum">     511 </span>        [<span class="branchCov" title="Branch 0 was taken 16969 times"> + </span><span class="branchCov" title="Branch 1 was taken 40914 times"> + </span>]:<span class="lineCov">      57883 :         if (o-&gt;encoding == REDIS_ENCODING_HT) {</span>
+<span class="lineNum">     512 </span>                :<span class="lineCov">      16969 :             dict *set = o-&gt;ptr;</span>
+<span class="lineNum">     513 </span>                :<span class="lineCov">      16969 :             dictIterator *di = dictGetIterator(set);</span>
+<span class="lineNum">     514 </span>                :            :             dictEntry *de;
+<span class="lineNum">     515 </span>                :            : 
+<span class="lineNum">     516 </span>        [<span class="branchCov" title="Branch 1 was taken 16969 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">      16969 :             if ((n = rdbSaveLen(rdb,dictSize(set))) == -1) return -1;</span>
+<span class="lineNum">     517 </span>                :            :             nwritten += n;
+<span class="lineNum">     518 </span>                :            : 
+<span class="lineNum">     519 </span>        [<span class="branchCov" title="Branch 1 was taken 48128 times"> + </span><span class="branchCov" title="Branch 2 was taken 16969 times"> + </span>]:<span class="lineCov">      65097 :             while((de = dictNext(di)) != NULL) {</span>
+<span class="lineNum">     520 </span>                :<span class="lineCov">      48128 :                 robj *eleobj = dictGetKey(de);</span>
+<span class="lineNum">     521 </span>        [<span class="branchCov" title="Branch 1 was taken 48128 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">      48128 :                 if ((n = rdbSaveStringObject(rdb,eleobj)) == -1) return -1;</span>
+<span class="lineNum">     522 </span>                :<span class="lineCov">      48128 :                 nwritten += n;</span>
+<span class="lineNum">     523 </span>                :            :             }
+<span class="lineNum">     524 </span>                :<span class="lineCov">      16969 :             dictReleaseIterator(di);</span>
+<span class="lineNum">     525 </span>        [<span class="branchCov" title="Branch 0 was taken 40914 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">      40914 :         } else if (o-&gt;encoding == REDIS_ENCODING_INTSET) {</span>
+<span class="lineNum">     526 </span>                :<span class="lineCov">      40914 :             size_t l = intsetBlobLen((intset*)o-&gt;ptr);</span>
+<span class="lineNum">     527 </span>                :            : 
+<span class="lineNum">     528 </span>        [<span class="branchCov" title="Branch 1 was taken 40914 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">      40914 :             if ((n = rdbSaveRawString(rdb,o-&gt;ptr,l)) == -1) return -1;</span>
+<span class="lineNum">     529 </span>                :            :             nwritten += n;
+<span class="lineNum">     530 </span>                :            :         } else {
+<span class="lineNum">     531 </span>                :<span class="lineNoCov">          0 :             redisPanic(&quot;Unknown set encoding&quot;);</span>
+<span class="lineNum">     532 </span>                :            :         }
+<span class="lineNum">     533 </span>        [<span class="branchCov" title="Branch 0 was taken 57922 times"> + </span><span class="branchCov" title="Branch 1 was taken 31532 times"> + </span>]:<span class="lineCov">      89454 :     } else if (o-&gt;type == REDIS_ZSET) {</span>
+<span class="lineNum">     534 </span>                :            :         /* Save a sorted set value */
+<span class="lineNum">     535 </span>        [<span class="branchCov" title="Branch 0 was taken 43146 times"> + </span><span class="branchCov" title="Branch 1 was taken 14776 times"> + </span>]:<span class="lineCov">      57922 :         if (o-&gt;encoding == REDIS_ENCODING_ZIPLIST) {</span>
+<span class="lineNum">     536 </span>                :<span class="lineCov">      43146 :             size_t l = ziplistBlobLen((unsigned char*)o-&gt;ptr);</span>
+<span class="lineNum">     537 </span>                :            : 
+<span class="lineNum">     538 </span>        [<span class="branchCov" title="Branch 1 was taken 43146 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">      43146 :             if ((n = rdbSaveRawString(rdb,o-&gt;ptr,l)) == -1) return -1;</span>
+<span class="lineNum">     539 </span>                :            :             nwritten += n;
+<span class="lineNum">     540 </span>        [<span class="branchCov" title="Branch 0 was taken 14776 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">      14776 :         } else if (o-&gt;encoding == REDIS_ENCODING_SKIPLIST) {</span>
+<span class="lineNum">     541 </span>                :<span class="lineCov">      14776 :             zset *zs = o-&gt;ptr;</span>
+<span class="lineNum">     542 </span>                :<span class="lineCov">      14776 :             dictIterator *di = dictGetIterator(zs-&gt;dict);</span>
+<span class="lineNum">     543 </span>                :            :             dictEntry *de;
+<span class="lineNum">     544 </span>                :            : 
+<span class="lineNum">     545 </span>        [<span class="branchCov" title="Branch 1 was taken 14776 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">      14776 :             if ((n = rdbSaveLen(rdb,dictSize(zs-&gt;dict))) == -1) return -1;</span>
+<span class="lineNum">     546 </span>                :            :             nwritten += n;
+<span class="lineNum">     547 </span>                :            : 
+<span class="lineNum">     548 </span>        [<span class="branchCov" title="Branch 1 was taken 153150 times"> + </span><span class="branchCov" title="Branch 2 was taken 14776 times"> + </span>]:<span class="lineCov">     167926 :             while((de = dictNext(di)) != NULL) {</span>
+<span class="lineNum">     549 </span>                :<span class="lineCov">     153150 :                 robj *eleobj = dictGetKey(de);</span>
+<span class="lineNum">     550 </span>                :<span class="lineCov">     153150 :                 double *score = dictGetVal(de);</span>
+<span class="lineNum">     551 </span>                :            : 
+<span class="lineNum">     552 </span>        [<span class="branchCov" title="Branch 1 was taken 153150 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">     153150 :                 if ((n = rdbSaveStringObject(rdb,eleobj)) == -1) return -1;</span>
+<span class="lineNum">     553 </span>                :<span class="lineCov">     153150 :                 nwritten += n;</span>
+<span class="lineNum">     554 </span>        [<span class="branchCov" title="Branch 1 was taken 153150 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">     153150 :                 if ((n = rdbSaveDoubleValue(rdb,*score)) == -1) return -1;</span>
+<span class="lineNum">     555 </span>                :<span class="lineCov">     153150 :                 nwritten += n;</span>
+<span class="lineNum">     556 </span>                :            :             }
+<span class="lineNum">     557 </span>                :<span class="lineCov">      14776 :             dictReleaseIterator(di);</span>
+<span class="lineNum">     558 </span>                :            :         } else {
+<span class="lineNum">     559 </span>                :<span class="lineNoCov">          0 :             redisPanic(&quot;Unknown sorted set encoding&quot;);</span>
+<span class="lineNum">     560 </span>                :            :         }
+<span class="lineNum">     561 </span>        [<span class="branchCov" title="Branch 0 was taken 31532 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">      31532 :     } else if (o-&gt;type == REDIS_HASH) {</span>
+<span class="lineNum">     562 </span>                :            :         /* Save a hash value */
+<span class="lineNum">     563 </span>        [<span class="branchCov" title="Branch 0 was taken 20428 times"> + </span><span class="branchCov" title="Branch 1 was taken 11104 times"> + </span>]:<span class="lineCov">      31532 :         if (o-&gt;encoding == REDIS_ENCODING_ZIPLIST) {</span>
+<span class="lineNum">     564 </span>                :<span class="lineCov">      20428 :             size_t l = ziplistBlobLen((unsigned char*)o-&gt;ptr);</span>
+<span class="lineNum">     565 </span>                :            : 
+<span class="lineNum">     566 </span>        [<span class="branchCov" title="Branch 1 was taken 20428 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">      20428 :             if ((n = rdbSaveRawString(rdb,o-&gt;ptr,l)) == -1) return -1;</span>
+<span class="lineNum">     567 </span>                :            :             nwritten += n;
+<span class="lineNum">     568 </span>                :            : 
+<span class="lineNum">     569 </span>        [<span class="branchCov" title="Branch 0 was taken 11104 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">      11104 :         } else if (o-&gt;encoding == REDIS_ENCODING_HT) {</span>
+<span class="lineNum">     570 </span>                :<span class="lineCov">      11104 :             dictIterator *di = dictGetIterator(o-&gt;ptr);</span>
+<span class="lineNum">     571 </span>                :            :             dictEntry *de;
+<span class="lineNum">     572 </span>                :            : 
+<span class="lineNum">     573 </span>        [<span class="branchCov" title="Branch 1 was taken 11104 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">      11104 :             if ((n = rdbSaveLen(rdb,dictSize((dict*)o-&gt;ptr))) == -1) return -1;</span>
+<span class="lineNum">     574 </span>                :            :             nwritten += n;
+<span class="lineNum">     575 </span>                :            : 
+<span class="lineNum">     576 </span>        [<span class="branchCov" title="Branch 1 was taken 15613 times"> + </span><span class="branchCov" title="Branch 2 was taken 11104 times"> + </span>]:<span class="lineCov">      26717 :             while((de = dictNext(di)) != NULL) {</span>
+<span class="lineNum">     577 </span>                :<span class="lineCov">      15613 :                 robj *key = dictGetKey(de);</span>
+<span class="lineNum">     578 </span>                :<span class="lineCov">      15613 :                 robj *val = dictGetVal(de);</span>
+<span class="lineNum">     579 </span>                :            : 
+<span class="lineNum">     580 </span>        [<span class="branchCov" title="Branch 1 was taken 15613 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">      15613 :                 if ((n = rdbSaveStringObject(rdb,key)) == -1) return -1;</span>
+<span class="lineNum">     581 </span>                :<span class="lineCov">      15613 :                 nwritten += n;</span>
+<span class="lineNum">     582 </span>        [<span class="branchCov" title="Branch 1 was taken 15613 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">      15613 :                 if ((n = rdbSaveStringObject(rdb,val)) == -1) return -1;</span>
+<span class="lineNum">     583 </span>                :<span class="lineCov">      15613 :                 nwritten += n;</span>
+<span class="lineNum">     584 </span>                :            :             }
+<span class="lineNum">     585 </span>                :<span class="lineCov">      11104 :             dictReleaseIterator(di);</span>
+<span class="lineNum">     586 </span>                :            : 
+<span class="lineNum">     587 </span>                :            :         } else {
+<span class="lineNum">     588 </span>                :<span class="lineNoCov">          0 :             redisPanic(&quot;Unknown hash encoding&quot;);</span>
+<span class="lineNum">     589 </span>                :            :         }
+<span class="lineNum">     590 </span>                :            : 
+<span class="lineNum">     591 </span>                :            :     } else {
+<span class="lineNum">     592 </span>                :<span class="lineNoCov">          0 :         redisPanic(&quot;Unknown object type&quot;);</span>
+<span class="lineNum">     593 </span>                :            :     }
+<span class="lineNum">     594 </span>                :<span class="lineCov">    3827726 :     return nwritten;</span>
+<span class="lineNum">     595 </span>                :            : }
+<span class="lineNum">     596 </span>                :            : 
+<span class="lineNum">     597 </span>                :            : /* Return the length the object will have on disk if saved with
+<span class="lineNum">     598 </span>                :            :  * the rdbSaveObject() function. Currently we use a trick to get
+<a name="599"><span class="lineNum">     599 </span>                :            :  * this length with very little changes to the code. In the future</a>
+<span class="lineNum">     600 </span>                :            :  * we could switch to a faster solution. */
+<span class="lineNum">     601 </span>                :<span class="lineCov">       3397 : off_t rdbSavedObjectLen(robj *o) {</span>
+<span class="lineNum">     602 </span>                :<span class="lineCov">       3397 :     int len = rdbSaveObject(NULL,o);</span>
+<span class="lineNum">     603 </span>        [<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchCov" title="Branch 1 was taken 3397 times"> + </span>]:<span class="lineCov">       3397 :     redisAssertWithInfo(NULL,o,len != -1);</span>
+<span class="lineNum">     604 </span>                :<span class="lineCov">       3397 :     return len;</span>
+<span class="lineNum">     605 </span>                :            : }
+<span class="lineNum">     606 </span>                :            : 
+<span class="lineNum">     607 </span>                :            : /* Save a key-value pair, with expire time, type, key, value.
+<span class="lineNum">     608 </span>                :            :  * On error -1 is returned.
+<a name="609"><span class="lineNum">     609 </span>                :            :  * On success if the key was actually saved 1 is returned, otherwise 0</a>
+<span class="lineNum">     610 </span>                :            :  * is returned (the key was already expired). */
+<span class="lineNum">     611 </span>                :<span class="lineCov">    3824315 : int rdbSaveKeyValuePair(rio *rdb, robj *key, robj *val,</span>
+<span class="lineNum">     612 </span>                :            :                         long long expiretime, long long now)
+<span class="lineNum">     613 </span>                :            : {
+<span class="lineNum">     614 </span>                :            :     /* Save the expire time */
+<span class="lineNum">     615 </span>        [<span class="branchCov" title="Branch 0 was taken 500 times"> + </span><span class="branchCov" title="Branch 1 was taken 3823815 times"> + </span>]:<span class="lineCov">    3824315 :     if (expiretime != -1) {</span>
+<span class="lineNum">     616 </span>                :            :         /* If this key is already expired skip it */
+<span class="lineNum">     617 </span>        [<span class="branchCov" title="Branch 0 was taken 500 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">        500 :         if (expiretime &lt; now) return 0;</span>
+<span class="lineNum">     618 </span>        [<span class="branchCov" title="Branch 1 was taken 500 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">        500 :         if (rdbSaveType(rdb,REDIS_RDB_OPCODE_EXPIRETIME_MS) == -1) return -1;</span>
+<span class="lineNum">     619 </span>        [<span class="branchCov" title="Branch 1 was taken 500 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">        500 :         if (rdbSaveMillisecondTime(rdb,expiretime) == -1) return -1;</span>
+<span class="lineNum">     620 </span>                :            :     }
+<span class="lineNum">     621 </span>                :            : 
+<span class="lineNum">     622 </span>                :            :     /* Save type, key, value */
+<span class="lineNum">     623 </span>        [<span class="branchCov" title="Branch 1 was taken 3824315 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">    3824315 :     if (rdbSaveObjectType(rdb,val) == -1) return -1;</span>
+<span class="lineNum">     624 </span>        [<span class="branchCov" title="Branch 1 was taken 3824315 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">    3824315 :     if (rdbSaveStringObject(rdb,key) == -1) return -1;</span>
+<span class="lineNum">     625 </span>        [<span class="branchCov" title="Branch 1 was taken 3824315 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">    3824315 :     if (rdbSaveObject(rdb,val) == -1) return -1;</span>
+<span class="lineNum">     626 </span>                :<span class="lineCov">    3824315 :     return 1;</span>
+<span class="lineNum">     627 </span>                :            : }
+<a name="628"><span class="lineNum">     628 </span>                :            : </a>
+<span class="lineNum">     629 </span>                :            : /* Save the DB on disk. Return REDIS_ERR on error, REDIS_OK on success */
+<span class="lineNum">     630 </span>                :<span class="lineCov">        375 : int rdbSave(char *filename) {</span>
+<span class="lineNum">     631 </span>                :<span class="lineCov">        375 :     dictIterator *di = NULL;</span>
+<span class="lineNum">     632 </span>                :            :     dictEntry *de;
+<span class="lineNum">     633 </span>                :            :     char tmpfile[256];
+<span class="lineNum">     634 </span>                :            :     char magic[10];
+<span class="lineNum">     635 </span>                :            :     int j;
+<span class="lineNum">     636 </span>                :<span class="lineCov">        375 :     long long now = mstime();</span>
+<span class="lineNum">     637 </span>                :            :     FILE *fp;
+<span class="lineNum">     638 </span>                :            :     rio rdb;
+<span class="lineNum">     639 </span>                :            :     uint64_t cksum;
+<span class="lineNum">     640 </span>                :            : 
+<span class="lineNum">     641 </span>                :<span class="lineCov">        375 :     snprintf(tmpfile,256,&quot;temp-%d.rdb&quot;, (int) getpid());</span>
+<span class="lineNum">     642 </span>                :<span class="lineCov">        375 :     fp = fopen(tmpfile,&quot;w&quot;);</span>
+<span class="lineNum">     643 </span>        [<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchCov" title="Branch 1 was taken 375 times"> + </span>]:<span class="lineCov">        375 :     if (!fp) {</span>
+<span class="lineNum">     644 </span>                :<span class="lineNoCov">          0 :         redisLog(REDIS_WARNING, &quot;Failed opening .rdb for saving: %s&quot;,</span>
+<span class="lineNum">     645 </span>                :<span class="lineNoCov">          0 :             strerror(errno));</span>
+<span class="lineNum">     646 </span>                :<span class="lineNoCov">          0 :         return REDIS_ERR;</span>
+<span class="lineNum">     647 </span>                :            :     }
+<span class="lineNum">     648 </span>                :            : 
+<span class="lineNum">     649 </span>                :<span class="lineCov">        375 :     rioInitWithFile(&amp;rdb,fp);</span>
+<span class="lineNum">     650 </span>        [<span class="branchCov" title="Branch 0 was taken 375 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">        375 :     if (server.rdb_checksum)</span>
+<span class="lineNum">     651 </span>                :<span class="lineCov">        375 :         rdb.update_cksum = rioGenericUpdateChecksum;</span>
+<span class="lineNum">     652 </span>                :            :     snprintf(magic,sizeof(magic),&quot;REDIS%04d&quot;,REDIS_RDB_VERSION);
+<span class="lineNum">     653 </span>        [<span class="branchCov" title="Branch 1 was taken 375 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">        375 :     if (rdbWriteRaw(&amp;rdb,magic,9) == -1) goto werr;</span>
+<span class="lineNum">     654 </span>                :            : 
+<span class="lineNum">     655 </span>        [<span class="branchCov" title="Branch 0 was taken 6000 times"> + </span><span class="branchCov" title="Branch 1 was taken 375 times"> + </span>]:<span class="lineCov">       6375 :     for (j = 0; j &lt; server.dbnum; j++) {</span>
+<span class="lineNum">     656 </span>                :<span class="lineCov">       6000 :         redisDb *db = server.db+j;</span>
+<span class="lineNum">     657 </span>                :<span class="lineCov">       6000 :         dict *d = db-&gt;dict;</span>
+<span class="lineNum">     658 </span>        [<span class="branchCov" title="Branch 0 was taken 5856 times"> + </span><span class="branchCov" title="Branch 1 was taken 144 times"> + </span>]:<span class="lineCov">       6000 :         if (dictSize(d) == 0) continue;</span>
+<span class="lineNum">     659 </span>                :<span class="lineCov">        144 :         di = dictGetSafeIterator(d);</span>
+<span class="lineNum">     660 </span>        [<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchCov" title="Branch 1 was taken 144 times"> + </span>]:<span class="lineCov">        144 :         if (!di) {</span>
+<span class="lineNum">     661 </span>                :<span class="lineNoCov">          0 :             fclose(fp);</span>
+<span class="lineNum">     662 </span>                :<span class="lineNoCov">          0 :             return REDIS_ERR;</span>
+<span class="lineNum">     663 </span>                :            :         }
+<span class="lineNum">     664 </span>                :            : 
+<span class="lineNum">     665 </span>                :            :         /* Write the SELECT DB opcode */
+<span class="lineNum">     666 </span>        [<span class="branchCov" title="Branch 1 was taken 144 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">        144 :         if (rdbSaveType(&amp;rdb,REDIS_RDB_OPCODE_SELECTDB) == -1) goto werr;</span>
+<span class="lineNum">     667 </span>        [<span class="branchCov" title="Branch 1 was taken 144 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">        144 :         if (rdbSaveLen(&amp;rdb,j) == -1) goto werr;</span>
+<span class="lineNum">     668 </span>                :            : 
+<span class="lineNum">     669 </span>                :            :         /* Iterate this DB writing every entry */
+<span class="lineNum">     670 </span>        [<span class="branchCov" title="Branch 1 was taken 3824315 times"> + </span><span class="branchCov" title="Branch 2 was taken 144 times"> + </span>]:<span class="lineCov">    3824459 :         while((de = dictNext(di)) != NULL) {</span>
+<span class="lineNum">     671 </span>                :<span class="lineCov">    3824315 :             sds keystr = dictGetKey(de);</span>
+<span class="lineNum">     672 </span>                :<span class="lineCov">    3824315 :             robj key, *o = dictGetVal(de);</span>
+<span class="lineNum">     673 </span>                :            :             long long expire;
+<span class="lineNum">     674 </span>                :            :             
+<span class="lineNum">     675 </span>                :<span class="lineCov">    3824315 :             initStaticStringObject(key,keystr);</span>
+<span class="lineNum">     676 </span>                :<span class="lineCov">    3824315 :             expire = getExpire(db,&amp;key);</span>
+<span class="lineNum">     677 </span>        [<span class="branchCov" title="Branch 1 was taken 3824315 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">    3824459 :             if (rdbSaveKeyValuePair(&amp;rdb,&amp;key,o,expire,now) == -1) goto werr;</span>
+<span class="lineNum">     678 </span>                :            :         }
+<span class="lineNum">     679 </span>                :<span class="lineCov">        144 :         dictReleaseIterator(di);</span>
+<span class="lineNum">     680 </span>                :            :     }
+<span class="lineNum">     681 </span>                :<span class="lineCov">        375 :     di = NULL; /* So that we don't release it again on error. */</span>
+<span class="lineNum">     682 </span>                :            : 
+<span class="lineNum">     683 </span>                :            :     /* EOF opcode */
+<span class="lineNum">     684 </span>        [<span class="branchCov" title="Branch 1 was taken 375 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">        375 :     if (rdbSaveType(&amp;rdb,REDIS_RDB_OPCODE_EOF) == -1) goto werr;</span>
+<span class="lineNum">     685 </span>                :            : 
+<span class="lineNum">     686 </span>                :            :     /* CRC64 checksum. It will be zero if checksum computation is disabled, the
+<span class="lineNum">     687 </span>                :            :      * loading code skips the check in this case. */
+<span class="lineNum">     688 </span>                :<span class="lineCov">        375 :     cksum = rdb.cksum;</span>
+<span class="lineNum">     689 </span>                :            :     memrev64ifbe(&amp;cksum);
+<span class="lineNum">     690 </span>                :            :     rioWrite(&amp;rdb,&amp;cksum,8);
+<span class="lineNum">     691 </span>                :            : 
+<span class="lineNum">     692 </span>                :            :     /* Make sure data will not remain on the OS's output buffers */
+<span class="lineNum">     693 </span>                :<span class="lineCov">        375 :     fflush(fp);</span>
+<span class="lineNum">     694 </span>                :<span class="lineCov">        375 :     fsync(fileno(fp));</span>
+<span class="lineNum">     695 </span>                :<span class="lineCov">        375 :     fclose(fp);</span>
+<span class="lineNum">     696 </span>                :            : 
+<span class="lineNum">     697 </span>                :            :     /* Use RENAME to make sure the DB file is changed atomically only
+<span class="lineNum">     698 </span>                :            :      * if the generate DB file is ok. */
+<span class="lineNum">     699 </span>        [<span class="branchNoCov" title="Branch 1 was not taken"> - </span><span class="branchCov" title="Branch 2 was taken 375 times"> + </span>]:<span class="lineCov">        375 :     if (rename(tmpfile,filename) == -1) {</span>
+<span class="lineNum">     700 </span>                :<span class="lineNoCov">          0 :         redisLog(REDIS_WARNING,&quot;Error moving temp DB file on the final destination: %s&quot;, strerror(errno));</span>
+<span class="lineNum">     701 </span>                :<span class="lineNoCov">          0 :         unlink(tmpfile);</span>
+<span class="lineNum">     702 </span>                :<span class="lineNoCov">          0 :         return REDIS_ERR;</span>
+<span class="lineNum">     703 </span>                :            :     }
+<span class="lineNum">     704 </span>                :<span class="lineCov">        375 :     redisLog(REDIS_NOTICE,&quot;DB saved on disk&quot;);</span>
+<span class="lineNum">     705 </span>                :<span class="lineCov">        375 :     server.dirty = 0;</span>
+<span class="lineNum">     706 </span>                :<span class="lineCov">        375 :     server.lastsave = time(NULL);</span>
+<span class="lineNum">     707 </span>                :<span class="lineCov">        375 :     server.lastbgsave_status = REDIS_OK;</span>
+<span class="lineNum">     708 </span>                :<span class="lineCov">        375 :     return REDIS_OK;</span>
+<span class="lineNum">     709 </span>                :            : 
+<span class="lineNum">     710 </span>                :            : werr:
+<span class="lineNum">     711 </span>                :<span class="lineNoCov">          0 :     fclose(fp);</span>
+<span class="lineNum">     712 </span>                :<span class="lineNoCov">          0 :     unlink(tmpfile);</span>
+<span class="lineNum">     713 </span>                :<span class="lineNoCov">          0 :     redisLog(REDIS_WARNING,&quot;Write error saving DB on disk: %s&quot;, strerror(errno));</span>
+<span class="lineNum">     714 </span>        [<span class="branchNoExec" title="Branch 0 was not executed"> # </span><span class="branchNoExec" title="Branch 1 was not executed"> # </span>]:<span class="lineCov">        375 :     if (di) dictReleaseIterator(di);</span>
+<span class="lineNum">     715 </span>                :            :     return REDIS_ERR;
+<a name="716"><span class="lineNum">     716 </span>                :            : }</a>
+<span class="lineNum">     717 </span>                :            : 
+<span class="lineNum">     718 </span>                :<span class="lineCov">         68 : int rdbSaveBackground(char *filename) {</span>
+<span class="lineNum">     719 </span>                :            :     pid_t childpid;
+<span class="lineNum">     720 </span>                :            :     long long start;
+<span class="lineNum">     721 </span>                :            : 
+<span class="lineNum">     722 </span>        [<span class="branchCov" title="Branch 0 was taken 68 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">         68 :     if (server.rdb_child_pid != -1) return REDIS_ERR;</span>
+<span class="lineNum">     723 </span>                :            : 
+<span class="lineNum">     724 </span>                :<span class="lineCov">         68 :     server.dirty_before_bgsave = server.dirty;</span>
+<span class="lineNum">     725 </span>                :<span class="lineCov">         68 :     server.lastbgsave_try = time(NULL);</span>
+<span class="lineNum">     726 </span>                :            : 
+<span class="lineNum">     727 </span>                :<span class="lineCov">         68 :     start = ustime();</span>
+<span class="lineNum">     728 </span>        [<span class="branchCov" title="Branch 1 was taken 24 times"> + </span><span class="branchCov" title="Branch 2 was taken 44 times"> + </span>]:<span class="lineCov">         68 :     if ((childpid = fork()) == 0) {</span>
+<span class="lineNum">     729 </span>                :            :         int retval;
+<span class="lineNum">     730 </span>                :            : 
+<span class="lineNum">     731 </span>                :            :         /* Child */
+<span class="lineNum">     732 </span>                :<span class="lineCov">         24 :         closeListeningSockets(0);</span>
+<span class="lineNum">     733 </span>                :<span class="lineCov">         24 :         redisSetProcTitle(&quot;redis-rdb-bgsave&quot;);</span>
+<span class="lineNum">     734 </span>                :<span class="lineCov">         24 :         retval = rdbSave(filename);</span>
+<span class="lineNum">     735 </span>        [<span class="branchCov" title="Branch 0 was taken 24 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">         24 :         if (retval == REDIS_OK) {</span>
+<span class="lineNum">     736 </span>                :<span class="lineCov">         24 :             size_t private_dirty = zmalloc_get_private_dirty();</span>
+<span class="lineNum">     737 </span>                :            : 
+<span class="lineNum">     738 </span>        [<span class="branchCov" title="Branch 0 was taken 24 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">         24 :             if (private_dirty) {</span>
+<span class="lineNum">     739 </span>                :<span class="lineCov">         24 :                 redisLog(REDIS_NOTICE,</span>
+<span class="lineNum">     740 </span>                :            :                     &quot;RDB: %lu MB of memory used by copy-on-write&quot;,
+<span class="lineNum">     741 </span>                :            :                     private_dirty/(1024*1024));
+<span class="lineNum">     742 </span>                :            :             }
+<span class="lineNum">     743 </span>                :            :         }
+<span class="lineNum">     744 </span>                :<span class="lineCov">         24 :         exitFromChild((retval == REDIS_OK) ? 0 : 1);</span>
+<span class="lineNum">     745 </span>                :            :     } else {
+<span class="lineNum">     746 </span>                :            :         /* Parent */
+<span class="lineNum">     747 </span>                :<span class="lineCov">         44 :         server.stat_fork_time = ustime()-start;</span>
+<span class="lineNum">     748 </span>        [<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchCov" title="Branch 1 was taken 44 times"> + </span>]:<span class="lineCov">         44 :         if (childpid == -1) {</span>
+<span class="lineNum">     749 </span>                :<span class="lineNoCov">          0 :             redisLog(REDIS_WARNING,&quot;Can't save in background: fork: %s&quot;,</span>
+<span class="lineNum">     750 </span>                :<span class="lineNoCov">          0 :                 strerror(errno));</span>
+<span class="lineNum">     751 </span>                :<span class="lineNoCov">          0 :             return REDIS_ERR;</span>
+<span class="lineNum">     752 </span>                :            :         }
+<span class="lineNum">     753 </span>                :<span class="lineCov">         44 :         redisLog(REDIS_NOTICE,&quot;Background saving started by pid %d&quot;,childpid);</span>
+<span class="lineNum">     754 </span>                :<span class="lineCov">         44 :         server.rdb_save_time_start = time(NULL);</span>
+<span class="lineNum">     755 </span>                :<span class="lineCov">         44 :         server.rdb_child_pid = childpid;</span>
+<span class="lineNum">     756 </span>                :<span class="lineCov">         44 :         updateDictResizePolicy();</span>
+<span class="lineNum">     757 </span>                :<span class="lineCov">         44 :         return REDIS_OK;</span>
+<span class="lineNum">     758 </span>                :            :     }
+<span class="lineNum">     759 </span>                :<span class="lineNoCov">          0 :     return REDIS_OK; /* unreached */</span>
+<a name="760"><span class="lineNum">     760 </span>                :            : }</a>
+<span class="lineNum">     761 </span>                :            : 
+<span class="lineNum">     762 </span>                :<span class="lineNoCov">          0 : void rdbRemoveTempFile(pid_t childpid) {</span>
+<span class="lineNum">     763 </span>                :            :     char tmpfile[256];
+<span class="lineNum">     764 </span>                :            : 
+<span class="lineNum">     765 </span>                :            :     snprintf(tmpfile,256,&quot;temp-%d.rdb&quot;, (int) childpid);
+<span class="lineNum">     766 </span>                :<span class="lineNoCov">          0 :     unlink(tmpfile);</span>
+<span class="lineNum">     767 </span>                :<span class="lineNoCov">          0 : }</span>
+<span class="lineNum">     768 </span>                :            : 
+<a name="769"><span class="lineNum">     769 </span>                :            : /* Load a Redis object of the specified type from the specified file.</a>
+<span class="lineNum">     770 </span>                :            :  * On success a newly allocated object is returned, otherwise NULL. */
+<span class="lineNum">     771 </span>                :<span class="lineCov">     623576 : robj *rdbLoadObject(int rdbtype, rio *rdb) {</span>
+<span class="lineNum">     772 </span>                :            :     robj *o, *ele, *dec;
+<span class="lineNum">     773 </span>                :            :     size_t len;
+<span class="lineNum">     774 </span>                :            :     unsigned int i;
+<span class="lineNum">     775 </span>                :            : 
+<span class="lineNum">     776 </span>        [<span class="branchCov" title="Branch 0 was taken 579263 times"> + </span><span class="branchCov" title="Branch 1 was taken 44313 times"> + </span>]:<span class="lineCov">     623576 :     if (rdbtype == REDIS_RDB_TYPE_STRING) {</span>
+<span class="lineNum">     777 </span>                :            :         /* Read string value */
+<span class="lineNum">     778 </span>        [<span class="branchCov" title="Branch 1 was taken 579263 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">     579263 :         if ((o = rdbLoadEncodedStringObject(rdb)) == NULL) return NULL;</span>
+<span class="lineNum">     779 </span>                :<span class="lineCov">     579263 :         o = tryObjectEncoding(o);</span>
+<span class="lineNum">     780 </span>        [<span class="branchCov" title="Branch 0 was taken 1292 times"> + </span><span class="branchCov" title="Branch 1 was taken 43021 times"> + </span>]:<span class="lineCov">      44313 :     } else if (rdbtype == REDIS_RDB_TYPE_LIST) {</span>
+<span class="lineNum">     781 </span>                :            :         /* Read list value */
+<span class="lineNum">     782 </span>        [<span class="branchCov" title="Branch 1 was taken 1292 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">       1292 :         if ((len = rdbLoadLen(rdb,NULL)) == REDIS_RDB_LENERR) return NULL;</span>
+<span class="lineNum">     783 </span>                :            : 
+<span class="lineNum">     784 </span>                :            :         /* Use a real list when there are too many entries */
+<span class="lineNum">     785 </span>        [<span class="branchCov" title="Branch 0 was taken 2 times"> + </span><span class="branchCov" title="Branch 1 was taken 1290 times"> + </span>]:<span class="lineCov">       1292 :         if (len &gt; server.list_max_ziplist_entries) {</span>
+<span class="lineNum">     786 </span>                :<span class="lineCov">       1292 :             o = createListObject();</span>
+<span class="lineNum">     787 </span>                :            :         } else {
+<span class="lineNum">     788 </span>                :<span class="lineCov">       1290 :             o = createZiplistObject();</span>
+<span class="lineNum">     789 </span>                :            :         }
+<span class="lineNum">     790 </span>                :            : 
+<span class="lineNum">     791 </span>                :            :         /* Load every single element of the list */
+<span class="lineNum">     792 </span>        [<span class="branchCov" title="Branch 0 was taken 103168 times"> + </span><span class="branchCov" title="Branch 1 was taken 1292 times"> + </span>]:<span class="lineCov">     104460 :         while(len--) {</span>
+<span class="lineNum">     793 </span>        [<span class="branchCov" title="Branch 1 was taken 103168 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">     103168 :             if ((ele = rdbLoadEncodedStringObject(rdb)) == NULL) return NULL;</span>
+<span class="lineNum">     794 </span>                :            : 
+<span class="lineNum">     795 </span>                :            :             /* If we are using a ziplist and the value is too big, convert
+<span class="lineNum">     796 </span>                :            :              * the object to a real list. */
+<span class="lineNum">     797 </span>[<span class="branchCov" title="Branch 0 was taken 1390 times"> + </span><span class="branchCov" title="Branch 1 was taken 101778 times"> + </span>][<span class="branchCov" title="Branch 2 was taken 1339 times"> + </span><span class="branchCov" title="Branch 3 was taken 51 times"> + </span>]:<span class="lineCov">     103168 :             if (o-&gt;encoding == REDIS_ENCODING_ZIPLIST &amp;&amp;</span>
+<span class="lineNum">     798 </span>        [<span class="branchCov" title="Branch 0 was taken 1282 times"> + </span><span class="branchCov" title="Branch 1 was taken 57 times"> + </span>]:<span class="lineCov">       1339 :                 sdsEncodedObject(ele) &amp;&amp;</span>
+<span class="lineNum">     799 </span>                :<span class="lineCov">       2678 :                 sdslen(ele-&gt;ptr) &gt; server.list_max_ziplist_value)</span>
+<span class="lineNum">     800 </span>                :<span class="lineCov">       1282 :                     listTypeConvert(o,REDIS_ENCODING_LINKEDLIST);</span>
+<span class="lineNum">     801 </span>                :            : 
+<span class="lineNum">     802 </span>        [<span class="branchCov" title="Branch 0 was taken 108 times"> + </span><span class="branchCov" title="Branch 1 was taken 103060 times"> + </span>]:<span class="lineCov">     103168 :             if (o-&gt;encoding == REDIS_ENCODING_ZIPLIST) {</span>
+<span class="lineNum">     803 </span>                :<span class="lineCov">        108 :                 dec = getDecodedObject(ele);</span>
+<span class="lineNum">     804 </span>                :<span class="lineCov">        108 :                 o-&gt;ptr = ziplistPush(o-&gt;ptr,dec-&gt;ptr,sdslen(dec-&gt;ptr),REDIS_TAIL);</span>
+<span class="lineNum">     805 </span>                :<span class="lineCov">        108 :                 decrRefCount(dec);</span>
+<span class="lineNum">     806 </span>                :<span class="lineCov">        108 :                 decrRefCount(ele);</span>
+<span class="lineNum">     807 </span>                :            :             } else {
+<span class="lineNum">     808 </span>                :<span class="lineCov">     103060 :                 ele = tryObjectEncoding(ele);</span>
+<span class="lineNum">     809 </span>                :<span class="lineCov">     103168 :                 listAddNodeTail(o-&gt;ptr,ele);</span>
+<span class="lineNum">     810 </span>                :            :             }
+<span class="lineNum">     811 </span>                :            :         }
+<span class="lineNum">     812 </span>        [<span class="branchCov" title="Branch 0 was taken 4426 times"> + </span><span class="branchCov" title="Branch 1 was taken 38595 times"> + </span>]:<span class="lineCov">      43021 :     } else if (rdbtype == REDIS_RDB_TYPE_SET) {</span>
+<span class="lineNum">     813 </span>                :            :         /* Read list/set value */
+<span class="lineNum">     814 </span>        [<span class="branchCov" title="Branch 1 was taken 4426 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">       4426 :         if ((len = rdbLoadLen(rdb,NULL)) == REDIS_RDB_LENERR) return NULL;</span>
+<span class="lineNum">     815 </span>                :            : 
+<span class="lineNum">     816 </span>                :            :         /* Use a regular set when there are too many entries. */
+<span class="lineNum">     817 </span>        [<span class="branchCov" title="Branch 0 was taken 3 times"> + </span><span class="branchCov" title="Branch 1 was taken 4423 times"> + </span>]:<span class="lineCov">       4426 :         if (len &gt; server.set_max_intset_entries) {</span>
+<span class="lineNum">     818 </span>                :<span class="lineCov">          3 :             o = createSetObject();</span>
+<span class="lineNum">     819 </span>                :            :             /* It's faster to expand the dict to the right size asap in order
+<span class="lineNum">     820 </span>                :            :              * to avoid rehashing */
+<span class="lineNum">     821 </span>        [<span class="branchCov" title="Branch 0 was taken 3 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">          3 :             if (len &gt; DICT_HT_INITIAL_SIZE)</span>
+<span class="lineNum">     822 </span>                :<span class="lineCov">          3 :                 dictExpand(o-&gt;ptr,len);</span>
+<span class="lineNum">     823 </span>                :            :         } else {
+<span class="lineNum">     824 </span>                :<span class="lineCov">       4423 :             o = createIntsetObject();</span>
+<span class="lineNum">     825 </span>                :            :         }
+<span class="lineNum">     826 </span>                :            : 
+<span class="lineNum">     827 </span>                :            :         /* Load every single element of the list/set */
+<span class="lineNum">     828 </span>        [<span class="branchCov" title="Branch 0 was taken 11682 times"> + </span><span class="branchCov" title="Branch 1 was taken 4426 times"> + </span>]:<span class="lineCov">      16108 :         for (i = 0; i &lt; len; i++) {</span>
+<span class="lineNum">     829 </span>                :            :             long long llval;
+<span class="lineNum">     830 </span>        [<span class="branchCov" title="Branch 1 was taken 11682 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">      11682 :             if ((ele = rdbLoadEncodedStringObject(rdb)) == NULL) return NULL;</span>
+<span class="lineNum">     831 </span>                :<span class="lineCov">      11682 :             ele = tryObjectEncoding(ele);</span>
+<span class="lineNum">     832 </span>                :            : 
+<span class="lineNum">     833 </span>        [<span class="branchCov" title="Branch 0 was taken 5637 times"> + </span><span class="branchCov" title="Branch 1 was taken 6045 times"> + </span>]:<span class="lineCov">      11682 :             if (o-&gt;encoding == REDIS_ENCODING_INTSET) {</span>
+<span class="lineNum">     834 </span>                :            :                 /* Fetch integer value from element */
+<span class="lineNum">     835 </span>        [<span class="branchCov" title="Branch 1 was taken 1214 times"> + </span><span class="branchCov" title="Branch 2 was taken 4423 times"> + </span>]:<span class="lineCov">       5637 :                 if (isObjectRepresentableAsLongLong(ele,&amp;llval) == REDIS_OK) {</span>
+<span class="lineNum">     836 </span>                :<span class="lineCov">       1214 :                     o-&gt;ptr = intsetAdd(o-&gt;ptr,llval,NULL);</span>
+<span class="lineNum">     837 </span>                :            :                 } else {
+<span class="lineNum">     838 </span>                :<span class="lineCov">       4423 :                     setTypeConvert(o,REDIS_ENCODING_HT);</span>
+<span class="lineNum">     839 </span>                :<span class="lineCov">       4423 :                     dictExpand(o-&gt;ptr,len);</span>
+<span class="lineNum">     840 </span>                :            :                 }
+<span class="lineNum">     841 </span>                :            :             }
+<span class="lineNum">     842 </span>                :            : 
+<span class="lineNum">     843 </span>                :            :             /* This will also be called when the set was just converted
+<span class="lineNum">     844 </span>                :            :              * to a regular hash table encoded set */
+<span class="lineNum">     845 </span>        [<span class="branchCov" title="Branch 0 was taken 10468 times"> + </span><span class="branchCov" title="Branch 1 was taken 1214 times"> + </span>]:<span class="lineCov">      11682 :             if (o-&gt;encoding == REDIS_ENCODING_HT) {</span>
+<span class="lineNum">     846 </span>                :<span class="lineCov">      10468 :                 dictAdd((dict*)o-&gt;ptr,ele,NULL);</span>
+<span class="lineNum">     847 </span>                :            :             } else {
+<span class="lineNum">     848 </span>                :<span class="lineCov">       1214 :                 decrRefCount(ele);</span>
+<span class="lineNum">     849 </span>                :            :             }
+<span class="lineNum">     850 </span>                :            :         }
+<span class="lineNum">     851 </span>        [<span class="branchCov" title="Branch 0 was taken 3432 times"> + </span><span class="branchCov" title="Branch 1 was taken 35163 times"> + </span>]:<span class="lineCov">      38595 :     } else if (rdbtype == REDIS_RDB_TYPE_ZSET) {</span>
+<span class="lineNum">     852 </span>                :            :         /* Read list/set value */
+<span class="lineNum">     853 </span>                :            :         size_t zsetlen;
+<span class="lineNum">     854 </span>                :<span class="lineCov">       3432 :         size_t maxelelen = 0;</span>
+<span class="lineNum">     855 </span>                :            :         zset *zs;
+<span class="lineNum">     856 </span>                :            : 
+<span class="lineNum">     857 </span>        [<span class="branchCov" title="Branch 1 was taken 3432 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">       3432 :         if ((zsetlen = rdbLoadLen(rdb,NULL)) == REDIS_RDB_LENERR) return NULL;</span>
+<span class="lineNum">     858 </span>                :<span class="lineCov">       3432 :         o = createZsetObject();</span>
+<span class="lineNum">     859 </span>                :<span class="lineCov">       3432 :         zs = o-&gt;ptr;</span>
+<span class="lineNum">     860 </span>                :            : 
+<span class="lineNum">     861 </span>                :            :         /* Load every single element of the list/set */
+<span class="lineNum">     862 </span>        [<span class="branchCov" title="Branch 0 was taken 5903 times"> + </span><span class="branchCov" title="Branch 1 was taken 3432 times"> + </span>]:<span class="lineCov">       9335 :         while(zsetlen--) {</span>
+<span class="lineNum">     863 </span>                :            :             robj *ele;
+<span class="lineNum">     864 </span>                :            :             double score;
+<span class="lineNum">     865 </span>                :            :             zskiplistNode *znode;
+<span class="lineNum">     866 </span>                :            : 
+<span class="lineNum">     867 </span>        [<span class="branchCov" title="Branch 1 was taken 5903 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">       5903 :             if ((ele = rdbLoadEncodedStringObject(rdb)) == NULL) return NULL;</span>
+<span class="lineNum">     868 </span>                :<span class="lineCov">       5903 :             ele = tryObjectEncoding(ele);</span>
+<span class="lineNum">     869 </span>        [<span class="branchCov" title="Branch 1 was taken 5903 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">       5903 :             if (rdbLoadDoubleValue(rdb,&amp;score) == -1) return NULL;</span>
+<span class="lineNum">     870 </span>                :            : 
+<span class="lineNum">     871 </span>                :            :             /* Don't care about integer-encoded strings. */
+<span class="lineNum">     872 </span>[<span class="branchCov" title="Branch 0 was taken 3868 times"> + </span><span class="branchCov" title="Branch 1 was taken 2035 times"> + </span>][<span class="branchCov" title="Branch 2 was taken 3647 times"> + </span><span class="branchCov" title="Branch 3 was taken 221 times"> + </span>]:<span class="lineCov">       5903 :             if (sdsEncodedObject(ele) &amp;&amp; sdslen(ele-&gt;ptr) &gt; maxelelen)</span>
+<span class="lineNum">     873 </span>                :<span class="lineCov">       3647 :                 maxelelen = sdslen(ele-&gt;ptr);</span>
+<span class="lineNum">     874 </span>                :            : 
+<span class="lineNum">     875 </span>                :<span class="lineCov">       5903 :             znode = zslInsert(zs-&gt;zsl,score,ele);</span>
+<span class="lineNum">     876 </span>                :<span class="lineCov">       5903 :             dictAdd(zs-&gt;dict,ele,&amp;znode-&gt;score);</span>
+<span class="lineNum">     877 </span>                :<span class="lineCov">       5903 :             incrRefCount(ele); /* added to skiplist */</span>
+<span class="lineNum">     878 </span>                :            :         }
+<span class="lineNum">     879 </span>                :            : 
+<span class="lineNum">     880 </span>                :            :         /* Convert *after* loading, since sorted sets are not stored ordered. */
+<span class="lineNum">     881 </span>[<span class="branchCov" title="Branch 1 was taken 3431 times"> + </span><span class="branchCov" title="Branch 2 was taken 1 time"> + </span>][<span class="branchCov" title="Branch 3 was taken 13 times"> + </span><span class="branchCov" title="Branch 4 was taken 3418 times"> + </span>]:<span class="lineCov">       3432 :         if (zsetLength(o) &lt;= server.zset_max_ziplist_entries &amp;&amp;</span>
+<span class="lineNum">     882 </span>                :<span class="lineCov">       3431 :             maxelelen &lt;= server.zset_max_ziplist_value)</span>
+<span class="lineNum">     883 </span>                :<span class="lineCov">         13 :                 zsetConvert(o,REDIS_ENCODING_ZIPLIST);</span>
+<span class="lineNum">     884 </span>        [<span class="branchCov" title="Branch 0 was taken 2903 times"> + </span><span class="branchCov" title="Branch 1 was taken 32260 times"> + </span>]:<span class="lineCov">      35163 :     } else if (rdbtype == REDIS_RDB_TYPE_HASH) {</span>
+<span class="lineNum">     885 </span>                :            :         size_t len;
+<span class="lineNum">     886 </span>                :            :         int ret;
+<span class="lineNum">     887 </span>                :            : 
+<span class="lineNum">     888 </span>                :<span class="lineCov">       2903 :         len = rdbLoadLen(rdb, NULL);</span>
+<span class="lineNum">     889 </span>        [<span class="branchCov" title="Branch 0 was taken 2903 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">       2903 :         if (len == REDIS_RDB_LENERR) return NULL;</span>
+<span class="lineNum">     890 </span>                :            : 
+<span class="lineNum">     891 </span>                :<span class="lineCov">       2903 :         o = createHashObject();</span>
+<span class="lineNum">     892 </span>                :            : 
+<span class="lineNum">     893 </span>                :            :         /* Too many entries? Use an hash table. */
+<span class="lineNum">     894 </span>        [<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchCov" title="Branch 1 was taken 2903 times"> + </span>]:<span class="lineCov">       2903 :         if (len &gt; server.hash_max_ziplist_entries)</span>
+<span class="lineNum">     895 </span>                :<span class="lineCov">       2903 :             hashTypeConvert(o, REDIS_ENCODING_HT);</span>
+<span class="lineNum">     896 </span>                :            : 
+<span class="lineNum">     897 </span>                :            :         /* Load every field and value into the ziplist */
+<span class="lineNum">     898 </span>        [<span class="branchCov" title="Branch 0 was taken 3077 times"> + </span><span class="branchCov" title="Branch 1 was taken 1 time"> + </span>]:<span class="lineCov">       3078 :         while (o-&gt;encoding == REDIS_ENCODING_ZIPLIST &amp;&amp; len &gt; 0) {</span>
+<span class="lineNum">     899 </span>                :            :             robj *field, *value;
+<span class="lineNum">     900 </span>                :            : 
+<span class="lineNum">     901 </span>                :<span class="lineCov">       3077 :             len--;</span>
+<span class="lineNum">     902 </span>                :            :             /* Load raw strings */
+<span class="lineNum">     903 </span>                :<span class="lineCov">       3077 :             field = rdbLoadStringObject(rdb);</span>
+<span class="lineNum">     904 </span>        [<span class="branchCov" title="Branch 0 was taken 3077 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">       3077 :             if (field == NULL) return NULL;</span>
+<span class="lineNum">     905 </span>        [<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchCov" title="Branch 1 was taken 3077 times"> + </span>]:<span class="lineCov">       3077 :             redisAssert(sdsEncodedObject(field));</span>
+<span class="lineNum">     906 </span>                :<span class="lineCov">       3077 :             value = rdbLoadStringObject(rdb);</span>
+<span class="lineNum">     907 </span>        [<span class="branchCov" title="Branch 0 was taken 3077 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">       3077 :             if (value == NULL) return NULL;</span>
+<span class="lineNum">     908 </span>        [<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchCov" title="Branch 1 was taken 3077 times"> + </span>]:<span class="lineCov">       3077 :             redisAssert(sdsEncodedObject(value));</span>
+<span class="lineNum">     909 </span>                :            : 
+<span class="lineNum">     910 </span>                :            :             /* Add pair to ziplist */
+<span class="lineNum">     911 </span>                :<span class="lineCov">       3077 :             o-&gt;ptr = ziplistPush(o-&gt;ptr, field-&gt;ptr, sdslen(field-&gt;ptr), ZIPLIST_TAIL);</span>
+<span class="lineNum">     912 </span>                :<span class="lineCov">       3077 :             o-&gt;ptr = ziplistPush(o-&gt;ptr, value-&gt;ptr, sdslen(value-&gt;ptr), ZIPLIST_TAIL);</span>
+<span class="lineNum">     913 </span>                :            :             /* Convert to hash table if size threshold is exceeded */
+<span class="lineNum">     914 </span>[<span class="branchCov" title="Branch 0 was taken 1451 times"> + </span><span class="branchCov" title="Branch 1 was taken 1626 times"> + </span>][<span class="branchCov" title="Branch 2 was taken 1276 times"> + </span><span class="branchCov" title="Branch 3 was taken 175 times"> + </span>]:<span class="lineCov">       3077 :             if (sdslen(field-&gt;ptr) &gt; server.hash_max_ziplist_value ||</span>
+<span class="lineNum">     915 </span>                :<span class="lineCov">       2902 :                 sdslen(value-&gt;ptr) &gt; server.hash_max_ziplist_value)</span>
+<span class="lineNum">     916 </span>                :            :             {
+<span class="lineNum">     917 </span>                :<span class="lineCov">       2902 :                 decrRefCount(field);</span>
+<span class="lineNum">     918 </span>                :<span class="lineCov">       2902 :                 decrRefCount(value);</span>
+<span class="lineNum">     919 </span>                :<span class="lineCov">       2902 :                 hashTypeConvert(o, REDIS_ENCODING_HT);</span>
+<span class="lineNum">     920 </span>                :<span class="lineCov">       2903 :                 break;</span>
+<span class="lineNum">     921 </span>                :            :             }
+<span class="lineNum">     922 </span>                :<span class="lineCov">        175 :             decrRefCount(field);</span>
+<span class="lineNum">     923 </span>                :<span class="lineCov">        175 :             decrRefCount(value);</span>
+<span class="lineNum">     924 </span>                :            :         }
+<span class="lineNum">     925 </span>                :            : 
+<span class="lineNum">     926 </span>                :            :         /* Load remaining fields and values into the hash table */
+<span class="lineNum">     927 </span>        [<span class="branchCov" title="Branch 0 was taken 305 times"> + </span><span class="branchCov" title="Branch 1 was taken 2903 times"> + </span>]:<span class="lineCov">       3208 :         while (o-&gt;encoding == REDIS_ENCODING_HT &amp;&amp; len &gt; 0) {</span>
+<span class="lineNum">     928 </span>                :            :             robj *field, *value;
+<span class="lineNum">     929 </span>                :            : 
+<span class="lineNum">     930 </span>                :<span class="lineCov">        305 :             len--;</span>
+<span class="lineNum">     931 </span>                :            :             /* Load encoded strings */
+<span class="lineNum">     932 </span>                :<span class="lineCov">        305 :             field = rdbLoadEncodedStringObject(rdb);</span>
+<span class="lineNum">     933 </span>        [<span class="branchCov" title="Branch 0 was taken 305 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">        305 :             if (field == NULL) return NULL;</span>
+<span class="lineNum">     934 </span>                :<span class="lineCov">        305 :             value = rdbLoadEncodedStringObject(rdb);</span>
+<span class="lineNum">     935 </span>        [<span class="branchCov" title="Branch 0 was taken 305 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">        305 :             if (value == NULL) return NULL;</span>
+<span class="lineNum">     936 </span>                :            : 
+<span class="lineNum">     937 </span>                :<span class="lineCov">        305 :             field = tryObjectEncoding(field);</span>
+<span class="lineNum">     938 </span>                :<span class="lineCov">        305 :             value = tryObjectEncoding(value);</span>
+<span class="lineNum">     939 </span>                :            : 
+<span class="lineNum">     940 </span>                :            :             /* Add pair to hash table */
+<span class="lineNum">     941 </span>                :<span class="lineCov">        305 :             ret = dictAdd((dict*)o-&gt;ptr, field, value);</span>
+<span class="lineNum">     942 </span>        [<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchCov" title="Branch 1 was taken 305 times"> + </span>]:<span class="lineCov">        305 :             redisAssert(ret == REDIS_OK);</span>
+<span class="lineNum">     943 </span>                :            :         }
+<span class="lineNum">     944 </span>                :            : 
+<span class="lineNum">     945 </span>                :            :         /* All pairs should be read by now */
+<span class="lineNum">     946 </span>        [<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchCov" title="Branch 1 was taken 2903 times"> + </span>]:<span class="lineCov">       2903 :         redisAssert(len == 0);</span>
+<span class="lineNum">     947 </span>                :            : 
+<span class="lineNum">     948 </span>        [<span class="branchCov" title="Branch 0 was taken 32260 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">      32260 :     } else if (rdbtype == REDIS_RDB_TYPE_HASH_ZIPMAP  ||</span>
+<span class="lineNum">     949 </span>                :            :                rdbtype == REDIS_RDB_TYPE_LIST_ZIPLIST ||
+<span class="lineNum">     950 </span>                :            :                rdbtype == REDIS_RDB_TYPE_SET_INTSET   ||
+<span class="lineNum">     951 </span>                :<span class="lineCov">      32260 :                rdbtype == REDIS_RDB_TYPE_ZSET_ZIPLIST ||</span>
+<span class="lineNum">     952 </span>                :            :                rdbtype == REDIS_RDB_TYPE_HASH_ZIPLIST)
+<span class="lineNum">     953 </span>                :            :     {
+<span class="lineNum">     954 </span>                :<span class="lineCov">      32260 :         robj *aux = rdbLoadStringObject(rdb);</span>
+<span class="lineNum">     955 </span>                :            : 
+<span class="lineNum">     956 </span>        [<span class="branchCov" title="Branch 0 was taken 32260 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">      32260 :         if (aux == NULL) return NULL;</span>
+<span class="lineNum">     957 </span>                :<span class="lineCov">      32260 :         o = createObject(REDIS_STRING,NULL); /* string is just placeholder */</span>
+<span class="lineNum">     958 </span>                :<span class="lineCov">      32260 :         o-&gt;ptr = zmalloc(sdslen(aux-&gt;ptr));</span>
+<span class="lineNum">     959 </span>                :<span class="lineCov">      64520 :         memcpy(o-&gt;ptr,aux-&gt;ptr,sdslen(aux-&gt;ptr));</span>
+<span class="lineNum">     960 </span>                :<span class="lineCov">      32260 :         decrRefCount(aux);</span>
+<span class="lineNum">     961 </span>                :            : 
+<span class="lineNum">     962 </span>                :            :         /* Fix the object encoding, and make sure to convert the encoded
+<span class="lineNum">     963 </span>                :            :          * data type into the base type if accordingly to the current
+<span class="lineNum">     964 </span>                :            :          * configuration there are too many elements in the encoded data
+<span class="lineNum">     965 </span>                :            :          * type. Note that we only check the length and not max element
+<span class="lineNum">     966 </span>                :            :          * size as this is an O(N) scan. Eventually everything will get
+<span class="lineNum">     967 </span>                :            :          * converted. */
+<span class="lineNum">     968 </span>  [<span class="branchCov" title="Branch 0 was taken 3 times"> + </span><span class="branchCov" title="Branch 1 was taken 5269 times"> + </span><span class="branchCov" title="Branch 2 was taken 10671 times"> + </span><span class="branchCov" title="Branch 3 was taken 10853 times"> + </span> :<span class="lineCov">      32260 :         switch(rdbtype) {</span>
+<span class="lineNum">         </span>         <span class="branchCov" title="Branch 4 was taken 5464 times"> + </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>]
+<span class="lineNum">     969 </span>                :            :             case REDIS_RDB_TYPE_HASH_ZIPMAP:
+<span class="lineNum">     970 </span>                :            :                 /* Convert to ziplist encoded hash. This must be deprecated
+<span class="lineNum">     971 </span>                :            :                  * when loading dumps created by Redis 2.4 gets deprecated. */
+<span class="lineNum">     972 </span>                :            :                 {
+<span class="lineNum">     973 </span>                :<span class="lineCov">          3 :                     unsigned char *zl = ziplistNew();</span>
+<span class="lineNum">     974 </span>                :<span class="lineCov">          3 :                     unsigned char *zi = zipmapRewind(o-&gt;ptr);</span>
+<span class="lineNum">     975 </span>                :            :                     unsigned char *fstr, *vstr;
+<span class="lineNum">     976 </span>                :            :                     unsigned int flen, vlen;
+<span class="lineNum">     977 </span>                :<span class="lineCov">          3 :                     unsigned int maxlen = 0;</span>
+<span class="lineNum">     978 </span>                :            : 
+<span class="lineNum">     979 </span>        [<span class="branchCov" title="Branch 1 was taken 6 times"> + </span><span class="branchCov" title="Branch 2 was taken 3 times"> + </span>]:<span class="lineCov">          9 :                     while ((zi = zipmapNext(zi, &amp;fstr, &amp;flen, &amp;vstr, &amp;vlen)) != NULL) {</span>
+<span class="lineNum">     980 </span>        [<span class="branchCov" title="Branch 0 was taken 3 times"> + </span><span class="branchCov" title="Branch 1 was taken 3 times"> + </span>]:<span class="lineCov">          6 :                         if (flen &gt; maxlen) maxlen = flen;</span>
+<span class="lineNum">     981 </span>        [<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchCov" title="Branch 1 was taken 6 times"> + </span>]:<span class="lineCov">          6 :                         if (vlen &gt; maxlen) maxlen = vlen;</span>
+<span class="lineNum">     982 </span>                :<span class="lineCov">          6 :                         zl = ziplistPush(zl, fstr, flen, ZIPLIST_TAIL);</span>
+<span class="lineNum">     983 </span>                :<span class="lineCov">          6 :                         zl = ziplistPush(zl, vstr, vlen, ZIPLIST_TAIL);</span>
+<span class="lineNum">     984 </span>                :            :                     }
+<span class="lineNum">     985 </span>                :            : 
+<span class="lineNum">     986 </span>                :<span class="lineCov">          3 :                     zfree(o-&gt;ptr);</span>
+<span class="lineNum">     987 </span>                :<span class="lineCov">          3 :                     o-&gt;ptr = zl;</span>
+<span class="lineNum">     988 </span>                :<span class="lineCov">          3 :                     o-&gt;type = REDIS_HASH;</span>
+<span class="lineNum">     989 </span>                :<span class="lineCov">          3 :                     o-&gt;encoding = REDIS_ENCODING_ZIPLIST;</span>
+<span class="lineNum">     990 </span>                :            : 
+<span class="lineNum">     991 </span>[<span class="branchCov" title="Branch 1 was taken 2 times"> + </span><span class="branchCov" title="Branch 2 was taken 1 time"> + </span>][<span class="branchCov" title="Branch 3 was taken 1 time"> + </span><span class="branchCov" title="Branch 4 was taken 1 time"> + </span>]:<span class="lineCov">          3 :                     if (hashTypeLength(o) &gt; server.hash_max_ziplist_entries ||</span>
+<span class="lineNum">     992 </span>                :<span class="lineCov">          2 :                         maxlen &gt; server.hash_max_ziplist_value)</span>
+<span class="lineNum">     993 </span>                :            :                     {
+<span class="lineNum">     994 </span>                :<span class="lineCov">          2 :                         hashTypeConvert(o, REDIS_ENCODING_HT);</span>
+<span class="lineNum">     995 </span>                :            :                     }
+<span class="lineNum">     996 </span>                :            :                 }
+<span class="lineNum">     997 </span>                :            :                 break;
+<span class="lineNum">     998 </span>                :            :             case REDIS_RDB_TYPE_LIST_ZIPLIST:
+<span class="lineNum">     999 </span>                :<span class="lineCov">       5269 :                 o-&gt;type = REDIS_LIST;</span>
+<span class="lineNum">    1000 </span>                :<span class="lineCov">       5269 :                 o-&gt;encoding = REDIS_ENCODING_ZIPLIST;</span>
+<span class="lineNum">    1001 </span>        [<span class="branchNoCov" title="Branch 1 was not taken"> - </span><span class="branchCov" title="Branch 2 was taken 5269 times"> + </span>]:<span class="lineCov">       5269 :                 if (ziplistLen(o-&gt;ptr) &gt; server.list_max_ziplist_entries)</span>
+<span class="lineNum">    1002 </span>                :<span class="lineNoCov">          0 :                     listTypeConvert(o,REDIS_ENCODING_LINKEDLIST);</span>
+<span class="lineNum">    1003 </span>                :            :                 break;
+<span class="lineNum">    1004 </span>                :            :             case REDIS_RDB_TYPE_SET_INTSET:
+<span class="lineNum">    1005 </span>                :<span class="lineCov">      10671 :                 o-&gt;type = REDIS_SET;</span>
+<span class="lineNum">    1006 </span>                :<span class="lineCov">      10671 :                 o-&gt;encoding = REDIS_ENCODING_INTSET;</span>
+<span class="lineNum">    1007 </span>        [<span class="branchNoCov" title="Branch 1 was not taken"> - </span><span class="branchCov" title="Branch 2 was taken 10671 times"> + </span>]:<span class="lineCov">      10671 :                 if (intsetLen(o-&gt;ptr) &gt; server.set_max_intset_entries)</span>
+<span class="lineNum">    1008 </span>                :<span class="lineNoCov">          0 :                     setTypeConvert(o,REDIS_ENCODING_HT);</span>
+<span class="lineNum">    1009 </span>                :            :                 break;
+<span class="lineNum">    1010 </span>                :            :             case REDIS_RDB_TYPE_ZSET_ZIPLIST:
+<span class="lineNum">    1011 </span>                :<span class="lineCov">      10853 :                 o-&gt;type = REDIS_ZSET;</span>
+<span class="lineNum">    1012 </span>                :<span class="lineCov">      10853 :                 o-&gt;encoding = REDIS_ENCODING_ZIPLIST;</span>
+<span class="lineNum">    1013 </span>        [<span class="branchCov" title="Branch 1 was taken 14 times"> + </span><span class="branchCov" title="Branch 2 was taken 10839 times"> + </span>]:<span class="lineCov">      10853 :                 if (zsetLength(o) &gt; server.zset_max_ziplist_entries)</span>
+<span class="lineNum">    1014 </span>                :<span class="lineCov">         14 :                     zsetConvert(o,REDIS_ENCODING_SKIPLIST);</span>
+<span class="lineNum">    1015 </span>                :            :                 break;
+<span class="lineNum">    1016 </span>                :            :             case REDIS_RDB_TYPE_HASH_ZIPLIST:
+<span class="lineNum">    1017 </span>                :<span class="lineCov">       5464 :                 o-&gt;type = REDIS_HASH;</span>
+<span class="lineNum">    1018 </span>                :<span class="lineCov">       5464 :                 o-&gt;encoding = REDIS_ENCODING_ZIPLIST;</span>
+<span class="lineNum">    1019 </span>        [<span class="branchNoCov" title="Branch 1 was not taken"> - </span><span class="branchCov" title="Branch 2 was taken 5464 times"> + </span>]:<span class="lineCov">       5464 :                 if (hashTypeLength(o) &gt; server.hash_max_ziplist_entries)</span>
+<span class="lineNum">    1020 </span>                :<span class="lineNoCov">          0 :                     hashTypeConvert(o, REDIS_ENCODING_HT);</span>
+<span class="lineNum">    1021 </span>                :            :                 break;
+<span class="lineNum">    1022 </span>                :            :             default:
+<span class="lineNum">    1023 </span>                :<span class="lineNoCov">          0 :                 redisPanic(&quot;Unknown encoding&quot;);</span>
+<span class="lineNum">    1024 </span>                :            :                 break;
+<span class="lineNum">    1025 </span>                :            :         }
+<span class="lineNum">    1026 </span>                :            :     } else {
+<span class="lineNum">    1027 </span>                :<span class="lineNoCov">          0 :         redisPanic(&quot;Unknown object type&quot;);</span>
+<span class="lineNum">    1028 </span>                :            :     }
+<span class="lineNum">    1029 </span>                :<span class="lineCov">     623576 :     return o;</span>
+<span class="lineNum">    1030 </span>                :            : }
+<span class="lineNum">    1031 </span>                :            : 
+<a name="1032"><span class="lineNum">    1032 </span>                :            : /* Mark that we are loading in the global state and setup the fields</a>
+<span class="lineNum">    1033 </span>                :            :  * needed to provide loading stats. */
+<span class="lineNum">    1034 </span>                :<span class="lineCov">        216 : void startLoading(FILE *fp) {</span>
+<span class="lineNum">    1035 </span>                :            :     struct stat sb;
+<span class="lineNum">    1036 </span>                :            : 
+<span class="lineNum">    1037 </span>                :            :     /* Load the DB */
+<span class="lineNum">    1038 </span>                :<span class="lineCov">        216 :     server.loading = 1;</span>
+<span class="lineNum">    1039 </span>                :<span class="lineCov">        216 :     server.loading_start_time = time(NULL);</span>
+<span class="lineNum">    1040 </span>        [<span class="branchNoCov" title="Branch 1 was not taken"> - </span><span class="branchCov" title="Branch 2 was taken 216 times"> + </span>]:<span class="lineCov">        432 :     if (fstat(fileno(fp), &amp;sb) == -1) {</span>
+<span class="lineNum">    1041 </span>                :<span class="lineNoCov">          0 :         server.loading_total_bytes = 1; /* just to avoid division by zero */</span>
+<span class="lineNum">    1042 </span>                :            :     } else {
+<span class="lineNum">    1043 </span>                :<span class="lineCov">        216 :         server.loading_total_bytes = sb.st_size;</span>
+<span class="lineNum">    1044 </span>                :            :     }
+<span class="lineNum">    1045 </span>                :<span class="lineCov">        216 : }</span>
+<a name="1046"><span class="lineNum">    1046 </span>                :            : </a>
+<span class="lineNum">    1047 </span>                :            : /* Refresh the loading progress info */
+<span class="lineNum">    1048 </span>                :<span class="lineCov">        208 : void loadingProgress(off_t pos) {</span>
+<span class="lineNum">    1049 </span>                :<span class="lineCov">        208 :     server.loading_loaded_bytes = pos;</span>
+<span class="lineNum">    1050 </span>        [<span class="branchCov" title="Branch 1 was taken 35 times"> + </span><span class="branchCov" title="Branch 2 was taken 173 times"> + </span>]:<span class="lineCov">        208 :     if (server.stat_peak_memory &lt; zmalloc_used_memory())</span>
+<span class="lineNum">    1051 </span>                :<span class="lineCov">         35 :         server.stat_peak_memory = zmalloc_used_memory();</span>
+<span class="lineNum">    1052 </span>                :<span class="lineCov">        208 : }</span>
+<a name="1053"><span class="lineNum">    1053 </span>                :            : </a>
+<a name="1054"><span class="lineNum">    1054 </span>                :            : /* Loading finished */</a>
+<span class="lineNum">    1055 </span>                :<span class="lineCov">        176 : void stopLoading(void) {</span>
+<span class="lineNum">    1056 </span>                :<span class="lineCov">        213 :     server.loading = 0;</span>
+<span class="lineNum">    1057 </span>                :<span class="lineCov">        176 : }</span>
+<span class="lineNum">    1058 </span>                :            : 
+<a name="1059"><span class="lineNum">    1059 </span>                :            : /* Track loading progress in order to serve client's from time to time</a>
+<span class="lineNum">    1060 </span>                :            :    and if needed calculate rdb checksum  */
+<span class="lineNum">    1061 </span>                :<span class="lineCov">    3241861 : void rdbLoadProgressCallback(rio *r, const void *buf, size_t len) {</span>
+<span class="lineNum">    1062 </span>        [<span class="branchCov" title="Branch 0 was taken 3241861 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">    3241861 :     if (server.rdb_checksum)</span>
+<span class="lineNum">    1063 </span>                :<span class="lineCov">    3241861 :         rioGenericUpdateChecksum(r, buf, len);</span>
+<span class="lineNum">    1064 </span>[<span class="branchCov" title="Branch 0 was taken 3241861 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>][<span class="branchCov" title="Branch 2 was taken 10 times"> + </span><span class="branchCov" title="Branch 3 was taken 3241851 times"> + </span>]:<span class="lineCov">    3241861 :     if (server.loading_process_events_interval_bytes &amp;&amp;</span>
+<span class="lineNum">    1065 </span>                :<span class="lineCov">    3241861 :         (r-&gt;processed_bytes + len)/server.loading_process_events_interval_bytes &gt; r-&gt;processed_bytes/server.loading_process_events_interval_bytes) {</span>
+<span class="lineNum">    1066 </span>                :<span class="lineCov">         10 :         loadingProgress(r-&gt;processed_bytes);</span>
+<span class="lineNum">    1067 </span>                :<span class="lineCov">         10 :         aeProcessEvents(server.el, AE_FILE_EVENTS|AE_DONT_WAIT);</span>
+<span class="lineNum">    1068 </span>                :            :     }
+<span class="lineNum">    1069 </span>                :<span class="lineCov">    3241861 : }</span>
+<span class="lineNum">    1070 </span>                :            : 
+<span class="lineNum">    1071 </span>                :<span class="lineCov">        157 : int rdbLoad(char *filename) {</span>
+<span class="lineNum">    1072 </span>                :            :     uint32_t dbid;
+<span class="lineNum">    1073 </span>                :            :     int type, rdbver;
+<span class="lineNum">    1074 </span>                :<span class="lineCov">        157 :     redisDb *db = server.db+0;</span>
+<span class="lineNum">    1075 </span>                :            :     char buf[1024];
+<span class="lineNum">    1076 </span>                :<span class="lineCov">        157 :     long long expiretime, now = mstime();</span>
+<span class="lineNum">    1077 </span>                :            :     FILE *fp;
+<span class="lineNum">    1078 </span>                :            :     rio rdb;
+<span class="lineNum">    1079 </span>                :            : 
+<span class="lineNum">    1080 </span>        [<span class="branchCov" title="Branch 1 was taken 38 times"> + </span><span class="branchCov" title="Branch 2 was taken 119 times"> + </span>]:<span class="lineCov">        157 :     if ((fp = fopen(filename,&quot;r&quot;)) == NULL) return REDIS_ERR;</span>
+<span class="lineNum">    1081 </span>                :            : 
+<span class="lineNum">    1082 </span>                :<span class="lineCov">         38 :     rioInitWithFile(&amp;rdb,fp);</span>
+<span class="lineNum">    1083 </span>                :<span class="lineCov">         38 :     rdb.update_cksum = rdbLoadProgressCallback;</span>
+<span class="lineNum">    1084 </span>                :<span class="lineCov">         38 :     rdb.max_processing_chunk = server.loading_process_events_interval_bytes;</span>
+<span class="lineNum">    1085 </span>        [<span class="branchCov" title="Branch 1 was taken 38 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">         38 :     if (rioRead(&amp;rdb,buf,9) == 0) goto eoferr;</span>
+<span class="lineNum">    1086 </span>                :<span class="lineCov">         38 :     buf[9] = '\0';</span>
+<span class="lineNum">    1087 </span>        [<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchCov" title="Branch 1 was taken 38 times"> + </span>]:<span class="lineCov">         38 :     if (memcmp(buf,&quot;REDIS&quot;,5) != 0) {</span>
+<span class="lineNum">    1088 </span>                :<span class="lineNoCov">          0 :         fclose(fp);</span>
+<span class="lineNum">    1089 </span>                :<span class="lineNoCov">          0 :         redisLog(REDIS_WARNING,&quot;Wrong signature trying to load DB from file&quot;);</span>
+<span class="lineNum">    1090 </span>                :<span class="lineNoCov">          0 :         errno = EINVAL;</span>
+<span class="lineNum">    1091 </span>                :<span class="lineNoCov">          0 :         return REDIS_ERR;</span>
+<span class="lineNum">    1092 </span>                :            :     }
+<span class="lineNum">    1093 </span>                :<span class="lineCov">         38 :     rdbver = atoi(buf+5);</span>
+<span class="lineNum">    1094 </span>        [<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchCov" title="Branch 1 was taken 38 times"> + </span>]:<span class="lineCov">         38 :     if (rdbver &lt; 1 || rdbver &gt; REDIS_RDB_VERSION) {</span>
+<span class="lineNum">    1095 </span>                :<span class="lineNoCov">          0 :         fclose(fp);</span>
+<span class="lineNum">    1096 </span>                :<span class="lineNoCov">          0 :         redisLog(REDIS_WARNING,&quot;Can't handle RDB format version %d&quot;,rdbver);</span>
+<span class="lineNum">    1097 </span>                :<span class="lineNoCov">          0 :         errno = EINVAL;</span>
+<span class="lineNum">    1098 </span>                :<span class="lineNoCov">          0 :         return REDIS_ERR;</span>
+<span class="lineNum">    1099 </span>                :            :     }
+<span class="lineNum">    1100 </span>                :            : 
+<span class="lineNum">    1101 </span>                :<span class="lineCov">     623650 :     startLoading(fp);</span>
+<span class="lineNum">    1102 </span>                :            :     while(1) {
+<span class="lineNum">    1103 </span>                :            :         robj *key, *val;
+<span class="lineNum">    1104 </span>                :<span class="lineCov">     623650 :         expiretime = -1;</span>
+<span class="lineNum">    1105 </span>                :            : 
+<span class="lineNum">    1106 </span>                :            :         /* Read type. */
+<span class="lineNum">    1107 </span>        [<span class="branchCov" title="Branch 1 was taken 623650 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">     623650 :         if ((type = rdbLoadType(&amp;rdb)) == -1) goto eoferr;</span>
+<span class="lineNum">    1108 </span>        [<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchCov" title="Branch 1 was taken 623650 times"> + </span>]:<span class="lineCov">     623650 :         if (type == REDIS_RDB_OPCODE_EXPIRETIME) {</span>
+<span class="lineNum">    1109 </span>        [<span class="branchNoExec" title="Branch 1 was not executed"> # </span><span class="branchNoExec" title="Branch 2 was not executed"> # </span>]:<span class="lineNoCov">          0 :             if ((expiretime = rdbLoadTime(&amp;rdb)) == -1) goto eoferr;</span>
+<span class="lineNum">    1110 </span>                :            :             /* We read the time so we need to read the object type again. */
+<span class="lineNum">    1111 </span>        [<span class="branchNoExec" title="Branch 1 was not executed"> # </span><span class="branchNoExec" title="Branch 2 was not executed"> # </span>]:<span class="lineNoCov">          0 :             if ((type = rdbLoadType(&amp;rdb)) == -1) goto eoferr;</span>
+<span class="lineNum">    1112 </span>                :            :             /* the EXPIRETIME opcode specifies time in seconds, so convert
+<span class="lineNum">    1113 </span>                :            :              * into milliseconds. */
+<span class="lineNum">    1114 </span>                :<span class="lineNoCov">          0 :             expiretime *= 1000;</span>
+<span class="lineNum">    1115 </span>        [<span class="branchCov" title="Branch 0 was taken 3 times"> + </span><span class="branchCov" title="Branch 1 was taken 623647 times"> + </span>]:<span class="lineCov">     623650 :         } else if (type == REDIS_RDB_OPCODE_EXPIRETIME_MS) {</span>
+<span class="lineNum">    1116 </span>                :            :             /* Milliseconds precision expire times introduced with RDB
+<span class="lineNum">    1117 </span>                :            :              * version 3. */
+<span class="lineNum">    1118 </span>        [<span class="branchCov" title="Branch 1 was taken 3 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          3 :             if ((expiretime = rdbLoadMillisecondTime(&amp;rdb)) == -1) goto eoferr;</span>
+<span class="lineNum">    1119 </span>                :            :             /* We read the time so we need to read the object type again. */
+<span class="lineNum">    1120 </span>        [<span class="branchCov" title="Branch 1 was taken 3 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          3 :             if ((type = rdbLoadType(&amp;rdb)) == -1) goto eoferr;</span>
+<span class="lineNum">    1121 </span>                :            :         }
+<span class="lineNum">    1122 </span>                :            : 
+<span class="lineNum">    1123 </span>        [<span class="branchCov" title="Branch 0 was taken 623612 times"> + </span><span class="branchCov" title="Branch 1 was taken 38 times"> + </span>]:<span class="lineCov">     623650 :         if (type == REDIS_RDB_OPCODE_EOF)</span>
+<span class="lineNum">    1124 </span>                :            :             break;
+<span class="lineNum">    1125 </span>                :            : 
+<span class="lineNum">    1126 </span>                :            :         /* Handle SELECT DB opcode as a special case */
+<span class="lineNum">    1127 </span>        [<span class="branchCov" title="Branch 0 was taken 47 times"> + </span><span class="branchCov" title="Branch 1 was taken 623565 times"> + </span>]:<span class="lineCov">     623612 :         if (type == REDIS_RDB_OPCODE_SELECTDB) {</span>
+<span class="lineNum">    1128 </span>        [<span class="branchCov" title="Branch 1 was taken 47 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">         47 :             if ((dbid = rdbLoadLen(&amp;rdb,NULL)) == REDIS_RDB_LENERR)</span>
+<span class="lineNum">    1129 </span>                :            :                 goto eoferr;
+<span class="lineNum">    1130 </span>        [<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchCov" title="Branch 1 was taken 47 times"> + </span>]:<span class="lineCov">         47 :             if (dbid &gt;= (unsigned)server.dbnum) {</span>
+<span class="lineNum">    1131 </span>                :<span class="lineNoCov">          0 :                 redisLog(REDIS_WARNING,&quot;FATAL: Data file was created with a Redis server configured to handle more than %d databases. Exiting\n&quot;, server.dbnum);</span>
+<span class="lineNum">    1132 </span>                :<span class="lineNoCov">          0 :                 exit(1);</span>
+<span class="lineNum">    1133 </span>                :            :             }
+<span class="lineNum">    1134 </span>                :<span class="lineCov">         47 :             db = server.db+dbid;</span>
+<span class="lineNum">    1135 </span>                :<span class="lineCov">         47 :             continue;</span>
+<span class="lineNum">    1136 </span>                :            :         }
+<span class="lineNum">    1137 </span>                :            :         /* Read key */
+<span class="lineNum">    1138 </span>        [<span class="branchCov" title="Branch 1 was taken 623565 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">     623565 :         if ((key = rdbLoadStringObject(&amp;rdb)) == NULL) goto eoferr;</span>
+<span class="lineNum">    1139 </span>                :            :         /* Read value */
+<span class="lineNum">    1140 </span>        [<span class="branchCov" title="Branch 1 was taken 623565 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">     623565 :         if ((val = rdbLoadObject(type,&amp;rdb)) == NULL) goto eoferr;</span>
+<span class="lineNum">    1141 </span>                :            :         /* Check if the key already expired. This function is used when loading
+<span class="lineNum">    1142 </span>                :            :          * an RDB file from disk, either at startup, or when an RDB was
+<span class="lineNum">    1143 </span>                :            :          * received from the master. In the latter case, the master is
+<span class="lineNum">    1144 </span>                :            :          * responsible for key expiry. If we would expire keys here, the
+<span class="lineNum">    1145 </span>                :            :          * snapshot taken by the master may not be reflected on the slave. */
+<span class="lineNum">    1146 </span>[<span class="branchCov" title="Branch 0 was taken 3 times"> + </span><span class="branchCov" title="Branch 1 was taken 623562 times"> + </span>][<span class="branchNoCov" title="Branch 2 was not taken"> - </span><span class="branchCov" title="Branch 3 was taken 3 times"> + </span>]:<span class="lineCov">     623565 :         if (server.masterhost == NULL &amp;&amp; expiretime != -1 &amp;&amp; expiretime &lt; now) {</span>
+<span class="lineNum">    1147 </span>                :<span class="lineNoCov">          0 :             decrRefCount(key);</span>
+<span class="lineNum">    1148 </span>                :<span class="lineNoCov">          0 :             decrRefCount(val);</span>
+<span class="lineNum">    1149 </span>                :<span class="lineNoCov">          0 :             continue;</span>
+<span class="lineNum">    1150 </span>                :            :         }
+<span class="lineNum">    1151 </span>                :            :         /* Add the new object in the hash table */
+<span class="lineNum">    1152 </span>                :<span class="lineCov">     623565 :         dbAdd(db,key,val);</span>
+<span class="lineNum">    1153 </span>                :            : 
+<span class="lineNum">    1154 </span>                :            :         /* Set the expire time if needed */
+<span class="lineNum">    1155 </span>        [<span class="branchCov" title="Branch 0 was taken 3 times"> + </span><span class="branchCov" title="Branch 1 was taken 623562 times"> + </span>]:<span class="lineCov">     623565 :         if (expiretime != -1) setExpire(db,key,expiretime);</span>
+<span class="lineNum">    1156 </span>                :            : 
+<span class="lineNum">    1157 </span>                :<span class="lineCov">     623565 :         decrRefCount(key);</span>
+<span class="lineNum">    1158 </span>                :            :     }
+<span class="lineNum">    1159 </span>                :            :     /* Verify the checksum if RDB version is &gt;= 5 */
+<span class="lineNum">    1160 </span>[<span class="branchCov" title="Branch 0 was taken 34 times"> + </span><span class="branchCov" title="Branch 1 was taken 4 times"> + </span>][<span class="branchCov" title="Branch 2 was taken 34 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">         38 :     if (rdbver &gt;= 5 &amp;&amp; server.rdb_checksum) {</span>
+<span class="lineNum">    1161 </span>                :<span class="lineCov">         34 :         uint64_t cksum, expected = rdb.cksum;</span>
+<span class="lineNum">    1162 </span>                :            : 
+<span class="lineNum">    1163 </span>        [<span class="branchCov" title="Branch 1 was taken 34 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">         34 :         if (rioRead(&amp;rdb,&amp;cksum,8) == 0) goto eoferr;</span>
+<span class="lineNum">    1164 </span>                :            :         memrev64ifbe(&amp;cksum);
+<span class="lineNum">    1165 </span>        [<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchCov" title="Branch 1 was taken 34 times"> + </span>]:<span class="lineCov">         34 :         if (cksum == 0) {</span>
+<span class="lineNum">    1166 </span>                :<span class="lineNoCov">          0 :             redisLog(REDIS_WARNING,&quot;RDB file was saved with checksum disabled: no check performed.&quot;);</span>
+<span class="lineNum">    1167 </span>        [<span class="branchCov" title="Branch 0 was taken 1 time"> + </span><span class="branchCov" title="Branch 1 was taken 33 times"> + </span>]:<span class="lineCov">         34 :         } else if (cksum != expected) {</span>
+<span class="lineNum">    1168 </span>                :<span class="lineCov">          1 :             redisLog(REDIS_WARNING,&quot;Wrong RDB checksum. Aborting now.&quot;);</span>
+<span class="lineNum">    1169 </span>                :<span class="lineCov">          1 :             exit(1);</span>
+<span class="lineNum">    1170 </span>                :            :         }
+<span class="lineNum">    1171 </span>                :            :     }
+<span class="lineNum">    1172 </span>                :            : 
+<span class="lineNum">    1173 </span>                :<span class="lineCov">         37 :     fclose(fp);</span>
+<span class="lineNum">    1174 </span>                :            :     stopLoading();
+<span class="lineNum">    1175 </span>                :<span class="lineCov">         37 :     return REDIS_OK;</span>
+<span class="lineNum">    1176 </span>                :            : 
+<span class="lineNum">    1177 </span>                :            : eoferr: /* unexpected end of file is handled here with a fatal exit */
+<span class="lineNum">    1178 </span>                :<span class="lineNoCov">          0 :     redisLog(REDIS_WARNING,&quot;Short read or OOM loading DB. Unrecoverable error, aborting now.&quot;);</span>
+<span class="lineNum">    1179 </span>                :<span class="lineCov">        156 :     exit(1);</span>
+<span class="lineNum">    1180 </span>                :            :     return REDIS_ERR; /* Just to avoid warning */
+<span class="lineNum">    1181 </span>                :            : }
+<a name="1182"><span class="lineNum">    1182 </span>                :            : </a>
+<span class="lineNum">    1183 </span>                :            : /* A background saving child (BGSAVE) terminated its work. Handle this. */
+<span class="lineNum">    1184 </span>                :<span class="lineCov">         44 : void backgroundSaveDoneHandler(int exitcode, int bysignal) {</span>
+<span class="lineNum">    1185 </span>        [<span class="branchCov" title="Branch 0 was taken 44 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">         44 :     if (!bysignal &amp;&amp; exitcode == 0) {</span>
+<span class="lineNum">    1186 </span>                :<span class="lineCov">         44 :         redisLog(REDIS_NOTICE,</span>
+<span class="lineNum">    1187 </span>                :            :             &quot;Background saving terminated with success&quot;);
+<span class="lineNum">    1188 </span>                :<span class="lineCov">         44 :         server.dirty = server.dirty - server.dirty_before_bgsave;</span>
+<span class="lineNum">    1189 </span>                :<span class="lineCov">         44 :         server.lastsave = time(NULL);</span>
+<span class="lineNum">    1190 </span>                :<span class="lineCov">         44 :         server.lastbgsave_status = REDIS_OK;</span>
+<span class="lineNum">    1191 </span>        [<span class="branchNoExec" title="Branch 0 was not executed"> # </span><span class="branchNoExec" title="Branch 1 was not executed"> # </span>]:<span class="lineNoCov">          0 :     } else if (!bysignal &amp;&amp; exitcode != 0) {</span>
+<span class="lineNum">    1192 </span>                :<span class="lineNoCov">          0 :         redisLog(REDIS_WARNING, &quot;Background saving error&quot;);</span>
+<span class="lineNum">    1193 </span>                :<span class="lineNoCov">          0 :         server.lastbgsave_status = REDIS_ERR;</span>
+<span class="lineNum">    1194 </span>                :            :     } else {
+<span class="lineNum">    1195 </span>                :<span class="lineNoCov">          0 :         redisLog(REDIS_WARNING,</span>
+<span class="lineNum">    1196 </span>                :            :             &quot;Background saving terminated by signal %d&quot;, bysignal);
+<span class="lineNum">    1197 </span>                :<span class="lineNoCov">          0 :         rdbRemoveTempFile(server.rdb_child_pid);</span>
+<span class="lineNum">    1198 </span>                :            :         /* SIGUSR1 is whitelisted, so we have a way to kill a child without
+<span class="lineNum">    1199 </span>                :            :          * tirggering an error conditon. */
+<span class="lineNum">    1200 </span>        [<span class="branchNoExec" title="Branch 0 was not executed"> # </span><span class="branchNoExec" title="Branch 1 was not executed"> # </span>]:<span class="lineNoCov">          0 :         if (bysignal != SIGUSR1)</span>
+<span class="lineNum">    1201 </span>                :<span class="lineNoCov">          0 :             server.lastbgsave_status = REDIS_ERR;</span>
+<span class="lineNum">    1202 </span>                :            :     }
+<span class="lineNum">    1203 </span>                :<span class="lineCov">         44 :     server.rdb_child_pid = -1;</span>
+<span class="lineNum">    1204 </span>                :<span class="lineCov">         44 :     server.rdb_save_time_last = time(NULL)-server.rdb_save_time_start;</span>
+<span class="lineNum">    1205 </span>                :<span class="lineCov">         44 :     server.rdb_save_time_start = -1;</span>
+<span class="lineNum">    1206 </span>                :            :     /* Possibly there are slaves waiting for a BGSAVE in order to be served
+<span class="lineNum">    1207 </span>                :            :      * (the first stage of SYNC is a bulk transfer of dump.rdb) */
+<span class="lineNum">    1208 </span>        [<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchCov" title="Branch 1 was taken 44 times"> + </span>]:<span class="lineCov">         44 :     updateSlavesWaitingBgsave(exitcode == 0 ? REDIS_OK : REDIS_ERR);</span>
+<a name="1209"><span class="lineNum">    1209 </span>                :<span class="lineCov">         44 : }</span></a>
+<span class="lineNum">    1210 </span>                :            : 
+<span class="lineNum">    1211 </span>                :<span class="lineCov">         13 : void saveCommand(redisClient *c) {</span>
+<span class="lineNum">    1212 </span>        [<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchCov" title="Branch 1 was taken 13 times"> + </span>]:<span class="lineCov">         13 :     if (server.rdb_child_pid != -1) {</span>
+<span class="lineNum">    1213 </span>                :<span class="lineNoCov">          0 :         addReplyError(c,&quot;Background save already in progress&quot;);</span>
+<span class="lineNum">    1214 </span>                :<span class="lineCov">         13 :         return;</span>
+<span class="lineNum">    1215 </span>                :            :     }
+<span class="lineNum">    1216 </span>        [<span class="branchCov" title="Branch 1 was taken 13 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">         13 :     if (rdbSave(server.rdb_filename) == REDIS_OK) {</span>
+<span class="lineNum">    1217 </span>                :<span class="lineCov">         13 :         addReply(c,shared.ok);</span>
+<span class="lineNum">    1218 </span>                :            :     } else {
+<span class="lineNum">    1219 </span>                :<span class="lineNoCov">          0 :         addReply(c,shared.err);</span>
+<span class="lineNum">    1220 </span>                :            :     }
+<a name="1221"><span class="lineNum">    1221 </span>                :            : }</a>
+<span class="lineNum">    1222 </span>                :            : 
+<span class="lineNum">    1223 </span>                :<span class="lineCov">          7 : void bgsaveCommand(redisClient *c) {</span>
+<span class="lineNum">    1224 </span>        [<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchCov" title="Branch 1 was taken 7 times"> + </span>]:<span class="lineCov">          7 :     if (server.rdb_child_pid != -1) {</span>
+<span class="lineNum">    1225 </span>                :<span class="lineNoCov">          0 :         addReplyError(c,&quot;Background save already in progress&quot;);</span>
+<span class="lineNum">    1226 </span>        [<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchCov" title="Branch 1 was taken 7 times"> + </span>]:<span class="lineCov">          7 :     } else if (server.aof_child_pid != -1) {</span>
+<span class="lineNum">    1227 </span>                :<span class="lineNoCov">          0 :         addReplyError(c,&quot;Can't BGSAVE while AOF log rewriting is in progress&quot;);</span>
+<span class="lineNum">    1228 </span>        [<span class="branchCov" title="Branch 1 was taken 5 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          7 :     } else if (rdbSaveBackground(server.rdb_filename) == REDIS_OK) {</span>
+<span class="lineNum">    1229 </span>                :<span class="lineCov">          5 :         addReplyStatus(c,&quot;Background saving started&quot;);</span>
+<span class="lineNum">    1230 </span>                :            :     } else {
+<span class="lineNum">    1231 </span>                :<span class="lineNoCov">          0 :         addReply(c,shared.err);</span>
+<span class="lineNum">    1232 </span>                :            :     }
+<span class="lineNum">    1233 </span>                :<span class="lineCov">          5 : }</span>
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.9</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

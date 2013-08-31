@@ -1,0 +1,261 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - redis-lcov_9.info - /var/lib/jenkins/jobs/redis-lcov/workspace/src/slowlog.c</title>
+  <link rel="stylesheet" type="text/css" href="../../../../../../../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../../../../../../../index.html">top level</a> - <a href="index.html">var/lib/jenkins/jobs/redis-lcov/workspace/src</a> - slowlog.c<span style="font-size: 80%;"> (source / <a href="slowlog.c.func.html">functions</a>)</span></td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">redis-lcov_9.info</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">73</td>
+            <td class="headerCovTableEntry">74</td>
+            <td class="headerCovTableEntryHi">98.6 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2013-08-26</td>
+            <td></td>
+            <td class="headerItem">Functions:</td>
+            <td class="headerCovTableEntry">6</td>
+            <td class="headerCovTableEntry">6</td>
+            <td class="headerCovTableEntryHi">100.0 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Legend:</td>
+            <td class="headerValueLeg">            Lines:
+            <span class="coverLegendCov">hit</span>
+            <span class="coverLegendNoCov">not hit</span>
+            | Branches:
+            <span class="coverLegendCov">+</span> taken
+            <span class="coverLegendNoCov">-</span> not taken
+            <span class="coverLegendNoCov">#</span> not executed
+</td>
+            <td></td>
+            <td class="headerItem">Branches:</td>
+            <td class="headerCovTableEntry">41</td>
+            <td class="headerCovTableEntry">46</td>
+            <td class="headerCovTableEntryMed">89.1 %</td>
+          </tr>
+          <tr><td><img src="../../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">           Branch data     Line data    Source code</pre>
+<pre class="source">
+<a name="1"><span class="lineNum">       1 </span>                :            : /* Slowlog implements a system that is able to remember the latest N</a>
+<span class="lineNum">       2 </span>                :            :  * queries that took more than M microseconds to execute.
+<span class="lineNum">       3 </span>                :            :  *
+<span class="lineNum">       4 </span>                :            :  * The execution time to reach to be logged in the slow log is set
+<span class="lineNum">       5 </span>                :            :  * using the 'slowlog-log-slower-than' config directive, that is also
+<span class="lineNum">       6 </span>                :            :  * readable and writable using the CONFIG SET/GET command.
+<span class="lineNum">       7 </span>                :            :  *
+<span class="lineNum">       8 </span>                :            :  * The slow queries log is actually not &quot;logged&quot; in the Redis log file
+<span class="lineNum">       9 </span>                :            :  * but is accessible thanks to the SLOWLOG command.
+<span class="lineNum">      10 </span>                :            :  *
+<span class="lineNum">      11 </span>                :            :  * ----------------------------------------------------------------------------
+<span class="lineNum">      12 </span>                :            :  *
+<span class="lineNum">      13 </span>                :            :  * Copyright (c) 2009-2012, Salvatore Sanfilippo &lt;antirez at gmail dot com&gt;
+<span class="lineNum">      14 </span>                :            :  * All rights reserved.
+<span class="lineNum">      15 </span>                :            :  *
+<span class="lineNum">      16 </span>                :            :  * Redistribution and use in source and binary forms, with or without
+<span class="lineNum">      17 </span>                :            :  * modification, are permitted provided that the following conditions are met:
+<span class="lineNum">      18 </span>                :            :  *
+<span class="lineNum">      19 </span>                :            :  *   * Redistributions of source code must retain the above copyright notice,
+<span class="lineNum">      20 </span>                :            :  *     this list of conditions and the following disclaimer.
+<span class="lineNum">      21 </span>                :            :  *   * Redistributions in binary form must reproduce the above copyright
+<span class="lineNum">      22 </span>                :            :  *     notice, this list of conditions and the following disclaimer in the
+<span class="lineNum">      23 </span>                :            :  *     documentation and/or other materials provided with the distribution.
+<span class="lineNum">      24 </span>                :            :  *   * Neither the name of Redis nor the names of its contributors may be used
+<span class="lineNum">      25 </span>                :            :  *     to endorse or promote products derived from this software without
+<span class="lineNum">      26 </span>                :            :  *     specific prior written permission.
+<span class="lineNum">      27 </span>                :            :  *
+<span class="lineNum">      28 </span>                :            :  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS &quot;AS IS&quot;
+<span class="lineNum">      29 </span>                :            :  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+<span class="lineNum">      30 </span>                :            :  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+<span class="lineNum">      31 </span>                :            :  * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+<span class="lineNum">      32 </span>                :            :  * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+<span class="lineNum">      33 </span>                :            :  * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+<span class="lineNum">      34 </span>                :            :  * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+<span class="lineNum">      35 </span>                :            :  * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+<span class="lineNum">      36 </span>                :            :  * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+<span class="lineNum">      37 </span>                :            :  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+<span class="lineNum">      38 </span>                :            :  * POSSIBILITY OF SUCH DAMAGE.
+<span class="lineNum">      39 </span>                :            :  */
+<span class="lineNum">      40 </span>                :            : 
+<span class="lineNum">      41 </span>                :            : 
+<span class="lineNum">      42 </span>                :            : #include &quot;redis.h&quot;
+<span class="lineNum">      43 </span>                :            : #include &quot;slowlog.h&quot;
+<span class="lineNum">      44 </span>                :            : 
+<span class="lineNum">      45 </span>                :            : /* Create a new slowlog entry.
+<a name="46"><span class="lineNum">      46 </span>                :            :  * Incrementing the ref count of all the objects retained is up to</a>
+<span class="lineNum">      47 </span>                :            :  * this function. */
+<span class="lineNum">      48 </span>                :<span class="lineCov">        196 : slowlogEntry *slowlogCreateEntry(robj **argv, int argc, long long duration) {</span>
+<span class="lineNum">      49 </span>                :<span class="lineCov">        196 :     slowlogEntry *se = zmalloc(sizeof(*se));</span>
+<span class="lineNum">      50 </span>                :<span class="lineCov">        196 :     int j, slargc = argc;</span>
+<span class="lineNum">      51 </span>                :            : 
+<span class="lineNum">      52 </span>        [<span class="branchCov" title="Branch 0 was taken 1 time"> + </span><span class="branchCov" title="Branch 1 was taken 195 times"> + </span>]:<span class="lineCov">        196 :     if (slargc &gt; SLOWLOG_ENTRY_MAX_ARGC) slargc = SLOWLOG_ENTRY_MAX_ARGC;</span>
+<span class="lineNum">      53 </span>                :<span class="lineCov">        196 :     se-&gt;argc = slargc;</span>
+<span class="lineNum">      54 </span>                :<span class="lineCov">        196 :     se-&gt;argv = zmalloc(sizeof(robj*)*slargc);</span>
+<span class="lineNum">      55 </span>        [<span class="branchCov" title="Branch 0 was taken 370 times"> + </span><span class="branchCov" title="Branch 1 was taken 196 times"> + </span>]:<span class="lineCov">        566 :     for (j = 0; j &lt; slargc; j++) {</span>
+<span class="lineNum">      56 </span>                :            :         /* Logging too many arguments is a useless memory waste, so we stop
+<span class="lineNum">      57 </span>                :            :          * at SLOWLOG_ENTRY_MAX_ARGC, but use the last argument to specify
+<span class="lineNum">      58 </span>                :            :          * how many remaining arguments there were in the original command. */
+<span class="lineNum">      59 </span>[<span class="branchCov" title="Branch 0 was taken 32 times"> + </span><span class="branchCov" title="Branch 1 was taken 338 times"> + </span>][<span class="branchCov" title="Branch 2 was taken 1 time"> + </span><span class="branchCov" title="Branch 3 was taken 31 times"> + </span>]:<span class="lineCov">        370 :         if (slargc != argc &amp;&amp; j == slargc-1) {</span>
+<span class="lineNum">      60 </span>                :<span class="lineCov">          1 :             se-&gt;argv[j] = createObject(REDIS_STRING,</span>
+<span class="lineNum">      61 </span>                :<span class="lineCov">          1 :                 sdscatprintf(sdsempty(),&quot;... (%d more arguments)&quot;,</span>
+<span class="lineNum">      62 </span>                :<span class="lineCov">          1 :                 argc-slargc+1));</span>
+<span class="lineNum">      63 </span>                :            :         } else {
+<span class="lineNum">      64 </span>                :            :             /* Trim too long strings as well... */
+<span class="lineNum">      65 </span>[<span class="branchCov" title="Branch 0 was taken 369 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>][<span class="branchCov" title="Branch 2 was taken 340 times"> + </span><span class="branchCov" title="Branch 3 was taken 29 times"> + </span>]:<span class="lineCov">        369 :             if (argv[j]-&gt;type == REDIS_STRING &amp;&amp;</span>
+<span class="lineNum">      66 </span>        [<span class="branchCov" title="Branch 0 was taken 2 times"> + </span><span class="branchCov" title="Branch 1 was taken 338 times"> + </span>]:<span class="lineCov">        340 :                 sdsEncodedObject(argv[j]) &amp;&amp;</span>
+<span class="lineNum">      67 </span>                :<span class="lineCov">        340 :                 sdslen(argv[j]-&gt;ptr) &gt; SLOWLOG_ENTRY_MAX_STRING)</span>
+<span class="lineNum">      68 </span>                :<span class="lineCov">          2 :             {</span>
+<span class="lineNum">      69 </span>                :<span class="lineCov">          2 :                 sds s = sdsnewlen(argv[j]-&gt;ptr, SLOWLOG_ENTRY_MAX_STRING);</span>
+<span class="lineNum">      70 </span>                :            : 
+<span class="lineNum">      71 </span>                :<span class="lineCov">          2 :                 s = sdscatprintf(s,&quot;... (%lu more bytes)&quot;,</span>
+<span class="lineNum">      72 </span>                :            :                     (unsigned long)
+<span class="lineNum">      73 </span>                :<span class="lineCov">          2 :                     sdslen(argv[j]-&gt;ptr) - SLOWLOG_ENTRY_MAX_STRING);</span>
+<span class="lineNum">      74 </span>                :<span class="lineCov">          2 :                 se-&gt;argv[j] = createObject(REDIS_STRING,s);</span>
+<span class="lineNum">      75 </span>                :            :             } else {
+<span class="lineNum">      76 </span>                :<span class="lineCov">        367 :                 se-&gt;argv[j] = argv[j];</span>
+<span class="lineNum">      77 </span>                :<span class="lineCov">        367 :                 incrRefCount(argv[j]);</span>
+<span class="lineNum">      78 </span>                :            :             }
+<span class="lineNum">      79 </span>                :            :         }
+<span class="lineNum">      80 </span>                :            :     }
+<span class="lineNum">      81 </span>                :<span class="lineCov">        196 :     se-&gt;time = time(NULL);</span>
+<span class="lineNum">      82 </span>                :<span class="lineCov">        196 :     se-&gt;duration = duration;</span>
+<span class="lineNum">      83 </span>                :<span class="lineCov">        196 :     se-&gt;id = server.slowlog_entry_id++;</span>
+<span class="lineNum">      84 </span>                :<span class="lineCov">        196 :     return se;</span>
+<span class="lineNum">      85 </span>                :            : }
+<span class="lineNum">      86 </span>                :            : 
+<span class="lineNum">      87 </span>                :            : /* Free a slow log entry. The argument is void so that the prototype of this
+<span class="lineNum">      88 </span>                :            :  * function matches the one of the 'free' method of adlist.c.
+<a name="89"><span class="lineNum">      89 </span>                :            :  *</a>
+<span class="lineNum">      90 </span>                :            :  * This function will take care to release all the retained object. */
+<span class="lineNum">      91 </span>                :<span class="lineCov">        114 : void slowlogFreeEntry(void *septr) {</span>
+<span class="lineNum">      92 </span>                :<span class="lineCov">        114 :     slowlogEntry *se = septr;</span>
+<span class="lineNum">      93 </span>                :            :     int j;
+<span class="lineNum">      94 </span>                :            : 
+<span class="lineNum">      95 </span>        [<span class="branchCov" title="Branch 0 was taken 171 times"> + </span><span class="branchCov" title="Branch 1 was taken 114 times"> + </span>]:<span class="lineCov">        285 :     for (j = 0; j &lt; se-&gt;argc; j++)</span>
+<span class="lineNum">      96 </span>                :<span class="lineCov">        171 :         decrRefCount(se-&gt;argv[j]);</span>
+<span class="lineNum">      97 </span>                :<span class="lineCov">        114 :     zfree(se-&gt;argv);</span>
+<span class="lineNum">      98 </span>                :<span class="lineCov">        114 :     zfree(se);</span>
+<span class="lineNum">      99 </span>                :<span class="lineCov">        114 : }</span>
+<span class="lineNum">     100 </span>                :            : 
+<a name="101"><span class="lineNum">     101 </span>                :            : /* Initialize the slow log. This function should be called a single time</a>
+<span class="lineNum">     102 </span>                :            :  * at server startup. */
+<span class="lineNum">     103 </span>                :<span class="lineCov">        131 : void slowlogInit(void) {</span>
+<span class="lineNum">     104 </span>                :<span class="lineCov">        131 :     server.slowlog = listCreate();</span>
+<span class="lineNum">     105 </span>                :<span class="lineCov">        131 :     server.slowlog_entry_id = 0;</span>
+<span class="lineNum">     106 </span>                :<span class="lineCov">        131 :     listSetFreeMethod(server.slowlog,slowlogFreeEntry);</span>
+<span class="lineNum">     107 </span>                :<span class="lineCov">        131 : }</span>
+<span class="lineNum">     108 </span>                :            : 
+<span class="lineNum">     109 </span>                :            : /* Push a new entry into the slow log.
+<a name="110"><span class="lineNum">     110 </span>                :            :  * This function will make sure to trim the slow log accordingly to the</a>
+<span class="lineNum">     111 </span>                :            :  * configured max length. */
+<span class="lineNum">     112 </span>                :<span class="lineCov">    6063329 : void slowlogPushEntryIfNeeded(robj **argv, int argc, long long duration) {</span>
+<span class="lineNum">     113 </span>        [<span class="branchCov" title="Branch 0 was taken 6063329 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">   12126658 :     if (server.slowlog_log_slower_than &lt; 0) return; /* Slowlog disabled */</span>
+<span class="lineNum">     114 </span>        [<span class="branchCov" title="Branch 0 was taken 196 times"> + </span><span class="branchCov" title="Branch 1 was taken 6063133 times"> + </span>]:<span class="lineCov">    6063329 :     if (duration &gt;= server.slowlog_log_slower_than)</span>
+<span class="lineNum">     115 </span>                :<span class="lineCov">    6063329 :         listAddNodeHead(server.slowlog,slowlogCreateEntry(argv,argc,duration));</span>
+<span class="lineNum">     116 </span>                :            : 
+<span class="lineNum">     117 </span>                :            :     /* Remove old entries if needed. */
+<span class="lineNum">     118 </span>        [<span class="branchCov" title="Branch 0 was taken 95 times"> + </span><span class="branchCov" title="Branch 1 was taken 6063329 times"> + </span>]:<span class="lineCov">    6063424 :     while (listLength(server.slowlog) &gt; server.slowlog_max_len)</span>
+<span class="lineNum">     119 </span>                :<span class="lineCov">         95 :         listDelNode(server.slowlog,listLast(server.slowlog));</span>
+<span class="lineNum">     120 </span>                :            : }
+<a name="121"><span class="lineNum">     121 </span>                :            : </a>
+<span class="lineNum">     122 </span>                :            : /* Remove all the entries from the current slow log. */
+<span class="lineNum">     123 </span>                :<span class="lineCov">          4 : void slowlogReset(void) {</span>
+<span class="lineNum">     124 </span>        [<span class="branchCov" title="Branch 0 was taken 19 times"> + </span><span class="branchCov" title="Branch 1 was taken 4 times"> + </span>]:<span class="lineCov">         23 :     while (listLength(server.slowlog) &gt; 0)</span>
+<span class="lineNum">     125 </span>                :<span class="lineCov">         19 :         listDelNode(server.slowlog,listLast(server.slowlog));</span>
+<span class="lineNum">     126 </span>                :<span class="lineCov">          4 : }</span>
+<span class="lineNum">     127 </span>                :            : 
+<a name="128"><span class="lineNum">     128 </span>                :            : /* The SLOWLOG command. Implements all the subcommands needed to handle the</a>
+<span class="lineNum">     129 </span>                :            :  * Redis slow log. */
+<span class="lineNum">     130 </span>                :<span class="lineCov">         16 : void slowlogCommand(redisClient *c) {</span>
+<span class="lineNum">     131 </span>[<span class="branchCov" title="Branch 0 was taken 15 times"> + </span><span class="branchCov" title="Branch 1 was taken 1 time"> + </span>][<span class="branchCov" title="Branch 3 was taken 4 times"> + </span><span class="branchCov" title="Branch 4 was taken 11 times"> + </span>]:<span class="lineCov">         16 :     if (c-&gt;argc == 2 &amp;&amp; !strcasecmp(c-&gt;argv[1]-&gt;ptr,&quot;reset&quot;)) {</span>
+<span class="lineNum">     132 </span>                :<span class="lineCov">          4 :         slowlogReset();</span>
+<span class="lineNum">     133 </span>                :<span class="lineCov">          4 :         addReply(c,shared.ok);</span>
+<span class="lineNum">     134 </span>[<span class="branchCov" title="Branch 0 was taken 11 times"> + </span><span class="branchCov" title="Branch 1 was taken 1 time"> + </span>][<span class="branchCov" title="Branch 3 was taken 7 times"> + </span><span class="branchCov" title="Branch 4 was taken 4 times"> + </span>]:<span class="lineCov">         12 :     } else if (c-&gt;argc == 2 &amp;&amp; !strcasecmp(c-&gt;argv[1]-&gt;ptr,&quot;len&quot;)) {</span>
+<span class="lineNum">     135 </span>                :<span class="lineCov">          7 :         addReplyLongLong(c,listLength(server.slowlog));</span>
+<span class="lineNum">     136 </span>  [<span class="branchCov" title="Branch 0 was taken 5 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span><span class="branchCov" title="Branch 2 was taken 5 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">         10 :     } else if ((c-&gt;argc == 2 || c-&gt;argc == 3) &amp;&amp;</span>
+<span class="lineNum">     137 </span>                :<span class="lineCov">          5 :                !strcasecmp(c-&gt;argv[1]-&gt;ptr,&quot;get&quot;))</span>
+<span class="lineNum">     138 </span>                :<span class="lineCov">          5 :     {</span>
+<span class="lineNum">     139 </span>                :<span class="lineCov">          5 :         long count = 10, sent = 0;</span>
+<span class="lineNum">     140 </span>                :            :         listIter li;
+<span class="lineNum">     141 </span>                :            :         void *totentries;
+<span class="lineNum">     142 </span>                :            :         listNode *ln;
+<span class="lineNum">     143 </span>                :            :         slowlogEntry *se;
+<span class="lineNum">     144 </span>                :            : 
+<span class="lineNum">     145 </span>  [<span class="branchCov" title="Branch 0 was taken 1 time"> + </span><span class="branchCov" title="Branch 1 was taken 4 times"> + </span><span class="branchCov" title="Branch 2 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">          6 :         if (c-&gt;argc == 3 &amp;&amp;</span>
+<span class="lineNum">     146 </span>                :<span class="lineCov">          1 :             getLongFromObjectOrReply(c,c-&gt;argv[2],&amp;count,NULL) != REDIS_OK)</span>
+<span class="lineNum">     147 </span>                :<span class="lineCov">         16 :             return;</span>
+<span class="lineNum">     148 </span>                :            : 
+<span class="lineNum">     149 </span>                :<span class="lineCov">          5 :         listRewind(server.slowlog,&amp;li);</span>
+<span class="lineNum">     150 </span>                :<span class="lineCov">          5 :         totentries = addDeferredMultiBulkLength(c);</span>
+<span class="lineNum">     151 </span>[<span class="branchCov" title="Branch 0 was taken 15 times"> + </span><span class="branchCov" title="Branch 1 was taken 1 time"> + </span>][<span class="branchCov" title="Branch 3 was taken 11 times"> + </span><span class="branchCov" title="Branch 4 was taken 4 times"> + </span>]:<span class="lineCov">         16 :         while(count-- &amp;&amp; (ln = listNext(&amp;li))) {</span>
+<span class="lineNum">     152 </span>                :            :             int j;
+<span class="lineNum">     153 </span>                :            : 
+<span class="lineNum">     154 </span>                :<span class="lineCov">         11 :             se = ln-&gt;value;</span>
+<span class="lineNum">     155 </span>                :<span class="lineCov">         11 :             addReplyMultiBulkLen(c,4);</span>
+<span class="lineNum">     156 </span>                :<span class="lineCov">         11 :             addReplyLongLong(c,se-&gt;id);</span>
+<span class="lineNum">     157 </span>                :<span class="lineCov">         11 :             addReplyLongLong(c,se-&gt;time);</span>
+<span class="lineNum">     158 </span>                :<span class="lineCov">         11 :             addReplyLongLong(c,se-&gt;duration);</span>
+<span class="lineNum">     159 </span>                :<span class="lineCov">         11 :             addReplyMultiBulkLen(c,se-&gt;argc);</span>
+<span class="lineNum">     160 </span>        [<span class="branchCov" title="Branch 1 was taken 52 times"> + </span><span class="branchCov" title="Branch 2 was taken 11 times"> + </span>]:<span class="lineCov">         63 :             for (j = 0; j &lt; se-&gt;argc; j++)</span>
+<span class="lineNum">     161 </span>                :<span class="lineCov">         52 :                 addReplyBulk(c,se-&gt;argv[j]);</span>
+<span class="lineNum">     162 </span>                :<span class="lineCov">         11 :             sent++;</span>
+<span class="lineNum">     163 </span>                :            :         }
+<span class="lineNum">     164 </span>                :<span class="lineCov">          5 :         setDeferredMultiBulkLength(c,totentries,sent);</span>
+<span class="lineNum">     165 </span>                :            :     } else {
+<span class="lineNum">     166 </span>                :<span class="lineNoCov">          0 :         addReplyError(c,</span>
+<span class="lineNum">     167 </span>                :            :             &quot;Unknown SLOWLOG subcommand or wrong # of args. Try GET, RESET, LEN.&quot;);
+<span class="lineNum">     168 </span>                :            :     }
+<span class="lineNum">     169 </span>                :            : }
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.9</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

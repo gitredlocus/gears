@@ -1,0 +1,912 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - redis-lcov_9.info - /var/lib/jenkins/jobs/redis-lcov/workspace/src/db.c</title>
+  <link rel="stylesheet" type="text/css" href="../../../../../../../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../../../../../../../index.html">top level</a> - <a href="index.html">var/lib/jenkins/jobs/redis-lcov/workspace/src</a> - db.c<span style="font-size: 80%;"> (source / <a href="db.c.func.html">functions</a>)</span></td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">redis-lcov_9.info</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">299</td>
+            <td class="headerCovTableEntry">402</td>
+            <td class="headerCovTableEntryLo">74.4 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2013-08-26</td>
+            <td></td>
+            <td class="headerItem">Functions:</td>
+            <td class="headerCovTableEntry">43</td>
+            <td class="headerCovTableEntry">55</td>
+            <td class="headerCovTableEntryMed">78.2 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Legend:</td>
+            <td class="headerValueLeg">            Lines:
+            <span class="coverLegendCov">hit</span>
+            <span class="coverLegendNoCov">not hit</span>
+            | Branches:
+            <span class="coverLegendCov">+</span> taken
+            <span class="coverLegendNoCov">-</span> not taken
+            <span class="coverLegendNoCov">#</span> not executed
+</td>
+            <td></td>
+            <td class="headerItem">Branches:</td>
+            <td class="headerCovTableEntry">129</td>
+            <td class="headerCovTableEntry">200</td>
+            <td class="headerCovTableEntryLo">64.5 %</td>
+          </tr>
+          <tr><td><img src="../../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">           Branch data     Line data    Source code</pre>
+<pre class="source">
+<a name="1"><span class="lineNum">       1 </span>                :            : /*</a>
+<span class="lineNum">       2 </span>                :            :  * Copyright (c) 2009-2012, Salvatore Sanfilippo &lt;antirez at gmail dot com&gt;
+<span class="lineNum">       3 </span>                :            :  * All rights reserved.
+<span class="lineNum">       4 </span>                :            :  *
+<span class="lineNum">       5 </span>                :            :  * Redistribution and use in source and binary forms, with or without
+<span class="lineNum">       6 </span>                :            :  * modification, are permitted provided that the following conditions are met:
+<span class="lineNum">       7 </span>                :            :  *
+<span class="lineNum">       8 </span>                :            :  *   * Redistributions of source code must retain the above copyright notice,
+<span class="lineNum">       9 </span>                :            :  *     this list of conditions and the following disclaimer.
+<span class="lineNum">      10 </span>                :            :  *   * Redistributions in binary form must reproduce the above copyright
+<span class="lineNum">      11 </span>                :            :  *     notice, this list of conditions and the following disclaimer in the
+<span class="lineNum">      12 </span>                :            :  *     documentation and/or other materials provided with the distribution.
+<span class="lineNum">      13 </span>                :            :  *   * Neither the name of Redis nor the names of its contributors may be used
+<span class="lineNum">      14 </span>                :            :  *     to endorse or promote products derived from this software without
+<span class="lineNum">      15 </span>                :            :  *     specific prior written permission.
+<span class="lineNum">      16 </span>                :            :  *
+<span class="lineNum">      17 </span>                :            :  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS &quot;AS IS&quot;
+<span class="lineNum">      18 </span>                :            :  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+<span class="lineNum">      19 </span>                :            :  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+<span class="lineNum">      20 </span>                :            :  * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+<span class="lineNum">      21 </span>                :            :  * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+<span class="lineNum">      22 </span>                :            :  * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+<span class="lineNum">      23 </span>                :            :  * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+<span class="lineNum">      24 </span>                :            :  * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+<span class="lineNum">      25 </span>                :            :  * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+<span class="lineNum">      26 </span>                :            :  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+<span class="lineNum">      27 </span>                :            :  * POSSIBILITY OF SUCH DAMAGE.
+<span class="lineNum">      28 </span>                :            :  */
+<span class="lineNum">      29 </span>                :            : 
+<span class="lineNum">      30 </span>                :            : #include &quot;redis.h&quot;
+<span class="lineNum">      31 </span>                :            : 
+<span class="lineNum">      32 </span>                :            : #include &lt;signal.h&gt;
+<span class="lineNum">      33 </span>                :            : #include &lt;ctype.h&gt;
+<span class="lineNum">      34 </span>                :            : 
+<span class="lineNum">      35 </span>                :            : void slotToKeyAdd(robj *key);
+<span class="lineNum">      36 </span>                :            : void slotToKeyDel(robj *key);
+<span class="lineNum">      37 </span>                :            : void slotToKeyFlush(void);
+<span class="lineNum">      38 </span>                :            : 
+<span class="lineNum">      39 </span>                :            : /*-----------------------------------------------------------------------------
+<span class="lineNum">      40 </span>                :            :  * C-level DB API
+<a name="41"><span class="lineNum">      41 </span>                :            :  *----------------------------------------------------------------------------*/</a>
+<span class="lineNum">      42 </span>                :            : 
+<span class="lineNum">      43 </span>                :<span class="lineCov">    5412879 : robj *lookupKey(redisDb *db, robj *key) {</span>
+<span class="lineNum">      44 </span>                :<span class="lineCov">    5412879 :     dictEntry *de = dictFind(db-&gt;dict,key-&gt;ptr);</span>
+<span class="lineNum">      45 </span>        [<span class="branchCov" title="Branch 0 was taken 1561967 times"> + </span><span class="branchCov" title="Branch 1 was taken 3850912 times"> + </span>]:<span class="lineCov">    5412879 :     if (de) {</span>
+<span class="lineNum">      46 </span>                :<span class="lineCov">    1561967 :         robj *val = dictGetVal(de);</span>
+<span class="lineNum">      47 </span>                :            : 
+<span class="lineNum">      48 </span>                :            :         /* Update the access time for the ageing algorithm.
+<span class="lineNum">      49 </span>                :            :          * Don't do it if we have a saving child, as this will trigger
+<span class="lineNum">      50 </span>                :            :          * a copy on write madness. */
+<span class="lineNum">      51 </span>[<span class="branchCov" title="Branch 0 was taken 1552618 times"> + </span><span class="branchCov" title="Branch 1 was taken 9349 times"> + </span>][<span class="branchCov" title="Branch 2 was taken 1549089 times"> + </span><span class="branchCov" title="Branch 3 was taken 3529 times"> + </span>]:<span class="lineCov">    1561967 :         if (server.rdb_child_pid == -1 &amp;&amp; server.aof_child_pid == -1)</span>
+<span class="lineNum">      52 </span>                :<span class="lineCov">    5412879 :             val-&gt;lru = server.lruclock;</span>
+<span class="lineNum">      53 </span>                :            :         return val;
+<span class="lineNum">      54 </span>                :            :     } else {
+<span class="lineNum">      55 </span>                :            :         return NULL;
+<span class="lineNum">      56 </span>                :            :     }
+<a name="57"><span class="lineNum">      57 </span>                :            : }</a>
+<span class="lineNum">      58 </span>                :            : 
+<span class="lineNum">      59 </span>                :<span class="lineCov">     982955 : robj *lookupKeyRead(redisDb *db, robj *key) {</span>
+<span class="lineNum">      60 </span>                :            :     robj *val;
+<span class="lineNum">      61 </span>                :            : 
+<span class="lineNum">      62 </span>                :<span class="lineCov">     982955 :     expireIfNeeded(db,key);</span>
+<span class="lineNum">      63 </span>                :<span class="lineCov">     982955 :     val = lookupKey(db,key);</span>
+<span class="lineNum">      64 </span>        [<span class="branchCov" title="Branch 0 was taken 284236 times"> + </span><span class="branchCov" title="Branch 1 was taken 698719 times"> + </span>]:<span class="lineCov">     982955 :     if (val == NULL)</span>
+<span class="lineNum">      65 </span>                :<span class="lineCov">     284236 :         server.stat_keyspace_misses++;</span>
+<span class="lineNum">      66 </span>                :            :     else
+<span class="lineNum">      67 </span>                :<span class="lineCov">     698719 :         server.stat_keyspace_hits++;</span>
+<span class="lineNum">      68 </span>                :<span class="lineCov">     982955 :     return val;</span>
+<a name="69"><span class="lineNum">      69 </span>                :            : }</a>
+<span class="lineNum">      70 </span>                :            : 
+<span class="lineNum">      71 </span>                :<span class="lineCov">    4429924 : robj *lookupKeyWrite(redisDb *db, robj *key) {</span>
+<span class="lineNum">      72 </span>                :<span class="lineCov">    4429924 :     expireIfNeeded(db,key);</span>
+<span class="lineNum">      73 </span>                :<span class="lineCov">    4429924 :     return lookupKey(db,key);</span>
+<a name="74"><span class="lineNum">      74 </span>                :            : }</a>
+<span class="lineNum">      75 </span>                :            : 
+<span class="lineNum">      76 </span>                :<span class="lineCov">     247391 : robj *lookupKeyReadOrReply(redisClient *c, robj *key, robj *reply) {</span>
+<span class="lineNum">      77 </span>                :<span class="lineCov">     247391 :     robj *o = lookupKeyRead(c-&gt;db, key);</span>
+<span class="lineNum">      78 </span>        [<span class="branchCov" title="Branch 0 was taken 78 times"> + </span><span class="branchCov" title="Branch 1 was taken 247313 times"> + </span>]:<span class="lineCov">     247391 :     if (!o) addReply(c,reply);</span>
+<span class="lineNum">      79 </span>                :<span class="lineCov">     247391 :     return o;</span>
+<a name="80"><span class="lineNum">      80 </span>                :            : }</a>
+<span class="lineNum">      81 </span>                :            : 
+<span class="lineNum">      82 </span>                :<span class="lineCov">     120618 : robj *lookupKeyWriteOrReply(redisClient *c, robj *key, robj *reply) {</span>
+<span class="lineNum">      83 </span>                :<span class="lineCov">     120618 :     robj *o = lookupKeyWrite(c-&gt;db, key);</span>
+<span class="lineNum">      84 </span>        [<span class="branchCov" title="Branch 0 was taken 31 times"> + </span><span class="branchCov" title="Branch 1 was taken 120587 times"> + </span>]:<span class="lineCov">     120618 :     if (!o) addReply(c,reply);</span>
+<span class="lineNum">      85 </span>                :<span class="lineCov">     120618 :     return o;</span>
+<span class="lineNum">      86 </span>                :            : }
+<span class="lineNum">      87 </span>                :            : 
+<span class="lineNum">      88 </span>                :            : /* Add the key to the DB. It's up to the caller to increment the reference
+<span class="lineNum">      89 </span>                :            :  * counter of the value if needed.
+<a name="90"><span class="lineNum">      90 </span>                :            :  *</a>
+<span class="lineNum">      91 </span>                :            :  * The program is aborted if the key already exists. */
+<span class="lineNum">      92 </span>                :<span class="lineCov">    4215727 : void dbAdd(redisDb *db, robj *key, robj *val) {</span>
+<span class="lineNum">      93 </span>                :<span class="lineCov">    4215727 :     sds copy = sdsdup(key-&gt;ptr);</span>
+<span class="lineNum">      94 </span>                :<span class="lineCov">    4215727 :     int retval = dictAdd(db-&gt;dict, copy, val);</span>
+<span class="lineNum">      95 </span>                :            : 
+<span class="lineNum">      96 </span>        [<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchCov" title="Branch 1 was taken 4215727 times"> + </span>]:<span class="lineCov">    4215727 :     redisAssertWithInfo(NULL,key,retval == REDIS_OK);</span>
+<span class="lineNum">      97 </span>        [<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchCov" title="Branch 1 was taken 4215727 times"> + </span>]:<span class="lineCov">    4215727 :     if (server.cluster_enabled) slotToKeyAdd(key);</span>
+<span class="lineNum">      98 </span>                :<span class="lineCov">    4215727 :  }</span>
+<span class="lineNum">      99 </span>                :            : 
+<span class="lineNum">     100 </span>                :            : /* Overwrite an existing key with a new value. Incrementing the reference
+<span class="lineNum">     101 </span>                :            :  * count of the new value is up to the caller.
+<span class="lineNum">     102 </span>                :            :  * This function does not modify the expire time of the existing key.
+<a name="103"><span class="lineNum">     103 </span>                :            :  *</a>
+<span class="lineNum">     104 </span>                :            :  * The program is aborted if the key was not already present. */
+<span class="lineNum">     105 </span>                :<span class="lineCov">     284972 : void dbOverwrite(redisDb *db, robj *key, robj *val) {</span>
+<span class="lineNum">     106 </span>                :<span class="lineCov">     284972 :     struct dictEntry *de = dictFind(db-&gt;dict,key-&gt;ptr);</span>
+<span class="lineNum">     107 </span>                :            :     
+<span class="lineNum">     108 </span>        [<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchCov" title="Branch 1 was taken 284972 times"> + </span>]:<span class="lineCov">     284972 :     redisAssertWithInfo(NULL,key,de != NULL);</span>
+<span class="lineNum">     109 </span>                :<span class="lineCov">     284972 :     dictReplace(db-&gt;dict, key-&gt;ptr, val);</span>
+<span class="lineNum">     110 </span>                :<span class="lineCov">     284972 : }</span>
+<span class="lineNum">     111 </span>                :            : 
+<span class="lineNum">     112 </span>                :            : /* High level Set operation. This function can be used in order to set
+<span class="lineNum">     113 </span>                :            :  * a key, whatever it was existing or not, to a new object.
+<span class="lineNum">     114 </span>                :            :  *
+<span class="lineNum">     115 </span>                :            :  * 1) The ref count of the value object is incremented.
+<a name="116"><span class="lineNum">     116 </span>                :            :  * 2) clients WATCHing for the destination key notified.</a>
+<span class="lineNum">     117 </span>                :            :  * 3) The expire time of the key is reset (the key is made persistent). */
+<span class="lineNum">     118 </span>                :<span class="lineCov">    3303341 : void setKey(redisDb *db, robj *key, robj *val) {</span>
+<span class="lineNum">     119 </span>        [<span class="branchCov" title="Branch 1 was taken 3229749 times"> + </span><span class="branchCov" title="Branch 2 was taken 73592 times"> + </span>]:<span class="lineCov">    3303341 :     if (lookupKeyWrite(db,key) == NULL) {</span>
+<span class="lineNum">     120 </span>                :<span class="lineCov">    3229749 :         dbAdd(db,key,val);</span>
+<span class="lineNum">     121 </span>                :            :     } else {
+<span class="lineNum">     122 </span>                :<span class="lineCov">      73592 :         dbOverwrite(db,key,val);</span>
+<span class="lineNum">     123 </span>                :            :     }
+<span class="lineNum">     124 </span>                :<span class="lineCov">    3303341 :     incrRefCount(val);</span>
+<span class="lineNum">     125 </span>                :<span class="lineCov">    3303341 :     removeExpire(db,key);</span>
+<span class="lineNum">     126 </span>                :            :     signalModifiedKey(db,key);
+<a name="127"><span class="lineNum">     127 </span>                :<span class="lineCov">    3303341 : }</span></a>
+<span class="lineNum">     128 </span>                :            : 
+<span class="lineNum">     129 </span>                :<span class="lineCov">       1484 : int dbExists(redisDb *db, robj *key) {</span>
+<span class="lineNum">     130 </span>                :<span class="lineCov">       1484 :     return dictFind(db-&gt;dict,key-&gt;ptr) != NULL;</span>
+<span class="lineNum">     131 </span>                :            : }
+<span class="lineNum">     132 </span>                :            : 
+<span class="lineNum">     133 </span>                :            : /* Return a random key, in form of a Redis object.
+<span class="lineNum">     134 </span>                :            :  * If there are no keys, NULL is returned.
+<a name="135"><span class="lineNum">     135 </span>                :            :  *</a>
+<span class="lineNum">     136 </span>                :            :  * The function makes sure to return keys not already expired. */
+<span class="lineNum">     137 </span>                :<span class="lineCov">     131220 : robj *dbRandomKey(redisDb *db) {</span>
+<span class="lineNum">     138 </span>                :            :     struct dictEntry *de;
+<span class="lineNum">     139 </span>                :            : 
+<span class="lineNum">     140 </span>                :            :     while(1) {
+<span class="lineNum">     141 </span>                :            :         sds key;
+<span class="lineNum">     142 </span>                :            :         robj *keyobj;
+<span class="lineNum">     143 </span>                :            : 
+<span class="lineNum">     144 </span>                :<span class="lineCov">     131220 :         de = dictGetRandomKey(db-&gt;dict);</span>
+<span class="lineNum">     145 </span>        [<span class="branchCov" title="Branch 0 was taken 131218 times"> + </span><span class="branchCov" title="Branch 1 was taken 2 times"> + </span>]:<span class="lineCov">     131220 :         if (de == NULL) return NULL;</span>
+<span class="lineNum">     146 </span>                :            : 
+<span class="lineNum">     147 </span>                :<span class="lineCov">     131218 :         key = dictGetKey(de);</span>
+<span class="lineNum">     148 </span>                :<span class="lineCov">     131218 :         keyobj = createStringObject(key,sdslen(key));</span>
+<span class="lineNum">     149 </span>        [<span class="branchCov" title="Branch 1 was taken 1 time"> + </span><span class="branchCov" title="Branch 2 was taken 131217 times"> + </span>]:<span class="lineCov">     131218 :         if (dictFind(db-&gt;expires,key)) {</span>
+<span class="lineNum">     150 </span>        [<span class="branchNoCov" title="Branch 1 was not taken"> - </span><span class="branchCov" title="Branch 2 was taken 1 time"> + </span>]:<span class="lineCov">          1 :             if (expireIfNeeded(db,keyobj)) {</span>
+<span class="lineNum">     151 </span>                :<span class="lineNoCov">          0 :                 decrRefCount(keyobj);</span>
+<span class="lineNum">     152 </span>                :<span class="lineNoCov">          0 :                 continue; /* search for another key. This expired. */</span>
+<span class="lineNum">     153 </span>                :            :             }
+<span class="lineNum">     154 </span>                :            :         }
+<span class="lineNum">     155 </span>                :            :         return keyobj;
+<span class="lineNum">     156 </span>                :<span class="lineCov">     131220 :     }</span>
+<span class="lineNum">     157 </span>                :            : }
+<a name="158"><span class="lineNum">     158 </span>                :            : </a>
+<span class="lineNum">     159 </span>                :            : /* Delete a key, value, and associated expiration entry if any, from the DB */
+<span class="lineNum">     160 </span>                :<span class="lineCov">     206808 : int dbDelete(redisDb *db, robj *key) {</span>
+<span class="lineNum">     161 </span>                :            :     /* Deleting an entry from the expires dict will not free the sds of
+<span class="lineNum">     162 </span>                :            :      * the key, because it is shared with the main dictionary. */
+<span class="lineNum">     163 </span>        [<span class="branchCov" title="Branch 0 was taken 29023 times"> + </span><span class="branchCov" title="Branch 1 was taken 177785 times"> + </span>]:<span class="lineCov">     206808 :     if (dictSize(db-&gt;expires) &gt; 0) dictDelete(db-&gt;expires,key-&gt;ptr);</span>
+<span class="lineNum">     164 </span>        [<span class="branchCov" title="Branch 1 was taken 130395 times"> + </span><span class="branchCov" title="Branch 2 was taken 76413 times"> + </span>]:<span class="lineCov">     206808 :     if (dictDelete(db-&gt;dict,key-&gt;ptr) == DICT_OK) {</span>
+<span class="lineNum">     165 </span>        [<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchCov" title="Branch 1 was taken 130395 times"> + </span>]:<span class="lineCov">     206808 :         if (server.cluster_enabled) slotToKeyDel(key);</span>
+<span class="lineNum">     166 </span>                :            :         return 1;
+<span class="lineNum">     167 </span>                :            :     } else {
+<span class="lineNum">     168 </span>                :            :         return 0;
+<span class="lineNum">     169 </span>                :            :     }
+<a name="170"><span class="lineNum">     170 </span>                :            : }</a>
+<span class="lineNum">     171 </span>                :            : 
+<span class="lineNum">     172 </span>                :<span class="lineCov">        457 : long long emptyDb() {</span>
+<span class="lineNum">     173 </span>                :            :     int j;
+<span class="lineNum">     174 </span>                :<span class="lineCov">        457 :     long long removed = 0;</span>
+<span class="lineNum">     175 </span>                :            : 
+<span class="lineNum">     176 </span>        [<span class="branchCov" title="Branch 0 was taken 7312 times"> + </span><span class="branchCov" title="Branch 1 was taken 457 times"> + </span>]:<span class="lineCov">       7769 :     for (j = 0; j &lt; server.dbnum; j++) {</span>
+<span class="lineNum">     177 </span>                :<span class="lineCov">       7312 :         removed += dictSize(server.db[j].dict);</span>
+<span class="lineNum">     178 </span>                :<span class="lineCov">       7312 :         dictEmpty(server.db[j].dict);</span>
+<span class="lineNum">     179 </span>                :<span class="lineCov">       7312 :         dictEmpty(server.db[j].expires);</span>
+<span class="lineNum">     180 </span>                :            :     }
+<span class="lineNum">     181 </span>        [<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchCov" title="Branch 1 was taken 457 times"> + </span>]:<span class="lineCov">        457 :     if (server.cluster_enabled) slotToKeyFlush();</span>
+<span class="lineNum">     182 </span>                :<span class="lineCov">        457 :     return removed;</span>
+<a name="183"><span class="lineNum">     183 </span>                :            : }</a>
+<a name="184"><span class="lineNum">     184 </span>                :            : </a>
+<span class="lineNum">     185 </span>                :<span class="lineCov">     806213 : int selectDb(redisClient *c, int id) {</span>
+<span class="lineNum">     186 </span>[<span class="branchCov" title="Branch 0 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>][<span class="branchCov" title="Branch 2 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">     889420 :     if (id &lt; 0 || id &gt;= server.dbnum)</span>
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 4 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>][<span class="branchCov" title="Branch 6 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 7 was not taken"> - </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 8 was taken 83203 times"> + </span><span class="branchNoCov" title="Branch 9 was not taken"> - </span>][<span class="branchCov" title="Branch 10 was taken 83200 times"> + </span><span class="branchCov" title="Branch 11 was taken 3 times"> + </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 12 was taken 806213 times"> + </span><span class="branchNoCov" title="Branch 13 was not taken"> - </span>][<span class="branchCov" title="Branch 14 was taken 806213 times"> + </span><span class="branchNoCov" title="Branch 15 was not taken"> - </span>]
+<span class="lineNum">     187 </span>                :            :         return REDIS_ERR;
+<span class="lineNum">     188 </span>                :<span class="lineCov">      83204 :     c-&gt;db = &amp;server.db[id];</span>
+<span class="lineNum">     189 </span>                :<span class="lineCov">     806213 :     return REDIS_OK;</span>
+<span class="lineNum">     190 </span>                :            : }
+<span class="lineNum">     191 </span>                :            : 
+<span class="lineNum">     192 </span>                :            : /*-----------------------------------------------------------------------------
+<span class="lineNum">     193 </span>                :            :  * Hooks for key space changes.
+<span class="lineNum">     194 </span>                :            :  *
+<span class="lineNum">     195 </span>                :            :  * Every time a key in the database is modified the function
+<span class="lineNum">     196 </span>                :            :  * signalModifiedKey() is called.
+<span class="lineNum">     197 </span>                :            :  *
+<span class="lineNum">     198 </span>                :            :  * Every time a DB is flushed the function signalFlushDb() is called.
+<a name="199"><span class="lineNum">     199 </span>                :            :  *----------------------------------------------------------------------------*/</a>
+<a name="200"><span class="lineNum">     200 </span>                :            : </a>
+<span class="lineNum">     201 </span>                :<span class="lineCov">    1040759 : void signalModifiedKey(redisDb *db, robj *key) {</span>
+<span class="lineNum">     202 </span>                :<span class="lineCov">    4365571 :     touchWatchedKey(db,key);</span>
+<a name="203"><span class="lineNum">     203 </span>                :<span class="lineCov">    1040759 : }</span></a>
+<a name="204"><span class="lineNum">     204 </span>                :            : </a>
+<span class="lineNum">     205 </span>                :<span class="lineCov">         19 : void signalFlushedDb(int dbid) {</span>
+<span class="lineNum">     206 </span>                :<span class="lineCov">        310 :     touchWatchedKeysOnFlush(dbid);</span>
+<span class="lineNum">     207 </span>                :<span class="lineCov">         19 : }</span>
+<span class="lineNum">     208 </span>                :            : 
+<span class="lineNum">     209 </span>                :            : /*-----------------------------------------------------------------------------
+<span class="lineNum">     210 </span>                :            :  * Type agnostic commands operating on the key space
+<span class="lineNum">     211 </span>                :            :  *----------------------------------------------------------------------------*/
+<span class="lineNum">     212 </span>                :            : 
+<span class="lineNum">     213 </span>                :<span class="lineCov">         40 : void flushdbCommand(redisClient *c) {</span>
+<span class="lineNum">     214 </span>                :<span class="lineCov">         40 :     server.dirty += dictSize(c-&gt;db-&gt;dict);</span>
+<span class="lineNum">     215 </span>                :<span class="lineCov">         40 :     signalFlushedDb(c-&gt;db-&gt;id);</span>
+<span class="lineNum">     216 </span>                :<span class="lineCov">         40 :     dictEmpty(c-&gt;db-&gt;dict);</span>
+<span class="lineNum">     217 </span>                :<span class="lineCov">         40 :     dictEmpty(c-&gt;db-&gt;expires);</span>
+<span class="lineNum">     218 </span>        [<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchCov" title="Branch 1 was taken 40 times"> + </span>]:<span class="lineCov">         40 :     if (server.cluster_enabled) slotToKeyFlush();</span>
+<span class="lineNum">     219 </span>                :<span class="lineCov">         40 :     addReply(c,shared.ok);</span>
+<span class="lineNum">     220 </span>                :<span class="lineCov">         40 : }</span>
+<span class="lineNum">     221 </span>                :            : 
+<span class="lineNum">     222 </span>                :<span class="lineCov">        251 : void flushallCommand(redisClient *c) {</span>
+<span class="lineNum">     223 </span>                :            :     signalFlushedDb(-1);
+<span class="lineNum">     224 </span>                :<span class="lineCov">        251 :     server.dirty += emptyDb();</span>
+<span class="lineNum">     225 </span>                :<span class="lineCov">        251 :     addReply(c,shared.ok);</span>
+<span class="lineNum">     226 </span>        [<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchCov" title="Branch 1 was taken 251 times"> + </span>]:<span class="lineCov">        251 :     if (server.rdb_child_pid != -1) {</span>
+<span class="lineNum">     227 </span>                :<span class="lineNoCov">          0 :         kill(server.rdb_child_pid,SIGUSR1);</span>
+<span class="lineNum">     228 </span>                :<span class="lineNoCov">          0 :         rdbRemoveTempFile(server.rdb_child_pid);</span>
+<span class="lineNum">     229 </span>                :            :     }
+<span class="lineNum">     230 </span>        [<span class="branchCov" title="Branch 0 was taken 251 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">        251 :     if (server.saveparamslen &gt; 0) {</span>
+<span class="lineNum">     231 </span>                :            :         /* Normally rdbSave() will reset dirty, but we don't want this here
+<span class="lineNum">     232 </span>                :            :          * as otherwise FLUSHALL will not be replicated nor put into the AOF. */
+<span class="lineNum">     233 </span>                :<span class="lineCov">        251 :         int saved_dirty = server.dirty;</span>
+<span class="lineNum">     234 </span>                :<span class="lineCov">        251 :         rdbSave(server.rdb_filename);</span>
+<span class="lineNum">     235 </span>                :<span class="lineCov">        251 :         server.dirty = saved_dirty;</span>
+<span class="lineNum">     236 </span>                :            :     }
+<span class="lineNum">     237 </span>                :<span class="lineCov">        251 :     server.dirty++;</span>
+<span class="lineNum">     238 </span>                :<span class="lineCov">        251 : }</span>
+<span class="lineNum">     239 </span>                :            : 
+<span class="lineNum">     240 </span>                :<span class="lineCov">      61837 : void delCommand(redisClient *c) {</span>
+<span class="lineNum">     241 </span>                :<span class="lineCov">      61837 :     int deleted = 0, j;</span>
+<span class="lineNum">     242 </span>                :            : 
+<span class="lineNum">     243 </span>        [<span class="branchCov" title="Branch 0 was taken 61927 times"> + </span><span class="branchCov" title="Branch 1 was taken 61837 times"> + </span>]:<span class="lineCov">     123764 :     for (j = 1; j &lt; c-&gt;argc; j++) {</span>
+<span class="lineNum">     244 </span>        [<span class="branchCov" title="Branch 1 was taken 21385 times"> + </span><span class="branchCov" title="Branch 2 was taken 40542 times"> + </span>]:<span class="lineCov">      61927 :         if (dbDelete(c-&gt;db,c-&gt;argv[j])) {</span>
+<span class="lineNum">     245 </span>                :<span class="lineCov">      21385 :             signalModifiedKey(c-&gt;db,c-&gt;argv[j]);</span>
+<span class="lineNum">     246 </span>                :<span class="lineCov">      21385 :             notifyKeyspaceEvent(REDIS_NOTIFY_GENERIC,</span>
+<span class="lineNum">     247 </span>                :<span class="lineCov">      42770 :                 &quot;del&quot;,c-&gt;argv[j],c-&gt;db-&gt;id);</span>
+<span class="lineNum">     248 </span>                :<span class="lineCov">      21385 :             server.dirty++;</span>
+<span class="lineNum">     249 </span>                :<span class="lineCov">      21385 :             deleted++;</span>
+<span class="lineNum">     250 </span>                :            :         }
+<span class="lineNum">     251 </span>                :            :     }
+<span class="lineNum">     252 </span>                :<span class="lineCov">      61837 :     addReplyLongLong(c,deleted);</span>
+<a name="253"><span class="lineNum">     253 </span>                :<span class="lineCov">      61837 : }</span></a>
+<span class="lineNum">     254 </span>                :            : 
+<span class="lineNum">     255 </span>                :<span class="lineCov">       1484 : void existsCommand(redisClient *c) {</span>
+<span class="lineNum">     256 </span>                :<span class="lineCov">       1484 :     expireIfNeeded(c-&gt;db,c-&gt;argv[1]);</span>
+<span class="lineNum">     257 </span>        [<span class="branchCov" title="Branch 1 was taken 1402 times"> + </span><span class="branchCov" title="Branch 2 was taken 82 times"> + </span>]:<span class="lineCov">       1484 :     if (dbExists(c-&gt;db,c-&gt;argv[1])) {</span>
+<span class="lineNum">     258 </span>                :<span class="lineCov">       1402 :         addReply(c, shared.cone);</span>
+<span class="lineNum">     259 </span>                :            :     } else {
+<span class="lineNum">     260 </span>                :<span class="lineCov">         82 :         addReply(c, shared.czero);</span>
+<span class="lineNum">     261 </span>                :            :     }
+<span class="lineNum">     262 </span>                :<span class="lineCov">       1484 : }</span>
+<span class="lineNum">     263 </span>                :            : 
+<span class="lineNum">     264 </span>                :<span class="lineCov">      83203 : void selectCommand(redisClient *c) {</span>
+<span class="lineNum">     265 </span>                :            :     long id;
+<span class="lineNum">     266 </span>                :            : 
+<span class="lineNum">     267 </span>        [<span class="branchCov" title="Branch 1 was taken 83203 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">      83203 :     if (getLongFromObjectOrReply(c, c-&gt;argv[1], &amp;id,</span>
+<span class="lineNum">     268 </span>                :            :         &quot;invalid DB index&quot;) != REDIS_OK)
+<span class="lineNum">     269 </span>                :            :         return;
+<span class="lineNum">     270 </span>                :            : 
+<span class="lineNum">     271 </span>[<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchCov" title="Branch 1 was taken 83203 times"> + </span>][<span class="branchNoExec" title="Branch 2 was not executed"> # </span><span class="branchNoExec" title="Branch 3 was not executed"> # </span>]:<span class="lineCov">      83203 :     if (server.cluster_enabled &amp;&amp; id != 0) {</span>
+<span class="lineNum">     272 </span>                :<span class="lineNoCov">          0 :         addReplyError(c,&quot;SELECT is not allowed in cluster mode&quot;);</span>
+<span class="lineNum">     273 </span>                :<span class="lineNoCov">          0 :         return;</span>
+<span class="lineNum">     274 </span>                :            :     }
+<span class="lineNum">     275 </span>        [<span class="branchCov" title="Branch 0 was taken 3 times"> + </span><span class="branchCov" title="Branch 1 was taken 83200 times"> + </span>]:<span class="lineCov">      83203 :     if (selectDb(c,id) == REDIS_ERR) {</span>
+<span class="lineNum">     276 </span>                :<span class="lineCov">          3 :         addReplyError(c,&quot;invalid DB index&quot;);</span>
+<span class="lineNum">     277 </span>                :            :     } else {
+<span class="lineNum">     278 </span>                :<span class="lineCov">      83203 :         addReply(c,shared.ok);</span>
+<span class="lineNum">     279 </span>                :            :     }
+<a name="280"><span class="lineNum">     280 </span>                :            : }</a>
+<span class="lineNum">     281 </span>                :            : 
+<span class="lineNum">     282 </span>                :<span class="lineCov">     131220 : void randomkeyCommand(redisClient *c) {</span>
+<span class="lineNum">     283 </span>                :            :     robj *key;
+<span class="lineNum">     284 </span>                :            : 
+<span class="lineNum">     285 </span>        [<span class="branchCov" title="Branch 1 was taken 2 times"> + </span><span class="branchCov" title="Branch 2 was taken 131218 times"> + </span>]:<span class="lineCov">     131220 :     if ((key = dbRandomKey(c-&gt;db)) == NULL) {</span>
+<span class="lineNum">     286 </span>                :<span class="lineCov">          2 :         addReply(c,shared.nullbulk);</span>
+<span class="lineNum">     287 </span>                :<span class="lineCov">     131220 :         return;</span>
+<span class="lineNum">     288 </span>                :            :     }
+<span class="lineNum">     289 </span>                :            : 
+<span class="lineNum">     290 </span>                :<span class="lineCov">     131218 :     addReplyBulk(c,key);</span>
+<span class="lineNum">     291 </span>                :<span class="lineCov">     131218 :     decrRefCount(key);</span>
+<a name="292"><span class="lineNum">     292 </span>                :            : }</a>
+<span class="lineNum">     293 </span>                :            : 
+<span class="lineNum">     294 </span>                :<span class="lineCov">         11 : void keysCommand(redisClient *c) {</span>
+<span class="lineNum">     295 </span>                :            :     dictIterator *di;
+<span class="lineNum">     296 </span>                :            :     dictEntry *de;
+<span class="lineNum">     297 </span>                :<span class="lineCov">         11 :     sds pattern = c-&gt;argv[1]-&gt;ptr;</span>
+<span class="lineNum">     298 </span>                :<span class="lineCov">         11 :     int plen = sdslen(pattern), allkeys;</span>
+<span class="lineNum">     299 </span>                :<span class="lineCov">         11 :     unsigned long numkeys = 0;</span>
+<span class="lineNum">     300 </span>                :<span class="lineCov">         11 :     void *replylen = addDeferredMultiBulkLength(c);</span>
+<span class="lineNum">     301 </span>                :            : 
+<span class="lineNum">     302 </span>                :<span class="lineCov">         11 :     di = dictGetSafeIterator(c-&gt;db-&gt;dict);</span>
+<span class="lineNum">     303 </span>[<span class="branchCov" title="Branch 0 was taken 10 times"> + </span><span class="branchCov" title="Branch 1 was taken 1 time"> + </span>][<span class="branchNoCov" title="Branch 2 was not taken"> - </span><span class="branchCov" title="Branch 3 was taken 10 times"> + </span>]:<span class="lineCov">         11 :     allkeys = (pattern[0] == '*' &amp;&amp; pattern[1] == '\0');</span>
+<span class="lineNum">     304 </span>        [<span class="branchCov" title="Branch 1 was taken 22913 times"> + </span><span class="branchCov" title="Branch 2 was taken 11 times"> + </span>]:<span class="lineCov">      22924 :     while((de = dictNext(di)) != NULL) {</span>
+<span class="lineNum">     305 </span>                :<span class="lineCov">      22913 :         sds key = dictGetKey(de);</span>
+<span class="lineNum">     306 </span>                :            :         robj *keyobj;
+<span class="lineNum">     307 </span>                :            : 
+<span class="lineNum">     308 </span>[<span class="branchCov" title="Branch 0 was taken 6 times"> + </span><span class="branchCov" title="Branch 1 was taken 22907 times"> + </span>][<span class="branchCov" title="Branch 3 was taken 3 times"> + </span><span class="branchCov" title="Branch 4 was taken 3 times"> + </span>]:<span class="lineCov">      22913 :         if (allkeys || stringmatchlen(pattern,plen,key,sdslen(key),0)) {</span>
+<span class="lineNum">     309 </span>                :<span class="lineCov">      22910 :             keyobj = createStringObject(key,sdslen(key));</span>
+<span class="lineNum">     310 </span>        [<span class="branchCov" title="Branch 1 was taken 22910 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">      22910 :             if (expireIfNeeded(c-&gt;db,keyobj) == 0) {</span>
+<span class="lineNum">     311 </span>                :<span class="lineCov">      22910 :                 addReplyBulk(c,keyobj);</span>
+<span class="lineNum">     312 </span>                :<span class="lineCov">      22910 :                 numkeys++;</span>
+<span class="lineNum">     313 </span>                :            :             }
+<span class="lineNum">     314 </span>                :<span class="lineCov">      22913 :             decrRefCount(keyobj);</span>
+<span class="lineNum">     315 </span>                :            :         }
+<span class="lineNum">     316 </span>                :            :     }
+<span class="lineNum">     317 </span>                :<span class="lineCov">         11 :     dictReleaseIterator(di);</span>
+<span class="lineNum">     318 </span>                :<span class="lineCov">         11 :     setDeferredMultiBulkLength(c,replylen,numkeys);</span>
+<a name="319"><span class="lineNum">     319 </span>                :<span class="lineCov">         11 : }</span></a>
+<span class="lineNum">     320 </span>                :            : 
+<span class="lineNum">     321 </span>                :<span class="lineCov">        115 : void dbsizeCommand(redisClient *c) {</span>
+<span class="lineNum">     322 </span>                :<span class="lineCov">        115 :     addReplyLongLong(c,dictSize(c-&gt;db-&gt;dict));</span>
+<a name="323"><span class="lineNum">     323 </span>                :<span class="lineCov">        115 : }</span></a>
+<span class="lineNum">     324 </span>                :            : 
+<span class="lineNum">     325 </span>                :<span class="lineNoCov">          0 : void lastsaveCommand(redisClient *c) {</span>
+<span class="lineNum">     326 </span>                :<span class="lineNoCov">          0 :     addReplyLongLong(c,server.lastsave);</span>
+<a name="327"><span class="lineNum">     327 </span>                :<span class="lineNoCov">          0 : }</span></a>
+<span class="lineNum">     328 </span>                :            : 
+<span class="lineNum">     329 </span>                :<span class="lineCov">     647322 : void typeCommand(redisClient *c) {</span>
+<span class="lineNum">     330 </span>                :            :     robj *o;
+<span class="lineNum">     331 </span>                :            :     char *type;
+<span class="lineNum">     332 </span>                :            : 
+<span class="lineNum">     333 </span>                :<span class="lineCov">     647322 :     o = lookupKeyRead(c-&gt;db,c-&gt;argv[1]);</span>
+<span class="lineNum">     334 </span>        [<span class="branchCov" title="Branch 0 was taken 363735 times"> + </span><span class="branchCov" title="Branch 1 was taken 283587 times"> + </span>]:<span class="lineCov">     647322 :     if (o == NULL) {</span>
+<span class="lineNum">     335 </span>                :            :         type = &quot;none&quot;;
+<span class="lineNum">     336 </span>                :            :     } else {
+<span class="lineNum">     337 </span>        [<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchCov" title="Branch 1 was taken 363735 times"> + </span>]:<span class="lineCov">     363735 :         switch(o-&gt;type) {</span>
+<span class="lineNum">     338 </span>                :            :         case REDIS_STRING: type = &quot;string&quot;; break;
+<span class="lineNum">     339 </span>                :            :         case REDIS_LIST: type = &quot;list&quot;; break;
+<span class="lineNum">     340 </span>                :            :         case REDIS_SET: type = &quot;set&quot;; break;
+<span class="lineNum">     341 </span>                :            :         case REDIS_ZSET: type = &quot;zset&quot;; break;
+<span class="lineNum">     342 </span>                :            :         case REDIS_HASH: type = &quot;hash&quot;; break;
+<span class="lineNum">     343 </span>                :            :         default: type = &quot;unknown&quot;; break;
+<span class="lineNum">     344 </span>                :            :         }
+<span class="lineNum">     345 </span>                :            :     }
+<span class="lineNum">     346 </span>                :<span class="lineCov">     647322 :     addReplyStatus(c,type);</span>
+<a name="347"><span class="lineNum">     347 </span>                :<span class="lineCov">     647322 : }</span></a>
+<span class="lineNum">     348 </span>                :            : 
+<span class="lineNum">     349 </span>                :<span class="lineCov">          1 : void shutdownCommand(redisClient *c) {</span>
+<span class="lineNum">     350 </span>                :<span class="lineCov">          1 :     int flags = 0;</span>
+<span class="lineNum">     351 </span>                :            : 
+<span class="lineNum">     352 </span>        [<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchCov" title="Branch 1 was taken 1 time"> + </span>]:<span class="lineCov">          1 :     if (c-&gt;argc &gt; 2) {</span>
+<span class="lineNum">     353 </span>                :<span class="lineNoCov">          0 :         addReply(c,shared.syntaxerr);</span>
+<span class="lineNum">     354 </span>                :<span class="lineNoCov">          0 :         return;</span>
+<span class="lineNum">     355 </span>        [<span class="branchCov" title="Branch 0 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">          1 :     } else if (c-&gt;argc == 2) {</span>
+<span class="lineNum">     356 </span>        [<span class="branchNoCov" title="Branch 1 was not taken"> - </span><span class="branchCov" title="Branch 2 was taken 1 time"> + </span>]:<span class="lineCov">          1 :         if (!strcasecmp(c-&gt;argv[1]-&gt;ptr,&quot;nosave&quot;)) {</span>
+<span class="lineNum">     357 </span>                :            :             flags |= REDIS_SHUTDOWN_NOSAVE;
+<span class="lineNum">     358 </span>        [<span class="branchNoExec" title="Branch 1 was not executed"> # </span><span class="branchNoExec" title="Branch 2 was not executed"> # </span>]:<span class="lineNoCov">          0 :         } else if (!strcasecmp(c-&gt;argv[1]-&gt;ptr,&quot;save&quot;)) {</span>
+<span class="lineNum">     359 </span>                :            :             flags |= REDIS_SHUTDOWN_SAVE;
+<span class="lineNum">     360 </span>                :            :         } else {
+<span class="lineNum">     361 </span>                :<span class="lineNoCov">          0 :             addReply(c,shared.syntaxerr);</span>
+<span class="lineNum">     362 </span>                :<span class="lineNoCov">          0 :             return;</span>
+<span class="lineNum">     363 </span>                :            :         }
+<span class="lineNum">     364 </span>                :            :     }
+<span class="lineNum">     365 </span>                :            :     /* SHUTDOWN can be called even while the server is in &quot;loading&quot; state.
+<span class="lineNum">     366 </span>                :            :      * When this happens we need to make sure no attempt is performed to save
+<span class="lineNum">     367 </span>                :            :      * the dataset on shutdown (otherwise it could overwrite the current DB
+<span class="lineNum">     368 </span>                :            :      * with half-read data). */
+<span class="lineNum">     369 </span>        [<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchCov" title="Branch 1 was taken 1 time"> + </span>]:<span class="lineCov">          1 :     if (server.loading)</span>
+<span class="lineNum">     370 </span>                :<span class="lineNoCov">          0 :         flags = (flags &amp; ~REDIS_SHUTDOWN_SAVE) | REDIS_SHUTDOWN_NOSAVE;</span>
+<span class="lineNum">     371 </span>        [<span class="branchCov" title="Branch 1 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          1 :     if (prepareForShutdown(flags) == REDIS_OK) exit(0);</span>
+<span class="lineNum">     372 </span>                :<span class="lineNoCov">          0 :     addReplyError(c,&quot;Errors trying to SHUTDOWN. Check logs.&quot;);</span>
+<span class="lineNum">     373 </span>                :            : }
+<span class="lineNum">     374 </span>                :            : 
+<span class="lineNum">     375 </span>                :<span class="lineCov">          9 : void renameGenericCommand(redisClient *c, int nx) {</span>
+<span class="lineNum">     376 </span>                :            :     robj *o;
+<span class="lineNum">     377 </span>                :            :     long long expire;
+<span class="lineNum">     378 </span>                :            : 
+<span class="lineNum">     379 </span>                :            :     /* To use the same key as src and dst is probably an error */
+<span class="lineNum">     380 </span>        [<span class="branchCov" title="Branch 1 was taken 1 time"> + </span><span class="branchCov" title="Branch 2 was taken 8 times"> + </span>]:<span class="lineCov">          9 :     if (sdscmp(c-&gt;argv[1]-&gt;ptr,c-&gt;argv[2]-&gt;ptr) == 0) {</span>
+<span class="lineNum">     381 </span>                :<span class="lineCov">          1 :         addReply(c,shared.sameobjecterr);</span>
+<span class="lineNum">     382 </span>                :<span class="lineCov">          1 :         return;</span>
+<span class="lineNum">     383 </span>                :            :     }
+<span class="lineNum">     384 </span>                :            : 
+<span class="lineNum">     385 </span>        [<span class="branchCov" title="Branch 1 was taken 7 times"> + </span><span class="branchCov" title="Branch 2 was taken 1 time"> + </span>]:<span class="lineCov">          8 :     if ((o = lookupKeyWriteOrReply(c,c-&gt;argv[1],shared.nokeyerr)) == NULL)</span>
+<span class="lineNum">     386 </span>                :            :         return;
+<span class="lineNum">     387 </span>                :            : 
+<span class="lineNum">     388 </span>                :<span class="lineCov">          7 :     incrRefCount(o);</span>
+<span class="lineNum">     389 </span>                :<span class="lineCov">          7 :     expire = getExpire(c-&gt;db,c-&gt;argv[1]);</span>
+<span class="lineNum">     390 </span>        [<span class="branchCov" title="Branch 1 was taken 3 times"> + </span><span class="branchCov" title="Branch 2 was taken 4 times"> + </span>]:<span class="lineCov">          7 :     if (lookupKeyWrite(c-&gt;db,c-&gt;argv[2]) != NULL) {</span>
+<span class="lineNum">     391 </span>        [<span class="branchCov" title="Branch 0 was taken 1 time"> + </span><span class="branchCov" title="Branch 1 was taken 2 times"> + </span>]:<span class="lineCov">          3 :         if (nx) {</span>
+<span class="lineNum">     392 </span>                :<span class="lineCov">          1 :             decrRefCount(o);</span>
+<span class="lineNum">     393 </span>                :<span class="lineCov">          1 :             addReply(c,shared.czero);</span>
+<span class="lineNum">     394 </span>                :<span class="lineCov">          1 :             return;</span>
+<span class="lineNum">     395 </span>                :            :         }
+<span class="lineNum">     396 </span>                :            :         /* Overwrite: delete the old key before creating the new one
+<span class="lineNum">     397 </span>                :            :          * with the same name. */
+<span class="lineNum">     398 </span>                :<span class="lineCov">          2 :         dbDelete(c-&gt;db,c-&gt;argv[2]);</span>
+<span class="lineNum">     399 </span>                :            :     }
+<span class="lineNum">     400 </span>                :<span class="lineCov">          6 :     dbAdd(c-&gt;db,c-&gt;argv[2],o);</span>
+<span class="lineNum">     401 </span>        [<span class="branchCov" title="Branch 0 was taken 1 time"> + </span><span class="branchCov" title="Branch 1 was taken 5 times"> + </span>]:<span class="lineCov">          6 :     if (expire != -1) setExpire(c-&gt;db,c-&gt;argv[2],expire);</span>
+<span class="lineNum">     402 </span>                :<span class="lineCov">          6 :     dbDelete(c-&gt;db,c-&gt;argv[1]);</span>
+<span class="lineNum">     403 </span>                :<span class="lineCov">          6 :     signalModifiedKey(c-&gt;db,c-&gt;argv[1]);</span>
+<span class="lineNum">     404 </span>                :<span class="lineCov">          6 :     signalModifiedKey(c-&gt;db,c-&gt;argv[2]);</span>
+<span class="lineNum">     405 </span>                :<span class="lineCov">          6 :     notifyKeyspaceEvent(REDIS_NOTIFY_GENERIC,&quot;rename_from&quot;,</span>
+<span class="lineNum">     406 </span>                :<span class="lineCov">         12 :         c-&gt;argv[1],c-&gt;db-&gt;id);</span>
+<span class="lineNum">     407 </span>                :<span class="lineCov">          6 :     notifyKeyspaceEvent(REDIS_NOTIFY_GENERIC,&quot;rename_to&quot;,</span>
+<span class="lineNum">     408 </span>                :<span class="lineCov">         12 :         c-&gt;argv[2],c-&gt;db-&gt;id);</span>
+<span class="lineNum">     409 </span>                :<span class="lineCov">          6 :     server.dirty++;</span>
+<span class="lineNum">     410 </span>        [<span class="branchCov" title="Branch 0 was taken 1 time"> + </span><span class="branchCov" title="Branch 1 was taken 5 times"> + </span>]:<span class="lineCov">          9 :     addReply(c,nx ? shared.cone : shared.ok);</span>
+<a name="411"><span class="lineNum">     411 </span>                :            : }</a>
+<span class="lineNum">     412 </span>                :            : 
+<span class="lineNum">     413 </span>                :<span class="lineCov">          7 : void renameCommand(redisClient *c) {</span>
+<span class="lineNum">     414 </span>                :<span class="lineCov">          7 :     renameGenericCommand(c,0);</span>
+<a name="415"><span class="lineNum">     415 </span>                :<span class="lineCov">          7 : }</span></a>
+<span class="lineNum">     416 </span>                :            : 
+<span class="lineNum">     417 </span>                :<span class="lineCov">          2 : void renamenxCommand(redisClient *c) {</span>
+<span class="lineNum">     418 </span>                :<span class="lineCov">          2 :     renameGenericCommand(c,1);</span>
+<span class="lineNum">     419 </span>                :<span class="lineCov">          2 : }</span>
+<span class="lineNum">     420 </span>                :            : 
+<span class="lineNum">     421 </span>                :<span class="lineCov">          2 : void moveCommand(redisClient *c) {</span>
+<span class="lineNum">     422 </span>                :            :     robj *o;
+<span class="lineNum">     423 </span>                :            :     redisDb *src, *dst;
+<span class="lineNum">     424 </span>                :            :     int srcid;
+<span class="lineNum">     425 </span>                :            : 
+<span class="lineNum">     426 </span>        [<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchCov" title="Branch 1 was taken 2 times"> + </span>]:<span class="lineCov">          2 :     if (server.cluster_enabled) {</span>
+<span class="lineNum">     427 </span>                :<span class="lineNoCov">          0 :         addReplyError(c,&quot;MOVE is not allowed in cluster mode&quot;);</span>
+<span class="lineNum">     428 </span>                :<span class="lineNoCov">          0 :         return;</span>
+<span class="lineNum">     429 </span>                :            :     }
+<span class="lineNum">     430 </span>                :            : 
+<span class="lineNum">     431 </span>                :            :     /* Obtain source and target DB pointers */
+<span class="lineNum">     432 </span>                :<span class="lineCov">          2 :     src = c-&gt;db;</span>
+<span class="lineNum">     433 </span>                :<span class="lineCov">          2 :     srcid = c-&gt;db-&gt;id;</span>
+<span class="lineNum">     434 </span>        [<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchCov" title="Branch 1 was taken 2 times"> + </span>]:<span class="lineCov">          2 :     if (selectDb(c,atoi(c-&gt;argv[2]-&gt;ptr)) == REDIS_ERR) {</span>
+<span class="lineNum">     435 </span>                :<span class="lineNoCov">          0 :         addReply(c,shared.outofrangeerr);</span>
+<span class="lineNum">     436 </span>                :<span class="lineNoCov">          0 :         return;</span>
+<span class="lineNum">     437 </span>                :            :     }
+<span class="lineNum">     438 </span>                :<span class="lineCov">          2 :     dst = c-&gt;db;</span>
+<span class="lineNum">     439 </span>                :            :     selectDb(c,srcid); /* Back to the source DB */
+<span class="lineNum">     440 </span>                :            : 
+<span class="lineNum">     441 </span>                :            :     /* If the user is moving using as target the same
+<span class="lineNum">     442 </span>                :            :      * DB as the source DB it is probably an error. */
+<span class="lineNum">     443 </span>        [<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchCov" title="Branch 1 was taken 2 times"> + </span>]:<span class="lineCov">          2 :     if (src == dst) {</span>
+<span class="lineNum">     444 </span>                :<span class="lineNoCov">          0 :         addReply(c,shared.sameobjecterr);</span>
+<span class="lineNum">     445 </span>                :<span class="lineNoCov">          0 :         return;</span>
+<span class="lineNum">     446 </span>                :            :     }
+<span class="lineNum">     447 </span>                :            : 
+<span class="lineNum">     448 </span>                :            :     /* Check if the element exists and get a reference */
+<span class="lineNum">     449 </span>                :<span class="lineCov">          2 :     o = lookupKeyWrite(c-&gt;db,c-&gt;argv[1]);</span>
+<span class="lineNum">     450 </span>        [<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchCov" title="Branch 1 was taken 2 times"> + </span>]:<span class="lineCov">          2 :     if (!o) {</span>
+<span class="lineNum">     451 </span>                :<span class="lineNoCov">          0 :         addReply(c,shared.czero);</span>
+<span class="lineNum">     452 </span>                :<span class="lineNoCov">          0 :         return;</span>
+<span class="lineNum">     453 </span>                :            :     }
+<span class="lineNum">     454 </span>                :            : 
+<span class="lineNum">     455 </span>                :            :     /* Return zero if the key already exists in the target DB */
+<span class="lineNum">     456 </span>        [<span class="branchCov" title="Branch 1 was taken 1 time"> + </span><span class="branchCov" title="Branch 2 was taken 1 time"> + </span>]:<span class="lineCov">          2 :     if (lookupKeyWrite(dst,c-&gt;argv[1]) != NULL) {</span>
+<span class="lineNum">     457 </span>                :<span class="lineCov">          1 :         addReply(c,shared.czero);</span>
+<span class="lineNum">     458 </span>                :<span class="lineCov">          1 :         return;</span>
+<span class="lineNum">     459 </span>                :            :     }
+<span class="lineNum">     460 </span>                :<span class="lineCov">          1 :     dbAdd(dst,c-&gt;argv[1],o);</span>
+<span class="lineNum">     461 </span>                :<span class="lineCov">          1 :     incrRefCount(o);</span>
+<span class="lineNum">     462 </span>                :            : 
+<span class="lineNum">     463 </span>                :            :     /* OK! key moved, free the entry in the source DB */
+<span class="lineNum">     464 </span>                :<span class="lineCov">          1 :     dbDelete(src,c-&gt;argv[1]);</span>
+<span class="lineNum">     465 </span>                :<span class="lineCov">          1 :     server.dirty++;</span>
+<span class="lineNum">     466 </span>                :<span class="lineCov">          2 :     addReply(c,shared.cone);</span>
+<span class="lineNum">     467 </span>                :            : }
+<span class="lineNum">     468 </span>                :            : 
+<span class="lineNum">     469 </span>                :            : /*-----------------------------------------------------------------------------
+<span class="lineNum">     470 </span>                :            :  * Expires API
+<a name="471"><span class="lineNum">     471 </span>                :            :  *----------------------------------------------------------------------------*/</a>
+<span class="lineNum">     472 </span>                :            : 
+<span class="lineNum">     473 </span>                :<span class="lineCov">    3303342 : int removeExpire(redisDb *db, robj *key) {</span>
+<span class="lineNum">     474 </span>                :            :     /* An expire may only be removed if there is a corresponding entry in the
+<span class="lineNum">     475 </span>                :            :      * main dict. Otherwise, the key will never be freed. */
+<span class="lineNum">     476 </span>        [<span class="branchNoCov" title="Branch 1 was not taken"> - </span><span class="branchCov" title="Branch 2 was taken 3303342 times"> + </span>]:<span class="lineCov">    3303342 :     redisAssertWithInfo(NULL,key,dictFind(db-&gt;dict,key-&gt;ptr) != NULL);</span>
+<span class="lineNum">     477 </span>                :<span class="lineCov">    3303342 :     return dictDelete(db-&gt;expires,key-&gt;ptr) == DICT_OK;</span>
+<a name="478"><span class="lineNum">     478 </span>                :            : }</a>
+<span class="lineNum">     479 </span>                :            : 
+<span class="lineNum">     480 </span>                :<span class="lineCov">      19327 : void setExpire(redisDb *db, robj *key, long long when) {</span>
+<span class="lineNum">     481 </span>                :            :     dictEntry *kde, *de;
+<span class="lineNum">     482 </span>                :            : 
+<span class="lineNum">     483 </span>                :            :     /* Reuse the sds from the main dict in the expire dict */
+<span class="lineNum">     484 </span>                :<span class="lineCov">      19327 :     kde = dictFind(db-&gt;dict,key-&gt;ptr);</span>
+<span class="lineNum">     485 </span>        [<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchCov" title="Branch 1 was taken 19327 times"> + </span>]:<span class="lineCov">      19327 :     redisAssertWithInfo(NULL,key,kde != NULL);</span>
+<span class="lineNum">     486 </span>                :<span class="lineCov">      19327 :     de = dictReplaceRaw(db-&gt;expires,dictGetKey(kde));</span>
+<span class="lineNum">     487 </span>                :<span class="lineCov">      19327 :     dictSetSignedIntegerVal(de,when);</span>
+<span class="lineNum">     488 </span>                :<span class="lineCov">      19327 : }</span>
+<span class="lineNum">     489 </span>                :            : 
+<a name="490"><span class="lineNum">     490 </span>                :            : /* Return the expire time of the specified key, or -1 if no expire</a>
+<span class="lineNum">     491 </span>                :            :  * is associated with this key (i.e. the key is non volatile) */
+<span class="lineNum">     492 </span>                :<span class="lineCov">   13080173 : long long getExpire(redisDb *db, robj *key) {</span>
+<span class="lineNum">     493 </span>                :            :     dictEntry *de;
+<span class="lineNum">     494 </span>                :            : 
+<span class="lineNum">     495 </span>                :            :     /* No expire? return ASAP */
+<span class="lineNum">     496 </span>[<span class="branchCov" title="Branch 0 was taken 270009 times"> + </span><span class="branchCov" title="Branch 1 was taken 12810164 times"> + </span>][<span class="branchCov" title="Branch 3 was taken 10721 times"> + </span><span class="branchCov" title="Branch 4 was taken 259288 times"> + </span>]:<span class="lineCov">   13080173 :     if (dictSize(db-&gt;expires) == 0 ||</span>
+<span class="lineNum">     497 </span>                :<span class="lineCov">     270009 :        (de = dictFind(db-&gt;expires,key-&gt;ptr)) == NULL) return -1;</span>
+<span class="lineNum">     498 </span>                :            : 
+<span class="lineNum">     499 </span>                :            :     /* The entry was found in the expire dict, this means it should also
+<span class="lineNum">     500 </span>                :            :      * be present in the main dict (safety check). */
+<span class="lineNum">     501 </span>        [<span class="branchNoCov" title="Branch 1 was not taken"> - </span><span class="branchCov" title="Branch 2 was taken 10721 times"> + </span>]:<span class="lineCov">      10721 :     redisAssertWithInfo(NULL,key,dictFind(db-&gt;dict,key-&gt;ptr) != NULL);</span>
+<span class="lineNum">     502 </span>                :<span class="lineCov">   13080173 :     return dictGetSignedIntegerVal(de);</span>
+<span class="lineNum">     503 </span>                :            : }
+<span class="lineNum">     504 </span>                :            : 
+<span class="lineNum">     505 </span>                :            : /* Propagate expires into slaves and the AOF file.
+<span class="lineNum">     506 </span>                :            :  * When a key expires in the master, a DEL operation for this key is sent
+<span class="lineNum">     507 </span>                :            :  * to all the slaves and the AOF file if enabled.
+<span class="lineNum">     508 </span>                :            :  *
+<span class="lineNum">     509 </span>                :            :  * This way the key expiry is centralized in one place, and since both
+<span class="lineNum">     510 </span>                :            :  * AOF and the master-&gt;slave link guarantee operation ordering, everything
+<a name="511"><span class="lineNum">     511 </span>                :            :  * will be consistent even if we allow write operations against expiring</a>
+<span class="lineNum">     512 </span>                :            :  * keys. */
+<span class="lineNum">     513 </span>                :<span class="lineCov">       6259 : void propagateExpire(redisDb *db, robj *key) {</span>
+<span class="lineNum">     514 </span>                :            :     robj *argv[2];
+<span class="lineNum">     515 </span>                :            : 
+<span class="lineNum">     516 </span>                :<span class="lineCov">       6259 :     argv[0] = shared.del;</span>
+<span class="lineNum">     517 </span>                :<span class="lineCov">       6259 :     argv[1] = key;</span>
+<span class="lineNum">     518 </span>                :<span class="lineCov">       6259 :     incrRefCount(argv[0]);</span>
+<span class="lineNum">     519 </span>                :<span class="lineCov">       6259 :     incrRefCount(argv[1]);</span>
+<span class="lineNum">     520 </span>                :            : 
+<span class="lineNum">     521 </span>        [<span class="branchCov" title="Branch 0 was taken 1 time"> + </span><span class="branchCov" title="Branch 1 was taken 6258 times"> + </span>]:<span class="lineCov">       6259 :     if (server.aof_state != REDIS_AOF_OFF)</span>
+<span class="lineNum">     522 </span>                :<span class="lineCov">          1 :         feedAppendOnlyFile(server.delCommand,db-&gt;id,argv,2);</span>
+<span class="lineNum">     523 </span>                :<span class="lineCov">       6259 :     replicationFeedSlaves(server.slaves,db-&gt;id,argv,2);</span>
+<span class="lineNum">     524 </span>                :            : 
+<span class="lineNum">     525 </span>                :<span class="lineCov">       6259 :     decrRefCount(argv[0]);</span>
+<span class="lineNum">     526 </span>                :<span class="lineCov">       6259 :     decrRefCount(argv[1]);</span>
+<a name="527"><span class="lineNum">     527 </span>                :<span class="lineCov">       6259 : }</span></a>
+<span class="lineNum">     528 </span>                :            : 
+<span class="lineNum">     529 </span>                :<span class="lineCov">    5437274 : int expireIfNeeded(redisDb *db, robj *key) {</span>
+<span class="lineNum">     530 </span>                :<span class="lineCov">    5437274 :     long long when = getExpire(db,key);</span>
+<span class="lineNum">     531 </span>                :            : 
+<span class="lineNum">     532 </span>        [<span class="branchCov" title="Branch 0 was taken 10189 times"> + </span><span class="branchCov" title="Branch 1 was taken 5427085 times"> + </span>]:<span class="lineCov">    5437274 :     if (when &lt; 0) return 0; /* No expire for this key */</span>
+<span class="lineNum">     533 </span>                :            : 
+<span class="lineNum">     534 </span>                :            :     /* Don't expire anything while loading. It will be done later. */
+<span class="lineNum">     535 </span>        [<span class="branchCov" title="Branch 0 was taken 10188 times"> + </span><span class="branchCov" title="Branch 1 was taken 1 time"> + </span>]:<span class="lineCov">      10189 :     if (server.loading) return 0;</span>
+<span class="lineNum">     536 </span>                :            : 
+<span class="lineNum">     537 </span>                :            :     /* If we are running in the context of a slave, return ASAP:
+<span class="lineNum">     538 </span>                :            :      * the slave key expiration is controlled by the master that will
+<span class="lineNum">     539 </span>                :            :      * send us synthesized DEL operations for expired keys.
+<span class="lineNum">     540 </span>                :            :      *
+<span class="lineNum">     541 </span>                :            :      * Still we try to return the right information to the caller, 
+<span class="lineNum">     542 </span>                :            :      * that is, 0 if we think the key should be still valid, 1 if
+<span class="lineNum">     543 </span>                :            :      * we think the key is expired at this time. */
+<span class="lineNum">     544 </span>        [<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchCov" title="Branch 1 was taken 10188 times"> + </span>]:<span class="lineCov">      10188 :     if (server.masterhost != NULL) {</span>
+<span class="lineNum">     545 </span>                :<span class="lineNoCov">          0 :         return mstime() &gt; when;</span>
+<span class="lineNum">     546 </span>                :            :     }
+<span class="lineNum">     547 </span>                :            : 
+<span class="lineNum">     548 </span>                :            :     /* Return when this key has not expired */
+<span class="lineNum">     549 </span>        [<span class="branchCov" title="Branch 1 was taken 7 times"> + </span><span class="branchCov" title="Branch 2 was taken 10181 times"> + </span>]:<span class="lineCov">      10188 :     if (mstime() &lt;= when) return 0;</span>
+<span class="lineNum">     550 </span>                :            : 
+<span class="lineNum">     551 </span>                :            :     /* Delete the key */
+<span class="lineNum">     552 </span>                :<span class="lineCov">          7 :     server.stat_expiredkeys++;</span>
+<span class="lineNum">     553 </span>                :<span class="lineCov">          7 :     propagateExpire(db,key);</span>
+<span class="lineNum">     554 </span>                :<span class="lineCov">          7 :     notifyKeyspaceEvent(REDIS_NOTIFY_EXPIRED,</span>
+<span class="lineNum">     555 </span>                :            :         &quot;expired&quot;,key,db-&gt;id);
+<span class="lineNum">     556 </span>                :<span class="lineCov">    5437274 :     return dbDelete(db,key);</span>
+<span class="lineNum">     557 </span>                :            : }
+<span class="lineNum">     558 </span>                :            : 
+<span class="lineNum">     559 </span>                :            : /*-----------------------------------------------------------------------------
+<span class="lineNum">     560 </span>                :            :  * Expires Commands
+<span class="lineNum">     561 </span>                :            :  *----------------------------------------------------------------------------*/
+<span class="lineNum">     562 </span>                :            : 
+<span class="lineNum">     563 </span>                :            : /* This is the generic command implementation for EXPIRE, PEXPIRE, EXPIREAT
+<span class="lineNum">     564 </span>                :            :  * and PEXPIREAT. Because the commad second argument may be relative or absolute
+<span class="lineNum">     565 </span>                :            :  * the &quot;basetime&quot; argument is used to signal what the base time is (either 0
+<span class="lineNum">     566 </span>                :            :  * for *AT variants of the command, or the current time for relative expires).
+<span class="lineNum">     567 </span>                :            :  *
+<span class="lineNum">     568 </span>                :            :  * unit is either UNIT_SECONDS or UNIT_MILLISECONDS, and is only used for
+<span class="lineNum">     569 </span>                :            :  * the argv[2] parameter. The basetime is always specified in milliseconds. */
+<span class="lineNum">     570 </span>                :<span class="lineCov">        585 : void expireGenericCommand(redisClient *c, long long basetime, int unit) {</span>
+<span class="lineNum">     571 </span>                :<span class="lineCov">        585 :     robj *key = c-&gt;argv[1], *param = c-&gt;argv[2];</span>
+<span class="lineNum">     572 </span>                :            :     long long when; /* unix time in milliseconds when the key will expire. */
+<span class="lineNum">     573 </span>                :            : 
+<span class="lineNum">     574 </span>        [<span class="branchCov" title="Branch 1 was taken 585 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">        585 :     if (getLongLongFromObjectOrReply(c, param, &amp;when, NULL) != REDIS_OK)</span>
+<span class="lineNum">     575 </span>                :            :         return;
+<span class="lineNum">     576 </span>                :            : 
+<span class="lineNum">     577 </span>        [<span class="branchCov" title="Branch 0 was taken 568 times"> + </span><span class="branchCov" title="Branch 1 was taken 17 times"> + </span>]:<span class="lineCov">        585 :     if (unit == UNIT_SECONDS) when *= 1000;</span>
+<span class="lineNum">     578 </span>                :<span class="lineCov">        585 :     when += basetime;</span>
+<span class="lineNum">     579 </span>                :            : 
+<span class="lineNum">     580 </span>                :            :     /* No key, return zero. */
+<span class="lineNum">     581 </span>        [<span class="branchCov" title="Branch 1 was taken 505 times"> + </span><span class="branchCov" title="Branch 2 was taken 80 times"> + </span>]:<span class="lineCov">        585 :     if (lookupKeyRead(c-&gt;db,key) == NULL) {</span>
+<span class="lineNum">     582 </span>                :<span class="lineCov">        505 :         addReply(c,shared.czero);</span>
+<span class="lineNum">     583 </span>                :<span class="lineCov">        505 :         return;</span>
+<span class="lineNum">     584 </span>                :            :     }
+<span class="lineNum">     585 </span>                :            : 
+<span class="lineNum">     586 </span>                :            :     /* EXPIRE with negative TTL, or EXPIREAT with a timestamp into the past
+<span class="lineNum">     587 </span>                :            :      * should never be executed as a DEL when load the AOF or in the context
+<span class="lineNum">     588 </span>                :            :      * of a slave instance.
+<span class="lineNum">     589 </span>                :            :      *
+<span class="lineNum">     590 </span>                :            :      * Instead we take the other branch of the IF statement setting an expire
+<span class="lineNum">     591 </span>                :            :      * (possibly in the past) and wait for an explicit DEL from the master. */
+<span class="lineNum">     592 </span>[<span class="branchCov" title="Branch 1 was taken 20 times"> + </span><span class="branchCov" title="Branch 2 was taken 60 times"> + </span>][<span class="branchCov" title="Branch 3 was taken 19 times"> + </span><span class="branchCov" title="Branch 4 was taken 1 time"> + </span>]:<span class="lineCov">         80 :     if (when &lt;= mstime() &amp;&amp; !server.loading &amp;&amp; !server.masterhost) {</span>
+<span class="lineNum">         </span>        [<span class="branchCov" title="Branch 5 was taken 19 times"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span>]
+<span class="lineNum">     593 </span>                :            :         robj *aux;
+<span class="lineNum">     594 </span>                :            : 
+<span class="lineNum">     595 </span>        [<span class="branchNoCov" title="Branch 1 was not taken"> - </span><span class="branchCov" title="Branch 2 was taken 19 times"> + </span>]:<span class="lineCov">         19 :         redisAssertWithInfo(c,key,dbDelete(c-&gt;db,key));</span>
+<span class="lineNum">     596 </span>                :<span class="lineCov">         19 :         server.dirty++;</span>
+<span class="lineNum">     597 </span>                :            : 
+<span class="lineNum">     598 </span>                :            :         /* Replicate/AOF this as an explicit DEL. */
+<span class="lineNum">     599 </span>                :<span class="lineCov">         19 :         aux = createStringObject(&quot;DEL&quot;,3);</span>
+<span class="lineNum">     600 </span>                :<span class="lineCov">         19 :         rewriteClientCommandVector(c,2,aux,key);</span>
+<span class="lineNum">     601 </span>                :<span class="lineCov">         19 :         decrRefCount(aux);</span>
+<span class="lineNum">     602 </span>                :<span class="lineCov">         19 :         signalModifiedKey(c-&gt;db,key);</span>
+<span class="lineNum">     603 </span>                :<span class="lineCov">         19 :         notifyKeyspaceEvent(REDIS_NOTIFY_GENERIC,&quot;del&quot;,key,c-&gt;db-&gt;id);</span>
+<span class="lineNum">     604 </span>                :<span class="lineCov">         19 :         addReply(c, shared.cone);</span>
+<span class="lineNum">     605 </span>                :<span class="lineCov">         19 :         return;</span>
+<span class="lineNum">     606 </span>                :            :     } else {
+<span class="lineNum">     607 </span>                :<span class="lineCov">         61 :         setExpire(c-&gt;db,key,when);</span>
+<span class="lineNum">     608 </span>                :<span class="lineCov">         61 :         addReply(c,shared.cone);</span>
+<span class="lineNum">     609 </span>                :<span class="lineCov">         61 :         signalModifiedKey(c-&gt;db,key);</span>
+<span class="lineNum">     610 </span>                :<span class="lineCov">         61 :         notifyKeyspaceEvent(REDIS_NOTIFY_GENERIC,&quot;expire&quot;,key,c-&gt;db-&gt;id);</span>
+<span class="lineNum">     611 </span>                :<span class="lineCov">         61 :         server.dirty++;</span>
+<span class="lineNum">     612 </span>                :<span class="lineCov">        585 :         return;</span>
+<span class="lineNum">     613 </span>                :            :     }
+<a name="614"><span class="lineNum">     614 </span>                :            : }</a>
+<span class="lineNum">     615 </span>                :            : 
+<span class="lineNum">     616 </span>                :<span class="lineCov">        565 : void expireCommand(redisClient *c) {</span>
+<span class="lineNum">     617 </span>                :<span class="lineCov">        565 :     expireGenericCommand(c,mstime(),UNIT_SECONDS);</span>
+<a name="618"><span class="lineNum">     618 </span>                :<span class="lineCov">        565 : }</span></a>
+<span class="lineNum">     619 </span>                :            : 
+<span class="lineNum">     620 </span>                :<span class="lineCov">          3 : void expireatCommand(redisClient *c) {</span>
+<span class="lineNum">     621 </span>                :<span class="lineCov">          3 :     expireGenericCommand(c,0,UNIT_SECONDS);</span>
+<a name="622"><span class="lineNum">     622 </span>                :<span class="lineCov">          3 : }</span></a>
+<span class="lineNum">     623 </span>                :            : 
+<span class="lineNum">     624 </span>                :<span class="lineCov">          5 : void pexpireCommand(redisClient *c) {</span>
+<span class="lineNum">     625 </span>                :<span class="lineCov">          5 :     expireGenericCommand(c,mstime(),UNIT_MILLISECONDS);</span>
+<a name="626"><span class="lineNum">     626 </span>                :<span class="lineCov">          5 : }</span></a>
+<span class="lineNum">     627 </span>                :            : 
+<span class="lineNum">     628 </span>                :<span class="lineCov">         12 : void pexpireatCommand(redisClient *c) {</span>
+<span class="lineNum">     629 </span>                :<span class="lineCov">         12 :     expireGenericCommand(c,0,UNIT_MILLISECONDS);</span>
+<a name="630"><span class="lineNum">     630 </span>                :<span class="lineCov">         12 : }</span></a>
+<span class="lineNum">     631 </span>                :            : 
+<span class="lineNum">     632 </span>                :<span class="lineCov">         40 : void ttlGenericCommand(redisClient *c, int output_ms) {</span>
+<span class="lineNum">     633 </span>                :<span class="lineCov">         40 :     long long expire, ttl = -1;</span>
+<span class="lineNum">     634 </span>                :            : 
+<span class="lineNum">     635 </span>                :            :     /* If the key does not exist at all, return -2 */
+<span class="lineNum">     636 </span>        [<span class="branchCov" title="Branch 1 was taken 2 times"> + </span><span class="branchCov" title="Branch 2 was taken 38 times"> + </span>]:<span class="lineCov">         40 :     if (lookupKeyRead(c-&gt;db,c-&gt;argv[1]) == NULL) {</span>
+<span class="lineNum">     637 </span>                :<span class="lineCov">          2 :         addReplyLongLong(c,-2);</span>
+<span class="lineNum">     638 </span>                :<span class="lineCov">         40 :         return;</span>
+<span class="lineNum">     639 </span>                :            :     }
+<span class="lineNum">     640 </span>                :            :     /* The key exists. Return -1 if it has no expire, or the actual
+<span class="lineNum">     641 </span>                :            :      * TTL value otherwise. */
+<span class="lineNum">     642 </span>                :<span class="lineCov">         38 :     expire = getExpire(c-&gt;db,c-&gt;argv[1]);</span>
+<span class="lineNum">     643 </span>        [<span class="branchCov" title="Branch 0 was taken 29 times"> + </span><span class="branchCov" title="Branch 1 was taken 9 times"> + </span>]:<span class="lineCov">         38 :     if (expire != -1) {</span>
+<span class="lineNum">     644 </span>                :<span class="lineCov">         29 :         ttl = expire-mstime();</span>
+<span class="lineNum">     645 </span>        [<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchCov" title="Branch 1 was taken 29 times"> + </span>]:<span class="lineCov">         29 :         if (ttl &lt; 0) ttl = 0;</span>
+<span class="lineNum">     646 </span>                :            :     }
+<span class="lineNum">     647 </span>        [<span class="branchCov" title="Branch 0 was taken 9 times"> + </span><span class="branchCov" title="Branch 1 was taken 29 times"> + </span>]:<span class="lineCov">         38 :     if (ttl == -1) {</span>
+<span class="lineNum">     648 </span>                :<span class="lineCov">          9 :         addReplyLongLong(c,-1);</span>
+<span class="lineNum">     649 </span>                :            :     } else {
+<span class="lineNum">     650 </span>        [<span class="branchCov" title="Branch 0 was taken 27 times"> + </span><span class="branchCov" title="Branch 1 was taken 2 times"> + </span>]:<span class="lineCov">         29 :         addReplyLongLong(c,output_ms ? ttl : ((ttl+500)/1000));</span>
+<span class="lineNum">     651 </span>                :            :     }
+<a name="652"><span class="lineNum">     652 </span>                :            : }</a>
+<span class="lineNum">     653 </span>                :            : 
+<span class="lineNum">     654 </span>                :<span class="lineCov">         36 : void ttlCommand(redisClient *c) {</span>
+<span class="lineNum">     655 </span>                :<span class="lineCov">         36 :     ttlGenericCommand(c, 0);</span>
+<a name="656"><span class="lineNum">     656 </span>                :<span class="lineCov">         36 : }</span></a>
+<span class="lineNum">     657 </span>                :            : 
+<span class="lineNum">     658 </span>                :<span class="lineCov">          4 : void pttlCommand(redisClient *c) {</span>
+<span class="lineNum">     659 </span>                :<span class="lineCov">          4 :     ttlGenericCommand(c, 1);</span>
+<a name="660"><span class="lineNum">     660 </span>                :<span class="lineCov">          4 : }</span></a>
+<span class="lineNum">     661 </span>                :            : 
+<span class="lineNum">     662 </span>                :<span class="lineCov">          3 : void persistCommand(redisClient *c) {</span>
+<span class="lineNum">     663 </span>                :            :     dictEntry *de;
+<span class="lineNum">     664 </span>                :            : 
+<span class="lineNum">     665 </span>                :<span class="lineCov">          3 :     de = dictFind(c-&gt;db-&gt;dict,c-&gt;argv[1]-&gt;ptr);</span>
+<span class="lineNum">     666 </span>        [<span class="branchCov" title="Branch 0 was taken 2 times"> + </span><span class="branchCov" title="Branch 1 was taken 1 time"> + </span>]:<span class="lineCov">          3 :     if (de == NULL) {</span>
+<span class="lineNum">     667 </span>                :<span class="lineCov">          2 :         addReply(c,shared.czero);</span>
+<span class="lineNum">     668 </span>                :            :     } else {
+<span class="lineNum">     669 </span>        [<span class="branchCov" title="Branch 1 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          1 :         if (removeExpire(c-&gt;db,c-&gt;argv[1])) {</span>
+<span class="lineNum">     670 </span>                :<span class="lineCov">          1 :             addReply(c,shared.cone);</span>
+<span class="lineNum">     671 </span>                :<span class="lineCov">          1 :             server.dirty++;</span>
+<span class="lineNum">     672 </span>                :            :         } else {
+<span class="lineNum">     673 </span>                :<span class="lineNoCov">          0 :             addReply(c,shared.czero);</span>
+<span class="lineNum">     674 </span>                :            :         }
+<span class="lineNum">     675 </span>                :            :     }
+<span class="lineNum">     676 </span>                :<span class="lineCov">          3 : }</span>
+<span class="lineNum">     677 </span>                :            : 
+<span class="lineNum">     678 </span>                :            : /* -----------------------------------------------------------------------------
+<span class="lineNum">     679 </span>                :            :  * API to get key arguments from commands
+<a name="680"><span class="lineNum">     680 </span>                :            :  * ---------------------------------------------------------------------------*/</a>
+<span class="lineNum">     681 </span>                :            : 
+<span class="lineNum">     682 </span>                :<span class="lineNoCov">          0 : int *getKeysUsingCommandTable(struct redisCommand *cmd,robj **argv, int argc, int *numkeys) {</span>
+<span class="lineNum">     683 </span>                :<span class="lineNoCov">          0 :     int j, i = 0, last, *keys;</span>
+<span class="lineNum">     684 </span>                :            :     REDIS_NOTUSED(argv);
+<span class="lineNum">     685 </span>                :            : 
+<span class="lineNum">     686 </span>        [<span class="branchNoExec" title="Branch 0 was not executed"> # </span><span class="branchNoExec" title="Branch 1 was not executed"> # </span>]:<span class="lineNoCov">          0 :     if (cmd-&gt;firstkey == 0) {</span>
+<span class="lineNum">     687 </span>                :<span class="lineNoCov">          0 :         *numkeys = 0;</span>
+<span class="lineNum">     688 </span>                :<span class="lineNoCov">          0 :         return NULL;</span>
+<span class="lineNum">     689 </span>                :            :     }
+<span class="lineNum">     690 </span>                :<span class="lineNoCov">          0 :     last = cmd-&gt;lastkey;</span>
+<span class="lineNum">     691 </span>        [<span class="branchNoExec" title="Branch 0 was not executed"> # </span><span class="branchNoExec" title="Branch 1 was not executed"> # </span>]:<span class="lineNoCov">          0 :     if (last &lt; 0) last = argc+last;</span>
+<span class="lineNum">     692 </span>                :<span class="lineNoCov">          0 :     keys = zmalloc(sizeof(int)*((last - cmd-&gt;firstkey)+1));</span>
+<span class="lineNum">     693 </span>        [<span class="branchNoExec" title="Branch 0 was not executed"> # </span><span class="branchNoExec" title="Branch 1 was not executed"> # </span>]:<span class="lineNoCov">          0 :     for (j = cmd-&gt;firstkey; j &lt;= last; j += cmd-&gt;keystep) {</span>
+<span class="lineNum">     694 </span>        [<span class="branchNoExec" title="Branch 0 was not executed"> # </span><span class="branchNoExec" title="Branch 1 was not executed"> # </span>]:<span class="lineNoCov">          0 :         redisAssert(j &lt; argc);</span>
+<span class="lineNum">     695 </span>                :<span class="lineNoCov">          0 :         keys[i++] = j;</span>
+<span class="lineNum">     696 </span>                :            :     }
+<span class="lineNum">     697 </span>                :<span class="lineNoCov">          0 :     *numkeys = i;</span>
+<span class="lineNum">     698 </span>                :<span class="lineNoCov">          0 :     return keys;</span>
+<a name="699"><span class="lineNum">     699 </span>                :            : }</a>
+<span class="lineNum">     700 </span>                :            : 
+<span class="lineNum">     701 </span>                :<span class="lineNoCov">          0 : int *getKeysFromCommand(struct redisCommand *cmd,robj **argv, int argc, int *numkeys, int flags) {</span>
+<span class="lineNum">     702 </span>        [<span class="branchNoExec" title="Branch 0 was not executed"> # </span><span class="branchNoExec" title="Branch 1 was not executed"> # </span>]:<span class="lineNoCov">          0 :     if (cmd-&gt;getkeys_proc) {</span>
+<span class="lineNum">     703 </span>                :<span class="lineNoCov">          0 :         return cmd-&gt;getkeys_proc(cmd,argv,argc,numkeys,flags);</span>
+<span class="lineNum">     704 </span>                :            :     } else {
+<span class="lineNum">     705 </span>                :<span class="lineNoCov">          0 :         return getKeysUsingCommandTable(cmd,argv,argc,numkeys);</span>
+<span class="lineNum">     706 </span>                :            :     }
+<a name="707"><span class="lineNum">     707 </span>                :            : }</a>
+<span class="lineNum">     708 </span>                :            : 
+<span class="lineNum">     709 </span>                :<span class="lineNoCov">          0 : void getKeysFreeResult(int *result) {</span>
+<span class="lineNum">     710 </span>                :<span class="lineNoCov">          0 :     zfree(result);</span>
+<a name="711"><span class="lineNum">     711 </span>                :<span class="lineNoCov">          0 : }</span></a>
+<span class="lineNum">     712 </span>                :            : 
+<span class="lineNum">     713 </span>                :<span class="lineNoCov">          0 : int *noPreloadGetKeys(struct redisCommand *cmd,robj **argv, int argc, int *numkeys, int flags) {</span>
+<span class="lineNum">     714 </span>        [<span class="branchNoExec" title="Branch 0 was not executed"> # </span><span class="branchNoExec" title="Branch 1 was not executed"> # </span>]:<span class="lineNoCov">          0 :     if (flags &amp; REDIS_GETKEYS_PRELOAD) {</span>
+<span class="lineNum">     715 </span>                :<span class="lineNoCov">          0 :         *numkeys = 0;</span>
+<span class="lineNum">     716 </span>                :<span class="lineNoCov">          0 :         return NULL;</span>
+<span class="lineNum">     717 </span>                :            :     } else {
+<span class="lineNum">     718 </span>                :<span class="lineNoCov">          0 :         return getKeysUsingCommandTable(cmd,argv,argc,numkeys);</span>
+<span class="lineNum">     719 </span>                :            :     }
+<a name="720"><span class="lineNum">     720 </span>                :            : }</a>
+<span class="lineNum">     721 </span>                :            : 
+<span class="lineNum">     722 </span>                :<span class="lineNoCov">          0 : int *renameGetKeys(struct redisCommand *cmd,robj **argv, int argc, int *numkeys, int flags) {</span>
+<span class="lineNum">     723 </span>        [<span class="branchNoExec" title="Branch 0 was not executed"> # </span><span class="branchNoExec" title="Branch 1 was not executed"> # </span>]:<span class="lineNoCov">          0 :     if (flags &amp; REDIS_GETKEYS_PRELOAD) {</span>
+<span class="lineNum">     724 </span>                :<span class="lineNoCov">          0 :         int *keys = zmalloc(sizeof(int));</span>
+<span class="lineNum">     725 </span>                :<span class="lineNoCov">          0 :         *numkeys = 1;</span>
+<span class="lineNum">     726 </span>                :<span class="lineNoCov">          0 :         keys[0] = 1;</span>
+<span class="lineNum">     727 </span>                :<span class="lineNoCov">          0 :         return keys;</span>
+<span class="lineNum">     728 </span>                :            :     } else {
+<span class="lineNum">     729 </span>                :<span class="lineNoCov">          0 :         return getKeysUsingCommandTable(cmd,argv,argc,numkeys);</span>
+<span class="lineNum">     730 </span>                :            :     }
+<a name="731"><span class="lineNum">     731 </span>                :            : }</a>
+<span class="lineNum">     732 </span>                :            : 
+<span class="lineNum">     733 </span>                :<span class="lineNoCov">          0 : int *zunionInterGetKeys(struct redisCommand *cmd,robj **argv, int argc, int *numkeys, int flags) {</span>
+<span class="lineNum">     734 </span>                :            :     int i, num, *keys;
+<span class="lineNum">     735 </span>                :            :     REDIS_NOTUSED(cmd);
+<span class="lineNum">     736 </span>                :            :     REDIS_NOTUSED(flags);
+<span class="lineNum">     737 </span>                :            : 
+<span class="lineNum">     738 </span>                :<span class="lineNoCov">          0 :     num = atoi(argv[2]-&gt;ptr);</span>
+<span class="lineNum">     739 </span>                :            :     /* Sanity check. Don't return any key if the command is going to
+<span class="lineNum">     740 </span>                :            :      * reply with syntax error. */
+<span class="lineNum">     741 </span>        [<span class="branchNoExec" title="Branch 0 was not executed"> # </span><span class="branchNoExec" title="Branch 1 was not executed"> # </span>]:<span class="lineNoCov">          0 :     if (num &gt; (argc-3)) {</span>
+<span class="lineNum">     742 </span>                :<span class="lineNoCov">          0 :         *numkeys = 0;</span>
+<span class="lineNum">     743 </span>                :<span class="lineNoCov">          0 :         return NULL;</span>
+<span class="lineNum">     744 </span>                :            :     }
+<span class="lineNum">     745 </span>                :<span class="lineNoCov">          0 :     keys = zmalloc(sizeof(int)*num);</span>
+<span class="lineNum">     746 </span>        [<span class="branchNoExec" title="Branch 1 was not executed"> # </span><span class="branchNoExec" title="Branch 2 was not executed"> # </span>]:<span class="lineNoCov">          0 :     for (i = 0; i &lt; num; i++) keys[i] = 3+i;</span>
+<span class="lineNum">     747 </span>                :<span class="lineNoCov">          0 :     *numkeys = num;</span>
+<span class="lineNum">     748 </span>                :<span class="lineNoCov">          0 :     return keys;</span>
+<span class="lineNum">     749 </span>                :            : }
+<span class="lineNum">     750 </span>                :            : 
+<span class="lineNum">     751 </span>                :            : /* Slot to Key API. This is used by Redis Cluster in order to obtain in
+<a name="752"><span class="lineNum">     752 </span>                :            :  * a fast way a key that belongs to a specified hash slot. This is useful</a>
+<span class="lineNum">     753 </span>                :            :  * while rehashing the cluster. */
+<span class="lineNum">     754 </span>                :<span class="lineNoCov">          0 : void slotToKeyAdd(robj *key) {</span>
+<span class="lineNum">     755 </span>                :<span class="lineNoCov">          0 :     unsigned int hashslot = keyHashSlot(key-&gt;ptr,sdslen(key-&gt;ptr));</span>
+<span class="lineNum">     756 </span>                :            : 
+<span class="lineNum">     757 </span>                :<span class="lineNoCov">          0 :     zslInsert(server.cluster-&gt;slots_to_keys,hashslot,key);</span>
+<span class="lineNum">     758 </span>                :<span class="lineNoCov">          0 :     incrRefCount(key);</span>
+<a name="759"><span class="lineNum">     759 </span>                :<span class="lineNoCov">          0 : }</span></a>
+<span class="lineNum">     760 </span>                :            : 
+<span class="lineNum">     761 </span>                :<span class="lineNoCov">          0 : void slotToKeyDel(robj *key) {</span>
+<span class="lineNum">     762 </span>                :<span class="lineNoCov">          0 :     unsigned int hashslot = keyHashSlot(key-&gt;ptr,sdslen(key-&gt;ptr));</span>
+<span class="lineNum">     763 </span>                :            : 
+<span class="lineNum">     764 </span>                :<span class="lineNoCov">          0 :     zslDelete(server.cluster-&gt;slots_to_keys,hashslot,key);</span>
+<a name="765"><span class="lineNum">     765 </span>                :<span class="lineNoCov">          0 : }</span></a>
+<span class="lineNum">     766 </span>                :            : 
+<span class="lineNum">     767 </span>                :<span class="lineNoCov">          0 : void slotToKeyFlush(void) {</span>
+<span class="lineNum">     768 </span>                :<span class="lineNoCov">          0 :     zslFree(server.cluster-&gt;slots_to_keys);</span>
+<span class="lineNum">     769 </span>                :<span class="lineNoCov">          0 :     server.cluster-&gt;slots_to_keys = zslCreate();</span>
+<a name="770"><span class="lineNum">     770 </span>                :<span class="lineNoCov">          0 : }</span></a>
+<span class="lineNum">     771 </span>                :            : 
+<span class="lineNum">     772 </span>                :<span class="lineNoCov">          0 : unsigned int getKeysInSlot(unsigned int hashslot, robj **keys, unsigned int count) {</span>
+<span class="lineNum">     773 </span>                :            :     zskiplistNode *n;
+<span class="lineNum">     774 </span>                :            :     zrangespec range;
+<span class="lineNum">     775 </span>                :<span class="lineNoCov">          0 :     int j = 0;</span>
+<span class="lineNum">     776 </span>                :            : 
+<span class="lineNum">     777 </span>                :<span class="lineNoCov">          0 :     range.min = range.max = hashslot;</span>
+<span class="lineNum">     778 </span>                :<span class="lineNoCov">          0 :     range.minex = range.maxex = 0;</span>
+<span class="lineNum">     779 </span>                :            :     
+<span class="lineNum">     780 </span>                :<span class="lineNoCov">          0 :     n = zslFirstInRange(server.cluster-&gt;slots_to_keys, range);</span>
+<span class="lineNum">     781 </span>[<span class="branchNoExec" title="Branch 0 was not executed"> # </span><span class="branchNoExec" title="Branch 1 was not executed"> # </span>][<span class="branchNoExec" title="Branch 2 was not executed"> # </span><span class="branchNoExec" title="Branch 3 was not executed"> # </span>]:<span class="lineNoCov">          0 :     while(n &amp;&amp; n-&gt;score == hashslot &amp;&amp; count--) {</span>
+<span class="lineNum">         </span>        [<span class="branchNoExec" title="Branch 4 was not executed"> # </span><span class="branchNoExec" title="Branch 5 was not executed"> # </span>]
+<span class="lineNum">     782 </span>                :<span class="lineNoCov">          0 :         keys[j++] = n-&gt;obj;</span>
+<span class="lineNum">     783 </span>                :<span class="lineNoCov">          0 :         n = n-&gt;level[0].forward;</span>
+<span class="lineNum">     784 </span>                :            :     }
+<span class="lineNum">     785 </span>                :<span class="lineNoCov">          0 :     return j;</span>
+<a name="786"><span class="lineNum">     786 </span>                :            : }</a>
+<span class="lineNum">     787 </span>                :            : 
+<span class="lineNum">     788 </span>                :<span class="lineNoCov">          0 : unsigned int countKeysInSlot(unsigned int hashslot) {</span>
+<span class="lineNum">     789 </span>                :<span class="lineNoCov">          0 :     zskiplist *zsl = server.cluster-&gt;slots_to_keys;</span>
+<span class="lineNum">     790 </span>                :            :     zskiplistNode *zn;
+<span class="lineNum">     791 </span>                :            :     zrangespec range;
+<span class="lineNum">     792 </span>                :<span class="lineNoCov">          0 :     int rank, count = 0;</span>
+<span class="lineNum">     793 </span>                :            : 
+<span class="lineNum">     794 </span>                :<span class="lineNoCov">          0 :     range.min = range.max = hashslot;</span>
+<span class="lineNum">     795 </span>                :<span class="lineNoCov">          0 :     range.minex = range.maxex = 0;</span>
+<span class="lineNum">     796 </span>                :            : 
+<span class="lineNum">     797 </span>                :            :     /* Find first element in range */
+<span class="lineNum">     798 </span>                :<span class="lineNoCov">          0 :     zn = zslFirstInRange(zsl, range);</span>
+<span class="lineNum">     799 </span>                :            : 
+<span class="lineNum">     800 </span>                :            :     /* Use rank of first element, if any, to determine preliminary count */
+<span class="lineNum">     801 </span>        [<span class="branchNoExec" title="Branch 0 was not executed"> # </span><span class="branchNoExec" title="Branch 1 was not executed"> # </span>]:<span class="lineNoCov">          0 :     if (zn != NULL) {</span>
+<span class="lineNum">     802 </span>                :<span class="lineNoCov">          0 :         rank = zslGetRank(zsl, zn-&gt;score, zn-&gt;obj);</span>
+<span class="lineNum">     803 </span>                :<span class="lineNoCov">          0 :         count = (zsl-&gt;length - (rank - 1));</span>
+<span class="lineNum">     804 </span>                :            : 
+<span class="lineNum">     805 </span>                :            :         /* Find last element in range */
+<span class="lineNum">     806 </span>                :<span class="lineNoCov">          0 :         zn = zslLastInRange(zsl, range);</span>
+<span class="lineNum">     807 </span>                :            : 
+<span class="lineNum">     808 </span>                :            :         /* Use rank of last element, if any, to determine the actual count */
+<span class="lineNum">     809 </span>        [<span class="branchNoExec" title="Branch 0 was not executed"> # </span><span class="branchNoExec" title="Branch 1 was not executed"> # </span>]:<span class="lineNoCov">          0 :         if (zn != NULL) {</span>
+<span class="lineNum">     810 </span>                :<span class="lineNoCov">          0 :             rank = zslGetRank(zsl, zn-&gt;score, zn-&gt;obj);</span>
+<span class="lineNum">     811 </span>                :<span class="lineNoCov">          0 :             count -= (zsl-&gt;length - rank);</span>
+<span class="lineNum">     812 </span>                :            :         }
+<span class="lineNum">     813 </span>                :            :     }
+<span class="lineNum">     814 </span>                :<span class="lineNoCov">          0 :     return count;</span>
+<span class="lineNum">     815 </span>                :            : }
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.9</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

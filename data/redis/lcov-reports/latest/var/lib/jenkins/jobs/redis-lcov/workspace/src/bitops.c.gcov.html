@@ -1,0 +1,504 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - redis-lcov_9.info - /var/lib/jenkins/jobs/redis-lcov/workspace/src/bitops.c</title>
+  <link rel="stylesheet" type="text/css" href="../../../../../../../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../../../../../../../index.html">top level</a> - <a href="index.html">var/lib/jenkins/jobs/redis-lcov/workspace/src</a> - bitops.c<span style="font-size: 80%;"> (source / <a href="bitops.c.func.html">functions</a>)</span></td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">redis-lcov_9.info</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">207</td>
+            <td class="headerCovTableEntry">213</td>
+            <td class="headerCovTableEntryHi">97.2 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2013-08-26</td>
+            <td></td>
+            <td class="headerItem">Functions:</td>
+            <td class="headerCovTableEntry">6</td>
+            <td class="headerCovTableEntry">6</td>
+            <td class="headerCovTableEntryHi">100.0 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Legend:</td>
+            <td class="headerValueLeg">            Lines:
+            <span class="coverLegendCov">hit</span>
+            <span class="coverLegendNoCov">not hit</span>
+            | Branches:
+            <span class="coverLegendCov">+</span> taken
+            <span class="coverLegendNoCov">-</span> not taken
+            <span class="coverLegendNoCov">#</span> not executed
+</td>
+            <td></td>
+            <td class="headerItem">Branches:</td>
+            <td class="headerCovTableEntry">129</td>
+            <td class="headerCovTableEntry">148</td>
+            <td class="headerCovTableEntryMed">87.2 %</td>
+          </tr>
+          <tr><td><img src="../../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">           Branch data     Line data    Source code</pre>
+<pre class="source">
+<a name="1"><span class="lineNum">       1 </span>                :            : /* Bit operations.</a>
+<span class="lineNum">       2 </span>                :            :  *
+<span class="lineNum">       3 </span>                :            :  * Copyright (c) 2009-2012, Salvatore Sanfilippo &lt;antirez at gmail dot com&gt;
+<span class="lineNum">       4 </span>                :            :  * All rights reserved.
+<span class="lineNum">       5 </span>                :            :  *
+<span class="lineNum">       6 </span>                :            :  * Redistribution and use in source and binary forms, with or without
+<span class="lineNum">       7 </span>                :            :  * modification, are permitted provided that the following conditions are met:
+<span class="lineNum">       8 </span>                :            :  *
+<span class="lineNum">       9 </span>                :            :  *   * Redistributions of source code must retain the above copyright notice,
+<span class="lineNum">      10 </span>                :            :  *     this list of conditions and the following disclaimer.
+<span class="lineNum">      11 </span>                :            :  *   * Redistributions in binary form must reproduce the above copyright
+<span class="lineNum">      12 </span>                :            :  *     notice, this list of conditions and the following disclaimer in the
+<span class="lineNum">      13 </span>                :            :  *     documentation and/or other materials provided with the distribution.
+<span class="lineNum">      14 </span>                :            :  *   * Neither the name of Redis nor the names of its contributors may be used
+<span class="lineNum">      15 </span>                :            :  *     to endorse or promote products derived from this software without
+<span class="lineNum">      16 </span>                :            :  *     specific prior written permission.
+<span class="lineNum">      17 </span>                :            :  *
+<span class="lineNum">      18 </span>                :            :  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS &quot;AS IS&quot;
+<span class="lineNum">      19 </span>                :            :  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+<span class="lineNum">      20 </span>                :            :  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+<span class="lineNum">      21 </span>                :            :  * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+<span class="lineNum">      22 </span>                :            :  * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+<span class="lineNum">      23 </span>                :            :  * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+<span class="lineNum">      24 </span>                :            :  * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+<span class="lineNum">      25 </span>                :            :  * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+<span class="lineNum">      26 </span>                :            :  * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+<span class="lineNum">      27 </span>                :            :  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+<span class="lineNum">      28 </span>                :            :  * POSSIBILITY OF SUCH DAMAGE.
+<span class="lineNum">      29 </span>                :            :  */
+<span class="lineNum">      30 </span>                :            : 
+<span class="lineNum">      31 </span>                :            : #include &quot;redis.h&quot;
+<span class="lineNum">      32 </span>                :            : 
+<span class="lineNum">      33 </span>                :            : /* -----------------------------------------------------------------------------
+<span class="lineNum">      34 </span>                :            :  * Helpers and low level bit functions.
+<span class="lineNum">      35 </span>                :            :  * -------------------------------------------------------------------------- */
+<span class="lineNum">      36 </span>                :            : 
+<span class="lineNum">      37 </span>                :            : /* This helper function used by GETBIT / SETBIT parses the bit offset argument
+<a name="38"><span class="lineNum">      38 </span>                :            :  * making sure an error is returned if it is negative or if it overflows</a>
+<span class="lineNum">      39 </span>                :            :  * Redis 512 MB limit for the string value. */
+<span class="lineNum">      40 </span>                :<span class="lineCov">       2028 : static int getBitOffsetFromArgument(redisClient *c, robj *o, size_t *offset) {</span>
+<span class="lineNum">      41 </span>                :            :     long long loffset;
+<span class="lineNum">      42 </span>                :<span class="lineCov">       2028 :     char *err = &quot;bit offset is not an integer or out of range&quot;;</span>
+<span class="lineNum">      43 </span>                :            : 
+<span class="lineNum">      44 </span>        [<span class="branchCov" title="Branch 1 was taken 2028 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">       2028 :     if (getLongLongFromObjectOrReply(c,o,&amp;loffset,err) != REDIS_OK)</span>
+<span class="lineNum">      45 </span>                :            :         return REDIS_ERR;
+<span class="lineNum">      46 </span>                :            : 
+<span class="lineNum">      47 </span>                :            :     /* Limit offset to 512MB in bytes */
+<span class="lineNum">      48 </span>[<span class="branchCov" title="Branch 0 was taken 2027 times"> + </span><span class="branchCov" title="Branch 1 was taken 1 time"> + </span>][<span class="branchCov" title="Branch 2 was taken 1 time"> + </span><span class="branchCov" title="Branch 3 was taken 2026 times"> + </span>]:<span class="lineCov">       2028 :     if ((loffset &lt; 0) || ((unsigned long long)loffset &gt;&gt; 3) &gt;= (512*1024*1024))</span>
+<span class="lineNum">      49 </span>                :            :     {
+<span class="lineNum">      50 </span>                :<span class="lineCov">          2 :         addReplyError(c,err);</span>
+<span class="lineNum">      51 </span>                :<span class="lineCov">          2 :         return REDIS_ERR;</span>
+<span class="lineNum">      52 </span>                :            :     }
+<span class="lineNum">      53 </span>                :            : 
+<span class="lineNum">      54 </span>                :<span class="lineCov">       2026 :     *offset = (size_t)loffset;</span>
+<span class="lineNum">      55 </span>                :<span class="lineCov">       2028 :     return REDIS_OK;</span>
+<span class="lineNum">      56 </span>                :            : }
+<span class="lineNum">      57 </span>                :            : 
+<span class="lineNum">      58 </span>                :            : /* Count number of bits set in the binary array pointed by 's' and long
+<a name="59"><span class="lineNum">      59 </span>                :            :  * 'count' bytes. The implementation of this function is required to</a>
+<span class="lineNum">      60 </span>                :            :  * work with a input string length up to 512 MB. */
+<span class="lineNum">      61 </span>                :<span class="lineCov">        108 : size_t redisPopcount(void *s, long count) {</span>
+<span class="lineNum">      62 </span>                :<span class="lineCov">        108 :     size_t bits = 0;</span>
+<span class="lineNum">      63 </span>                :            :     unsigned char *p;
+<span class="lineNum">      64 </span>                :<span class="lineCov">        108 :     uint32_t *p4 = s;</span>
+<span class="lineNum">      65 </span>                :            :     static const unsigned char bitsinbyte[256] = {0,1,1,2,1,2,2,3,1,2,2,3,2,3,3,4,1,2,2,3,2,3,3,4,2,3,3,4,3,4,4,5,1,2,2,3,2,3,3,4,2,3,3,4,3,4,4,5,2,3,3,4,3,4,4,5,3,4,4,5,4,5,5,6,1,2,2,3,2,3,3,4,2,3,3,4,3,4,4,5,2,3,3,4,3,4,4,5,3,4,4,5,4,5,5,6,2,3,3,4,3,4,4,5,3,4,4,5,4,5,5,6,3,4,4,5,4,5,5,6,4,5,5,6,5,6,6,7,1,2,2,3,2,3,3,4,2,3,3,4,3,4,4,5,2,3,3,4,3,4,4,5,3,4,4,5,4,5,5,6,2,3,3,4,3,4,4,5,3,4,4,5,4,5,5,6,3,4,4,5,4,5,5,6,4,5,5,6,5,6,6,7,2,3,3,4,3,4,4,5,3,4,4,5,4,5,5,6,3,4,4,5,4,5,5,6,4,5,5,6,5,6,6,7,3,4,4,5,4,5,5,6,4,5,5,6,5,6,6,7,4,5,5,6,5,6,6,7,5,6,6,7,6,7,7,8};
+<span class="lineNum">      66 </span>                :            : 
+<span class="lineNum">      67 </span>                :            :     /* Count bits 16 bytes at a time */
+<span class="lineNum">      68 </span>        [<span class="branchCov" title="Branch 0 was taken 9922 times"> + </span><span class="branchCov" title="Branch 1 was taken 108 times"> + </span>]:<span class="lineCov">      10030 :     while(count&gt;=16) {</span>
+<span class="lineNum">      69 </span>                :            :         uint32_t aux1, aux2, aux3, aux4;
+<span class="lineNum">      70 </span>                :            : 
+<span class="lineNum">      71 </span>                :<span class="lineCov">       9922 :         aux1 = *p4++;</span>
+<span class="lineNum">      72 </span>                :<span class="lineCov">       9922 :         aux2 = *p4++;</span>
+<span class="lineNum">      73 </span>                :<span class="lineCov">       9922 :         aux3 = *p4++;</span>
+<span class="lineNum">      74 </span>                :<span class="lineCov">       9922 :         aux4 = *p4++;</span>
+<span class="lineNum">      75 </span>                :<span class="lineCov">       9922 :         count -= 16;</span>
+<span class="lineNum">      76 </span>                :            : 
+<span class="lineNum">      77 </span>                :<span class="lineCov">       9922 :         aux1 = aux1 - ((aux1 &gt;&gt; 1) &amp; 0x55555555);</span>
+<span class="lineNum">      78 </span>                :<span class="lineCov">       9922 :         aux1 = (aux1 &amp; 0x33333333) + ((aux1 &gt;&gt; 2) &amp; 0x33333333);</span>
+<span class="lineNum">      79 </span>                :<span class="lineCov">       9922 :         aux2 = aux2 - ((aux2 &gt;&gt; 1) &amp; 0x55555555);</span>
+<span class="lineNum">      80 </span>                :<span class="lineCov">       9922 :         aux2 = (aux2 &amp; 0x33333333) + ((aux2 &gt;&gt; 2) &amp; 0x33333333);</span>
+<span class="lineNum">      81 </span>                :<span class="lineCov">       9922 :         aux3 = aux3 - ((aux3 &gt;&gt; 1) &amp; 0x55555555);</span>
+<span class="lineNum">      82 </span>                :<span class="lineCov">       9922 :         aux3 = (aux3 &amp; 0x33333333) + ((aux3 &gt;&gt; 2) &amp; 0x33333333);</span>
+<span class="lineNum">      83 </span>                :<span class="lineCov">       9922 :         aux4 = aux4 - ((aux4 &gt;&gt; 1) &amp; 0x55555555);</span>
+<span class="lineNum">      84 </span>                :<span class="lineCov">       9922 :         aux4 = (aux4 &amp; 0x33333333) + ((aux4 &gt;&gt; 2) &amp; 0x33333333);</span>
+<span class="lineNum">      85 </span>                :<span class="lineCov">       9922 :         bits += ((((aux1 + (aux1 &gt;&gt; 4)) &amp; 0x0F0F0F0F) * 0x01010101) &gt;&gt; 24) +</span>
+<span class="lineNum">      86 </span>                :<span class="lineCov">      19844 :                 ((((aux2 + (aux2 &gt;&gt; 4)) &amp; 0x0F0F0F0F) * 0x01010101) &gt;&gt; 24) +</span>
+<span class="lineNum">      87 </span>                :<span class="lineCov">      19844 :                 ((((aux3 + (aux3 &gt;&gt; 4)) &amp; 0x0F0F0F0F) * 0x01010101) &gt;&gt; 24) +</span>
+<span class="lineNum">      88 </span>                :<span class="lineCov">       9922 :                 ((((aux4 + (aux4 &gt;&gt; 4)) &amp; 0x0F0F0F0F) * 0x01010101) &gt;&gt; 24);</span>
+<span class="lineNum">      89 </span>                :            :     }
+<span class="lineNum">      90 </span>                :            :     /* Count the remaining bytes */
+<span class="lineNum">      91 </span>                :            :     p = (unsigned char*)p4;
+<span class="lineNum">      92 </span>        [<span class="branchCov" title="Branch 0 was taken 758 times"> + </span><span class="branchCov" title="Branch 1 was taken 108 times"> + </span>]:<span class="lineCov">        866 :     while(count--) bits += bitsinbyte[*p++];</span>
+<span class="lineNum">      93 </span>                :<span class="lineCov">        108 :     return bits;</span>
+<span class="lineNum">      94 </span>                :            : }
+<span class="lineNum">      95 </span>                :            : 
+<span class="lineNum">      96 </span>                :            : /* -----------------------------------------------------------------------------
+<span class="lineNum">      97 </span>                :            :  * Bits related string commands: GETBIT, SETBIT, BITCOUNT, BITOP.
+<span class="lineNum">      98 </span>                :            :  * -------------------------------------------------------------------------- */
+<span class="lineNum">      99 </span>                :            : 
+<span class="lineNum">     100 </span>                :            : #define BITOP_AND   0
+<span class="lineNum">     101 </span>                :            : #define BITOP_OR    1
+<span class="lineNum">     102 </span>                :            : #define BITOP_XOR   2
+<span class="lineNum">     103 </span>                :            : #define BITOP_NOT   3
+<a name="104"><span class="lineNum">     104 </span>                :            : </a>
+<span class="lineNum">     105 </span>                :            : /* SETBIT key offset bitvalue */
+<span class="lineNum">     106 </span>                :<span class="lineCov">       2013 : void setbitCommand(redisClient *c) {</span>
+<span class="lineNum">     107 </span>                :            :     robj *o;
+<span class="lineNum">     108 </span>                :<span class="lineCov">       2013 :     char *err = &quot;bit is not an integer or out of range&quot;;</span>
+<span class="lineNum">     109 </span>                :            :     size_t bitoffset;
+<span class="lineNum">     110 </span>                :            :     int byte, bit;
+<span class="lineNum">     111 </span>                :            :     int byteval, bitval;
+<span class="lineNum">     112 </span>                :            :     long on;
+<span class="lineNum">     113 </span>                :            : 
+<span class="lineNum">     114 </span>        [<span class="branchCov" title="Branch 1 was taken 2011 times"> + </span><span class="branchCov" title="Branch 2 was taken 2 times"> + </span>]:<span class="lineCov">       2013 :     if (getBitOffsetFromArgument(c,c-&gt;argv[2],&amp;bitoffset) != REDIS_OK)</span>
+<span class="lineNum">     115 </span>                :            :         return;
+<span class="lineNum">     116 </span>                :            : 
+<span class="lineNum">     117 </span>        [<span class="branchCov" title="Branch 1 was taken 2011 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">       2011 :     if (getLongFromObjectOrReply(c,c-&gt;argv[3],&amp;on,err) != REDIS_OK)</span>
+<span class="lineNum">     118 </span>                :            :         return;
+<span class="lineNum">     119 </span>                :            : 
+<span class="lineNum">     120 </span>                :            :     /* Bits can only be set or cleared... */
+<span class="lineNum">     121 </span>        [<span class="branchCov" title="Branch 0 was taken 4 times"> + </span><span class="branchCov" title="Branch 1 was taken 2007 times"> + </span>]:<span class="lineCov">       2011 :     if (on &amp; ~1) {</span>
+<span class="lineNum">     122 </span>                :<span class="lineCov">          4 :         addReplyError(c,err);</span>
+<span class="lineNum">     123 </span>                :<span class="lineCov">          4 :         return;</span>
+<span class="lineNum">     124 </span>                :            :     }
+<span class="lineNum">     125 </span>                :            : 
+<span class="lineNum">     126 </span>                :<span class="lineCov">       2007 :     o = lookupKeyWrite(c-&gt;db,c-&gt;argv[1]);</span>
+<span class="lineNum">     127 </span>        [<span class="branchCov" title="Branch 0 was taken 3 times"> + </span><span class="branchCov" title="Branch 1 was taken 2004 times"> + </span>]:<span class="lineCov">       2007 :     if (o == NULL) {</span>
+<span class="lineNum">     128 </span>                :<span class="lineCov">          3 :         o = createObject(REDIS_STRING,sdsempty());</span>
+<span class="lineNum">     129 </span>                :<span class="lineCov">          3 :         dbAdd(c-&gt;db,c-&gt;argv[1],o);</span>
+<span class="lineNum">     130 </span>                :            :     } else {
+<span class="lineNum">     131 </span>        [<span class="branchCov" title="Branch 1 was taken 2003 times"> + </span><span class="branchCov" title="Branch 2 was taken 1 time"> + </span>]:<span class="lineCov">       2004 :         if (checkType(c,o,REDIS_STRING)) return;</span>
+<span class="lineNum">     132 </span>                :            : 
+<span class="lineNum">     133 </span>                :            :         /* Create a copy when the object is shared or encoded. */
+<span class="lineNum">     134 </span>        [<span class="branchCov" title="Branch 0 was taken 2 times"> + </span><span class="branchCov" title="Branch 1 was taken 2001 times"> + </span>]:<span class="lineCov">       2003 :         if (o-&gt;refcount != 1 || o-&gt;encoding != REDIS_ENCODING_RAW) {</span>
+<span class="lineNum">     135 </span>                :<span class="lineCov">          2 :             robj *decoded = getDecodedObject(o);</span>
+<span class="lineNum">     136 </span>                :<span class="lineCov">          2 :             o = createRawStringObject(decoded-&gt;ptr, sdslen(decoded-&gt;ptr));</span>
+<span class="lineNum">     137 </span>                :<span class="lineCov">          2 :             decrRefCount(decoded);</span>
+<span class="lineNum">     138 </span>                :<span class="lineCov">          2 :             dbOverwrite(c-&gt;db,c-&gt;argv[1],o);</span>
+<span class="lineNum">     139 </span>                :            :         }
+<span class="lineNum">     140 </span>                :            :     }
+<span class="lineNum">     141 </span>                :            : 
+<span class="lineNum">     142 </span>                :            :     /* Grow sds value to the right length if necessary */
+<span class="lineNum">     143 </span>                :<span class="lineCov">       2006 :     byte = bitoffset &gt;&gt; 3;</span>
+<span class="lineNum">     144 </span>                :<span class="lineCov">       2006 :     o-&gt;ptr = sdsgrowzero(o-&gt;ptr,byte+1);</span>
+<span class="lineNum">     145 </span>                :            : 
+<span class="lineNum">     146 </span>                :            :     /* Get current values */
+<span class="lineNum">     147 </span>                :<span class="lineCov">       2006 :     byteval = ((uint8_t*)o-&gt;ptr)[byte];</span>
+<span class="lineNum">     148 </span>                :<span class="lineCov">       2006 :     bit = 7 - (bitoffset &amp; 0x7);</span>
+<span class="lineNum">     149 </span>                :<span class="lineCov">       2006 :     bitval = byteval &amp; (1 &lt;&lt; bit);</span>
+<span class="lineNum">     150 </span>                :            : 
+<span class="lineNum">     151 </span>                :            :     /* Update byte with new bit value and return original value */
+<span class="lineNum">     152 </span>                :<span class="lineCov">       2006 :     byteval &amp;= ~(1 &lt;&lt; bit);</span>
+<span class="lineNum">     153 </span>                :<span class="lineCov">       2006 :     byteval |= ((on &amp; 0x1) &lt;&lt; bit);</span>
+<span class="lineNum">     154 </span>                :<span class="lineCov">       2006 :     ((uint8_t*)o-&gt;ptr)[byte] = byteval;</span>
+<span class="lineNum">     155 </span>                :<span class="lineCov">       2006 :     signalModifiedKey(c-&gt;db,c-&gt;argv[1]);</span>
+<span class="lineNum">     156 </span>                :<span class="lineCov">       2006 :     notifyKeyspaceEvent(REDIS_NOTIFY_STRING,&quot;setbit&quot;,c-&gt;argv[1],c-&gt;db-&gt;id);</span>
+<span class="lineNum">     157 </span>                :<span class="lineCov">       2006 :     server.dirty++;</span>
+<span class="lineNum">     158 </span>        [<span class="branchCov" title="Branch 0 was taken 356 times"> + </span><span class="branchCov" title="Branch 1 was taken 1650 times"> + </span>]:<span class="lineCov">       2013 :     addReply(c, bitval ? shared.cone : shared.czero);</span>
+<span class="lineNum">     159 </span>                :            : }
+<a name="160"><span class="lineNum">     160 </span>                :            : </a>
+<span class="lineNum">     161 </span>                :            : /* GETBIT key offset */
+<span class="lineNum">     162 </span>                :<span class="lineCov">         15 : void getbitCommand(redisClient *c) {</span>
+<span class="lineNum">     163 </span>                :            :     robj *o;
+<span class="lineNum">     164 </span>                :            :     char llbuf[32];
+<span class="lineNum">     165 </span>                :            :     size_t bitoffset;
+<span class="lineNum">     166 </span>                :            :     size_t byte, bit;
+<span class="lineNum">     167 </span>                :<span class="lineCov">         15 :     size_t bitval = 0;</span>
+<span class="lineNum">     168 </span>                :            : 
+<span class="lineNum">     169 </span>        [<span class="branchCov" title="Branch 1 was taken 15 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">         15 :     if (getBitOffsetFromArgument(c,c-&gt;argv[2],&amp;bitoffset) != REDIS_OK)</span>
+<span class="lineNum">     170 </span>                :            :         return;
+<span class="lineNum">     171 </span>                :            : 
+<span class="lineNum">     172 </span>  [<span class="branchCov" title="Branch 1 was taken 14 times"> + </span><span class="branchCov" title="Branch 2 was taken 1 time"> + </span><span class="branchCov" title="Branch 3 was taken 14 times"> + </span><span class="branchNoCov" title="Branch 4 was not taken"> - </span>]:<span class="lineCov">         29 :     if ((o = lookupKeyReadOrReply(c,c-&gt;argv[1],shared.czero)) == NULL ||</span>
+<span class="lineNum">     173 </span>                :<span class="lineCov">         14 :         checkType(c,o,REDIS_STRING)) return;</span>
+<span class="lineNum">     174 </span>                :            : 
+<span class="lineNum">     175 </span>                :<span class="lineCov">         14 :     byte = bitoffset &gt;&gt; 3;</span>
+<span class="lineNum">     176 </span>                :<span class="lineCov">         14 :     bit = 7 - (bitoffset &amp; 0x7);</span>
+<span class="lineNum">     177 </span>        [<span class="branchCov" title="Branch 0 was taken 7 times"> + </span><span class="branchCov" title="Branch 1 was taken 7 times"> + </span>]:<span class="lineCov">         14 :     if (sdsEncodedObject(o)) {</span>
+<span class="lineNum">     178 </span>        [<span class="branchCov" title="Branch 0 was taken 4 times"> + </span><span class="branchCov" title="Branch 1 was taken 3 times"> + </span>]:<span class="lineCov">          7 :         if (byte &lt; sdslen(o-&gt;ptr))</span>
+<span class="lineNum">     179 </span>                :<span class="lineCov">          4 :             bitval = ((uint8_t*)o-&gt;ptr)[byte] &amp; (1 &lt;&lt; bit);</span>
+<span class="lineNum">     180 </span>                :            :     } else {
+<span class="lineNum">     181 </span>        [<span class="branchCov" title="Branch 1 was taken 4 times"> + </span><span class="branchCov" title="Branch 2 was taken 3 times"> + </span>]:<span class="lineCov">          7 :         if (byte &lt; (size_t)ll2string(llbuf,sizeof(llbuf),(long)o-&gt;ptr))</span>
+<span class="lineNum">     182 </span>                :<span class="lineCov">          4 :             bitval = llbuf[byte] &amp; (1 &lt;&lt; bit);</span>
+<span class="lineNum">     183 </span>                :            :     }
+<span class="lineNum">     184 </span>                :            : 
+<span class="lineNum">     185 </span>        [<span class="branchCov" title="Branch 0 was taken 4 times"> + </span><span class="branchCov" title="Branch 1 was taken 10 times"> + </span>]:<span class="lineCov">         15 :     addReply(c, bitval ? shared.cone : shared.czero);</span>
+<span class="lineNum">     186 </span>                :            : }
+<a name="187"><span class="lineNum">     187 </span>                :            : </a>
+<span class="lineNum">     188 </span>                :            : /* BITOP op_name target_key src_key1 src_key2 src_key3 ... src_keyN */
+<span class="lineNum">     189 </span>                :<span class="lineCov">         55 : void bitopCommand(redisClient *c) {</span>
+<span class="lineNum">     190 </span>                :<span class="lineCov">         55 :     char *opname = c-&gt;argv[1]-&gt;ptr;</span>
+<span class="lineNum">     191 </span>                :<span class="lineCov">         55 :     robj *o, *targetkey = c-&gt;argv[2];</span>
+<span class="lineNum">     192 </span>                :            :     long op, j, numkeys;
+<span class="lineNum">     193 </span>                :            :     robj **objects;      /* Array of source objects. */
+<span class="lineNum">     194 </span>                :            :     unsigned char **src; /* Array of source strings pointers. */
+<span class="lineNum">     195 </span>                :<span class="lineCov">         55 :     long *len, maxlen = 0; /* Array of length of src strings, and max len. */</span>
+<span class="lineNum">     196 </span>                :<span class="lineCov">         55 :     long minlen = 0;    /* Min len among the input keys. */</span>
+<span class="lineNum">     197 </span>                :<span class="lineCov">         55 :     unsigned char *res = NULL; /* Resulting string. */</span>
+<span class="lineNum">     198 </span>                :            : 
+<span class="lineNum">     199 </span>                :            :     /* Parse the operation name. */
+<span class="lineNum">     200 </span>[<span class="branchCov" title="Branch 0 was taken 13 times"> + </span><span class="branchCov" title="Branch 1 was taken 42 times"> + </span>][<span class="branchNoCov" title="Branch 3 was not taken"> - </span><span class="branchCov" title="Branch 4 was taken 13 times"> + </span>]:<span class="lineCov">         55 :     if ((opname[0] == 'a' || opname[0] == 'A') &amp;&amp; !strcasecmp(opname,&quot;and&quot;))</span>
+<span class="lineNum">     201 </span>                :            :         op = BITOP_AND;
+<span class="lineNum">     202 </span>[<span class="branchCov" title="Branch 0 was taken 14 times"> + </span><span class="branchCov" title="Branch 1 was taken 28 times"> + </span>][<span class="branchNoCov" title="Branch 3 was not taken"> - </span><span class="branchCov" title="Branch 4 was taken 14 times"> + </span>]:<span class="lineCov">         42 :     else if((opname[0] == 'o' || opname[0] == 'O') &amp;&amp; !strcasecmp(opname,&quot;or&quot;))</span>
+<span class="lineNum">     203 </span>                :            :         op = BITOP_OR;
+<span class="lineNum">     204 </span>[<span class="branchCov" title="Branch 0 was taken 15 times"> + </span><span class="branchCov" title="Branch 1 was taken 13 times"> + </span>][<span class="branchNoCov" title="Branch 3 was not taken"> - </span><span class="branchCov" title="Branch 4 was taken 15 times"> + </span>]:<span class="lineCov">         28 :     else if((opname[0] == 'x' || opname[0] == 'X') &amp;&amp; !strcasecmp(opname,&quot;xor&quot;))</span>
+<span class="lineNum">     205 </span>                :            :         op = BITOP_XOR;
+<span class="lineNum">     206 </span>[<span class="branchCov" title="Branch 0 was taken 13 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>][<span class="branchNoCov" title="Branch 3 was not taken"> - </span><span class="branchCov" title="Branch 4 was taken 13 times"> + </span>]:<span class="lineCov">         13 :     else if((opname[0] == 'n' || opname[0] == 'N') &amp;&amp; !strcasecmp(opname,&quot;not&quot;))</span>
+<span class="lineNum">     207 </span>                :            :         op = BITOP_NOT;
+<span class="lineNum">     208 </span>                :            :     else {
+<span class="lineNum">     209 </span>                :<span class="lineNoCov">          0 :         addReply(c,shared.syntaxerr);</span>
+<span class="lineNum">     210 </span>                :<span class="lineNoCov">          0 :         return;</span>
+<span class="lineNum">     211 </span>                :            :     }
+<span class="lineNum">     212 </span>                :            : 
+<span class="lineNum">     213 </span>                :            :     /* Sanity check: NOT accepts only a single key argument. */
+<span class="lineNum">     214 </span>[<span class="branchCov" title="Branch 0 was taken 13 times"> + </span><span class="branchCov" title="Branch 1 was taken 42 times"> + </span>][<span class="branchNoCov" title="Branch 2 was not taken"> - </span><span class="branchCov" title="Branch 3 was taken 13 times"> + </span>]:<span class="lineCov">         55 :     if (op == BITOP_NOT &amp;&amp; c-&gt;argc != 4) {</span>
+<span class="lineNum">     215 </span>                :<span class="lineNoCov">          0 :         addReplyError(c,&quot;BITOP NOT must be called with a single source key.&quot;);</span>
+<span class="lineNum">     216 </span>                :<span class="lineNoCov">          0 :         return;</span>
+<span class="lineNum">     217 </span>                :            :     }
+<span class="lineNum">     218 </span>                :            : 
+<span class="lineNum">     219 </span>                :            :     /* Lookup keys, and store pointers to the string objects into an array. */
+<span class="lineNum">     220 </span>                :<span class="lineCov">         55 :     numkeys = c-&gt;argc - 3;</span>
+<span class="lineNum">     221 </span>                :<span class="lineCov">         55 :     src = zmalloc(sizeof(unsigned char*) * numkeys);</span>
+<span class="lineNum">     222 </span>                :<span class="lineCov">         55 :     len = zmalloc(sizeof(long) * numkeys);</span>
+<span class="lineNum">     223 </span>                :<span class="lineCov">         55 :     objects = zmalloc(sizeof(robj*) * numkeys);</span>
+<span class="lineNum">     224 </span>        [<span class="branchCov" title="Branch 1 was taken 192 times"> + </span><span class="branchCov" title="Branch 2 was taken 54 times"> + </span>]:<span class="lineCov">        246 :     for (j = 0; j &lt; numkeys; j++) {</span>
+<span class="lineNum">     225 </span>                :<span class="lineCov">        192 :         o = lookupKeyRead(c-&gt;db,c-&gt;argv[j+3]);</span>
+<span class="lineNum">     226 </span>                :            :         /* Handle non-existing keys as empty strings. */
+<span class="lineNum">     227 </span>        [<span class="branchCov" title="Branch 0 was taken 5 times"> + </span><span class="branchCov" title="Branch 1 was taken 187 times"> + </span>]:<span class="lineCov">        192 :         if (o == NULL) {</span>
+<span class="lineNum">     228 </span>                :<span class="lineCov">          5 :             objects[j] = NULL;</span>
+<span class="lineNum">     229 </span>                :<span class="lineCov">          5 :             src[j] = NULL;</span>
+<span class="lineNum">     230 </span>                :<span class="lineCov">          5 :             len[j] = 0;</span>
+<span class="lineNum">     231 </span>                :<span class="lineCov">          5 :             minlen = 0;</span>
+<span class="lineNum">     232 </span>                :<span class="lineCov">          5 :             continue;</span>
+<span class="lineNum">     233 </span>                :            :         }
+<span class="lineNum">     234 </span>                :            :         /* Return an error if one of the keys is not a string. */
+<span class="lineNum">     235 </span>        [<span class="branchCov" title="Branch 1 was taken 1 time"> + </span><span class="branchCov" title="Branch 2 was taken 186 times"> + </span>]:<span class="lineCov">        187 :         if (checkType(c,o,REDIS_STRING)) {</span>
+<span class="lineNum">     236 </span>        [<span class="branchCov" title="Branch 0 was taken 2 times"> + </span><span class="branchCov" title="Branch 1 was taken 1 time"> + </span>]:<span class="lineCov">          3 :             for (j = j-1; j &gt;= 0; j--) {</span>
+<span class="lineNum">     237 </span>        [<span class="branchCov" title="Branch 0 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">          2 :                 if (objects[j])</span>
+<span class="lineNum">     238 </span>                :<span class="lineCov">          2 :                     decrRefCount(objects[j]);</span>
+<span class="lineNum">     239 </span>                :            :             }
+<span class="lineNum">     240 </span>                :<span class="lineCov">          1 :             zfree(src);</span>
+<span class="lineNum">     241 </span>                :<span class="lineCov">          1 :             zfree(len);</span>
+<span class="lineNum">     242 </span>                :<span class="lineCov">          1 :             zfree(objects);</span>
+<span class="lineNum">     243 </span>                :<span class="lineCov">          1 :             return;</span>
+<span class="lineNum">     244 </span>                :            :         }
+<span class="lineNum">     245 </span>                :<span class="lineCov">        186 :         objects[j] = getDecodedObject(o);</span>
+<span class="lineNum">     246 </span>                :<span class="lineCov">        186 :         src[j] = objects[j]-&gt;ptr;</span>
+<span class="lineNum">     247 </span>                :<span class="lineCov">        372 :         len[j] = sdslen(objects[j]-&gt;ptr);</span>
+<span class="lineNum">     248 </span>        [<span class="branchCov" title="Branch 0 was taken 90 times"> + </span><span class="branchCov" title="Branch 1 was taken 96 times"> + </span>]:<span class="lineCov">        186 :         if (len[j] &gt; maxlen) maxlen = len[j];</span>
+<span class="lineNum">     249 </span>[<span class="branchCov" title="Branch 0 was taken 134 times"> + </span><span class="branchCov" title="Branch 1 was taken 52 times"> + </span>][<span class="branchCov" title="Branch 2 was taken 38 times"> + </span><span class="branchCov" title="Branch 3 was taken 96 times"> + </span>]:<span class="lineCov">        186 :         if (j == 0 || len[j] &lt; minlen) minlen = len[j];</span>
+<span class="lineNum">     250 </span>                :            :     }
+<span class="lineNum">     251 </span>                :            : 
+<span class="lineNum">     252 </span>                :            :     /* Compute the bit operation, if at least one string is not empty. */
+<span class="lineNum">     253 </span>        [<span class="branchCov" title="Branch 0 was taken 53 times"> + </span><span class="branchCov" title="Branch 1 was taken 1 time"> + </span>]:<span class="lineCov">         54 :     if (maxlen) {</span>
+<span class="lineNum">     254 </span>                :<span class="lineCov">         53 :         res = (unsigned char*) sdsnewlen(NULL,maxlen);</span>
+<span class="lineNum">     255 </span>                :            :         unsigned char output, byte;
+<span class="lineNum">     256 </span>                :            :         long i;
+<span class="lineNum">     257 </span>                :            : 
+<span class="lineNum">     258 </span>                :            :         /* Fast path: as far as we have data for all the input bitmaps we
+<span class="lineNum">     259 </span>                :            :          * can take a fast path that performs much better than the
+<span class="lineNum">     260 </span>                :            :          * vanilla algorithm. */
+<span class="lineNum">     261 </span>                :<span class="lineCov">         53 :         j = 0;</span>
+<span class="lineNum">     262 </span>        [<span class="branchCov" title="Branch 0 was taken 48 times"> + </span><span class="branchCov" title="Branch 1 was taken 5 times"> + </span>]:<span class="lineCov">         53 :         if (minlen &amp;&amp; numkeys &lt;= 16) {</span>
+<span class="lineNum">     263 </span>                :            :             unsigned long *lp[16];
+<span class="lineNum">     264 </span>                :<span class="lineCov">         48 :             unsigned long *lres = (unsigned long*) res;</span>
+<span class="lineNum">     265 </span>                :            : 
+<span class="lineNum">     266 </span>                :            :             /* Note: sds pointer is always aligned to 8 byte boundary. */
+<span class="lineNum">     267 </span>                :<span class="lineCov">         48 :             memcpy(lp,src,sizeof(unsigned long*)*numkeys);</span>
+<span class="lineNum">     268 </span>                :<span class="lineCov">         48 :             memcpy(res,src[0],minlen);</span>
+<span class="lineNum">     269 </span>                :            : 
+<span class="lineNum">     270 </span>                :            :             /* Different branches per different operations for speed (sorry). */
+<span class="lineNum">     271 </span>        [<span class="branchCov" title="Branch 0 was taken 12 times"> + </span><span class="branchCov" title="Branch 1 was taken 36 times"> + </span>]:<span class="lineCov">         48 :             if (op == BITOP_AND) {</span>
+<span class="lineNum">     272 </span>        [<span class="branchCov" title="Branch 0 was taken 40 times"> + </span><span class="branchCov" title="Branch 1 was taken 12 times"> + </span>]:<span class="lineCov">         93 :                 while(minlen &gt;= sizeof(unsigned long)*4) {</span>
+<span class="lineNum">     273 </span>        [<span class="branchCov" title="Branch 0 was taken 154 times"> + </span><span class="branchCov" title="Branch 1 was taken 40 times"> + </span>]:<span class="lineCov">        194 :                     for (i = 1; i &lt; numkeys; i++) {</span>
+<span class="lineNum">     274 </span>                :<span class="lineCov">        154 :                         lres[0] &amp;= lp[i][0];</span>
+<span class="lineNum">     275 </span>                :<span class="lineCov">        154 :                         lres[1] &amp;= lp[i][1];</span>
+<span class="lineNum">     276 </span>                :<span class="lineCov">        154 :                         lres[2] &amp;= lp[i][2];</span>
+<span class="lineNum">     277 </span>                :<span class="lineCov">        154 :                         lres[3] &amp;= lp[i][3];</span>
+<span class="lineNum">     278 </span>                :<span class="lineCov">        154 :                         lp[i]+=4;</span>
+<span class="lineNum">     279 </span>                :            :                     }
+<span class="lineNum">     280 </span>                :<span class="lineCov">         40 :                     lres+=4;</span>
+<span class="lineNum">     281 </span>                :<span class="lineCov">         40 :                     j += sizeof(unsigned long)*4;</span>
+<span class="lineNum">     282 </span>                :<span class="lineCov">         40 :                     minlen -= sizeof(unsigned long)*4;</span>
+<span class="lineNum">     283 </span>                :            :                 }
+<span class="lineNum">     284 </span>        [<span class="branchCov" title="Branch 0 was taken 12 times"> + </span><span class="branchCov" title="Branch 1 was taken 24 times"> + </span>]:<span class="lineCov">         36 :             } else if (op == BITOP_OR) {</span>
+<span class="lineNum">     285 </span>        [<span class="branchCov" title="Branch 0 was taken 12 times"> + </span><span class="branchCov" title="Branch 1 was taken 62 times"> + </span>]:<span class="lineCov">         74 :                 while(minlen &gt;= sizeof(unsigned long)*4) {</span>
+<span class="lineNum">     286 </span>        [<span class="branchCov" title="Branch 0 was taken 101 times"> + </span><span class="branchCov" title="Branch 1 was taken 62 times"> + </span>]:<span class="lineCov">        163 :                     for (i = 1; i &lt; numkeys; i++) {</span>
+<span class="lineNum">     287 </span>                :<span class="lineCov">        101 :                         lres[0] |= lp[i][0];</span>
+<span class="lineNum">     288 </span>                :<span class="lineCov">        101 :                         lres[1] |= lp[i][1];</span>
+<span class="lineNum">     289 </span>                :<span class="lineCov">        101 :                         lres[2] |= lp[i][2];</span>
+<span class="lineNum">     290 </span>                :<span class="lineCov">        101 :                         lres[3] |= lp[i][3];</span>
+<span class="lineNum">     291 </span>                :<span class="lineCov">        101 :                         lp[i]+=4;</span>
+<span class="lineNum">     292 </span>                :            :                     }
+<span class="lineNum">     293 </span>                :<span class="lineCov">         62 :                     lres+=4;</span>
+<span class="lineNum">     294 </span>                :<span class="lineCov">         62 :                     j += sizeof(unsigned long)*4;</span>
+<span class="lineNum">     295 </span>                :<span class="lineCov">         62 :                     minlen -= sizeof(unsigned long)*4;</span>
+<span class="lineNum">     296 </span>                :            :                 }
+<span class="lineNum">     297 </span>        [<span class="branchCov" title="Branch 0 was taken 12 times"> + </span><span class="branchCov" title="Branch 1 was taken 12 times"> + </span>]:<span class="lineCov">         24 :             } else if (op == BITOP_XOR) {</span>
+<span class="lineNum">     298 </span>        [<span class="branchCov" title="Branch 0 was taken 12 times"> + </span><span class="branchCov" title="Branch 1 was taken 51 times"> + </span>]:<span class="lineCov">         63 :                 while(minlen &gt;= sizeof(unsigned long)*4) {</span>
+<span class="lineNum">     299 </span>        [<span class="branchCov" title="Branch 0 was taken 71 times"> + </span><span class="branchCov" title="Branch 1 was taken 51 times"> + </span>]:<span class="lineCov">        122 :                     for (i = 1; i &lt; numkeys; i++) {</span>
+<span class="lineNum">     300 </span>                :<span class="lineCov">         71 :                         lres[0] ^= lp[i][0];</span>
+<span class="lineNum">     301 </span>                :<span class="lineCov">         71 :                         lres[1] ^= lp[i][1];</span>
+<span class="lineNum">     302 </span>                :<span class="lineCov">         71 :                         lres[2] ^= lp[i][2];</span>
+<span class="lineNum">     303 </span>                :<span class="lineCov">         71 :                         lres[3] ^= lp[i][3];</span>
+<span class="lineNum">     304 </span>                :<span class="lineCov">         71 :                         lp[i]+=4;</span>
+<span class="lineNum">     305 </span>                :            :                     }
+<span class="lineNum">     306 </span>                :<span class="lineCov">         51 :                     lres+=4;</span>
+<span class="lineNum">     307 </span>                :<span class="lineCov">         51 :                     j += sizeof(unsigned long)*4;</span>
+<span class="lineNum">     308 </span>                :<span class="lineCov">         51 :                     minlen -= sizeof(unsigned long)*4;</span>
+<span class="lineNum">     309 </span>                :            :                 }
+<span class="lineNum">     310 </span>        [<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchCov" title="Branch 1 was taken 12 times"> + </span>]:<span class="lineCov">         12 :             } else if (op == BITOP_NOT) {</span>
+<span class="lineNum">     311 </span>        [<span class="branchCov" title="Branch 0 was taken 12 times"> + </span><span class="branchCov" title="Branch 1 was taken 153 times"> + </span>]:<span class="lineCov">        165 :                 while(minlen &gt;= sizeof(unsigned long)*4) {</span>
+<span class="lineNum">     312 </span>                :<span class="lineCov">        153 :                     lres[0] = ~lres[0];</span>
+<span class="lineNum">     313 </span>                :<span class="lineCov">        153 :                     lres[1] = ~lres[1];</span>
+<span class="lineNum">     314 </span>                :<span class="lineCov">        153 :                     lres[2] = ~lres[2];</span>
+<span class="lineNum">     315 </span>                :<span class="lineCov">        153 :                     lres[3] = ~lres[3];</span>
+<span class="lineNum">     316 </span>                :<span class="lineCov">        153 :                     lres+=4;</span>
+<span class="lineNum">     317 </span>                :<span class="lineCov">        153 :                     j += sizeof(unsigned long)*4;</span>
+<span class="lineNum">     318 </span>                :<span class="lineCov">        153 :                     minlen -= sizeof(unsigned long)*4;</span>
+<span class="lineNum">     319 </span>                :            :                 }
+<span class="lineNum">     320 </span>                :            :             }
+<span class="lineNum">     321 </span>                :            :         }
+<span class="lineNum">     322 </span>                :            : 
+<span class="lineNum">     323 </span>                :            :         /* j is set to the next byte to process by the previous loop. */
+<span class="lineNum">     324 </span>        [<span class="branchCov" title="Branch 0 was taken 20372 times"> + </span><span class="branchCov" title="Branch 1 was taken 53 times"> + </span>]:<span class="lineCov">      20425 :         for (; j &lt; maxlen; j++) {</span>
+<span class="lineNum">     325 </span>        [<span class="branchCov" title="Branch 0 was taken 9466 times"> + </span><span class="branchCov" title="Branch 1 was taken 10906 times"> + </span>]:<span class="lineCov">      20372 :             output = (len[0] &lt;= j) ? 0 : src[0][j];</span>
+<span class="lineNum">     326 </span>        [<span class="branchCov" title="Branch 0 was taken 184 times"> + </span><span class="branchCov" title="Branch 1 was taken 20188 times"> + </span>]:<span class="lineCov">      20372 :             if (op == BITOP_NOT) output = ~output;</span>
+<span class="lineNum">     327 </span>        [<span class="branchCov" title="Branch 0 was taken 98779 times"> + </span><span class="branchCov" title="Branch 1 was taken 20372 times"> + </span>]:<span class="lineCov">     119151 :             for (i = 1; i &lt; numkeys; i++) {</span>
+<span class="lineNum">     328 </span>        [<span class="branchCov" title="Branch 0 was taken 53310 times"> + </span><span class="branchCov" title="Branch 1 was taken 45469 times"> + </span>]:<span class="lineCov">      98779 :                 byte = (len[i] &lt;= j) ? 0 : src[i][j];</span>
+<span class="lineNum">     329 </span>  [<span class="branchCov" title="Branch 0 was taken 37757 times"> + </span><span class="branchCov" title="Branch 1 was taken 36187 times"> + </span><span class="branchCov" title="Branch 2 was taken 24835 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">      98779 :                 switch(op) {</span>
+<span class="lineNum">     330 </span>                :<span class="lineCov">      37757 :                 case BITOP_AND: output &amp;= byte; break;</span>
+<span class="lineNum">     331 </span>                :<span class="lineCov">      36187 :                 case BITOP_OR:  output |= byte; break;</span>
+<span class="lineNum">     332 </span>                :<span class="lineCov">      24835 :                 case BITOP_XOR: output ^= byte; break;</span>
+<span class="lineNum">     333 </span>                :            :                 }
+<span class="lineNum">     334 </span>                :            :             }
+<span class="lineNum">     335 </span>                :<span class="lineCov">      20372 :             res[j] = output;</span>
+<span class="lineNum">     336 </span>                :            :         }
+<span class="lineNum">     337 </span>                :            :     }
+<span class="lineNum">     338 </span>        [<span class="branchCov" title="Branch 0 was taken 189 times"> + </span><span class="branchCov" title="Branch 1 was taken 54 times"> + </span>]:<span class="lineCov">        243 :     for (j = 0; j &lt; numkeys; j++) {</span>
+<span class="lineNum">     339 </span>        [<span class="branchCov" title="Branch 0 was taken 184 times"> + </span><span class="branchCov" title="Branch 1 was taken 5 times"> + </span>]:<span class="lineCov">        189 :         if (objects[j])</span>
+<span class="lineNum">     340 </span>                :<span class="lineCov">        184 :             decrRefCount(objects[j]);</span>
+<span class="lineNum">     341 </span>                :            :     }
+<span class="lineNum">     342 </span>                :<span class="lineCov">         54 :     zfree(src);</span>
+<span class="lineNum">     343 </span>                :<span class="lineCov">         54 :     zfree(len);</span>
+<span class="lineNum">     344 </span>                :<span class="lineCov">         54 :     zfree(objects);</span>
+<span class="lineNum">     345 </span>                :            : 
+<span class="lineNum">     346 </span>                :            :     /* Store the computed value into the target key */
+<span class="lineNum">     347 </span>        [<span class="branchCov" title="Branch 0 was taken 53 times"> + </span><span class="branchCov" title="Branch 1 was taken 1 time"> + </span>]:<span class="lineCov">         54 :     if (maxlen) {</span>
+<span class="lineNum">     348 </span>                :<span class="lineCov">         53 :         o = createObject(REDIS_STRING,res);</span>
+<span class="lineNum">     349 </span>                :<span class="lineCov">         53 :         setKey(c-&gt;db,targetkey,o);</span>
+<span class="lineNum">     350 </span>                :<span class="lineCov">         53 :         notifyKeyspaceEvent(REDIS_NOTIFY_STRING,&quot;set&quot;,targetkey,c-&gt;db-&gt;id);</span>
+<span class="lineNum">     351 </span>                :<span class="lineCov">         53 :         decrRefCount(o);</span>
+<span class="lineNum">     352 </span>        [<span class="branchNoCov" title="Branch 1 was not taken"> - </span><span class="branchCov" title="Branch 2 was taken 1 time"> + </span>]:<span class="lineCov">          1 :     } else if (dbDelete(c-&gt;db,targetkey)) {</span>
+<span class="lineNum">     353 </span>                :<span class="lineNoCov">          0 :         signalModifiedKey(c-&gt;db,targetkey);</span>
+<span class="lineNum">     354 </span>                :<span class="lineNoCov">          0 :         notifyKeyspaceEvent(REDIS_NOTIFY_GENERIC,&quot;del&quot;,targetkey,c-&gt;db-&gt;id);</span>
+<span class="lineNum">     355 </span>                :            :     }
+<span class="lineNum">     356 </span>                :<span class="lineCov">         54 :     server.dirty++;</span>
+<span class="lineNum">     357 </span>                :<span class="lineCov">         55 :     addReplyLongLong(c,maxlen); /* Return the output string length in bytes. */</span>
+<span class="lineNum">     358 </span>                :            : }
+<a name="359"><span class="lineNum">     359 </span>                :            : </a>
+<span class="lineNum">     360 </span>                :            : /* BITCOUNT key [start end] */
+<span class="lineNum">     361 </span>                :<span class="lineCov">        112 : void bitcountCommand(redisClient *c) {</span>
+<span class="lineNum">     362 </span>                :            :     robj *o;
+<span class="lineNum">     363 </span>                :            :     long start, end, strlen;
+<span class="lineNum">     364 </span>                :            :     unsigned char *p;
+<span class="lineNum">     365 </span>                :            :     char llbuf[32];
+<span class="lineNum">     366 </span>                :            : 
+<span class="lineNum">     367 </span>                :            :     /* Lookup, check for type, and return 0 for non existing keys. */
+<span class="lineNum">     368 </span>  [<span class="branchCov" title="Branch 1 was taken 111 times"> + </span><span class="branchCov" title="Branch 2 was taken 1 time"> + </span><span class="branchCov" title="Branch 3 was taken 111 times"> + </span><span class="branchNoCov" title="Branch 4 was not taken"> - </span>]:<span class="lineCov">        223 :     if ((o = lookupKeyReadOrReply(c,c-&gt;argv[1],shared.czero)) == NULL ||</span>
+<span class="lineNum">     369 </span>                :<span class="lineCov">        111 :         checkType(c,o,REDIS_STRING)) return;</span>
+<span class="lineNum">     370 </span>                :            : 
+<span class="lineNum">     371 </span>                :            :     /* Set the 'p' pointer to the string, that can be just a stack allocated
+<span class="lineNum">     372 </span>                :            :      * array if our string was integer encoded. */
+<span class="lineNum">     373 </span>        [<span class="branchCov" title="Branch 0 was taken 1 time"> + </span><span class="branchCov" title="Branch 1 was taken 110 times"> + </span>]:<span class="lineCov">        111 :     if (o-&gt;encoding == REDIS_ENCODING_INT) {</span>
+<span class="lineNum">     374 </span>                :<span class="lineCov">          1 :         p = (unsigned char*) llbuf;</span>
+<span class="lineNum">     375 </span>                :<span class="lineCov">          1 :         strlen = ll2string(llbuf,sizeof(llbuf),(long)o-&gt;ptr);</span>
+<span class="lineNum">     376 </span>                :            :     } else {
+<span class="lineNum">     377 </span>                :<span class="lineCov">        110 :         p = (unsigned char*) o-&gt;ptr;</span>
+<span class="lineNum">     378 </span>                :<span class="lineCov">        110 :         strlen = sdslen(o-&gt;ptr);</span>
+<span class="lineNum">     379 </span>                :            :     }
+<span class="lineNum">     380 </span>                :            : 
+<span class="lineNum">     381 </span>                :            :     /* Parse start/end range if any. */
+<span class="lineNum">     382 </span>        [<span class="branchCov" title="Branch 0 was taken 5 times"> + </span><span class="branchCov" title="Branch 1 was taken 106 times"> + </span>]:<span class="lineCov">        111 :     if (c-&gt;argc == 4) {</span>
+<span class="lineNum">     383 </span>        [<span class="branchCov" title="Branch 1 was taken 5 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          5 :         if (getLongFromObjectOrReply(c,c-&gt;argv[2],&amp;start,NULL) != REDIS_OK)</span>
+<span class="lineNum">     384 </span>                :            :             return;
+<span class="lineNum">     385 </span>        [<span class="branchCov" title="Branch 1 was taken 5 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          5 :         if (getLongFromObjectOrReply(c,c-&gt;argv[3],&amp;end,NULL) != REDIS_OK)</span>
+<span class="lineNum">     386 </span>                :            :             return;
+<span class="lineNum">     387 </span>                :            :         /* Convert negative indexes */
+<span class="lineNum">     388 </span>        [<span class="branchCov" title="Branch 0 was taken 1 time"> + </span><span class="branchCov" title="Branch 1 was taken 4 times"> + </span>]:<span class="lineCov">          5 :         if (start &lt; 0) start = strlen+start;</span>
+<span class="lineNum">     389 </span>        [<span class="branchCov" title="Branch 0 was taken 2 times"> + </span><span class="branchCov" title="Branch 1 was taken 3 times"> + </span>]:<span class="lineCov">          5 :         if (end &lt; 0) end = strlen+end;</span>
+<span class="lineNum">     390 </span>        [<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchCov" title="Branch 1 was taken 5 times"> + </span>]:<span class="lineCov">          5 :         if (start &lt; 0) start = 0;</span>
+<span class="lineNum">     391 </span>        [<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchCov" title="Branch 1 was taken 5 times"> + </span>]:<span class="lineCov">          5 :         if (end &lt; 0) end = 0;</span>
+<span class="lineNum">     392 </span>        [<span class="branchCov" title="Branch 0 was taken 2 times"> + </span><span class="branchCov" title="Branch 1 was taken 3 times"> + </span>]:<span class="lineCov">          5 :         if (end &gt;= strlen) end = strlen-1;</span>
+<span class="lineNum">     393 </span>        [<span class="branchCov" title="Branch 0 was taken 105 times"> + </span><span class="branchCov" title="Branch 1 was taken 1 time"> + </span>]:<span class="lineCov">        106 :     } else if (c-&gt;argc == 2) {</span>
+<span class="lineNum">     394 </span>                :            :         /* The whole string. */
+<span class="lineNum">     395 </span>                :<span class="lineCov">        105 :         start = 0;</span>
+<span class="lineNum">     396 </span>                :<span class="lineCov">        105 :         end = strlen-1;</span>
+<span class="lineNum">     397 </span>                :            :     } else {
+<span class="lineNum">     398 </span>                :            :         /* Syntax error. */
+<span class="lineNum">     399 </span>                :<span class="lineCov">          1 :         addReply(c,shared.syntaxerr);</span>
+<span class="lineNum">     400 </span>                :<span class="lineCov">          1 :         return;</span>
+<span class="lineNum">     401 </span>                :            :     }
+<span class="lineNum">     402 </span>                :            : 
+<span class="lineNum">     403 </span>                :            :     /* Precondition: end &gt;= 0 &amp;&amp; end &lt; strlen, so the only condition where
+<span class="lineNum">     404 </span>                :            :      * zero can be returned is: start &gt; end. */
+<span class="lineNum">     405 </span>        [<span class="branchCov" title="Branch 0 was taken 2 times"> + </span><span class="branchCov" title="Branch 1 was taken 108 times"> + </span>]:<span class="lineCov">        110 :     if (start &gt; end) {</span>
+<span class="lineNum">     406 </span>                :<span class="lineCov">          2 :         addReply(c,shared.czero);</span>
+<span class="lineNum">     407 </span>                :            :     } else {
+<span class="lineNum">     408 </span>                :<span class="lineCov">        108 :         long bytes = end-start+1;</span>
+<span class="lineNum">     409 </span>                :            : 
+<span class="lineNum">     410 </span>                :<span class="lineCov">        112 :         addReplyLongLong(c,redisPopcount(p+start,bytes));</span>
+<span class="lineNum">     411 </span>                :            :     }
+<span class="lineNum">     412 </span>                :            : }
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.9</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

@@ -1,0 +1,41 @@
+Warning:  The encoding 'ANSI_X3.4-1968' is not supported by the Java runtime.
+<?xml version="1.0" encoding="ANSI_X3.4-1968" standalone="no"?>
+<pmd-cpd>
+<duplication lines="9" tokens="136">
+<file line="183" path="/var/lib/jenkins/jobs/redis-cpd/workspace/src/lzf_c.c"/>
+<file line="193" path="/var/lib/jenkins/jobs/redis-cpd/workspace/src/lzf_c.c"/>
+<codefragment><![CDATA[                  len++; if (ref [len] != ip [len]) break;
+                  len++; if (ref [len] != ip [len]) break;
+                  len++; if (ref [len] != ip [len]) break;
+                  len++; if (ref [len] != ip [len]) break;
+
+                  len++; if (ref [len] != ip [len]) break;
+                  len++; if (ref [len] != ip [len]) break;
+                  len++; if (ref [len] != ip [len]) break;
+                  len++; if (ref [len] != ip [len]) break;]]></codefragment>
+</duplication>
+<duplication lines="8" tokens="119">
+<file line="183" path="/var/lib/jenkins/jobs/redis-cpd/workspace/src/lzf_c.c"/>
+<file line="194" path="/var/lib/jenkins/jobs/redis-cpd/workspace/src/lzf_c.c"/>
+<codefragment><![CDATA[                  len++; if (ref [len] != ip [len]) break;
+                  len++; if (ref [len] != ip [len]) break;
+                  len++; if (ref [len] != ip [len]) break;
+                  len++; if (ref [len] != ip [len]) break;
+
+                  len++; if (ref [len] != ip [len]) break;
+                  len++; if (ref [len] != ip [len]) break;
+                  len++; if (ref [len] != ip [len]) break;]]></codefragment>
+</duplication>
+<duplication lines="7" tokens="102">
+<file line="183" path="/var/lib/jenkins/jobs/redis-cpd/workspace/src/lzf_c.c"/>
+<file line="195" path="/var/lib/jenkins/jobs/redis-cpd/workspace/src/lzf_c.c"/>
+<codefragment><![CDATA[                  len++; if (ref [len] != ip [len]) break;
+                  len++; if (ref [len] != ip [len]) break;
+                  len++; if (ref [len] != ip [len]) break;
+                  len++; if (ref [len] != ip [len]) break;
+
+                  len++; if (ref [len] != ip [len]) break;
+                  len++; if (ref [len] != ip [len]) break;]]></codefragment>
+</duplication>
+</pmd-cpd>
+

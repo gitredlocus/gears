@@ -1,0 +1,216 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - redis-lcov_9.info - /var/lib/jenkins/jobs/redis-lcov/workspace/src/endianconv.c</title>
+  <link rel="stylesheet" type="text/css" href="../../../../../../../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../../../../../../../index.html">top level</a> - <a href="index.html">var/lib/jenkins/jobs/redis-lcov/workspace/src</a> - endianconv.c<span style="font-size: 80%;"> (source / <a href="endianconv.c.func.html">functions</a>)</span></td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">redis-lcov_9.info</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntry">36</td>
+            <td class="headerCovTableEntryLo">0.0 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2013-08-26</td>
+            <td></td>
+            <td class="headerItem">Functions:</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntry">6</td>
+            <td class="headerCovTableEntryLo">0.0 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Legend:</td>
+            <td class="headerValueLeg">            Lines:
+            <span class="coverLegendCov">hit</span>
+            <span class="coverLegendNoCov">not hit</span>
+            | Branches:
+            <span class="coverLegendCov">+</span> taken
+            <span class="coverLegendNoCov">-</span> not taken
+            <span class="coverLegendNoCov">#</span> not executed
+</td>
+            <td></td>
+            <td class="headerItem">Branches:</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntryHi">-</td>
+          </tr>
+          <tr><td><img src="../../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">           Branch data     Line data    Source code</pre>
+<pre class="source">
+<a name="1"><span class="lineNum">       1 </span>                :            : /* endinconv.c -- Endian conversions utilities.</a>
+<span class="lineNum">       2 </span>                :            :  *
+<span class="lineNum">       3 </span>                :            :  * This functions are never called directly, but always using the macros
+<span class="lineNum">       4 </span>                :            :  * defined into endianconv.h, this way we define everything is a non-operation
+<span class="lineNum">       5 </span>                :            :  * if the arch is already little endian.
+<span class="lineNum">       6 </span>                :            :  *
+<span class="lineNum">       7 </span>                :            :  * Redis tries to encode everything as little endian (but a few things that need
+<span class="lineNum">       8 </span>                :            :  * to be backward compatible are still in big endian) because most of the
+<span class="lineNum">       9 </span>                :            :  * production environments are little endian, and we have a lot of conversions
+<span class="lineNum">      10 </span>                :            :  * in a few places because ziplists, intsets, zipmaps, need to be endian-neutral
+<span class="lineNum">      11 </span>                :            :  * even in memory, since they are serialied on RDB files directly with a single
+<span class="lineNum">      12 </span>                :            :  * write(2) without other additional steps.
+<span class="lineNum">      13 </span>                :            :  *
+<span class="lineNum">      14 </span>                :            :  * ----------------------------------------------------------------------------
+<span class="lineNum">      15 </span>                :            :  *
+<span class="lineNum">      16 </span>                :            :  * Copyright (c) 2011-2012, Salvatore Sanfilippo &lt;antirez at gmail dot com&gt;
+<span class="lineNum">      17 </span>                :            :  * All rights reserved.
+<span class="lineNum">      18 </span>                :            :  *
+<span class="lineNum">      19 </span>                :            :  * Redistribution and use in source and binary forms, with or without
+<span class="lineNum">      20 </span>                :            :  * modification, are permitted provided that the following conditions are met:
+<span class="lineNum">      21 </span>                :            :  *
+<span class="lineNum">      22 </span>                :            :  *   * Redistributions of source code must retain the above copyright notice,
+<span class="lineNum">      23 </span>                :            :  *     this list of conditions and the following disclaimer.
+<span class="lineNum">      24 </span>                :            :  *   * Redistributions in binary form must reproduce the above copyright
+<span class="lineNum">      25 </span>                :            :  *     notice, this list of conditions and the following disclaimer in the
+<span class="lineNum">      26 </span>                :            :  *     documentation and/or other materials provided with the distribution.
+<span class="lineNum">      27 </span>                :            :  *   * Neither the name of Redis nor the names of its contributors may be used
+<span class="lineNum">      28 </span>                :            :  *     to endorse or promote products derived from this software without
+<span class="lineNum">      29 </span>                :            :  *     specific prior written permission.
+<span class="lineNum">      30 </span>                :            :  *
+<span class="lineNum">      31 </span>                :            :  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS &quot;AS IS&quot;
+<span class="lineNum">      32 </span>                :            :  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+<span class="lineNum">      33 </span>                :            :  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+<span class="lineNum">      34 </span>                :            :  * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+<span class="lineNum">      35 </span>                :            :  * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+<span class="lineNum">      36 </span>                :            :  * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+<span class="lineNum">      37 </span>                :            :  * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+<span class="lineNum">      38 </span>                :            :  * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+<span class="lineNum">      39 </span>                :            :  * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+<span class="lineNum">      40 </span>                :            :  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+<span class="lineNum">      41 </span>                :            :  * POSSIBILITY OF SUCH DAMAGE.
+<span class="lineNum">      42 </span>                :            :  */
+<span class="lineNum">      43 </span>                :            : 
+<span class="lineNum">      44 </span>                :            : 
+<span class="lineNum">      45 </span>                :            : #include &lt;stdint.h&gt;
+<span class="lineNum">      46 </span>                :            : 
+<a name="47"><span class="lineNum">      47 </span>                :            : /* Toggle the 16 bit unsigned integer pointed by *p from little endian to</a>
+<a name="48"><span class="lineNum">      48 </span>                :            :  * big endian */</a>
+<span class="lineNum">      49 </span>                :<span class="lineNoCov">          0 : void memrev16(void *p) {</span>
+<span class="lineNum">      50 </span>                :<span class="lineNoCov">          0 :     unsigned char *x = p, t;</span>
+<span class="lineNum">      51 </span>                :            : 
+<span class="lineNum">      52 </span>                :<span class="lineNoCov">          0 :     t = x[0];</span>
+<span class="lineNum">      53 </span>                :<span class="lineNoCov">          0 :     x[0] = x[1];</span>
+<span class="lineNum">      54 </span>                :<span class="lineNoCov">          0 :     x[1] = t;</span>
+<span class="lineNum">      55 </span>                :<span class="lineNoCov">          0 : }</span>
+<span class="lineNum">      56 </span>                :            : 
+<a name="57"><span class="lineNum">      57 </span>                :            : /* Toggle the 32 bit unsigned integer pointed by *p from little endian to</a>
+<a name="58"><span class="lineNum">      58 </span>                :            :  * big endian */</a>
+<span class="lineNum">      59 </span>                :<span class="lineNoCov">          0 : void memrev32(void *p) {</span>
+<span class="lineNum">      60 </span>                :<span class="lineNoCov">          0 :     unsigned char *x = p, t;</span>
+<span class="lineNum">      61 </span>                :            : 
+<span class="lineNum">      62 </span>                :<span class="lineNoCov">          0 :     t = x[0];</span>
+<span class="lineNum">      63 </span>                :<span class="lineNoCov">          0 :     x[0] = x[3];</span>
+<span class="lineNum">      64 </span>                :<span class="lineNoCov">          0 :     x[3] = t;</span>
+<span class="lineNum">      65 </span>                :<span class="lineNoCov">          0 :     t = x[1];</span>
+<span class="lineNum">      66 </span>                :<span class="lineNoCov">          0 :     x[1] = x[2];</span>
+<span class="lineNum">      67 </span>                :<span class="lineNoCov">          0 :     x[2] = t;</span>
+<span class="lineNum">      68 </span>                :<span class="lineNoCov">          0 : }</span>
+<span class="lineNum">      69 </span>                :            : 
+<a name="70"><span class="lineNum">      70 </span>                :            : /* Toggle the 64 bit unsigned integer pointed by *p from little endian to</a>
+<a name="71"><span class="lineNum">      71 </span>                :            :  * big endian */</a>
+<span class="lineNum">      72 </span>                :<span class="lineNoCov">          0 : void memrev64(void *p) {</span>
+<span class="lineNum">      73 </span>                :<span class="lineNoCov">          0 :     unsigned char *x = p, t;</span>
+<span class="lineNum">      74 </span>                :            : 
+<span class="lineNum">      75 </span>                :<span class="lineNoCov">          0 :     t = x[0];</span>
+<span class="lineNum">      76 </span>                :<span class="lineNoCov">          0 :     x[0] = x[7];</span>
+<span class="lineNum">      77 </span>                :<span class="lineNoCov">          0 :     x[7] = t;</span>
+<span class="lineNum">      78 </span>                :<span class="lineNoCov">          0 :     t = x[1];</span>
+<span class="lineNum">      79 </span>                :<span class="lineNoCov">          0 :     x[1] = x[6];</span>
+<span class="lineNum">      80 </span>                :<span class="lineNoCov">          0 :     x[6] = t;</span>
+<span class="lineNum">      81 </span>                :<span class="lineNoCov">          0 :     t = x[2];</span>
+<span class="lineNum">      82 </span>                :<span class="lineNoCov">          0 :     x[2] = x[5];</span>
+<span class="lineNum">      83 </span>                :<span class="lineNoCov">          0 :     x[5] = t;</span>
+<span class="lineNum">      84 </span>                :<span class="lineNoCov">          0 :     t = x[3];</span>
+<span class="lineNum">      85 </span>                :<span class="lineNoCov">          0 :     x[3] = x[4];</span>
+<span class="lineNum">      86 </span>                :<span class="lineNoCov">          0 :     x[4] = t;</span>
+<span class="lineNum">      87 </span>                :<span class="lineNoCov">          0 : }</span>
+<span class="lineNum">      88 </span>                :            : 
+<span class="lineNum">      89 </span>                :<span class="lineNoCov">          0 : uint16_t intrev16(uint16_t v) {</span>
+<span class="lineNum">      90 </span>                :            :     memrev16(&amp;v);
+<span class="lineNum">      91 </span>                :<span class="lineNoCov">          0 :     return v;</span>
+<span class="lineNum">      92 </span>                :            : }
+<span class="lineNum">      93 </span>                :            : 
+<span class="lineNum">      94 </span>                :<span class="lineNoCov">          0 : uint32_t intrev32(uint32_t v) {</span>
+<span class="lineNum">      95 </span>                :            :     memrev32(&amp;v);
+<span class="lineNum">      96 </span>                :<span class="lineNoCov">          0 :     return v;</span>
+<span class="lineNum">      97 </span>                :            : }
+<span class="lineNum">      98 </span>                :            : 
+<span class="lineNum">      99 </span>                :<span class="lineNoCov">          0 : uint64_t intrev64(uint64_t v) {</span>
+<span class="lineNum">     100 </span>                :            :     memrev64(&amp;v);
+<span class="lineNum">     101 </span>                :<span class="lineNoCov">          0 :     return v;</span>
+<span class="lineNum">     102 </span>                :            : }
+<span class="lineNum">     103 </span>                :            : 
+<span class="lineNum">     104 </span>                :            : #ifdef TESTMAIN
+<span class="lineNum">     105 </span>                :            : #include &lt;stdio.h&gt;
+<span class="lineNum">     106 </span>                :            : 
+<span class="lineNum">     107 </span>                :            : int main(void) {
+<span class="lineNum">     108 </span>                :            :     char buf[32];
+<span class="lineNum">     109 </span>                :            : 
+<span class="lineNum">     110 </span>                :            :     sprintf(buf,&quot;ciaoroma&quot;);
+<span class="lineNum">     111 </span>                :            :     memrev16(buf);
+<span class="lineNum">     112 </span>                :            :     printf(&quot;%s\n&quot;, buf);
+<span class="lineNum">     113 </span>                :            : 
+<span class="lineNum">     114 </span>                :            :     sprintf(buf,&quot;ciaoroma&quot;);
+<span class="lineNum">     115 </span>                :            :     memrev32(buf);
+<span class="lineNum">     116 </span>                :            :     printf(&quot;%s\n&quot;, buf);
+<span class="lineNum">     117 </span>                :            : 
+<span class="lineNum">     118 </span>                :            :     sprintf(buf,&quot;ciaoroma&quot;);
+<span class="lineNum">     119 </span>                :            :     memrev64(buf);
+<span class="lineNum">     120 </span>                :            :     printf(&quot;%s\n&quot;, buf);
+<span class="lineNum">     121 </span>                :            : 
+<span class="lineNum">     122 </span>                :            :     return 0;
+<span class="lineNum">     123 </span>                :            : }
+<span class="lineNum">     124 </span>                :            : #endif
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.9</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

@@ -1,0 +1,1162 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - redis-lcov_9.info - /var/lib/jenkins/jobs/redis-lcov/workspace/src/scripting.c</title>
+  <link rel="stylesheet" type="text/css" href="../../../../../../../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../../../../../../../index.html">top level</a> - <a href="index.html">var/lib/jenkins/jobs/redis-lcov/workspace/src</a> - scripting.c<span style="font-size: 80%;"> (source / <a href="scripting.c.func.html">functions</a>)</span></td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">redis-lcov_9.info</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">438</td>
+            <td class="headerCovTableEntry">521</td>
+            <td class="headerCovTableEntryMed">84.1 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2013-08-26</td>
+            <td></td>
+            <td class="headerItem">Functions:</td>
+            <td class="headerCovTableEntry">30</td>
+            <td class="headerCovTableEntry">34</td>
+            <td class="headerCovTableEntryMed">88.2 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Legend:</td>
+            <td class="headerValueLeg">            Lines:
+            <span class="coverLegendCov">hit</span>
+            <span class="coverLegendNoCov">not hit</span>
+            | Branches:
+            <span class="coverLegendCov">+</span> taken
+            <span class="coverLegendNoCov">-</span> not taken
+            <span class="coverLegendNoCov">#</span> not executed
+</td>
+            <td></td>
+            <td class="headerItem">Branches:</td>
+            <td class="headerCovTableEntry">147</td>
+            <td class="headerCovTableEntry">211</td>
+            <td class="headerCovTableEntryLo">69.7 %</td>
+          </tr>
+          <tr><td><img src="../../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">           Branch data     Line data    Source code</pre>
+<pre class="source">
+<a name="1"><span class="lineNum">       1 </span>                :            : /*</a>
+<span class="lineNum">       2 </span>                :            :  * Copyright (c) 2009-2012, Salvatore Sanfilippo &lt;antirez at gmail dot com&gt;
+<span class="lineNum">       3 </span>                :            :  * All rights reserved.
+<span class="lineNum">       4 </span>                :            :  *
+<span class="lineNum">       5 </span>                :            :  * Redistribution and use in source and binary forms, with or without
+<span class="lineNum">       6 </span>                :            :  * modification, are permitted provided that the following conditions are met:
+<span class="lineNum">       7 </span>                :            :  *
+<span class="lineNum">       8 </span>                :            :  *   * Redistributions of source code must retain the above copyright notice,
+<span class="lineNum">       9 </span>                :            :  *     this list of conditions and the following disclaimer.
+<span class="lineNum">      10 </span>                :            :  *   * Redistributions in binary form must reproduce the above copyright
+<span class="lineNum">      11 </span>                :            :  *     notice, this list of conditions and the following disclaimer in the
+<span class="lineNum">      12 </span>                :            :  *     documentation and/or other materials provided with the distribution.
+<span class="lineNum">      13 </span>                :            :  *   * Neither the name of Redis nor the names of its contributors may be used
+<span class="lineNum">      14 </span>                :            :  *     to endorse or promote products derived from this software without
+<span class="lineNum">      15 </span>                :            :  *     specific prior written permission.
+<span class="lineNum">      16 </span>                :            :  *
+<span class="lineNum">      17 </span>                :            :  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS &quot;AS IS&quot;
+<span class="lineNum">      18 </span>                :            :  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+<span class="lineNum">      19 </span>                :            :  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+<span class="lineNum">      20 </span>                :            :  * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+<span class="lineNum">      21 </span>                :            :  * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+<span class="lineNum">      22 </span>                :            :  * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+<span class="lineNum">      23 </span>                :            :  * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+<span class="lineNum">      24 </span>                :            :  * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+<span class="lineNum">      25 </span>                :            :  * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+<span class="lineNum">      26 </span>                :            :  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+<span class="lineNum">      27 </span>                :            :  * POSSIBILITY OF SUCH DAMAGE.
+<span class="lineNum">      28 </span>                :            :  */
+<span class="lineNum">      29 </span>                :            : 
+<span class="lineNum">      30 </span>                :            : #include &quot;redis.h&quot;
+<span class="lineNum">      31 </span>                :            : #include &quot;sha1.h&quot;
+<span class="lineNum">      32 </span>                :            : #include &quot;rand.h&quot;
+<span class="lineNum">      33 </span>                :            : 
+<span class="lineNum">      34 </span>                :            : #include &lt;lua.h&gt;
+<span class="lineNum">      35 </span>                :            : #include &lt;lauxlib.h&gt;
+<span class="lineNum">      36 </span>                :            : #include &lt;lualib.h&gt;
+<span class="lineNum">      37 </span>                :            : #include &lt;ctype.h&gt;
+<span class="lineNum">      38 </span>                :            : #include &lt;math.h&gt;
+<span class="lineNum">      39 </span>                :            : 
+<span class="lineNum">      40 </span>                :            : char *redisProtocolToLuaType_Int(lua_State *lua, char *reply);
+<span class="lineNum">      41 </span>                :            : char *redisProtocolToLuaType_Bulk(lua_State *lua, char *reply);
+<span class="lineNum">      42 </span>                :            : char *redisProtocolToLuaType_Status(lua_State *lua, char *reply);
+<span class="lineNum">      43 </span>                :            : char *redisProtocolToLuaType_Error(lua_State *lua, char *reply);
+<span class="lineNum">      44 </span>                :            : char *redisProtocolToLuaType_MultiBulk(lua_State *lua, char *reply);
+<span class="lineNum">      45 </span>                :            : int redis_math_random (lua_State *L);
+<span class="lineNum">      46 </span>                :            : int redis_math_randomseed (lua_State *L);
+<span class="lineNum">      47 </span>                :            : void sha1hex(char *digest, char *script, size_t len);
+<span class="lineNum">      48 </span>                :            : 
+<span class="lineNum">      49 </span>                :            : /* Take a Redis reply in the Redis protocol format and convert it into a
+<span class="lineNum">      50 </span>                :            :  * Lua type. Thanks to this function, and the introduction of not connected
+<span class="lineNum">      51 </span>                :            :  * clients, it is trivial to implement the redis() lua function.
+<span class="lineNum">      52 </span>                :            :  *
+<span class="lineNum">      53 </span>                :            :  * Basically we take the arguments, execute the Redis command in the context
+<span class="lineNum">      54 </span>                :            :  * of a non connected client, then take the generated reply and convert it
+<span class="lineNum">      55 </span>                :            :  * into a suitable Lua type. With this trick the scripting feature does not
+<span class="lineNum">      56 </span>                :            :  * need the introduction of a full Redis internals API. Basically the script
+<span class="lineNum">      57 </span>                :            :  * is like a normal client that bypasses all the slow I/O paths.
+<span class="lineNum">      58 </span>                :            :  *
+<span class="lineNum">      59 </span>                :            :  * Note: in this function we do not do any sanity check as the reply is
+<span class="lineNum">      60 </span>                :            :  * generated by Redis directly. This allows us to go faster.
+<span class="lineNum">      61 </span>                :            :  * The reply string can be altered during the parsing as it is discarded
+<span class="lineNum">      62 </span>                :            :  * after the conversion is completed.
+<span class="lineNum">      63 </span>                :            :  *
+<span class="lineNum">      64 </span>                :            :  * Errors are returned as a table with a single 'err' field set to the
+<span class="lineNum">      65 </span>                :            :  * error string.
+<a name="66"><span class="lineNum">      66 </span>                :            :  */</a>
+<span class="lineNum">      67 </span>                :            : 
+<span class="lineNum">      68 </span>                :<span class="lineCov">     417209 : char *redisProtocolToLuaType(lua_State *lua, char* reply) {</span>
+<span class="lineNum">      69 </span>                :<span class="lineCov">     417209 :     char *p = reply;</span>
+<span class="lineNum">      70 </span>                :            : 
+<span class="lineNum">      71 </span>  [<span class="branchCov" title="Branch 0 was taken 317021 times"> + </span><span class="branchCov" title="Branch 1 was taken 164 times"> + </span><span class="branchCov" title="Branch 2 was taken 100008 times"> + </span><span class="branchCov" title="Branch 3 was taken 4 times"> + </span> :<span class="lineCov">     417209 :     switch(*p) {</span>
+<span class="lineNum">         </span>         <span class="branchCov" title="Branch 4 was taken 12 times"> + </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>]
+<span class="lineNum">      72 </span>                :            :     case ':':
+<span class="lineNum">      73 </span>                :<span class="lineCov">     317021 :         p = redisProtocolToLuaType_Int(lua,reply);</span>
+<span class="lineNum">      74 </span>                :<span class="lineCov">     317021 :         break;</span>
+<span class="lineNum">      75 </span>                :            :     case '$':
+<span class="lineNum">      76 </span>                :<span class="lineCov">        164 :         p = redisProtocolToLuaType_Bulk(lua,reply);</span>
+<span class="lineNum">      77 </span>                :<span class="lineCov">        164 :         break;</span>
+<span class="lineNum">      78 </span>                :            :     case '+':
+<span class="lineNum">      79 </span>                :<span class="lineCov">     100008 :         p = redisProtocolToLuaType_Status(lua,reply);</span>
+<span class="lineNum">      80 </span>                :<span class="lineCov">     100008 :         break;</span>
+<span class="lineNum">      81 </span>                :            :     case '-':
+<span class="lineNum">      82 </span>                :<span class="lineCov">          4 :         p = redisProtocolToLuaType_Error(lua,reply);</span>
+<span class="lineNum">      83 </span>                :<span class="lineCov">          4 :         break;</span>
+<span class="lineNum">      84 </span>                :            :     case '*':
+<span class="lineNum">      85 </span>                :<span class="lineCov">         12 :         p = redisProtocolToLuaType_MultiBulk(lua,reply);</span>
+<span class="lineNum">      86 </span>                :<span class="lineCov">         12 :         break;</span>
+<span class="lineNum">      87 </span>                :            :     }
+<span class="lineNum">      88 </span>                :<span class="lineCov">     417209 :     return p;</span>
+<a name="89"><span class="lineNum">      89 </span>                :            : }</a>
+<span class="lineNum">      90 </span>                :            : 
+<span class="lineNum">      91 </span>                :<span class="lineCov">     317021 : char *redisProtocolToLuaType_Int(lua_State *lua, char *reply) {</span>
+<span class="lineNum">      92 </span>                :<span class="lineCov">     317021 :     char *p = strchr(reply+1,'\r');</span>
+<span class="lineNum">      93 </span>                :            :     long long value;
+<span class="lineNum">      94 </span>                :            : 
+<span class="lineNum">      95 </span>                :<span class="lineCov">     317021 :     string2ll(reply+1,p-reply-1,&amp;value);</span>
+<span class="lineNum">      96 </span>                :<span class="lineCov">     317021 :     lua_pushnumber(lua,(lua_Number)value);</span>
+<span class="lineNum">      97 </span>                :<span class="lineCov">     317021 :     return p+2;</span>
+<a name="98"><span class="lineNum">      98 </span>                :            : }</a>
+<span class="lineNum">      99 </span>                :            : 
+<span class="lineNum">     100 </span>                :<span class="lineCov">        164 : char *redisProtocolToLuaType_Bulk(lua_State *lua, char *reply) {</span>
+<span class="lineNum">     101 </span>                :<span class="lineCov">        164 :     char *p = strchr(reply+1,'\r');</span>
+<span class="lineNum">     102 </span>                :            :     long long bulklen;
+<span class="lineNum">     103 </span>                :            : 
+<span class="lineNum">     104 </span>                :<span class="lineCov">        164 :     string2ll(reply+1,p-reply-1,&amp;bulklen);</span>
+<span class="lineNum">     105 </span>        [<span class="branchCov" title="Branch 0 was taken 8 times"> + </span><span class="branchCov" title="Branch 1 was taken 156 times"> + </span>]:<span class="lineCov">        164 :     if (bulklen == -1) {</span>
+<span class="lineNum">     106 </span>                :<span class="lineCov">          8 :         lua_pushboolean(lua,0);</span>
+<span class="lineNum">     107 </span>                :<span class="lineCov">          8 :         return p+2;</span>
+<span class="lineNum">     108 </span>                :            :     } else {
+<span class="lineNum">     109 </span>                :<span class="lineCov">        156 :         lua_pushlstring(lua,p+2,bulklen);</span>
+<span class="lineNum">     110 </span>                :<span class="lineCov">        164 :         return p+2+bulklen+2;</span>
+<span class="lineNum">     111 </span>                :            :     }
+<a name="112"><span class="lineNum">     112 </span>                :            : }</a>
+<span class="lineNum">     113 </span>                :            : 
+<span class="lineNum">     114 </span>                :<span class="lineCov">     100008 : char *redisProtocolToLuaType_Status(lua_State *lua, char *reply) {</span>
+<span class="lineNum">     115 </span>                :<span class="lineCov">     100008 :     char *p = strchr(reply+1,'\r');</span>
+<span class="lineNum">     116 </span>                :            : 
+<span class="lineNum">     117 </span>                :<span class="lineCov">     100008 :     lua_newtable(lua);</span>
+<span class="lineNum">     118 </span>                :<span class="lineCov">     100008 :     lua_pushstring(lua,&quot;ok&quot;);</span>
+<span class="lineNum">     119 </span>                :<span class="lineCov">     100008 :     lua_pushlstring(lua,reply+1,p-reply-1);</span>
+<span class="lineNum">     120 </span>                :<span class="lineCov">     100008 :     lua_settable(lua,-3);</span>
+<span class="lineNum">     121 </span>                :<span class="lineCov">     100008 :     return p+2;</span>
+<a name="122"><span class="lineNum">     122 </span>                :            : }</a>
+<span class="lineNum">     123 </span>                :            : 
+<span class="lineNum">     124 </span>                :<span class="lineCov">          4 : char *redisProtocolToLuaType_Error(lua_State *lua, char *reply) {</span>
+<span class="lineNum">     125 </span>                :<span class="lineCov">          4 :     char *p = strchr(reply+1,'\r');</span>
+<span class="lineNum">     126 </span>                :            : 
+<span class="lineNum">     127 </span>                :<span class="lineCov">          4 :     lua_newtable(lua);</span>
+<span class="lineNum">     128 </span>                :<span class="lineCov">          4 :     lua_pushstring(lua,&quot;err&quot;);</span>
+<span class="lineNum">     129 </span>                :<span class="lineCov">          4 :     lua_pushlstring(lua,reply+1,p-reply-1);</span>
+<span class="lineNum">     130 </span>                :<span class="lineCov">          4 :     lua_settable(lua,-3);</span>
+<span class="lineNum">     131 </span>                :<span class="lineCov">          4 :     return p+2;</span>
+<a name="132"><span class="lineNum">     132 </span>                :            : }</a>
+<span class="lineNum">     133 </span>                :            : 
+<span class="lineNum">     134 </span>                :<span class="lineCov">         12 : char *redisProtocolToLuaType_MultiBulk(lua_State *lua, char *reply) {</span>
+<span class="lineNum">     135 </span>                :<span class="lineCov">         12 :     char *p = strchr(reply+1,'\r');</span>
+<span class="lineNum">     136 </span>                :            :     long long mbulklen;
+<span class="lineNum">     137 </span>                :<span class="lineCov">         12 :     int j = 0;</span>
+<span class="lineNum">     138 </span>                :            : 
+<span class="lineNum">     139 </span>                :<span class="lineCov">         12 :     string2ll(reply+1,p-reply-1,&amp;mbulklen);</span>
+<span class="lineNum">     140 </span>                :<span class="lineCov">         12 :     p += 2;</span>
+<span class="lineNum">     141 </span>        [<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchCov" title="Branch 1 was taken 12 times"> + </span>]:<span class="lineCov">         12 :     if (mbulklen == -1) {</span>
+<span class="lineNum">     142 </span>                :<span class="lineNoCov">          0 :         lua_pushboolean(lua,0);</span>
+<span class="lineNum">     143 </span>                :<span class="lineNoCov">          0 :         return p;</span>
+<span class="lineNum">     144 </span>                :            :     }
+<span class="lineNum">     145 </span>                :<span class="lineCov">         12 :     lua_newtable(lua);</span>
+<span class="lineNum">     146 </span>        [<span class="branchCov" title="Branch 1 was taken 134 times"> + </span><span class="branchCov" title="Branch 2 was taken 12 times"> + </span>]:<span class="lineCov">        146 :     for (j = 0; j &lt; mbulklen; j++) {</span>
+<span class="lineNum">     147 </span>                :<span class="lineCov">        134 :         lua_pushnumber(lua,j+1);</span>
+<span class="lineNum">     148 </span>                :<span class="lineCov">        134 :         p = redisProtocolToLuaType(lua,p);</span>
+<span class="lineNum">     149 </span>                :<span class="lineCov">        134 :         lua_settable(lua,-3);</span>
+<span class="lineNum">     150 </span>                :            :     }
+<span class="lineNum">     151 </span>                :            :     return p;
+<a name="152"><span class="lineNum">     152 </span>                :            : }</a>
+<span class="lineNum">     153 </span>                :            : 
+<span class="lineNum">     154 </span>                :<span class="lineCov">         14 : void luaPushError(lua_State *lua, char *error) {</span>
+<span class="lineNum">     155 </span>                :            :     lua_Debug dbg;
+<span class="lineNum">     156 </span>                :            : 
+<span class="lineNum">     157 </span>                :<span class="lineCov">         14 :     lua_newtable(lua);</span>
+<span class="lineNum">     158 </span>                :<span class="lineCov">         14 :     lua_pushstring(lua,&quot;err&quot;);</span>
+<span class="lineNum">     159 </span>                :            : 
+<span class="lineNum">     160 </span>                :            :     /* Attempt to figure out where this function was called, if possible */
+<span class="lineNum">     161 </span>[<span class="branchCov" title="Branch 1 was taken 14 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 4 was taken 14 times"> + </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>]:<span class="lineCov">         28 :     if(lua_getstack(lua, 1, &amp;dbg) &amp;&amp; lua_getinfo(lua, &quot;nSl&quot;, &amp;dbg)) {</span>
+<span class="lineNum">     162 </span>                :<span class="lineCov">         14 :         sds msg = sdscatprintf(sdsempty(), &quot;%s: %d: %s&quot;,</span>
+<span class="lineNum">     163 </span>                :            :             dbg.source, dbg.currentline, error);
+<span class="lineNum">     164 </span>                :<span class="lineCov">         14 :         lua_pushstring(lua, msg);</span>
+<span class="lineNum">     165 </span>                :<span class="lineCov">         14 :         sdsfree(msg);</span>
+<span class="lineNum">     166 </span>                :            :     } else {
+<span class="lineNum">     167 </span>                :<span class="lineNoCov">          0 :         lua_pushstring(lua, error);</span>
+<span class="lineNum">     168 </span>                :            :     }
+<span class="lineNum">     169 </span>                :<span class="lineCov">         14 :     lua_settable(lua,-3);</span>
+<span class="lineNum">     170 </span>                :<span class="lineCov">         14 : }</span>
+<span class="lineNum">     171 </span>                :            : 
+<span class="lineNum">     172 </span>                :            : /* Sort the array currently in the stack. We do this to make the output
+<span class="lineNum">     173 </span>                :            :  * of commands like KEYS or SMEMBERS something deterministic when called
+<span class="lineNum">     174 </span>                :            :  * from Lua (to play well with AOf/replication).
+<span class="lineNum">     175 </span>                :            :  *
+<a name="176"><span class="lineNum">     176 </span>                :            :  * The array is sorted using table.sort itself, and assuming all the</a>
+<span class="lineNum">     177 </span>                :            :  * list elements are strings. */
+<span class="lineNum">     178 </span>                :<span class="lineCov">          2 : void luaSortArray(lua_State *lua) {</span>
+<span class="lineNum">     179 </span>                :            :     /* Initial Stack: array */
+<span class="lineNum">     180 </span>                :<span class="lineCov">          2 :     lua_getglobal(lua,&quot;table&quot;);</span>
+<span class="lineNum">     181 </span>                :<span class="lineCov">          2 :     lua_pushstring(lua,&quot;sort&quot;);</span>
+<span class="lineNum">     182 </span>                :<span class="lineCov">          2 :     lua_gettable(lua,-2);       /* Stack: array, table, table.sort */</span>
+<span class="lineNum">     183 </span>                :<span class="lineCov">          2 :     lua_pushvalue(lua,-3);      /* Stack: array, table, table.sort, array */</span>
+<span class="lineNum">     184 </span>        [<span class="branchNoCov" title="Branch 1 was not taken"> - </span><span class="branchCov" title="Branch 2 was taken 2 times"> + </span>]:<span class="lineCov">          2 :     if (lua_pcall(lua,1,0,0)) {</span>
+<span class="lineNum">     185 </span>                :            :         /* Stack: array, table, error */
+<span class="lineNum">     186 </span>                :            : 
+<span class="lineNum">     187 </span>                :            :         /* We are not interested in the error, we assume that the problem is
+<span class="lineNum">     188 </span>                :            :          * that there are 'false' elements inside the array, so we try
+<span class="lineNum">     189 </span>                :            :          * again with a slower function but able to handle this case, that
+<span class="lineNum">     190 </span>                :            :          * is: table.sort(table, __redis__compare_helper) */
+<span class="lineNum">     191 </span>                :<span class="lineNoCov">          0 :         lua_pop(lua,1);             /* Stack: array, table */</span>
+<span class="lineNum">     192 </span>                :<span class="lineNoCov">          0 :         lua_pushstring(lua,&quot;sort&quot;); /* Stack: array, table, sort */</span>
+<span class="lineNum">     193 </span>                :<span class="lineNoCov">          0 :         lua_gettable(lua,-2);       /* Stack: array, table, table.sort */</span>
+<span class="lineNum">     194 </span>                :<span class="lineNoCov">          0 :         lua_pushvalue(lua,-3);      /* Stack: array, table, table.sort, array */</span>
+<span class="lineNum">     195 </span>                :<span class="lineNoCov">          0 :         lua_getglobal(lua,&quot;__redis__compare_helper&quot;);</span>
+<span class="lineNum">     196 </span>                :            :         /* Stack: array, table, table.sort, array, __redis__compare_helper */
+<span class="lineNum">     197 </span>                :<span class="lineNoCov">          0 :         lua_call(lua,2,0);</span>
+<span class="lineNum">     198 </span>                :            :     }
+<span class="lineNum">     199 </span>                :            :     /* Stack: array (sorted), table */
+<span class="lineNum">     200 </span>                :<span class="lineCov">          2 :     lua_pop(lua,1);             /* Stack: array (sorted) */</span>
+<a name="201"><span class="lineNum">     201 </span>                :<span class="lineCov">          2 : }</span></a>
+<span class="lineNum">     202 </span>                :            : 
+<span class="lineNum">     203 </span>                :<span class="lineCov">     417089 : int luaRedisGenericCommand(lua_State *lua, int raise_error) {</span>
+<span class="lineNum">     204 </span>                :<span class="lineCov">     417089 :     int j, argc = lua_gettop(lua);</span>
+<span class="lineNum">     205 </span>                :            :     struct redisCommand *cmd;
+<span class="lineNum">     206 </span>                :            :     robj **argv;
+<span class="lineNum">     207 </span>                :<span class="lineCov">     417089 :     redisClient *c = server.lua_client;</span>
+<span class="lineNum">     208 </span>                :            :     sds reply;
+<span class="lineNum">     209 </span>                :            : 
+<span class="lineNum">     210 </span>                :            :     /* Require at least one argument */
+<span class="lineNum">     211 </span>        [<span class="branchCov" title="Branch 0 was taken 2 times"> + </span><span class="branchCov" title="Branch 1 was taken 417087 times"> + </span>]:<span class="lineCov">     417089 :     if (argc == 0) {</span>
+<span class="lineNum">     212 </span>                :<span class="lineCov">          2 :         luaPushError(lua,</span>
+<span class="lineNum">     213 </span>                :            :             &quot;Please specify at least one argument for redis.call()&quot;);
+<span class="lineNum">     214 </span>                :<span class="lineCov">          2 :         return 1;</span>
+<span class="lineNum">     215 </span>                :            :     }
+<span class="lineNum">     216 </span>                :            : 
+<span class="lineNum">     217 </span>                :            :     /* Build the arguments vector */
+<span class="lineNum">     218 </span>                :<span class="lineCov">     417087 :     argv = zmalloc(sizeof(robj*)*argc);</span>
+<span class="lineNum">     219 </span>        [<span class="branchCov" title="Branch 1 was taken 734212 times"> + </span><span class="branchCov" title="Branch 2 was taken 417087 times"> + </span>]:<span class="lineCov">    1151299 :     for (j = 0; j &lt; argc; j++) {</span>
+<span class="lineNum">     220 </span>        [<span class="branchCov" title="Branch 1 was taken 734212 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">     734212 :         if (!lua_isstring(lua,j+1)) break;</span>
+<span class="lineNum">     221 </span>                :<span class="lineCov">     734212 :         argv[j] = createStringObject((char*)lua_tostring(lua,j+1),</span>
+<span class="lineNum">     222 </span>                :            :                                      lua_strlen(lua,j+1));
+<span class="lineNum">     223 </span>                :            :     }
+<span class="lineNum">     224 </span>                :            :     
+<span class="lineNum">     225 </span>                :            :     /* Check if one of the arguments passed by the Lua script
+<span class="lineNum">     226 </span>                :            :      * is not a string or an integer (lua_isstring() return true for
+<span class="lineNum">     227 </span>                :            :      * integers as well). */
+<span class="lineNum">     228 </span>        [<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchCov" title="Branch 1 was taken 417087 times"> + </span>]:<span class="lineCov">     417087 :     if (j != argc) {</span>
+<span class="lineNum">     229 </span>                :<span class="lineNoCov">          0 :         j--;</span>
+<span class="lineNum">     230 </span>        [<span class="branchNoExec" title="Branch 0 was not executed"> # </span><span class="branchNoExec" title="Branch 1 was not executed"> # </span>]:<span class="lineNoCov">          0 :         while (j &gt;= 0) {</span>
+<span class="lineNum">     231 </span>                :<span class="lineNoCov">          0 :             decrRefCount(argv[j]);</span>
+<span class="lineNum">     232 </span>                :<span class="lineNoCov">          0 :             j--;</span>
+<span class="lineNum">     233 </span>                :            :         }
+<span class="lineNum">     234 </span>                :<span class="lineNoCov">          0 :         zfree(argv);</span>
+<span class="lineNum">     235 </span>                :<span class="lineNoCov">          0 :         luaPushError(lua,</span>
+<span class="lineNum">     236 </span>                :            :             &quot;Lua redis() command arguments must be strings or integers&quot;);
+<span class="lineNum">     237 </span>                :<span class="lineNoCov">          0 :         return 1;</span>
+<span class="lineNum">     238 </span>                :            :     }
+<span class="lineNum">     239 </span>                :            : 
+<span class="lineNum">     240 </span>                :            :     /* Setup our fake client for command execution */
+<span class="lineNum">     241 </span>                :<span class="lineCov">     417087 :     c-&gt;argv = argv;</span>
+<span class="lineNum">     242 </span>                :<span class="lineCov">     417087 :     c-&gt;argc = argc;</span>
+<span class="lineNum">     243 </span>                :            : 
+<span class="lineNum">     244 </span>                :            :     /* Command lookup */
+<span class="lineNum">     245 </span>                :<span class="lineCov">     417087 :     cmd = lookupCommand(argv[0]-&gt;ptr);</span>
+<span class="lineNum">     246 </span>[<span class="branchCov" title="Branch 0 was taken 417081 times"> + </span><span class="branchCov" title="Branch 1 was taken 6 times"> + </span>][<span class="branchCov" title="Branch 2 was taken 417059 times"> + </span><span class="branchCov" title="Branch 3 was taken 22 times"> + </span>]:<span class="lineCov">     417087 :     if (!cmd || ((cmd-&gt;arity &gt; 0 &amp;&amp; cmd-&gt;arity != argc) ||</span>
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 4 was taken 417057 times"> + </span><span class="branchCov" title="Branch 5 was taken 2 times"> + </span>][<span class="branchNoCov" title="Branch 6 was not taken"> - </span><span class="branchCov" title="Branch 7 was taken 417079 times"> + </span>]
+<span class="lineNum">     247 </span>                :<span class="lineCov">     417079 :                    (argc &lt; -cmd-&gt;arity)))</span>
+<span class="lineNum">     248 </span>                :            :     {
+<span class="lineNum">     249 </span>        [<span class="branchCov" title="Branch 0 was taken 2 times"> + </span><span class="branchCov" title="Branch 1 was taken 6 times"> + </span>]:<span class="lineCov">          8 :         if (cmd)</span>
+<span class="lineNum">     250 </span>                :<span class="lineCov">          2 :             luaPushError(lua,</span>
+<span class="lineNum">     251 </span>                :            :                 &quot;Wrong number of args calling Redis command From Lua script&quot;);
+<span class="lineNum">     252 </span>                :            :         else
+<span class="lineNum">     253 </span>                :<span class="lineCov">          6 :             luaPushError(lua,&quot;Unknown Redis command called from Lua script&quot;);</span>
+<span class="lineNum">     254 </span>                :            :         goto cleanup;
+<span class="lineNum">     255 </span>                :            :     }
+<span class="lineNum">     256 </span>                :            : 
+<span class="lineNum">     257 </span>                :            :     /* There are commands that are not allowed inside scripts. */
+<span class="lineNum">     258 </span>        [<span class="branchCov" title="Branch 0 was taken 2 times"> + </span><span class="branchCov" title="Branch 1 was taken 417077 times"> + </span>]:<span class="lineCov">     417079 :     if (cmd-&gt;flags &amp; REDIS_CMD_NOSCRIPT) {</span>
+<span class="lineNum">     259 </span>                :<span class="lineCov">          2 :         luaPushError(lua, &quot;This Redis command is not allowed from scripts&quot;);</span>
+<span class="lineNum">     260 </span>                :<span class="lineCov">          2 :         goto cleanup;</span>
+<span class="lineNum">     261 </span>                :            :     }
+<span class="lineNum">     262 </span>                :            : 
+<span class="lineNum">     263 </span>                :            :     /* Write commands are forbidden against read-only slaves, or if a
+<span class="lineNum">     264 </span>                :            :      * command marked as non-deterministic was already called in the context
+<span class="lineNum">     265 </span>                :            :      * of this script. */
+<span class="lineNum">     266 </span>        [<span class="branchCov" title="Branch 0 was taken 317041 times"> + </span><span class="branchCov" title="Branch 1 was taken 100036 times"> + </span>]:<span class="lineCov">     417077 :     if (cmd-&gt;flags &amp; REDIS_CMD_WRITE) {</span>
+<span class="lineNum">     267 </span>        [<span class="branchCov" title="Branch 0 was taken 2 times"> + </span><span class="branchCov" title="Branch 1 was taken 317039 times"> + </span>]:<span class="lineCov">     317041 :         if (server.lua_random_dirty) {</span>
+<span class="lineNum">     268 </span>                :<span class="lineCov">          2 :             luaPushError(lua,</span>
+<span class="lineNum">     269 </span>                :            :                 &quot;Write commands not allowed after non deterministic commands&quot;);
+<span class="lineNum">     270 </span>                :<span class="lineCov">          2 :             goto cleanup;</span>
+<span class="lineNum">     271 </span>[<span class="branchCov" title="Branch 0 was taken 60007 times"> + </span><span class="branchCov" title="Branch 1 was taken 257032 times"> + </span>][<span class="branchCov" title="Branch 2 was taken 60007 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">     317039 :         } else if (server.masterhost &amp;&amp; server.repl_slave_ro &amp;&amp;</span>
+<span class="lineNum">         </span>        [<span class="branchCov" title="Branch 4 was taken 60004 times"> + </span><span class="branchCov" title="Branch 5 was taken 3 times"> + </span>]
+<span class="lineNum">     272 </span>        [<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchCov" title="Branch 1 was taken 60004 times"> + </span>]:<span class="lineCov">      60004 :                    !server.loading &amp;&amp;</span>
+<span class="lineNum">     273 </span>                :<span class="lineCov">      60004 :                    !(server.lua_caller-&gt;flags &amp; REDIS_MASTER))</span>
+<span class="lineNum">     274 </span>                :            :         {
+<span class="lineNum">     275 </span>                :<span class="lineNoCov">          0 :             luaPushError(lua, shared.roslaveerr-&gt;ptr);</span>
+<span class="lineNum">     276 </span>                :<span class="lineNoCov">          0 :             goto cleanup;</span>
+<span class="lineNum">     277 </span>[<span class="branchCov" title="Branch 0 was taken 317039 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>][<span class="branchCov" title="Branch 2 was taken 317039 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">     317039 :         } else if (server.stop_writes_on_bgsave_err &amp;&amp;</span>
+<span class="lineNum">     278 </span>        [<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchCov" title="Branch 1 was taken 317039 times"> + </span>]:<span class="lineCov">     317039 :                    server.saveparamslen &gt; 0 &amp;&amp;</span>
+<span class="lineNum">     279 </span>                :<span class="lineCov">     317039 :                    server.lastbgsave_status == REDIS_ERR)</span>
+<span class="lineNum">     280 </span>                :            :         {
+<span class="lineNum">     281 </span>                :<span class="lineNoCov">          0 :             luaPushError(lua, shared.bgsaveerr-&gt;ptr);</span>
+<span class="lineNum">     282 </span>                :<span class="lineNoCov">          0 :             goto cleanup;</span>
+<span class="lineNum">     283 </span>                :            :         }
+<span class="lineNum">     284 </span>                :            :     }
+<span class="lineNum">     285 </span>                :            : 
+<span class="lineNum">     286 </span>                :            :     /* If we reached the memory limit configured via maxmemory, commands that
+<span class="lineNum">     287 </span>                :            :      * could enlarge the memory usage are not allowed, but only if this is the
+<span class="lineNum">     288 </span>                :            :      * first write in the context of this script, otherwise we can't stop
+<span class="lineNum">     289 </span>                :            :      * in the middle. */
+<span class="lineNum">     290 </span>[<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchCov" title="Branch 1 was taken 417075 times"> + </span>][<span class="branchNoExec" title="Branch 2 was not executed"> # </span><span class="branchNoExec" title="Branch 3 was not executed"> # </span>]:<span class="lineCov">     417075 :     if (server.maxmemory &amp;&amp; server.lua_write_dirty == 0 &amp;&amp;</span>
+<span class="lineNum">         </span>        [<span class="branchNoExec" title="Branch 4 was not executed"> # </span><span class="branchNoExec" title="Branch 5 was not executed"> # </span>]
+<span class="lineNum">     291 </span>                :<span class="lineNoCov">          0 :         (cmd-&gt;flags &amp; REDIS_CMD_DENYOOM))</span>
+<span class="lineNum">     292 </span>                :            :     {
+<span class="lineNum">     293 </span>        [<span class="branchNoExec" title="Branch 1 was not executed"> # </span><span class="branchNoExec" title="Branch 2 was not executed"> # </span>]:<span class="lineNoCov">          0 :         if (freeMemoryIfNeeded() == REDIS_ERR) {</span>
+<span class="lineNum">     294 </span>                :<span class="lineNoCov">          0 :             luaPushError(lua, shared.oomerr-&gt;ptr);</span>
+<span class="lineNum">     295 </span>                :<span class="lineNoCov">          0 :             goto cleanup;</span>
+<span class="lineNum">     296 </span>                :            :         }
+<span class="lineNum">     297 </span>                :            :     }
+<span class="lineNum">     298 </span>                :            : 
+<span class="lineNum">     299 </span>        [<span class="branchCov" title="Branch 0 was taken 2 times"> + </span><span class="branchCov" title="Branch 1 was taken 417073 times"> + </span>]:<span class="lineCov">     417075 :     if (cmd-&gt;flags &amp; REDIS_CMD_RANDOM) server.lua_random_dirty = 1;</span>
+<span class="lineNum">     300 </span>        [<span class="branchCov" title="Branch 0 was taken 317039 times"> + </span><span class="branchCov" title="Branch 1 was taken 100036 times"> + </span>]:<span class="lineCov">     417075 :     if (cmd-&gt;flags &amp; REDIS_CMD_WRITE) server.lua_write_dirty = 1;</span>
+<span class="lineNum">     301 </span>                :            : 
+<span class="lineNum">     302 </span>                :            :     /* Run the command */
+<span class="lineNum">     303 </span>                :<span class="lineCov">     417075 :     c-&gt;cmd = cmd;</span>
+<span class="lineNum">     304 </span>                :<span class="lineCov">     417075 :     call(c,REDIS_CALL_SLOWLOG | REDIS_CALL_STATS);</span>
+<span class="lineNum">     305 </span>                :            : 
+<span class="lineNum">     306 </span>                :            :     /* Convert the result of the Redis command into a suitable Lua type.
+<span class="lineNum">     307 </span>                :            :      * The first thing we need is to create a single string from the client
+<span class="lineNum">     308 </span>                :            :      * output buffers. */
+<span class="lineNum">     309 </span>                :<span class="lineCov">     417075 :     reply = sdsempty();</span>
+<span class="lineNum">     310 </span>        [<span class="branchCov" title="Branch 0 was taken 417073 times"> + </span><span class="branchCov" title="Branch 1 was taken 2 times"> + </span>]:<span class="lineCov">     417075 :     if (c-&gt;bufpos) {</span>
+<span class="lineNum">     311 </span>                :<span class="lineCov">     417073 :         reply = sdscatlen(reply,c-&gt;buf,c-&gt;bufpos);</span>
+<span class="lineNum">     312 </span>                :<span class="lineCov">     417075 :         c-&gt;bufpos = 0;</span>
+<span class="lineNum">     313 </span>                :            :     }
+<span class="lineNum">     314 </span>        [<span class="branchCov" title="Branch 0 was taken 2 times"> + </span><span class="branchCov" title="Branch 1 was taken 417075 times"> + </span>]:<span class="lineCov">     417077 :     while(listLength(c-&gt;reply)) {</span>
+<span class="lineNum">     315 </span>                :<span class="lineCov">          2 :         robj *o = listNodeValue(listFirst(c-&gt;reply));</span>
+<span class="lineNum">     316 </span>                :            : 
+<span class="lineNum">     317 </span>                :<span class="lineCov">          2 :         reply = sdscatlen(reply,o-&gt;ptr,sdslen(o-&gt;ptr));</span>
+<span class="lineNum">     318 </span>                :<span class="lineCov">          2 :         listDelNode(c-&gt;reply,listFirst(c-&gt;reply));</span>
+<span class="lineNum">     319 </span>                :            :     }
+<span class="lineNum">     320 </span>[<span class="branchCov" title="Branch 0 was taken 417057 times"> + </span><span class="branchCov" title="Branch 1 was taken 18 times"> + </span>][<span class="branchCov" title="Branch 2 was taken 417055 times"> + </span><span class="branchCov" title="Branch 3 was taken 2 times"> + </span>]:<span class="lineCov">     417075 :     if (raise_error &amp;&amp; reply[0] != '-') raise_error = 0;</span>
+<span class="lineNum">     321 </span>                :<span class="lineCov">     417075 :     redisProtocolToLuaType(lua,reply);</span>
+<span class="lineNum">     322 </span>                :            :     /* Sort the output array if needed, assuming it is a non-null multi bulk
+<span class="lineNum">     323 </span>                :            :      * reply as expected. */
+<span class="lineNum">     324 </span>[<span class="branchCov" title="Branch 0 was taken 2 times"> + </span><span class="branchCov" title="Branch 1 was taken 417073 times"> + </span>][<span class="branchCov" title="Branch 2 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">     417075 :     if ((cmd-&gt;flags &amp; REDIS_CMD_SORT_FOR_SCRIPT) &amp;&amp;</span>
+<span class="lineNum">     325 </span>        [<span class="branchCov" title="Branch 0 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">          2 :         (reply[0] == '*' &amp;&amp; reply[1] != '-')) {</span>
+<span class="lineNum">     326 </span>                :<span class="lineCov">          2 :             luaSortArray(lua);</span>
+<span class="lineNum">     327 </span>                :            :     }
+<span class="lineNum">     328 </span>                :<span class="lineCov">     417075 :     sdsfree(reply);</span>
+<span class="lineNum">     329 </span>                :<span class="lineCov">     417075 :     c-&gt;reply_bytes = 0;</span>
+<span class="lineNum">     330 </span>                :            : 
+<span class="lineNum">     331 </span>                :            : cleanup:
+<span class="lineNum">     332 </span>                :            :     /* Clean up. Command code may have changed argv/argc so we use the
+<span class="lineNum">     333 </span>                :            :      * argv/argc of the client instead of the local variables. */
+<span class="lineNum">     334 </span>        [<span class="branchCov" title="Branch 0 was taken 734212 times"> + </span><span class="branchCov" title="Branch 1 was taken 417087 times"> + </span>]:<span class="lineCov">    1151299 :     for (j = 0; j &lt; c-&gt;argc; j++)</span>
+<span class="lineNum">     335 </span>                :<span class="lineCov">     734212 :         decrRefCount(c-&gt;argv[j]);</span>
+<span class="lineNum">     336 </span>                :<span class="lineCov">     417087 :     zfree(c-&gt;argv);</span>
+<span class="lineNum">     337 </span>                :            : 
+<span class="lineNum">     338 </span>        [<span class="branchCov" title="Branch 0 was taken 10 times"> + </span><span class="branchCov" title="Branch 1 was taken 417077 times"> + </span>]:<span class="lineCov">     417087 :     if (raise_error) {</span>
+<span class="lineNum">     339 </span>                :            :         /* If we are here we should have an error in the stack, in the
+<span class="lineNum">     340 </span>                :            :          * form of a table with an &quot;err&quot; field. Extract the string to
+<span class="lineNum">     341 </span>                :            :          * return the plain error. */
+<span class="lineNum">     342 </span>                :<span class="lineCov">         10 :         lua_pushstring(lua,&quot;err&quot;);</span>
+<span class="lineNum">     343 </span>                :<span class="lineCov">         10 :         lua_gettable(lua,-2);</span>
+<span class="lineNum">     344 </span>                :<span class="lineCov">     417089 :         return lua_error(lua);</span>
+<span class="lineNum">     345 </span>                :            :     }
+<span class="lineNum">     346 </span>                :            :     return 1;
+<a name="347"><span class="lineNum">     347 </span>                :            : }</a>
+<span class="lineNum">     348 </span>                :            : 
+<span class="lineNum">     349 </span>                :<span class="lineCov">     417067 : int luaRedisCallCommand(lua_State *lua) {</span>
+<span class="lineNum">     350 </span>                :<span class="lineCov">     417067 :     return luaRedisGenericCommand(lua,1);</span>
+<a name="351"><span class="lineNum">     351 </span>                :            : }</a>
+<span class="lineNum">     352 </span>                :            : 
+<span class="lineNum">     353 </span>                :<span class="lineCov">         22 : int luaRedisPCallCommand(lua_State *lua) {</span>
+<span class="lineNum">     354 </span>                :<span class="lineCov">         22 :     return luaRedisGenericCommand(lua,0);</span>
+<span class="lineNum">     355 </span>                :            : }
+<span class="lineNum">     356 </span>                :            : 
+<a name="357"><span class="lineNum">     357 </span>                :            : /* This adds redis.sha1hex(string) to Lua scripts using the same hashing</a>
+<span class="lineNum">     358 </span>                :            :  * function used for sha1ing lua scripts. */
+<span class="lineNum">     359 </span>                :<span class="lineCov">      85587 : int luaRedisSha1hexCommand(lua_State *lua) {</span>
+<span class="lineNum">     360 </span>                :<span class="lineCov">      85587 :     int argc = lua_gettop(lua);</span>
+<span class="lineNum">     361 </span>                :            :     char digest[41];
+<span class="lineNum">     362 </span>                :            :     size_t len;
+<span class="lineNum">     363 </span>                :            :     char *s;
+<span class="lineNum">     364 </span>                :            : 
+<span class="lineNum">     365 </span>        [<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchCov" title="Branch 1 was taken 85587 times"> + </span>]:<span class="lineCov">      85587 :     if (argc != 1) {</span>
+<span class="lineNum">     366 </span>                :<span class="lineNoCov">          0 :         luaPushError(lua, &quot;wrong number of arguments&quot;);</span>
+<span class="lineNum">     367 </span>                :<span class="lineNoCov">          0 :         return 1;</span>
+<span class="lineNum">     368 </span>                :            :     }
+<span class="lineNum">     369 </span>                :            : 
+<span class="lineNum">     370 </span>                :<span class="lineCov">      85587 :     s = (char*)lua_tolstring(lua,1,&amp;len);</span>
+<span class="lineNum">     371 </span>                :<span class="lineCov">      85587 :     sha1hex(digest,s,len);</span>
+<span class="lineNum">     372 </span>                :<span class="lineCov">      85587 :     lua_pushstring(lua,digest);</span>
+<span class="lineNum">     373 </span>                :<span class="lineCov">      85587 :     return 1;</span>
+<span class="lineNum">     374 </span>                :            : }
+<span class="lineNum">     375 </span>                :            : 
+<span class="lineNum">     376 </span>                :            : /* Returns a table with a single field 'field' set to the string value
+<span class="lineNum">     377 </span>                :            :  * passed as argument. This helper function is handy when returning
+<span class="lineNum">     378 </span>                :            :  * a Redis Protocol error or status reply from Lua:
+<span class="lineNum">     379 </span>                :            :  *
+<span class="lineNum">     380 </span>                :            :  * return redis.error_reply(&quot;ERR Some Error&quot;)
+<a name="381"><span class="lineNum">     381 </span>                :            :  * return redis.status_reply(&quot;ERR Some Error&quot;)</a>
+<span class="lineNum">     382 </span>                :            :  */
+<span class="lineNum">     383 </span>                :<span class="lineNoCov">          0 : int luaRedisReturnSingleFieldTable(lua_State *lua, char *field) {</span>
+<span class="lineNum">     384 </span>[<span class="branchNoExec" title="Branch 1 was not executed"> # </span><span class="branchNoExec" title="Branch 2 was not executed"> # </span>][<span class="branchNoExec" title="Branch 4 was not executed"> # </span><span class="branchNoExec" title="Branch 5 was not executed"> # </span>]:<span class="lineNoCov">          0 :     if (lua_gettop(lua) != 1 || lua_type(lua,-1) != LUA_TSTRING) {</span>
+<span class="lineNum">     385 </span>                :<span class="lineNoCov">          0 :         luaPushError(lua, &quot;wrong number or type of arguments&quot;);</span>
+<span class="lineNum">     386 </span>                :<span class="lineNoCov">          0 :         return 1;</span>
+<span class="lineNum">     387 </span>                :            :     }
+<span class="lineNum">     388 </span>                :            : 
+<span class="lineNum">     389 </span>                :<span class="lineNoCov">          0 :     lua_newtable(lua);</span>
+<span class="lineNum">     390 </span>                :<span class="lineNoCov">          0 :     lua_pushstring(lua, field);</span>
+<span class="lineNum">     391 </span>                :<span class="lineNoCov">          0 :     lua_pushvalue(lua, -3);</span>
+<span class="lineNum">     392 </span>                :<span class="lineNoCov">          0 :     lua_settable(lua, -3);</span>
+<span class="lineNum">     393 </span>                :<span class="lineNoCov">          0 :     return 1;</span>
+<a name="394"><span class="lineNum">     394 </span>                :            : }</a>
+<span class="lineNum">     395 </span>                :            : 
+<span class="lineNum">     396 </span>                :<span class="lineNoCov">          0 : int luaRedisErrorReplyCommand(lua_State *lua) {</span>
+<span class="lineNum">     397 </span>                :<span class="lineNoCov">          0 :     return luaRedisReturnSingleFieldTable(lua,&quot;err&quot;);</span>
+<a name="398"><span class="lineNum">     398 </span>                :            : }</a>
+<span class="lineNum">     399 </span>                :            : 
+<span class="lineNum">     400 </span>                :<span class="lineNoCov">          0 : int luaRedisStatusReplyCommand(lua_State *lua) {</span>
+<span class="lineNum">     401 </span>                :<span class="lineNoCov">          0 :     return luaRedisReturnSingleFieldTable(lua,&quot;ok&quot;);</span>
+<a name="402"><span class="lineNum">     402 </span>                :            : }</a>
+<span class="lineNum">     403 </span>                :            : 
+<span class="lineNum">     404 </span>                :<span class="lineNoCov">          0 : int luaLogCommand(lua_State *lua) {</span>
+<span class="lineNum">     405 </span>                :<span class="lineNoCov">          0 :     int j, argc = lua_gettop(lua);</span>
+<span class="lineNum">     406 </span>                :            :     int level;
+<span class="lineNum">     407 </span>                :            :     sds log;
+<span class="lineNum">     408 </span>                :            : 
+<span class="lineNum">     409 </span>        [<span class="branchNoExec" title="Branch 0 was not executed"> # </span><span class="branchNoExec" title="Branch 1 was not executed"> # </span>]:<span class="lineNoCov">          0 :     if (argc &lt; 2) {</span>
+<span class="lineNum">     410 </span>                :<span class="lineNoCov">          0 :         luaPushError(lua, &quot;redis.log() requires two arguments or more.&quot;);</span>
+<span class="lineNum">     411 </span>                :<span class="lineNoCov">          0 :         return 1;</span>
+<span class="lineNum">     412 </span>        [<span class="branchNoExec" title="Branch 1 was not executed"> # </span><span class="branchNoExec" title="Branch 2 was not executed"> # </span>]:<span class="lineNoCov">          0 :     } else if (!lua_isnumber(lua,-argc)) {</span>
+<span class="lineNum">     413 </span>                :<span class="lineNoCov">          0 :         luaPushError(lua, &quot;First argument must be a number (log level).&quot;);</span>
+<span class="lineNum">     414 </span>                :<span class="lineNoCov">          0 :         return 1;</span>
+<span class="lineNum">     415 </span>                :            :     }
+<span class="lineNum">     416 </span>                :<span class="lineNoCov">          0 :     level = lua_tonumber(lua,-argc);</span>
+<span class="lineNum">     417 </span>        [<span class="branchNoExec" title="Branch 0 was not executed"> # </span><span class="branchNoExec" title="Branch 1 was not executed"> # </span>]:<span class="lineNoCov">          0 :     if (level &lt; REDIS_DEBUG || level &gt; REDIS_WARNING) {</span>
+<span class="lineNum">     418 </span>                :<span class="lineNoCov">          0 :         luaPushError(lua, &quot;Invalid debug level.&quot;);</span>
+<span class="lineNum">     419 </span>                :<span class="lineNoCov">          0 :         return 1;</span>
+<span class="lineNum">     420 </span>                :            :     }
+<span class="lineNum">     421 </span>                :            : 
+<span class="lineNum">     422 </span>                :            :     /* Glue together all the arguments */
+<span class="lineNum">     423 </span>                :<span class="lineNoCov">          0 :     log = sdsempty();</span>
+<span class="lineNum">     424 </span>        [<span class="branchNoExec" title="Branch 1 was not executed"> # </span><span class="branchNoExec" title="Branch 2 was not executed"> # </span>]:<span class="lineNoCov">          0 :     for (j = 1; j &lt; argc; j++) {</span>
+<span class="lineNum">     425 </span>                :            :         size_t len;
+<span class="lineNum">     426 </span>                :            :         char *s;
+<span class="lineNum">     427 </span>                :            : 
+<span class="lineNum">     428 </span>                :<span class="lineNoCov">          0 :         s = (char*)lua_tolstring(lua,(-argc)+j,&amp;len);</span>
+<span class="lineNum">     429 </span>        [<span class="branchNoExec" title="Branch 0 was not executed"> # </span><span class="branchNoExec" title="Branch 1 was not executed"> # </span>]:<span class="lineNoCov">          0 :         if (s) {</span>
+<span class="lineNum">     430 </span>        [<span class="branchNoExec" title="Branch 0 was not executed"> # </span><span class="branchNoExec" title="Branch 1 was not executed"> # </span>]:<span class="lineNoCov">          0 :             if (j != 1) log = sdscatlen(log,&quot; &quot;,1);</span>
+<span class="lineNum">     431 </span>                :<span class="lineNoCov">          0 :             log = sdscatlen(log,s,len);</span>
+<span class="lineNum">     432 </span>                :            :         }
+<span class="lineNum">     433 </span>                :            :     }
+<span class="lineNum">     434 </span>                :<span class="lineNoCov">          0 :     redisLogRaw(level,log);</span>
+<span class="lineNum">     435 </span>                :<span class="lineNoCov">          0 :     sdsfree(log);</span>
+<span class="lineNum">     436 </span>                :<span class="lineNoCov">          0 :     return 0;</span>
+<a name="437"><span class="lineNum">     437 </span>                :            : }</a>
+<span class="lineNum">     438 </span>                :            : 
+<span class="lineNum">     439 </span>                :<span class="lineCov">        782 : void luaMaskCountHook(lua_State *lua, lua_Debug *ar) {</span>
+<span class="lineNum">     440 </span>                :            :     long long elapsed;
+<span class="lineNum">     441 </span>                :            :     REDIS_NOTUSED(ar);
+<span class="lineNum">     442 </span>                :            :     REDIS_NOTUSED(lua);
+<span class="lineNum">     443 </span>                :            : 
+<span class="lineNum">     444 </span>                :<span class="lineCov">        782 :     elapsed = (ustime()/1000) - server.lua_time_start;</span>
+<span class="lineNum">     445 </span>[<span class="branchCov" title="Branch 0 was taken 747 times"> + </span><span class="branchCov" title="Branch 1 was taken 35 times"> + </span>][<span class="branchCov" title="Branch 2 was taken 3 times"> + </span><span class="branchCov" title="Branch 3 was taken 744 times"> + </span>]:<span class="lineCov">        782 :     if (elapsed &gt;= server.lua_time_limit &amp;&amp; server.lua_timedout == 0) {</span>
+<span class="lineNum">     446 </span>                :<span class="lineCov">          3 :         redisLog(REDIS_WARNING,&quot;Lua slow script detected: still in execution after %lld milliseconds. You can try killing the script using the SCRIPT KILL command.&quot;,elapsed);</span>
+<span class="lineNum">     447 </span>                :<span class="lineCov">          3 :         server.lua_timedout = 1;</span>
+<span class="lineNum">     448 </span>                :            :         /* Once the script timeouts we reenter the event loop to permit others
+<span class="lineNum">     449 </span>                :            :          * to call SCRIPT KILL or SHUTDOWN NOSAVE if needed. For this reason
+<span class="lineNum">     450 </span>                :            :          * we need to mask the client executing the script from the event loop.
+<span class="lineNum">     451 </span>                :            :          * If we don't do that the client may disconnect and could no longer be
+<span class="lineNum">     452 </span>                :            :          * here when the EVAL command will return. */
+<span class="lineNum">     453 </span>                :<span class="lineCov">          3 :          aeDeleteFileEvent(server.el, server.lua_caller-&gt;fd, AE_READABLE);</span>
+<span class="lineNum">     454 </span>                :            :     }
+<span class="lineNum">     455 </span>        [<span class="branchCov" title="Branch 0 was taken 747 times"> + </span><span class="branchCov" title="Branch 1 was taken 35 times"> + </span>]:<span class="lineCov">        782 :     if (server.lua_timedout)</span>
+<span class="lineNum">     456 </span>                :<span class="lineCov">        747 :         aeProcessEvents(server.el, AE_FILE_EVENTS|AE_DONT_WAIT);</span>
+<span class="lineNum">     457 </span>        [<span class="branchCov" title="Branch 0 was taken 1 time"> + </span><span class="branchCov" title="Branch 1 was taken 780 times"> + </span>]:<span class="lineCov">        781 :     if (server.lua_kill) {</span>
+<span class="lineNum">     458 </span>                :<span class="lineCov">          1 :         redisLog(REDIS_WARNING,&quot;Lua script killed by user with SCRIPT KILL.&quot;);</span>
+<span class="lineNum">     459 </span>                :<span class="lineCov">          1 :         lua_pushstring(lua,&quot;Script killed by user with SCRIPT KILL...&quot;);</span>
+<span class="lineNum">     460 </span>                :<span class="lineCov">          1 :         lua_error(lua);</span>
+<span class="lineNum">     461 </span>                :            :     }
+<a name="462"><span class="lineNum">     462 </span>                :<span class="lineCov">        780 : }</span></a>
+<span class="lineNum">     463 </span>                :            : 
+<span class="lineNum">     464 </span>                :<span class="lineCov">       1064 : void luaLoadLib(lua_State *lua, const char *libname, lua_CFunction luafunc) {</span>
+<span class="lineNum">     465 </span>                :<span class="lineCov">       1064 :   lua_pushcfunction(lua, luafunc);</span>
+<span class="lineNum">     466 </span>                :<span class="lineCov">       1064 :   lua_pushstring(lua, libname);</span>
+<span class="lineNum">     467 </span>                :<span class="lineCov">       1064 :   lua_call(lua, 1, 0);</span>
+<span class="lineNum">     468 </span>                :<span class="lineCov">       1064 : }</span>
+<span class="lineNum">     469 </span>                :            : 
+<span class="lineNum">     470 </span>                :            : LUALIB_API int (luaopen_cjson) (lua_State *L);
+<span class="lineNum">     471 </span>                :            : LUALIB_API int (luaopen_struct) (lua_State *L);
+<a name="472"><span class="lineNum">     472 </span>                :            : LUALIB_API int (luaopen_cmsgpack) (lua_State *L);</a>
+<span class="lineNum">     473 </span>                :            : 
+<span class="lineNum">     474 </span>                :<span class="lineCov">        133 : void luaLoadLibraries(lua_State *lua) {</span>
+<span class="lineNum">     475 </span>                :<span class="lineCov">        133 :     luaLoadLib(lua, &quot;&quot;, luaopen_base);</span>
+<span class="lineNum">     476 </span>                :<span class="lineCov">        133 :     luaLoadLib(lua, LUA_TABLIBNAME, luaopen_table);</span>
+<span class="lineNum">     477 </span>                :<span class="lineCov">        133 :     luaLoadLib(lua, LUA_STRLIBNAME, luaopen_string);</span>
+<span class="lineNum">     478 </span>                :<span class="lineCov">        133 :     luaLoadLib(lua, LUA_MATHLIBNAME, luaopen_math);</span>
+<span class="lineNum">     479 </span>                :<span class="lineCov">        133 :     luaLoadLib(lua, LUA_DBLIBNAME, luaopen_debug); </span>
+<span class="lineNum">     480 </span>                :<span class="lineCov">        133 :     luaLoadLib(lua, &quot;cjson&quot;, luaopen_cjson);</span>
+<span class="lineNum">     481 </span>                :<span class="lineCov">        133 :     luaLoadLib(lua, &quot;struct&quot;, luaopen_struct);</span>
+<span class="lineNum">     482 </span>                :<span class="lineCov">        133 :     luaLoadLib(lua, &quot;cmsgpack&quot;, luaopen_cmsgpack);</span>
+<span class="lineNum">     483 </span>                :            : 
+<span class="lineNum">     484 </span>                :            : #if 0 /* Stuff that we don't load currently, for sandboxing concerns. */
+<span class="lineNum">     485 </span>                :            :     luaLoadLib(lua, LUA_LOADLIBNAME, luaopen_package);
+<span class="lineNum">     486 </span>                :            :     luaLoadLib(lua, LUA_OSLIBNAME, luaopen_os);
+<span class="lineNum">     487 </span>                :            : #endif
+<span class="lineNum">     488 </span>                :<span class="lineCov">        133 : }</span>
+<span class="lineNum">     489 </span>                :            : 
+<a name="490"><span class="lineNum">     490 </span>                :            : /* Remove a functions that we don't want to expose to the Redis scripting</a>
+<span class="lineNum">     491 </span>                :            :  * environment. */
+<span class="lineNum">     492 </span>                :<span class="lineCov">        133 : void luaRemoveUnsupportedFunctions(lua_State *lua) {</span>
+<span class="lineNum">     493 </span>                :<span class="lineCov">        133 :     lua_pushnil(lua);</span>
+<span class="lineNum">     494 </span>                :<span class="lineCov">        133 :     lua_setglobal(lua,&quot;loadfile&quot;);</span>
+<span class="lineNum">     495 </span>                :<span class="lineCov">        133 : }</span>
+<span class="lineNum">     496 </span>                :            : 
+<span class="lineNum">     497 </span>                :            : /* This function installs metamethods in the global table _G that prevent
+<span class="lineNum">     498 </span>                :            :  * the creation of globals accidentally.
+<span class="lineNum">     499 </span>                :            :  *
+<a name="500"><span class="lineNum">     500 </span>                :            :  * It should be the last to be called in the scripting engine initialization</a>
+<span class="lineNum">     501 </span>                :            :  * sequence, because it may interact with creation of globals. */
+<span class="lineNum">     502 </span>                :<span class="lineCov">        133 : void scriptingEnableGlobalsProtection(lua_State *lua) {</span>
+<span class="lineNum">     503 </span>                :            :     char *s[32];
+<span class="lineNum">     504 </span>                :<span class="lineCov">        133 :     sds code = sdsempty();</span>
+<span class="lineNum">     505 </span>                :<span class="lineCov">        133 :     int j = 0;</span>
+<span class="lineNum">     506 </span>                :            : 
+<span class="lineNum">     507 </span>                :            :     /* strict.lua from: http://metalua.luaforge.net/src/lib/strict.lua.html.
+<span class="lineNum">     508 </span>                :            :      * Modified to be adapted to Redis. */
+<span class="lineNum">     509 </span>                :<span class="lineCov">        133 :     s[j++]=&quot;local mt = {}\n&quot;;</span>
+<span class="lineNum">     510 </span>                :<span class="lineCov">        133 :     s[j++]=&quot;setmetatable(_G, mt)\n&quot;;</span>
+<span class="lineNum">     511 </span>                :<span class="lineCov">        133 :     s[j++]=&quot;mt.__newindex = function (t, n, v)\n&quot;;</span>
+<span class="lineNum">     512 </span>                :<span class="lineCov">        133 :     s[j++]=&quot;  if debug.getinfo(2) then\n&quot;;</span>
+<span class="lineNum">     513 </span>                :<span class="lineCov">        133 :     s[j++]=&quot;    local w = debug.getinfo(2, \&quot;S\&quot;).what\n&quot;;</span>
+<span class="lineNum">     514 </span>                :<span class="lineCov">        133 :     s[j++]=&quot;    if w ~= \&quot;main\&quot; and w ~= \&quot;C\&quot; then\n&quot;;</span>
+<span class="lineNum">     515 </span>                :<span class="lineCov">        133 :     s[j++]=&quot;      error(\&quot;Script attempted to create global variable '\&quot;..tostring(n)..\&quot;'\&quot;, 2)\n&quot;;</span>
+<span class="lineNum">     516 </span>                :<span class="lineCov">        133 :     s[j++]=&quot;    end\n&quot;;</span>
+<span class="lineNum">     517 </span>                :<span class="lineCov">        133 :     s[j++]=&quot;  end\n&quot;;</span>
+<span class="lineNum">     518 </span>                :<span class="lineCov">        133 :     s[j++]=&quot;  rawset(t, n, v)\n&quot;;</span>
+<span class="lineNum">     519 </span>                :<span class="lineCov">        133 :     s[j++]=&quot;end\n&quot;;</span>
+<span class="lineNum">     520 </span>                :<span class="lineCov">        133 :     s[j++]=&quot;mt.__index = function (t, n)\n&quot;;</span>
+<span class="lineNum">     521 </span>                :<span class="lineCov">        133 :     s[j++]=&quot;  if debug.getinfo(2) and debug.getinfo(2, \&quot;S\&quot;).what ~= \&quot;C\&quot; then\n&quot;;</span>
+<span class="lineNum">     522 </span>                :<span class="lineCov">        133 :     s[j++]=&quot;    error(\&quot;Script attempted to access unexisting global variable '\&quot;..tostring(n)..\&quot;'\&quot;, 2)\n&quot;;</span>
+<span class="lineNum">     523 </span>                :<span class="lineCov">        133 :     s[j++]=&quot;  end\n&quot;;</span>
+<span class="lineNum">     524 </span>                :<span class="lineCov">        133 :     s[j++]=&quot;  return rawget(t, n)\n&quot;;</span>
+<span class="lineNum">     525 </span>                :<span class="lineCov">        133 :     s[j++]=&quot;end\n&quot;;</span>
+<span class="lineNum">     526 </span>                :<span class="lineCov">        133 :     s[j++]=NULL;</span>
+<span class="lineNum">     527 </span>                :            : 
+<span class="lineNum">     528 </span>        [<span class="branchCov" title="Branch 1 was taken 2261 times"> + </span><span class="branchCov" title="Branch 2 was taken 133 times"> + </span>]:<span class="lineCov">       2394 :     for (j = 0; s[j] != NULL; j++) code = sdscatlen(code,s[j],strlen(s[j]));</span>
+<span class="lineNum">     529 </span>                :<span class="lineCov">        133 :     luaL_loadbuffer(lua,code,sdslen(code),&quot;@enable_strict_lua&quot;);</span>
+<span class="lineNum">     530 </span>                :<span class="lineCov">        133 :     lua_pcall(lua,0,0,0);</span>
+<span class="lineNum">     531 </span>                :<span class="lineCov">        133 :     sdsfree(code);</span>
+<span class="lineNum">     532 </span>                :<span class="lineCov">        133 : }</span>
+<span class="lineNum">     533 </span>                :            : 
+<span class="lineNum">     534 </span>                :            : /* Initialize the scripting environment.
+<span class="lineNum">     535 </span>                :            :  * It is possible to call this function to reset the scripting environment
+<a name="536"><span class="lineNum">     536 </span>                :            :  * assuming that we call scriptingRelease() before.</a>
+<span class="lineNum">     537 </span>                :            :  * See scriptingReset() for more information. */
+<span class="lineNum">     538 </span>                :<span class="lineCov">        133 : void scriptingInit(void) {</span>
+<span class="lineNum">     539 </span>                :<span class="lineCov">        133 :     lua_State *lua = lua_open();</span>
+<span class="lineNum">     540 </span>                :            : 
+<span class="lineNum">     541 </span>                :<span class="lineCov">        133 :     luaLoadLibraries(lua);</span>
+<span class="lineNum">     542 </span>                :<span class="lineCov">        133 :     luaRemoveUnsupportedFunctions(lua);</span>
+<span class="lineNum">     543 </span>                :            : 
+<span class="lineNum">     544 </span>                :            :     /* Initialize a dictionary we use to map SHAs to scripts.
+<span class="lineNum">     545 </span>                :            :      * This is useful for replication, as we need to replicate EVALSHA
+<span class="lineNum">     546 </span>                :            :      * as EVAL, so we need to remember the associated script. */
+<span class="lineNum">     547 </span>                :<span class="lineCov">        133 :     server.lua_scripts = dictCreate(&amp;shaScriptObjectDictType,NULL);</span>
+<span class="lineNum">     548 </span>                :            : 
+<span class="lineNum">     549 </span>                :            :     /* Register the redis commands table and fields */
+<span class="lineNum">     550 </span>                :<span class="lineCov">        133 :     lua_newtable(lua);</span>
+<span class="lineNum">     551 </span>                :            : 
+<span class="lineNum">     552 </span>                :            :     /* redis.call */
+<span class="lineNum">     553 </span>                :<span class="lineCov">        133 :     lua_pushstring(lua,&quot;call&quot;);</span>
+<span class="lineNum">     554 </span>                :<span class="lineCov">        133 :     lua_pushcfunction(lua,luaRedisCallCommand);</span>
+<span class="lineNum">     555 </span>                :<span class="lineCov">        133 :     lua_settable(lua,-3);</span>
+<span class="lineNum">     556 </span>                :            : 
+<span class="lineNum">     557 </span>                :            :     /* redis.pcall */
+<span class="lineNum">     558 </span>                :<span class="lineCov">        133 :     lua_pushstring(lua,&quot;pcall&quot;);</span>
+<span class="lineNum">     559 </span>                :<span class="lineCov">        133 :     lua_pushcfunction(lua,luaRedisPCallCommand);</span>
+<span class="lineNum">     560 </span>                :<span class="lineCov">        133 :     lua_settable(lua,-3);</span>
+<span class="lineNum">     561 </span>                :            : 
+<span class="lineNum">     562 </span>                :            :     /* redis.log and log levels. */
+<span class="lineNum">     563 </span>                :<span class="lineCov">        133 :     lua_pushstring(lua,&quot;log&quot;);</span>
+<span class="lineNum">     564 </span>                :<span class="lineCov">        133 :     lua_pushcfunction(lua,luaLogCommand);</span>
+<span class="lineNum">     565 </span>                :<span class="lineCov">        133 :     lua_settable(lua,-3);</span>
+<span class="lineNum">     566 </span>                :            : 
+<span class="lineNum">     567 </span>                :<span class="lineCov">        133 :     lua_pushstring(lua,&quot;LOG_DEBUG&quot;);</span>
+<span class="lineNum">     568 </span>                :<span class="lineCov">        133 :     lua_pushnumber(lua,REDIS_DEBUG);</span>
+<span class="lineNum">     569 </span>                :<span class="lineCov">        133 :     lua_settable(lua,-3);</span>
+<span class="lineNum">     570 </span>                :            : 
+<span class="lineNum">     571 </span>                :<span class="lineCov">        133 :     lua_pushstring(lua,&quot;LOG_VERBOSE&quot;);</span>
+<span class="lineNum">     572 </span>                :<span class="lineCov">        133 :     lua_pushnumber(lua,REDIS_VERBOSE);</span>
+<span class="lineNum">     573 </span>                :<span class="lineCov">        133 :     lua_settable(lua,-3);</span>
+<span class="lineNum">     574 </span>                :            : 
+<span class="lineNum">     575 </span>                :<span class="lineCov">        133 :     lua_pushstring(lua,&quot;LOG_NOTICE&quot;);</span>
+<span class="lineNum">     576 </span>                :<span class="lineCov">        133 :     lua_pushnumber(lua,REDIS_NOTICE);</span>
+<span class="lineNum">     577 </span>                :<span class="lineCov">        133 :     lua_settable(lua,-3);</span>
+<span class="lineNum">     578 </span>                :            : 
+<span class="lineNum">     579 </span>                :<span class="lineCov">        133 :     lua_pushstring(lua,&quot;LOG_WARNING&quot;);</span>
+<span class="lineNum">     580 </span>                :<span class="lineCov">        133 :     lua_pushnumber(lua,REDIS_WARNING);</span>
+<span class="lineNum">     581 </span>                :<span class="lineCov">        133 :     lua_settable(lua,-3);</span>
+<span class="lineNum">     582 </span>                :            : 
+<span class="lineNum">     583 </span>                :            :     /* redis.sha1hex */
+<span class="lineNum">     584 </span>                :<span class="lineCov">        133 :     lua_pushstring(lua, &quot;sha1hex&quot;);</span>
+<span class="lineNum">     585 </span>                :<span class="lineCov">        133 :     lua_pushcfunction(lua, luaRedisSha1hexCommand);</span>
+<span class="lineNum">     586 </span>                :<span class="lineCov">        133 :     lua_settable(lua, -3);</span>
+<span class="lineNum">     587 </span>                :            : 
+<span class="lineNum">     588 </span>                :            :     /* redis.error_reply and redis.status_reply */
+<span class="lineNum">     589 </span>                :<span class="lineCov">        133 :     lua_pushstring(lua, &quot;error_reply&quot;);</span>
+<span class="lineNum">     590 </span>                :<span class="lineCov">        133 :     lua_pushcfunction(lua, luaRedisErrorReplyCommand);</span>
+<span class="lineNum">     591 </span>                :<span class="lineCov">        133 :     lua_settable(lua, -3);</span>
+<span class="lineNum">     592 </span>                :<span class="lineCov">        133 :     lua_pushstring(lua, &quot;status_reply&quot;);</span>
+<span class="lineNum">     593 </span>                :<span class="lineCov">        133 :     lua_pushcfunction(lua, luaRedisStatusReplyCommand);</span>
+<span class="lineNum">     594 </span>                :<span class="lineCov">        133 :     lua_settable(lua, -3);</span>
+<span class="lineNum">     595 </span>                :            : 
+<span class="lineNum">     596 </span>                :            :     /* Finally set the table as 'redis' global var. */
+<span class="lineNum">     597 </span>                :<span class="lineCov">        133 :     lua_setglobal(lua,&quot;redis&quot;);</span>
+<span class="lineNum">     598 </span>                :            : 
+<span class="lineNum">     599 </span>                :            :     /* Replace math.random and math.randomseed with our implementations. */
+<span class="lineNum">     600 </span>                :<span class="lineCov">        133 :     lua_getglobal(lua,&quot;math&quot;);</span>
+<span class="lineNum">     601 </span>                :            : 
+<span class="lineNum">     602 </span>                :<span class="lineCov">        133 :     lua_pushstring(lua,&quot;random&quot;);</span>
+<span class="lineNum">     603 </span>                :<span class="lineCov">        133 :     lua_pushcfunction(lua,redis_math_random);</span>
+<span class="lineNum">     604 </span>                :<span class="lineCov">        133 :     lua_settable(lua,-3);</span>
+<span class="lineNum">     605 </span>                :            : 
+<span class="lineNum">     606 </span>                :<span class="lineCov">        133 :     lua_pushstring(lua,&quot;randomseed&quot;);</span>
+<span class="lineNum">     607 </span>                :<span class="lineCov">        133 :     lua_pushcfunction(lua,redis_math_randomseed);</span>
+<span class="lineNum">     608 </span>                :<span class="lineCov">        133 :     lua_settable(lua,-3);</span>
+<span class="lineNum">     609 </span>                :            : 
+<span class="lineNum">     610 </span>                :<span class="lineCov">        133 :     lua_setglobal(lua,&quot;math&quot;);</span>
+<span class="lineNum">     611 </span>                :            : 
+<span class="lineNum">     612 </span>                :            :     /* Add a helper function that we use to sort the multi bulk output of non
+<span class="lineNum">     613 </span>                :            :      * deterministic commands, when containing 'false' elements. */
+<span class="lineNum">     614 </span>                :            :     {
+<span class="lineNum">     615 </span>                :<span class="lineCov">        133 :         char *compare_func =    &quot;function __redis__compare_helper(a,b)\n&quot;</span>
+<span class="lineNum">     616 </span>                :            :                                 &quot;  if a == false then a = '' end\n&quot;
+<span class="lineNum">     617 </span>                :            :                                 &quot;  if b == false then b = '' end\n&quot;
+<span class="lineNum">     618 </span>                :            :                                 &quot;  return a&lt;b\n&quot;
+<span class="lineNum">     619 </span>                :            :                                 &quot;end\n&quot;;
+<span class="lineNum">     620 </span>                :<span class="lineCov">        133 :         luaL_loadbuffer(lua,compare_func,strlen(compare_func),&quot;@cmp_func_def&quot;);</span>
+<span class="lineNum">     621 </span>                :<span class="lineCov">        133 :         lua_pcall(lua,0,0,0);</span>
+<span class="lineNum">     622 </span>                :            :     }
+<span class="lineNum">     623 </span>                :            : 
+<span class="lineNum">     624 </span>                :            :     /* Add a helper function we use for pcall error reporting.
+<span class="lineNum">     625 </span>                :            :      * Note that when the error is in the C function we want to report the
+<span class="lineNum">     626 </span>                :            :      * information about the caller, that's what makes sense from the point
+<span class="lineNum">     627 </span>                :            :      * of view of the user debugging a script. */
+<span class="lineNum">     628 </span>                :            :     {
+<span class="lineNum">     629 </span>                :<span class="lineCov">        133 :         char *errh_func =       &quot;function __redis__err__handler(err)\n&quot;</span>
+<span class="lineNum">     630 </span>                :            :                                 &quot;  local i = debug.getinfo(2,'nSl')\n&quot;
+<span class="lineNum">     631 </span>                :            :                                 &quot;  if i and i.what == 'C' then\n&quot;
+<span class="lineNum">     632 </span>                :            :                                 &quot;    i = debug.getinfo(3,'nSl')\n&quot;
+<span class="lineNum">     633 </span>                :            :                                 &quot;  end\n&quot;
+<span class="lineNum">     634 </span>                :            :                                 &quot;  if i then\n&quot;
+<span class="lineNum">     635 </span>                :            :                                 &quot;    return i.source .. ':' .. i.currentline .. ': ' .. err\n&quot;
+<span class="lineNum">     636 </span>                :            :                                 &quot;  else\n&quot;
+<span class="lineNum">     637 </span>                :            :                                 &quot;    return err\n&quot;
+<span class="lineNum">     638 </span>                :            :                                 &quot;  end\n&quot;
+<span class="lineNum">     639 </span>                :            :                                 &quot;end\n&quot;;
+<span class="lineNum">     640 </span>                :<span class="lineCov">        133 :         luaL_loadbuffer(lua,errh_func,strlen(errh_func),&quot;@err_handler_def&quot;);</span>
+<span class="lineNum">     641 </span>                :<span class="lineCov">        133 :         lua_pcall(lua,0,0,0);</span>
+<span class="lineNum">     642 </span>                :            :     }
+<span class="lineNum">     643 </span>                :            : 
+<span class="lineNum">     644 </span>                :            :     /* Create the (non connected) client that we use to execute Redis commands
+<span class="lineNum">     645 </span>                :            :      * inside the Lua interpreter.
+<span class="lineNum">     646 </span>                :            :      * Note: there is no need to create it again when this function is called
+<span class="lineNum">     647 </span>                :            :      * by scriptingReset(). */
+<span class="lineNum">     648 </span>        [<span class="branchCov" title="Branch 0 was taken 131 times"> + </span><span class="branchCov" title="Branch 1 was taken 2 times"> + </span>]:<span class="lineCov">        133 :     if (server.lua_client == NULL) {</span>
+<span class="lineNum">     649 </span>                :<span class="lineCov">        131 :         server.lua_client = createClient(-1);</span>
+<span class="lineNum">     650 </span>                :<span class="lineCov">        131 :         server.lua_client-&gt;flags |= REDIS_LUA_CLIENT;</span>
+<span class="lineNum">     651 </span>                :            :     }
+<span class="lineNum">     652 </span>                :            : 
+<span class="lineNum">     653 </span>                :            :     /* Lua beginners ofter don't use &quot;local&quot;, this is likely to introduce
+<span class="lineNum">     654 </span>                :            :      * subtle bugs in their code. To prevent problems we protect accesses
+<span class="lineNum">     655 </span>                :            :      * to global variables. */
+<span class="lineNum">     656 </span>                :<span class="lineCov">        133 :     scriptingEnableGlobalsProtection(lua);</span>
+<span class="lineNum">     657 </span>                :            : 
+<span class="lineNum">     658 </span>                :<span class="lineCov">        133 :     server.lua = lua;</span>
+<span class="lineNum">     659 </span>                :<span class="lineCov">        133 : }</span>
+<span class="lineNum">     660 </span>                :            : 
+<a name="661"><span class="lineNum">     661 </span>                :            : /* Release resources related to Lua scripting.</a>
+<span class="lineNum">     662 </span>                :            :  * This function is used in order to reset the scripting environment. */
+<span class="lineNum">     663 </span>                :<span class="lineCov">          2 : void scriptingRelease(void) {</span>
+<span class="lineNum">     664 </span>                :<span class="lineCov">          2 :     dictRelease(server.lua_scripts);</span>
+<span class="lineNum">     665 </span>                :<span class="lineCov">          2 :     lua_close(server.lua);</span>
+<a name="666"><span class="lineNum">     666 </span>                :<span class="lineCov">          2 : }</span></a>
+<span class="lineNum">     667 </span>                :            : 
+<span class="lineNum">     668 </span>                :<span class="lineCov">          2 : void scriptingReset(void) {</span>
+<span class="lineNum">     669 </span>                :<span class="lineCov">          2 :     scriptingRelease();</span>
+<span class="lineNum">     670 </span>                :<span class="lineCov">          2 :     scriptingInit();</span>
+<span class="lineNum">     671 </span>                :<span class="lineCov">          2 : }</span>
+<span class="lineNum">     672 </span>                :            : 
+<span class="lineNum">     673 </span>                :            : /* Perform the SHA1 of the input string. We use this both for hashing script
+<span class="lineNum">     674 </span>                :            :  * bodies in order to obtain the Lua function name, and in the implementation
+<span class="lineNum">     675 </span>                :            :  * of redis.sha1().
+<span class="lineNum">     676 </span>                :            :  *
+<a name="677"><span class="lineNum">     677 </span>                :            :  * 'digest' should point to a 41 bytes buffer: 40 for SHA1 converted into an</a>
+<span class="lineNum">     678 </span>                :            :  * hexadecimal number, plus 1 byte for null term. */
+<span class="lineNum">     679 </span>                :<span class="lineCov">     307568 : void sha1hex(char *digest, char *script, size_t len) {</span>
+<span class="lineNum">     680 </span>                :            :     SHA1_CTX ctx;
+<span class="lineNum">     681 </span>                :            :     unsigned char hash[20];
+<span class="lineNum">     682 </span>                :<span class="lineCov">     307568 :     char *cset = &quot;0123456789abcdef&quot;;</span>
+<span class="lineNum">     683 </span>                :            :     int j;
+<span class="lineNum">     684 </span>                :            : 
+<span class="lineNum">     685 </span>                :<span class="lineCov">     307568 :     SHA1Init(&amp;ctx);</span>
+<span class="lineNum">     686 </span>                :<span class="lineCov">     307568 :     SHA1Update(&amp;ctx,(unsigned char*)script,len);</span>
+<span class="lineNum">     687 </span>                :<span class="lineCov">     307568 :     SHA1Final(hash,&amp;ctx);</span>
+<span class="lineNum">     688 </span>                :            : 
+<span class="lineNum">     689 </span>        [<span class="branchCov" title="Branch 1 was taken 6151360 times"> + </span><span class="branchCov" title="Branch 2 was taken 307568 times"> + </span>]:<span class="lineCov">    6458928 :     for (j = 0; j &lt; 20; j++) {</span>
+<span class="lineNum">     690 </span>                :<span class="lineCov">    6151360 :         digest[j*2] = cset[((hash[j]&amp;0xF0)&gt;&gt;4)];</span>
+<span class="lineNum">     691 </span>                :<span class="lineCov">    6151360 :         digest[j*2+1] = cset[(hash[j]&amp;0xF)];</span>
+<span class="lineNum">     692 </span>                :            :     }
+<span class="lineNum">     693 </span>                :<span class="lineCov">     307568 :     digest[40] = '\0';</span>
+<a name="694"><span class="lineNum">     694 </span>                :<span class="lineCov">     307568 : }</span></a>
+<span class="lineNum">     695 </span>                :            : 
+<span class="lineNum">     696 </span>                :<span class="lineCov">     402861 : void luaReplyToRedisReply(redisClient *c, lua_State *lua) {</span>
+<span class="lineNum">     697 </span>                :<span class="lineCov">     402861 :     int t = lua_type(lua,-1);</span>
+<span class="lineNum">     698 </span>                :            : 
+<span class="lineNum">     699 </span>  [<span class="branchCov" title="Branch 0 was taken 85774 times"> + </span><span class="branchCov" title="Branch 1 was taken 12 times"> + </span><span class="branchCov" title="Branch 2 was taken 317025 times"> + </span><span class="branchCov" title="Branch 3 was taken 41 times"> + </span> :<span class="lineCov">     402861 :     switch(t) {</span>
+<span class="lineNum">         </span>            <span class="branchCov" title="Branch 4 was taken 9 times"> + </span>]
+<span class="lineNum">     700 </span>                :            :     case LUA_TSTRING:
+<span class="lineNum">     701 </span>                :<span class="lineCov">      85774 :         addReplyBulkCBuffer(c,(char*)lua_tostring(lua,-1),lua_strlen(lua,-1));</span>
+<span class="lineNum">     702 </span>                :<span class="lineCov">      85774 :         break;</span>
+<span class="lineNum">     703 </span>                :            :     case LUA_TBOOLEAN:
+<span class="lineNum">     704 </span>        [<span class="branchCov" title="Branch 1 was taken 4 times"> + </span><span class="branchCov" title="Branch 2 was taken 8 times"> + </span>]:<span class="lineCov">         12 :         addReply(c,lua_toboolean(lua,-1) ? shared.cone : shared.nullbulk);</span>
+<span class="lineNum">     705 </span>                :<span class="lineCov">         12 :         break;</span>
+<span class="lineNum">     706 </span>                :            :     case LUA_TNUMBER:
+<span class="lineNum">     707 </span>                :<span class="lineCov">     317025 :         addReplyLongLong(c,(long long)lua_tonumber(lua,-1));</span>
+<span class="lineNum">     708 </span>                :<span class="lineCov">     317025 :         break;</span>
+<span class="lineNum">     709 </span>                :            :     case LUA_TTABLE:
+<span class="lineNum">     710 </span>                :            :         /* We need to check if it is an array, an error, or a status reply.
+<span class="lineNum">     711 </span>                :            :          * Error are returned as a single element table with 'err' field.
+<span class="lineNum">     712 </span>                :            :          * Status replies are returned as single element table with 'ok' field */
+<span class="lineNum">     713 </span>                :<span class="lineCov">         41 :         lua_pushstring(lua,&quot;err&quot;);</span>
+<span class="lineNum">     714 </span>                :<span class="lineCov">         41 :         lua_gettable(lua,-2);</span>
+<span class="lineNum">     715 </span>                :<span class="lineCov">         41 :         t = lua_type(lua,-1);</span>
+<span class="lineNum">     716 </span>        [<span class="branchCov" title="Branch 0 was taken 8 times"> + </span><span class="branchCov" title="Branch 1 was taken 33 times"> + </span>]:<span class="lineCov">         41 :         if (t == LUA_TSTRING) {</span>
+<span class="lineNum">     717 </span>                :<span class="lineCov">          8 :             sds err = sdsnew(lua_tostring(lua,-1));</span>
+<span class="lineNum">     718 </span>                :<span class="lineCov">          8 :             sdsmapchars(err,&quot;\r\n&quot;,&quot;  &quot;,2);</span>
+<span class="lineNum">     719 </span>                :<span class="lineCov">          8 :             addReplySds(c,sdscatprintf(sdsempty(),&quot;-%s\r\n&quot;,err));</span>
+<span class="lineNum">     720 </span>                :<span class="lineCov">          8 :             sdsfree(err);</span>
+<span class="lineNum">     721 </span>                :<span class="lineCov">          8 :             lua_pop(lua,2);</span>
+<span class="lineNum">     722 </span>                :<span class="lineCov">     402861 :             return;</span>
+<span class="lineNum">     723 </span>                :            :         }
+<span class="lineNum">     724 </span>                :            : 
+<span class="lineNum">     725 </span>                :<span class="lineCov">         33 :         lua_pop(lua,1);</span>
+<span class="lineNum">     726 </span>                :<span class="lineCov">         33 :         lua_pushstring(lua,&quot;ok&quot;);</span>
+<span class="lineNum">     727 </span>                :<span class="lineCov">         33 :         lua_gettable(lua,-2);</span>
+<span class="lineNum">     728 </span>                :<span class="lineCov">         33 :         t = lua_type(lua,-1);</span>
+<span class="lineNum">     729 </span>        [<span class="branchCov" title="Branch 0 was taken 4 times"> + </span><span class="branchCov" title="Branch 1 was taken 29 times"> + </span>]:<span class="lineCov">         33 :         if (t == LUA_TSTRING) {</span>
+<span class="lineNum">     730 </span>                :<span class="lineCov">          4 :             sds ok = sdsnew(lua_tostring(lua,-1));</span>
+<span class="lineNum">     731 </span>                :<span class="lineCov">          4 :             sdsmapchars(ok,&quot;\r\n&quot;,&quot;  &quot;,2);</span>
+<span class="lineNum">     732 </span>                :<span class="lineCov">          4 :             addReplySds(c,sdscatprintf(sdsempty(),&quot;+%s\r\n&quot;,ok));</span>
+<span class="lineNum">     733 </span>                :<span class="lineCov">          4 :             sdsfree(ok);</span>
+<span class="lineNum">     734 </span>                :<span class="lineCov">          4 :             lua_pop(lua,1);</span>
+<span class="lineNum">     735 </span>                :            :         } else {
+<span class="lineNum">     736 </span>                :<span class="lineCov">         29 :             void *replylen = addDeferredMultiBulkLength(c);</span>
+<span class="lineNum">     737 </span>                :<span class="lineCov">         29 :             int j = 1, mbulklen = 0;</span>
+<span class="lineNum">     738 </span>                :            : 
+<span class="lineNum">     739 </span>                :<span class="lineCov">         29 :             lua_pop(lua,1); /* Discard the 'ok' field value we popped */</span>
+<span class="lineNum">     740 </span>                :            :             while(1) {
+<span class="lineNum">     741 </span>                :<span class="lineCov">        211 :                 lua_pushnumber(lua,j++);</span>
+<span class="lineNum">     742 </span>                :<span class="lineCov">        211 :                 lua_gettable(lua,-2);</span>
+<span class="lineNum">     743 </span>                :<span class="lineCov">        211 :                 t = lua_type(lua,-1);</span>
+<span class="lineNum">     744 </span>        [<span class="branchCov" title="Branch 0 was taken 29 times"> + </span><span class="branchCov" title="Branch 1 was taken 182 times"> + </span>]:<span class="lineCov">        211 :                 if (t == LUA_TNIL) {</span>
+<span class="lineNum">     745 </span>                :<span class="lineCov">         29 :                     lua_pop(lua,1);</span>
+<span class="lineNum">     746 </span>                :            :                     break;
+<span class="lineNum">     747 </span>                :            :                 }
+<span class="lineNum">     748 </span>                :<span class="lineCov">        182 :                 luaReplyToRedisReply(c, lua);</span>
+<span class="lineNum">     749 </span>                :<span class="lineCov">        182 :                 mbulklen++;</span>
+<span class="lineNum">     750 </span>                :<span class="lineCov">        182 :             }</span>
+<span class="lineNum">     751 </span>                :<span class="lineCov">         29 :             setDeferredMultiBulkLength(c,replylen,mbulklen);</span>
+<span class="lineNum">     752 </span>                :            :         }
+<span class="lineNum">     753 </span>                :            :         break;
+<span class="lineNum">     754 </span>                :            :     default:
+<span class="lineNum">     755 </span>                :<span class="lineCov">          9 :         addReply(c,shared.nullbulk);</span>
+<span class="lineNum">     756 </span>                :            :     }
+<span class="lineNum">     757 </span>                :<span class="lineCov">     402853 :     lua_pop(lua,1);</span>
+<span class="lineNum">     758 </span>                :            : }
+<span class="lineNum">     759 </span>                :            : 
+<a name="760"><span class="lineNum">     760 </span>                :            : /* Set an array of Redis String Objects as a Lua array (table) stored into a</a>
+<span class="lineNum">     761 </span>                :            :  * global variable. */
+<span class="lineNum">     762 </span>                :<span class="lineCov">     805390 : void luaSetGlobalArray(lua_State *lua, char *var, robj **elev, int elec) {</span>
+<span class="lineNum">     763 </span>                :            :     int j;
+<span class="lineNum">     764 </span>                :            : 
+<span class="lineNum">     765 </span>                :<span class="lineCov">     805390 :     lua_newtable(lua);</span>
+<span class="lineNum">     766 </span>        [<span class="branchCov" title="Branch 1 was taken 36 times"> + </span><span class="branchCov" title="Branch 2 was taken 805390 times"> + </span>]:<span class="lineCov">     805426 :     for (j = 0; j &lt; elec; j++) {</span>
+<span class="lineNum">     767 </span>                :<span class="lineCov">         36 :         lua_pushlstring(lua,(char*)elev[j]-&gt;ptr,sdslen(elev[j]-&gt;ptr));</span>
+<span class="lineNum">     768 </span>                :<span class="lineCov">         36 :         lua_rawseti(lua,-2,j+1);</span>
+<span class="lineNum">     769 </span>                :            :     }
+<span class="lineNum">     770 </span>                :<span class="lineCov">     805390 :     lua_setglobal(lua,var);</span>
+<span class="lineNum">     771 </span>                :<span class="lineCov">     805390 : }</span>
+<span class="lineNum">     772 </span>                :            : 
+<span class="lineNum">     773 </span>                :            : /* Define a lua function with the specified function name and body.
+<span class="lineNum">     774 </span>                :            :  * The function name musts be a 2 characters long string, since all the
+<span class="lineNum">     775 </span>                :            :  * functions we defined in the Lua context are in the form:
+<span class="lineNum">     776 </span>                :            :  *
+<span class="lineNum">     777 </span>                :            :  *   f_&lt;hex sha1 sum&gt;
+<span class="lineNum">     778 </span>                :            :  *
+<span class="lineNum">     779 </span>                :            :  * On success REDIS_OK is returned, and nothing is left on the Lua stack.
+<a name="780"><span class="lineNum">     780 </span>                :            :  * On error REDIS_ERR is returned and an appropriate error is set in the</a>
+<span class="lineNum">     781 </span>                :            :  * client context. */
+<span class="lineNum">     782 </span>                :<span class="lineCov">     191254 : int luaCreateFunction(redisClient *c, lua_State *lua, char *funcname, robj *body) {</span>
+<span class="lineNum">     783 </span>                :<span class="lineCov">     191254 :     sds funcdef = sdsempty();</span>
+<span class="lineNum">     784 </span>                :            : 
+<span class="lineNum">     785 </span>                :<span class="lineCov">     191254 :     funcdef = sdscat(funcdef,&quot;function &quot;);</span>
+<span class="lineNum">     786 </span>                :<span class="lineCov">     191254 :     funcdef = sdscatlen(funcdef,funcname,42);</span>
+<span class="lineNum">     787 </span>                :<span class="lineCov">     191254 :     funcdef = sdscatlen(funcdef,&quot;() &quot;,3);</span>
+<span class="lineNum">     788 </span>                :<span class="lineCov">     191254 :     funcdef = sdscatlen(funcdef,body-&gt;ptr,sdslen(body-&gt;ptr));</span>
+<span class="lineNum">     789 </span>                :<span class="lineCov">     191254 :     funcdef = sdscatlen(funcdef,&quot; end&quot;,4);</span>
+<span class="lineNum">     790 </span>                :            : 
+<span class="lineNum">     791 </span>        [<span class="branchNoCov" title="Branch 1 was not taken"> - </span><span class="branchCov" title="Branch 2 was taken 191254 times"> + </span>]:<span class="lineCov">     191254 :     if (luaL_loadbuffer(lua,funcdef,sdslen(funcdef),&quot;@user_script&quot;)) {</span>
+<span class="lineNum">     792 </span>                :<span class="lineNoCov">          0 :         addReplyErrorFormat(c,&quot;Error compiling script (new function): %s\n&quot;,</span>
+<span class="lineNum">     793 </span>                :            :             lua_tostring(lua,-1));
+<span class="lineNum">     794 </span>                :<span class="lineNoCov">          0 :         lua_pop(lua,1);</span>
+<span class="lineNum">     795 </span>                :<span class="lineNoCov">          0 :         sdsfree(funcdef);</span>
+<span class="lineNum">     796 </span>                :<span class="lineNoCov">          0 :         return REDIS_ERR;</span>
+<span class="lineNum">     797 </span>                :            :     }
+<span class="lineNum">     798 </span>                :<span class="lineCov">     191254 :     sdsfree(funcdef);</span>
+<span class="lineNum">     799 </span>        [<span class="branchNoCov" title="Branch 1 was not taken"> - </span><span class="branchCov" title="Branch 2 was taken 191254 times"> + </span>]:<span class="lineCov">     191254 :     if (lua_pcall(lua,0,0,0)) {</span>
+<span class="lineNum">     800 </span>                :<span class="lineNoCov">          0 :         addReplyErrorFormat(c,&quot;Error running script (new function): %s\n&quot;,</span>
+<span class="lineNum">     801 </span>                :            :             lua_tostring(lua,-1));
+<span class="lineNum">     802 </span>                :<span class="lineNoCov">          0 :         lua_pop(lua,1);</span>
+<span class="lineNum">     803 </span>                :<span class="lineNoCov">          0 :         return REDIS_ERR;</span>
+<span class="lineNum">     804 </span>                :            :     }
+<span class="lineNum">     805 </span>                :            : 
+<span class="lineNum">     806 </span>                :            :     /* We also save a SHA1 -&gt; Original script map in a dictionary
+<span class="lineNum">     807 </span>                :            :      * so that we can replicate / write in the AOF all the
+<span class="lineNum">     808 </span>                :            :      * EVALSHA commands as EVAL using the original script. */
+<span class="lineNum">     809 </span>                :            :     {
+<span class="lineNum">     810 </span>                :<span class="lineCov">     191254 :         int retval = dictAdd(server.lua_scripts,</span>
+<span class="lineNum">     811 </span>                :<span class="lineCov">     191254 :                              sdsnewlen(funcname+2,40),body);</span>
+<span class="lineNum">     812 </span>        [<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchCov" title="Branch 1 was taken 191254 times"> + </span>]:<span class="lineCov">     191254 :         redisAssertWithInfo(c,NULL,retval == DICT_OK);</span>
+<span class="lineNum">     813 </span>                :<span class="lineCov">     191254 :         incrRefCount(body);</span>
+<span class="lineNum">     814 </span>                :            :     }
+<span class="lineNum">     815 </span>                :<span class="lineCov">     191254 :     return REDIS_OK;</span>
+<a name="816"><span class="lineNum">     816 </span>                :            : }</a>
+<span class="lineNum">     817 </span>                :            : 
+<span class="lineNum">     818 </span>                :<span class="lineCov">     402699 : void evalGenericCommand(redisClient *c, int evalsha) {</span>
+<span class="lineNum">     819 </span>                :<span class="lineCov">     402699 :     lua_State *lua = server.lua;</span>
+<span class="lineNum">     820 </span>                :            :     char funcname[43];
+<span class="lineNum">     821 </span>                :            :     long long numkeys;
+<span class="lineNum">     822 </span>                :<span class="lineCov">     402699 :     int delhook = 0, err;</span>
+<span class="lineNum">     823 </span>                :            : 
+<span class="lineNum">     824 </span>                :            :     /* We want the same PRNG sequence at every call so that our PRNG is
+<span class="lineNum">     825 </span>                :            :      * not affected by external state. */
+<span class="lineNum">     826 </span>                :<span class="lineCov">     402699 :     redisSrand48(0);</span>
+<span class="lineNum">     827 </span>                :            : 
+<span class="lineNum">     828 </span>                :            :     /* We set this flag to zero to remember that so far no random command
+<span class="lineNum">     829 </span>                :            :      * was called. This way we can allow the user to call commands like
+<span class="lineNum">     830 </span>                :            :      * SRANDMEMBER or RANDOMKEY from Lua scripts as far as no write command
+<span class="lineNum">     831 </span>                :            :      * is called (otherwise the replication and AOF would end with non
+<span class="lineNum">     832 </span>                :            :      * deterministic sequences).
+<span class="lineNum">     833 </span>                :            :      *
+<span class="lineNum">     834 </span>                :            :      * Thanks to this flag we'll raise an error every time a write command
+<span class="lineNum">     835 </span>                :            :      * is called after a random command was used. */
+<span class="lineNum">     836 </span>                :<span class="lineCov">     402699 :     server.lua_random_dirty = 0;</span>
+<span class="lineNum">     837 </span>                :<span class="lineCov">     402699 :     server.lua_write_dirty = 0;</span>
+<span class="lineNum">     838 </span>                :            : 
+<span class="lineNum">     839 </span>                :            :     /* Get the number of arguments that are keys */
+<span class="lineNum">     840 </span>        [<span class="branchCov" title="Branch 1 was taken 402699 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">     402699 :     if (getLongLongFromObjectOrReply(c,c-&gt;argv[2],&amp;numkeys,NULL) != REDIS_OK)</span>
+<span class="lineNum">     841 </span>                :            :         return;
+<span class="lineNum">     842 </span>        [<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchCov" title="Branch 1 was taken 402699 times"> + </span>]:<span class="lineCov">     402699 :     if (numkeys &gt; (c-&gt;argc - 3)) {</span>
+<span class="lineNum">     843 </span>                :<span class="lineNoCov">          0 :         addReplyError(c,&quot;Number of keys can't be greater than number of args&quot;);</span>
+<span class="lineNum">     844 </span>                :<span class="lineNoCov">          0 :         return;</span>
+<span class="lineNum">     845 </span>                :            :     }
+<span class="lineNum">     846 </span>                :            : 
+<span class="lineNum">     847 </span>                :            :     /* We obtain the script SHA1, then check if this function is already
+<span class="lineNum">     848 </span>                :            :      * defined into the Lua state */
+<span class="lineNum">     849 </span>                :<span class="lineCov">     402699 :     funcname[0] = 'f';</span>
+<span class="lineNum">     850 </span>                :<span class="lineCov">     402699 :     funcname[1] = '_';</span>
+<span class="lineNum">     851 </span>        [<span class="branchCov" title="Branch 0 was taken 221979 times"> + </span><span class="branchCov" title="Branch 1 was taken 180720 times"> + </span>]:<span class="lineCov">     402699 :     if (!evalsha) {</span>
+<span class="lineNum">     852 </span>                :            :         /* Hash the code if this is an EVAL call */
+<span class="lineNum">     853 </span>                :<span class="lineCov">     221979 :         sha1hex(funcname+2,c-&gt;argv[1]-&gt;ptr,sdslen(c-&gt;argv[1]-&gt;ptr));</span>
+<span class="lineNum">     854 </span>                :            :     } else {
+<span class="lineNum">     855 </span>                :            :         /* We already have the SHA if it is a EVALSHA */
+<span class="lineNum">     856 </span>                :            :         int j;
+<span class="lineNum">     857 </span>                :<span class="lineCov">     180720 :         char *sha = c-&gt;argv[1]-&gt;ptr;</span>
+<span class="lineNum">     858 </span>                :            : 
+<span class="lineNum">     859 </span>        [<span class="branchCov" title="Branch 0 was taken 7228800 times"> + </span><span class="branchCov" title="Branch 1 was taken 180720 times"> + </span>]:<span class="lineCov">    7409520 :         for (j = 0; j &lt; 40; j++)</span>
+<span class="lineNum">     860 </span>                :<span class="lineCov">    7228800 :             funcname[j+2] = tolower(sha[j]);</span>
+<span class="lineNum">     861 </span>                :<span class="lineCov">     180720 :         funcname[42] = '\0';</span>
+<span class="lineNum">     862 </span>                :            :     }
+<span class="lineNum">     863 </span>                :            : 
+<span class="lineNum">     864 </span>                :            :     /* Push the pcall error handler function on the stack. */
+<span class="lineNum">     865 </span>                :<span class="lineCov">     402699 :     lua_getglobal(lua, &quot;__redis__err__handler&quot;);</span>
+<span class="lineNum">     866 </span>                :            : 
+<span class="lineNum">     867 </span>                :            :     /* Try to lookup the Lua function */
+<span class="lineNum">     868 </span>                :<span class="lineCov">     402699 :     lua_getglobal(lua, funcname);</span>
+<span class="lineNum">     869 </span>        [<span class="branchCov" title="Branch 1 was taken 191256 times"> + </span><span class="branchCov" title="Branch 2 was taken 211443 times"> + </span>]:<span class="lineCov">     402699 :     if (lua_isnil(lua,-1)) {</span>
+<span class="lineNum">     870 </span>                :<span class="lineCov">     191256 :         lua_pop(lua,1); /* remove the nil from the stack */</span>
+<span class="lineNum">     871 </span>                :            :         /* Function not defined... let's define it if we have the
+<span class="lineNum">     872 </span>                :            :          * body of the function. If this is an EVALSHA call we can just
+<span class="lineNum">     873 </span>                :            :          * return an error. */
+<span class="lineNum">     874 </span>        [<span class="branchCov" title="Branch 0 was taken 4 times"> + </span><span class="branchCov" title="Branch 1 was taken 191252 times"> + </span>]:<span class="lineCov">     191256 :         if (evalsha) {</span>
+<span class="lineNum">     875 </span>                :<span class="lineCov">          4 :             lua_pop(lua,1); /* remove the error handler from the stack. */</span>
+<span class="lineNum">     876 </span>                :<span class="lineCov">          4 :             addReply(c, shared.noscripterr);</span>
+<span class="lineNum">     877 </span>                :<span class="lineCov">          4 :             return;</span>
+<span class="lineNum">     878 </span>                :            :         }
+<span class="lineNum">     879 </span>        [<span class="branchCov" title="Branch 1 was taken 191252 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">     191252 :         if (luaCreateFunction(c,lua,funcname,c-&gt;argv[1]) == REDIS_ERR) return;</span>
+<span class="lineNum">     880 </span>                :            :         /* Now the following is guaranteed to return non nil */
+<span class="lineNum">     881 </span>                :<span class="lineCov">     191252 :         lua_getglobal(lua, funcname);</span>
+<span class="lineNum">     882 </span>        [<span class="branchNoCov" title="Branch 1 was not taken"> - </span><span class="branchCov" title="Branch 2 was taken 191252 times"> + </span>]:<span class="lineCov">     191252 :         redisAssert(!lua_isnil(lua,-1));</span>
+<span class="lineNum">     883 </span>                :            :     }
+<span class="lineNum">     884 </span>                :            : 
+<span class="lineNum">     885 </span>                :            :     /* Populate the argv and keys table accordingly to the arguments that
+<span class="lineNum">     886 </span>                :            :      * EVAL received. */
+<span class="lineNum">     887 </span>                :<span class="lineCov">     402695 :     luaSetGlobalArray(lua,&quot;KEYS&quot;,c-&gt;argv+3,numkeys);</span>
+<span class="lineNum">     888 </span>                :<span class="lineCov">     402695 :     luaSetGlobalArray(lua,&quot;ARGV&quot;,c-&gt;argv+3+numkeys,c-&gt;argc-3-numkeys);</span>
+<span class="lineNum">     889 </span>                :            : 
+<span class="lineNum">     890 </span>                :            :     /* Select the right DB in the context of the Lua client */
+<span class="lineNum">     891 </span>                :<span class="lineCov">     402695 :     selectDb(server.lua_client,c-&gt;db-&gt;id);</span>
+<span class="lineNum">     892 </span>                :            :     
+<span class="lineNum">     893 </span>                :            :     /* Set an hook in order to be able to stop the script execution if it
+<span class="lineNum">     894 </span>                :            :      * is running for too much time.
+<span class="lineNum">     895 </span>                :            :      * We set the hook only if the time limit is enabled as the hook will
+<span class="lineNum">     896 </span>                :            :      * make the Lua script execution slower. */
+<span class="lineNum">     897 </span>                :<span class="lineCov">     402695 :     server.lua_caller = c;</span>
+<span class="lineNum">     898 </span>                :<span class="lineCov">     402695 :     server.lua_time_start = ustime()/1000;</span>
+<span class="lineNum">     899 </span>                :<span class="lineCov">     402695 :     server.lua_kill = 0;</span>
+<span class="lineNum">     900 </span>[<span class="branchCov" title="Branch 0 was taken 402695 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>][<span class="branchCov" title="Branch 2 was taken 342689 times"> + </span><span class="branchCov" title="Branch 3 was taken 60006 times"> + </span>]:<span class="lineCov">     402695 :     if (server.lua_time_limit &gt; 0 &amp;&amp; server.masterhost == NULL) {</span>
+<span class="lineNum">     901 </span>                :<span class="lineCov">     342689 :         lua_sethook(lua,luaMaskCountHook,LUA_MASKCOUNT,100000);</span>
+<span class="lineNum">     902 </span>                :<span class="lineCov">     342689 :         delhook = 1;</span>
+<span class="lineNum">     903 </span>                :            :     }
+<span class="lineNum">     904 </span>                :            : 
+<span class="lineNum">     905 </span>                :            :     /* At this point whether this script was never seen before or if it was
+<span class="lineNum">     906 </span>                :            :      * already defined, we can call it. We have zero arguments and expect
+<span class="lineNum">     907 </span>                :            :      * a single return value. */
+<span class="lineNum">     908 </span>                :            : 
+<span class="lineNum">     909 </span>                :<span class="lineCov">     402695 :     err = lua_pcall(lua,0,1,-2);</span>
+<span class="lineNum">     910 </span>                :            : 
+<span class="lineNum">     911 </span>                :            :     /* Perform some cleanup that we need to do both on error and success. */
+<span class="lineNum">     912 </span>        [<span class="branchCov" title="Branch 0 was taken 342688 times"> + </span><span class="branchCov" title="Branch 1 was taken 60006 times"> + </span>]:<span class="lineCov">     402694 :     if (delhook) lua_sethook(lua,luaMaskCountHook,0,0); /* Disable hook */</span>
+<span class="lineNum">     913 </span>        [<span class="branchCov" title="Branch 0 was taken 2 times"> + </span><span class="branchCov" title="Branch 1 was taken 402692 times"> + </span>]:<span class="lineCov">     402694 :     if (server.lua_timedout) {</span>
+<span class="lineNum">     914 </span>                :<span class="lineCov">          2 :         server.lua_timedout = 0;</span>
+<span class="lineNum">     915 </span>                :            :         /* Restore the readable handler that was unregistered when the
+<span class="lineNum">     916 </span>                :            :          * script timeout was detected. */
+<span class="lineNum">     917 </span>                :<span class="lineCov">          2 :         aeCreateFileEvent(server.el,c-&gt;fd,AE_READABLE,</span>
+<span class="lineNum">     918 </span>                :            :                           readQueryFromClient,c);
+<span class="lineNum">     919 </span>                :            :     }
+<span class="lineNum">     920 </span>                :<span class="lineCov">     402694 :     server.lua_caller = NULL;</span>
+<span class="lineNum">     921 </span>                :<span class="lineCov">     402694 :     selectDb(c,server.lua_client-&gt;db-&gt;id); /* set DB ID from Lua client */</span>
+<span class="lineNum">     922 </span>                :<span class="lineCov">     402694 :     lua_gc(lua,LUA_GCSTEP,1);</span>
+<span class="lineNum">     923 </span>                :            : 
+<span class="lineNum">     924 </span>        [<span class="branchCov" title="Branch 0 was taken 15 times"> + </span><span class="branchCov" title="Branch 1 was taken 402679 times"> + </span>]:<span class="lineCov">     402694 :     if (err) {</span>
+<span class="lineNum">     925 </span>                :<span class="lineCov">         15 :         addReplyErrorFormat(c,&quot;Error running script (call to %s): %s\n&quot;,</span>
+<span class="lineNum">     926 </span>                :            :             funcname, lua_tostring(lua,-1));
+<span class="lineNum">     927 </span>                :<span class="lineCov">         15 :         lua_pop(lua,1); /* Consume the Lua reply. */</span>
+<span class="lineNum">     928 </span>                :            :     } else {
+<span class="lineNum">     929 </span>                :            :         /* On success convert the Lua return value into Redis protocol, and
+<span class="lineNum">     930 </span>                :            :          * send it to * the client. */
+<span class="lineNum">     931 </span>                :<span class="lineCov">     402679 :         luaReplyToRedisReply(c,lua);</span>
+<span class="lineNum">     932 </span>                :            :     }
+<span class="lineNum">     933 </span>                :            : 
+<span class="lineNum">     934 </span>                :            :     /* EVALSHA should be propagated to Slave and AOF file as full EVAL, unless
+<span class="lineNum">     935 </span>                :            :      * we are sure that the script was already in the context of all the
+<span class="lineNum">     936 </span>                :            :      * attached slaves *and* the current AOF file if enabled.
+<span class="lineNum">     937 </span>                :            :      *
+<span class="lineNum">     938 </span>                :            :      * To do so we use a cache of SHA1s of scripts that we already propagated
+<span class="lineNum">     939 </span>                :            :      * as full EVAL, that's called the Replication Script Cache.
+<span class="lineNum">     940 </span>                :            :      *
+<span class="lineNum">     941 </span>                :            :      * For repliation, everytime a new slave attaches to the master, we need to
+<span class="lineNum">     942 </span>                :            :      * flush our cache of scripts that can be replicated as EVALSHA, while
+<span class="lineNum">     943 </span>                :            :      * for AOF we need to do so every time we rewrite the AOF file. */
+<span class="lineNum">     944 </span>        [<span class="branchCov" title="Branch 0 was taken 180716 times"> + </span><span class="branchCov" title="Branch 1 was taken 221978 times"> + </span>]:<span class="lineCov">     402694 :     if (evalsha) {</span>
+<span class="lineNum">     945 </span>        [<span class="branchCov" title="Branch 1 was taken 129695 times"> + </span><span class="branchCov" title="Branch 2 was taken 51021 times"> + </span>]:<span class="lineCov">     180716 :         if (!replicationScriptCacheExists(c-&gt;argv[1]-&gt;ptr)) {</span>
+<span class="lineNum">     946 </span>                :            :             /* This script is not in our script cache, replicate it as
+<span class="lineNum">     947 </span>                :            :              * EVAL, then add it into the script cache, as from now on
+<span class="lineNum">     948 </span>                :            :              * slaves and AOF know about it. */
+<span class="lineNum">     949 </span>                :<span class="lineCov">     129695 :             robj *script = dictFetchValue(server.lua_scripts,c-&gt;argv[1]-&gt;ptr);</span>
+<span class="lineNum">     950 </span>                :            : 
+<span class="lineNum">     951 </span>                :<span class="lineCov">     129695 :             replicationScriptCacheAdd(c-&gt;argv[1]-&gt;ptr);</span>
+<span class="lineNum">     952 </span>        [<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchCov" title="Branch 1 was taken 129695 times"> + </span>]:<span class="lineCov">     129695 :             redisAssertWithInfo(c,NULL,script != NULL);</span>
+<span class="lineNum">     953 </span>                :<span class="lineCov">     129695 :             rewriteClientCommandArgument(c,0,</span>
+<span class="lineNum">     954 </span>                :            :                 resetRefCount(createStringObject(&quot;EVAL&quot;,4)));
+<span class="lineNum">     955 </span>                :<span class="lineCov">     402698 :             rewriteClientCommandArgument(c,1,script);</span>
+<span class="lineNum">     956 </span>                :            :         }
+<span class="lineNum">     957 </span>                :            :     }
+<a name="958"><span class="lineNum">     958 </span>                :            : }</a>
+<span class="lineNum">     959 </span>                :            : 
+<span class="lineNum">     960 </span>                :<span class="lineCov">     221979 : void evalCommand(redisClient *c) {</span>
+<span class="lineNum">     961 </span>                :<span class="lineCov">     221979 :     evalGenericCommand(c,0);</span>
+<a name="962"><span class="lineNum">     962 </span>                :<span class="lineCov">     221978 : }</span></a>
+<span class="lineNum">     963 </span>                :            : 
+<span class="lineNum">     964 </span>                :<span class="lineCov">     180722 : void evalShaCommand(redisClient *c) {</span>
+<span class="lineNum">     965 </span>        [<span class="branchCov" title="Branch 0 was taken 2 times"> + </span><span class="branchCov" title="Branch 1 was taken 180720 times"> + </span>]:<span class="lineCov">     180722 :     if (sdslen(c-&gt;argv[1]-&gt;ptr) != 40) {</span>
+<span class="lineNum">     966 </span>                :            :         /* We know that a match is not possible if the provided SHA is
+<span class="lineNum">     967 </span>                :            :          * not the right length. So we return an error ASAP, this way
+<span class="lineNum">     968 </span>                :            :          * evalGenericCommand() can be implemented without string length
+<span class="lineNum">     969 </span>                :            :          * sanity check */
+<span class="lineNum">     970 </span>                :<span class="lineCov">          2 :         addReply(c, shared.noscripterr);</span>
+<span class="lineNum">     971 </span>                :<span class="lineCov">     180722 :         return;</span>
+<span class="lineNum">     972 </span>                :            :     }
+<span class="lineNum">     973 </span>                :<span class="lineCov">     180720 :     evalGenericCommand(c,1);</span>
+<span class="lineNum">     974 </span>                :            : }
+<span class="lineNum">     975 </span>                :            : 
+<span class="lineNum">     976 </span>                :            : /* We replace math.random() with our implementation that is not affected
+<span class="lineNum">     977 </span>                :            :  * by specific libc random() implementations and will output the same sequence
+<span class="lineNum">     978 </span>                :            :  * (for the same seed) in every arch. */
+<span class="lineNum">     979 </span>                :            : 
+<a name="980"><span class="lineNum">     980 </span>                :            : /* The following implementation is the one shipped with Lua itself but with</a>
+<span class="lineNum">     981 </span>                :            :  * rand() replaced by redisLrand48(). */
+<span class="lineNum">     982 </span>                :<span class="lineCov">         10 : int redis_math_random (lua_State *L) {</span>
+<span class="lineNum">     983 </span>                :            :   /* the `%' avoids the (rare) case of r==1, and is needed also because on
+<span class="lineNum">     984 </span>                :            :      some systems (SunOS!) `rand()' may return a value larger than RAND_MAX */
+<span class="lineNum">     985 </span>                :<span class="lineCov">         10 :   lua_Number r = (lua_Number)(redisLrand48()%REDIS_LRAND48_MAX) /</span>
+<span class="lineNum">     986 </span>                :            :                                 (lua_Number)REDIS_LRAND48_MAX;
+<span class="lineNum">     987 </span>  [<span class="branchCov" title="Branch 1 was taken 10 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span><span class="branchNoCov" title="Branch 4 was not taken"> - </span>]:<span class="lineCov">         10 :   switch (lua_gettop(L)) {  /* check number of arguments */</span>
+<span class="lineNum">     988 </span>                :            :     case 0: {  /* no arguments */
+<span class="lineNum">     989 </span>                :<span class="lineCov">         10 :       lua_pushnumber(L, r);  /* Number between 0 and 1 */</span>
+<span class="lineNum">     990 </span>                :<span class="lineCov">         10 :       break;</span>
+<span class="lineNum">     991 </span>                :            :     }
+<span class="lineNum">     992 </span>        [<span class="branchNoExec" title="Branch 0 was not executed"> # </span><span class="branchNoExec" title="Branch 1 was not executed"> # </span>]:<span class="lineNoCov">          0 :     case 1: {  /* only upper limit */</span>
+<span class="lineNum">     993 </span>                :<span class="lineNoCov">          0 :       int u = luaL_checkint(L, 1);</span>
+<span class="lineNum">     994 </span>                :<span class="lineNoCov">          0 :       luaL_argcheck(L, 1&lt;=u, 1, &quot;interval is empty&quot;);</span>
+<span class="lineNum">     995 </span>                :<span class="lineNoCov">          0 :       lua_pushnumber(L, floor(r*u)+1);  /* int between 1 and `u' */</span>
+<span class="lineNum">     996 </span>                :<span class="lineNoCov">          0 :       break;</span>
+<span class="lineNum">     997 </span>                :            :     }
+<span class="lineNum">     998 </span>        [<span class="branchNoExec" title="Branch 0 was not executed"> # </span><span class="branchNoExec" title="Branch 1 was not executed"> # </span>]:<span class="lineNoCov">          0 :     case 2: {  /* lower and upper limits */</span>
+<span class="lineNum">     999 </span>                :<span class="lineNoCov">          0 :       int l = luaL_checkint(L, 1);</span>
+<span class="lineNum">    1000 </span>                :<span class="lineNoCov">          0 :       int u = luaL_checkint(L, 2);</span>
+<span class="lineNum">    1001 </span>                :<span class="lineNoCov">          0 :       luaL_argcheck(L, l&lt;=u, 2, &quot;interval is empty&quot;);</span>
+<span class="lineNum">    1002 </span>                :<span class="lineNoCov">          0 :       lua_pushnumber(L, floor(r*(u-l+1))+l);  /* int between `l' and `u' */</span>
+<span class="lineNum">    1003 </span>                :<span class="lineNoCov">          0 :       break;</span>
+<span class="lineNum">    1004 </span>                :            :     }
+<span class="lineNum">    1005 </span>                :<span class="lineCov">         10 :     default: return luaL_error(L, &quot;wrong number of arguments&quot;);</span>
+<span class="lineNum">    1006 </span>                :            :   }
+<span class="lineNum">    1007 </span>                :            :   return 1;
+<a name="1008"><span class="lineNum">    1008 </span>                :            : }</a>
+<span class="lineNum">    1009 </span>                :            : 
+<span class="lineNum">    1010 </span>                :<span class="lineCov">          6 : int redis_math_randomseed (lua_State *L) {</span>
+<span class="lineNum">    1011 </span>                :<span class="lineCov">          6 :   redisSrand48(luaL_checkint(L, 1));</span>
+<span class="lineNum">    1012 </span>                :<span class="lineCov">          6 :   return 0;</span>
+<span class="lineNum">    1013 </span>                :            : }
+<span class="lineNum">    1014 </span>                :            : 
+<span class="lineNum">    1015 </span>                :            : /* ---------------------------------------------------------------------------
+<span class="lineNum">    1016 </span>                :            :  * SCRIPT command for script environment introspection and control
+<a name="1017"><span class="lineNum">    1017 </span>                :            :  * ------------------------------------------------------------------------- */</a>
+<span class="lineNum">    1018 </span>                :            : 
+<span class="lineNum">    1019 </span>                :<span class="lineCov">          8 : void scriptCommand(redisClient *c) {</span>
+<span class="lineNum">    1020 </span>[<span class="branchCov" title="Branch 0 was taken 4 times"> + </span><span class="branchCov" title="Branch 1 was taken 4 times"> + </span>][<span class="branchCov" title="Branch 3 was taken 2 times"> + </span><span class="branchCov" title="Branch 4 was taken 2 times"> + </span>]:<span class="lineCov">          8 :     if (c-&gt;argc == 2 &amp;&amp; !strcasecmp(c-&gt;argv[1]-&gt;ptr,&quot;flush&quot;)) {</span>
+<span class="lineNum">    1021 </span>                :<span class="lineCov">          2 :         scriptingReset();</span>
+<span class="lineNum">    1022 </span>                :<span class="lineCov">          2 :         addReply(c,shared.ok);</span>
+<span class="lineNum">    1023 </span>                :<span class="lineCov">          2 :         replicationScriptCacheFlush();</span>
+<span class="lineNum">    1024 </span>                :<span class="lineCov">          2 :         server.dirty++; /* Propagating this command is a good idea. */</span>
+<span class="lineNum">    1025 </span>[<span class="branchCov" title="Branch 0 was taken 6 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>][<span class="branchCov" title="Branch 3 was taken 2 times"> + </span><span class="branchCov" title="Branch 4 was taken 4 times"> + </span>]:<span class="lineCov">          6 :     } else if (c-&gt;argc &gt;= 2 &amp;&amp; !strcasecmp(c-&gt;argv[1]-&gt;ptr,&quot;exists&quot;)) {</span>
+<span class="lineNum">    1026 </span>                :            :         int j;
+<span class="lineNum">    1027 </span>                :            : 
+<span class="lineNum">    1028 </span>                :<span class="lineCov">          2 :         addReplyMultiBulkLen(c, c-&gt;argc-2);</span>
+<span class="lineNum">    1029 </span>        [<span class="branchCov" title="Branch 1 was taken 4 times"> + </span><span class="branchCov" title="Branch 2 was taken 2 times"> + </span>]:<span class="lineCov">          6 :         for (j = 2; j &lt; c-&gt;argc; j++) {</span>
+<span class="lineNum">    1030 </span>        [<span class="branchCov" title="Branch 1 was taken 2 times"> + </span><span class="branchCov" title="Branch 2 was taken 2 times"> + </span>]:<span class="lineCov">          4 :             if (dictFind(server.lua_scripts,c-&gt;argv[j]-&gt;ptr))</span>
+<span class="lineNum">    1031 </span>                :<span class="lineCov">          2 :                 addReply(c,shared.cone);</span>
+<span class="lineNum">    1032 </span>                :            :             else
+<span class="lineNum">    1033 </span>                :<span class="lineCov">          2 :                 addReply(c,shared.czero);</span>
+<span class="lineNum">    1034 </span>                :            :         }
+<span class="lineNum">    1035 </span>[<span class="branchCov" title="Branch 0 was taken 2 times"> + </span><span class="branchCov" title="Branch 1 was taken 2 times"> + </span>][<span class="branchCov" title="Branch 3 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 4 was not taken"> - </span>]:<span class="lineCov">          6 :     } else if (c-&gt;argc == 3 &amp;&amp; !strcasecmp(c-&gt;argv[1]-&gt;ptr,&quot;load&quot;)) {</span>
+<span class="lineNum">    1036 </span>                :            :         char funcname[43];
+<span class="lineNum">    1037 </span>                :            :         sds sha;
+<span class="lineNum">    1038 </span>                :            : 
+<span class="lineNum">    1039 </span>                :<span class="lineCov">          2 :         funcname[0] = 'f';</span>
+<span class="lineNum">    1040 </span>                :<span class="lineCov">          2 :         funcname[1] = '_';</span>
+<span class="lineNum">    1041 </span>                :<span class="lineCov">          2 :         sha1hex(funcname+2,c-&gt;argv[2]-&gt;ptr,sdslen(c-&gt;argv[2]-&gt;ptr));</span>
+<span class="lineNum">    1042 </span>                :<span class="lineCov">          2 :         sha = sdsnewlen(funcname+2,40);</span>
+<span class="lineNum">    1043 </span>        [<span class="branchCov" title="Branch 1 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          2 :         if (dictFind(server.lua_scripts,sha) == NULL) {</span>
+<span class="lineNum">    1044 </span>        [<span class="branchNoCov" title="Branch 1 was not taken"> - </span><span class="branchCov" title="Branch 2 was taken 2 times"> + </span>]:<span class="lineCov">          2 :             if (luaCreateFunction(c,server.lua,funcname,c-&gt;argv[2])</span>
+<span class="lineNum">    1045 </span>                :            :                     == REDIS_ERR) {
+<span class="lineNum">    1046 </span>                :<span class="lineNoCov">          0 :                 sdsfree(sha);</span>
+<span class="lineNum">    1047 </span>                :<span class="lineCov">          8 :                 return;</span>
+<span class="lineNum">    1048 </span>                :            :             }
+<span class="lineNum">    1049 </span>                :            :         }
+<span class="lineNum">    1050 </span>                :<span class="lineCov">          2 :         addReplyBulkCBuffer(c,funcname+2,40);</span>
+<span class="lineNum">    1051 </span>                :<span class="lineCov">          2 :         sdsfree(sha);</span>
+<span class="lineNum">    1052 </span>                :<span class="lineCov">          2 :         forceCommandPropagation(c,REDIS_PROPAGATE_REPL|REDIS_PROPAGATE_AOF);</span>
+<span class="lineNum">    1053 </span>[<span class="branchCov" title="Branch 0 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>][<span class="branchCov" title="Branch 3 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 4 was not taken"> - </span>]:<span class="lineCov">          2 :     } else if (c-&gt;argc == 2 &amp;&amp; !strcasecmp(c-&gt;argv[1]-&gt;ptr,&quot;kill&quot;)) {</span>
+<span class="lineNum">    1054 </span>        [<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchCov" title="Branch 1 was taken 2 times"> + </span>]:<span class="lineCov">          2 :         if (server.lua_caller == NULL) {</span>
+<span class="lineNum">    1055 </span>                :<span class="lineNoCov">          0 :             addReplySds(c,sdsnew(&quot;-NOTBUSY No scripts in execution right now.\r\n&quot;));</span>
+<span class="lineNum">    1056 </span>        [<span class="branchCov" title="Branch 0 was taken 1 time"> + </span><span class="branchCov" title="Branch 1 was taken 1 time"> + </span>]:<span class="lineCov">          2 :         } else if (server.lua_write_dirty) {</span>
+<span class="lineNum">    1057 </span>                :<span class="lineCov">          1 :             addReplySds(c,sdsnew(&quot;-UNKILLABLE Sorry the script already executed write commands against the dataset. You can either wait the script termination or kill the server in an hard way using the SHUTDOWN NOSAVE command.\r\n&quot;));</span>
+<span class="lineNum">    1058 </span>                :            :         } else {
+<span class="lineNum">    1059 </span>                :<span class="lineCov">          1 :             server.lua_kill = 1;</span>
+<span class="lineNum">    1060 </span>                :<span class="lineCov">          1 :             addReply(c,shared.ok);</span>
+<span class="lineNum">    1061 </span>                :            :         }
+<span class="lineNum">    1062 </span>                :            :     } else {
+<span class="lineNum">    1063 </span>                :<span class="lineNoCov">          0 :         addReplyError(c, &quot;Unknown SCRIPT subcommand or wrong # of args.&quot;);</span>
+<span class="lineNum">    1064 </span>                :            :     }
+<span class="lineNum">    1065 </span>                :            : }
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.9</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

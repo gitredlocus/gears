@@ -1,0 +1,1273 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - redis-lcov_9.info - /var/lib/jenkins/jobs/redis-lcov/workspace/src/aof.c</title>
+  <link rel="stylesheet" type="text/css" href="../../../../../../../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../../../../../../../index.html">top level</a> - <a href="index.html">var/lib/jenkins/jobs/redis-lcov/workspace/src</a> - aof.c<span style="font-size: 80%;"> (source / <a href="aof.c.func.html">functions</a>)</span></td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">redis-lcov_9.info</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">500</td>
+            <td class="headerCovTableEntry">561</td>
+            <td class="headerCovTableEntryMed">89.1 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2013-08-26</td>
+            <td></td>
+            <td class="headerItem">Functions:</td>
+            <td class="headerCovTableEntry">26</td>
+            <td class="headerCovTableEntry">26</td>
+            <td class="headerCovTableEntryHi">100.0 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Legend:</td>
+            <td class="headerValueLeg">            Lines:
+            <span class="coverLegendCov">hit</span>
+            <span class="coverLegendNoCov">not hit</span>
+            | Branches:
+            <span class="coverLegendCov">+</span> taken
+            <span class="coverLegendNoCov">-</span> not taken
+            <span class="coverLegendNoCov">#</span> not executed
+</td>
+            <td></td>
+            <td class="headerItem">Branches:</td>
+            <td class="headerCovTableEntry">266</td>
+            <td class="headerCovTableEntry">388</td>
+            <td class="headerCovTableEntryLo">68.6 %</td>
+          </tr>
+          <tr><td><img src="../../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">           Branch data     Line data    Source code</pre>
+<pre class="source">
+<a name="1"><span class="lineNum">       1 </span>                :            : /*</a>
+<span class="lineNum">       2 </span>                :            :  * Copyright (c) 2009-2012, Salvatore Sanfilippo &lt;antirez at gmail dot com&gt;
+<span class="lineNum">       3 </span>                :            :  * All rights reserved.
+<span class="lineNum">       4 </span>                :            :  *
+<span class="lineNum">       5 </span>                :            :  * Redistribution and use in source and binary forms, with or without
+<span class="lineNum">       6 </span>                :            :  * modification, are permitted provided that the following conditions are met:
+<span class="lineNum">       7 </span>                :            :  *
+<span class="lineNum">       8 </span>                :            :  *   * Redistributions of source code must retain the above copyright notice,
+<span class="lineNum">       9 </span>                :            :  *     this list of conditions and the following disclaimer.
+<span class="lineNum">      10 </span>                :            :  *   * Redistributions in binary form must reproduce the above copyright
+<span class="lineNum">      11 </span>                :            :  *     notice, this list of conditions and the following disclaimer in the
+<span class="lineNum">      12 </span>                :            :  *     documentation and/or other materials provided with the distribution.
+<span class="lineNum">      13 </span>                :            :  *   * Neither the name of Redis nor the names of its contributors may be used
+<span class="lineNum">      14 </span>                :            :  *     to endorse or promote products derived from this software without
+<span class="lineNum">      15 </span>                :            :  *     specific prior written permission.
+<span class="lineNum">      16 </span>                :            :  *
+<span class="lineNum">      17 </span>                :            :  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS &quot;AS IS&quot;
+<span class="lineNum">      18 </span>                :            :  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+<span class="lineNum">      19 </span>                :            :  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+<span class="lineNum">      20 </span>                :            :  * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+<span class="lineNum">      21 </span>                :            :  * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+<span class="lineNum">      22 </span>                :            :  * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+<span class="lineNum">      23 </span>                :            :  * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+<span class="lineNum">      24 </span>                :            :  * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+<span class="lineNum">      25 </span>                :            :  * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+<span class="lineNum">      26 </span>                :            :  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+<span class="lineNum">      27 </span>                :            :  * POSSIBILITY OF SUCH DAMAGE.
+<span class="lineNum">      28 </span>                :            :  */
+<span class="lineNum">      29 </span>                :            : 
+<span class="lineNum">      30 </span>                :            : #include &quot;redis.h&quot;
+<span class="lineNum">      31 </span>                :            : #include &quot;bio.h&quot;
+<span class="lineNum">      32 </span>                :            : #include &quot;rio.h&quot;
+<span class="lineNum">      33 </span>                :            : 
+<span class="lineNum">      34 </span>                :            : #include &lt;signal.h&gt;
+<span class="lineNum">      35 </span>                :            : #include &lt;fcntl.h&gt;
+<span class="lineNum">      36 </span>                :            : #include &lt;sys/stat.h&gt;
+<span class="lineNum">      37 </span>                :            : #include &lt;sys/types.h&gt;
+<span class="lineNum">      38 </span>                :            : #include &lt;sys/time.h&gt;
+<span class="lineNum">      39 </span>                :            : #include &lt;sys/resource.h&gt;
+<span class="lineNum">      40 </span>                :            : #include &lt;sys/wait.h&gt;
+<span class="lineNum">      41 </span>                :            : 
+<span class="lineNum">      42 </span>                :            : void aofUpdateCurrentSize(void);
+<span class="lineNum">      43 </span>                :            : 
+<span class="lineNum">      44 </span>                :            : /* ----------------------------------------------------------------------------
+<span class="lineNum">      45 </span>                :            :  * AOF rewrite buffer implementation.
+<span class="lineNum">      46 </span>                :            :  *
+<span class="lineNum">      47 </span>                :            :  * The following code implement a simple buffer used in order to accumulate
+<span class="lineNum">      48 </span>                :            :  * changes while the background process is rewriting the AOF file.
+<span class="lineNum">      49 </span>                :            :  *
+<span class="lineNum">      50 </span>                :            :  * We only need to append, but can't just use realloc with a large block
+<span class="lineNum">      51 </span>                :            :  * because 'huge' reallocs are not always handled as one could expect
+<span class="lineNum">      52 </span>                :            :  * (via remapping of pages at OS level) but may involve copying data.
+<span class="lineNum">      53 </span>                :            :  *
+<span class="lineNum">      54 </span>                :            :  * For this reason we use a list of blocks, every block is
+<span class="lineNum">      55 </span>                :            :  * AOF_RW_BUF_BLOCK_SIZE bytes.
+<span class="lineNum">      56 </span>                :            :  * ------------------------------------------------------------------------- */
+<span class="lineNum">      57 </span>                :            : 
+<span class="lineNum">      58 </span>                :            : #define AOF_RW_BUF_BLOCK_SIZE (1024*1024*10)    /* 10 MB per block */
+<span class="lineNum">      59 </span>                :            : 
+<span class="lineNum">      60 </span>                :            : typedef struct aofrwblock {
+<span class="lineNum">      61 </span>                :            :     unsigned long used, free;
+<span class="lineNum">      62 </span>                :            :     char buf[AOF_RW_BUF_BLOCK_SIZE];
+<span class="lineNum">      63 </span>                :            : } aofrwblock;
+<span class="lineNum">      64 </span>                :            : 
+<span class="lineNum">      65 </span>                :            : /* This function free the old AOF rewrite buffer if needed, and initialize
+<a name="66"><span class="lineNum">      66 </span>                :            :  * a fresh new one. It tests for server.aof_rewrite_buf_blocks equal to NULL</a>
+<span class="lineNum">      67 </span>                :            :  * so can be used for the first initialization as well. */
+<span class="lineNum">      68 </span>                :<span class="lineCov">        363 : void aofRewriteBufferReset(void) {</span>
+<span class="lineNum">      69 </span>        [<span class="branchCov" title="Branch 0 was taken 232 times"> + </span><span class="branchCov" title="Branch 1 was taken 131 times"> + </span>]:<span class="lineCov">        363 :     if (server.aof_rewrite_buf_blocks)</span>
+<span class="lineNum">      70 </span>                :<span class="lineCov">        232 :         listRelease(server.aof_rewrite_buf_blocks);</span>
+<span class="lineNum">      71 </span>                :            : 
+<span class="lineNum">      72 </span>                :<span class="lineCov">        363 :     server.aof_rewrite_buf_blocks = listCreate();</span>
+<span class="lineNum">      73 </span>                :<span class="lineCov">        363 :     listSetFreeMethod(server.aof_rewrite_buf_blocks,zfree);</span>
+<span class="lineNum">      74 </span>                :<span class="lineCov">        363 : }</span>
+<a name="75"><span class="lineNum">      75 </span>                :            : </a>
+<span class="lineNum">      76 </span>                :            : /* Return the current size of the AOF rerwite buffer. */
+<span class="lineNum">      77 </span>                :<span class="lineCov">        255 : unsigned long aofRewriteBufferSize(void) {</span>
+<span class="lineNum">      78 </span>                :<span class="lineCov">        255 :     listNode *ln = listLast(server.aof_rewrite_buf_blocks);</span>
+<span class="lineNum">      79 </span>        [<span class="branchCov" title="Branch 0 was taken 25 times"> + </span><span class="branchCov" title="Branch 1 was taken 230 times"> + </span>]:<span class="lineCov">        255 :     aofrwblock *block = ln ? ln-&gt;value : NULL;</span>
+<span class="lineNum">      80 </span>                :            : 
+<span class="lineNum">      81 </span>        [<span class="branchCov" title="Branch 0 was taken 25 times"> + </span><span class="branchCov" title="Branch 1 was taken 230 times"> + </span>]:<span class="lineCov">        255 :     if (block == NULL) return 0;</span>
+<span class="lineNum">      82 </span>                :<span class="lineCov">         25 :     unsigned long size =</span>
+<span class="lineNum">      83 </span>                :<span class="lineCov">         25 :         (listLength(server.aof_rewrite_buf_blocks)-1) * AOF_RW_BUF_BLOCK_SIZE;</span>
+<span class="lineNum">      84 </span>                :<span class="lineCov">         25 :     size += block-&gt;used;</span>
+<span class="lineNum">      85 </span>                :<span class="lineCov">        255 :     return size;</span>
+<span class="lineNum">      86 </span>                :            : }
+<a name="87"><span class="lineNum">      87 </span>                :            : </a>
+<span class="lineNum">      88 </span>                :            : /* Append data to the AOF rewrite buffer, allocating new blocks if needed. */
+<span class="lineNum">      89 </span>                :<span class="lineCov">       5297 : void aofRewriteBufferAppend(unsigned char *s, unsigned long len) {</span>
+<span class="lineNum">      90 </span>                :<span class="lineCov">       5297 :     listNode *ln = listLast(server.aof_rewrite_buf_blocks);</span>
+<span class="lineNum">      91 </span>        [<span class="branchCov" title="Branch 0 was taken 5274 times"> + </span><span class="branchCov" title="Branch 1 was taken 23 times"> + </span>]:<span class="lineCov">       5297 :     aofrwblock *block = ln ? ln-&gt;value : NULL;</span>
+<span class="lineNum">      92 </span>                :            : 
+<span class="lineNum">      93 </span>        [<span class="branchCov" title="Branch 0 was taken 5320 times"> + </span><span class="branchCov" title="Branch 1 was taken 5297 times"> + </span>]:<span class="lineCov">      10617 :     while(len) {</span>
+<span class="lineNum">      94 </span>                :            :         /* If we already got at least an allocated block, try appending
+<span class="lineNum">      95 </span>                :            :          * at least some piece into it. */
+<span class="lineNum">      96 </span>        [<span class="branchCov" title="Branch 0 was taken 5297 times"> + </span><span class="branchCov" title="Branch 1 was taken 23 times"> + </span>]:<span class="lineCov">       5320 :         if (block) {</span>
+<span class="lineNum">      97 </span>                :<span class="lineCov">       5297 :             unsigned long thislen = (block-&gt;free &lt; len) ? block-&gt;free : len;</span>
+<span class="lineNum">      98 </span>        [<span class="branchCov" title="Branch 0 was taken 5297 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">       5297 :             if (thislen) {  /* The current block is not already full. */</span>
+<span class="lineNum">      99 </span>                :<span class="lineCov">       5297 :                 memcpy(block-&gt;buf+block-&gt;used, s, thislen);</span>
+<span class="lineNum">     100 </span>                :<span class="lineCov">       5297 :                 block-&gt;used += thislen;</span>
+<span class="lineNum">     101 </span>                :<span class="lineCov">       5297 :                 block-&gt;free -= thislen;</span>
+<span class="lineNum">     102 </span>                :<span class="lineCov">       5297 :                 s += thislen;</span>
+<span class="lineNum">     103 </span>                :<span class="lineCov">       5297 :                 len -= thislen;</span>
+<span class="lineNum">     104 </span>                :            :             }
+<span class="lineNum">     105 </span>                :            :         }
+<span class="lineNum">     106 </span>                :            : 
+<span class="lineNum">     107 </span>        [<span class="branchCov" title="Branch 0 was taken 23 times"> + </span><span class="branchCov" title="Branch 1 was taken 5297 times"> + </span>]:<span class="lineCov">       5320 :         if (len) { /* First block to allocate, or need another block. */</span>
+<span class="lineNum">     108 </span>                :            :             int numblocks;
+<span class="lineNum">     109 </span>                :            : 
+<span class="lineNum">     110 </span>                :<span class="lineCov">         23 :             block = zmalloc(sizeof(*block));</span>
+<span class="lineNum">     111 </span>                :<span class="lineCov">         23 :             block-&gt;free = AOF_RW_BUF_BLOCK_SIZE;</span>
+<span class="lineNum">     112 </span>                :<span class="lineCov">         23 :             block-&gt;used = 0;</span>
+<span class="lineNum">     113 </span>                :<span class="lineCov">         23 :             listAddNodeTail(server.aof_rewrite_buf_blocks,block);</span>
+<span class="lineNum">     114 </span>                :            : 
+<span class="lineNum">     115 </span>                :            :             /* Log every time we cross more 10 or 100 blocks, respectively
+<span class="lineNum">     116 </span>                :            :              * as a notice or warning. */
+<span class="lineNum">     117 </span>                :<span class="lineCov">         23 :             numblocks = listLength(server.aof_rewrite_buf_blocks);</span>
+<span class="lineNum">     118 </span>        [<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchCov" title="Branch 1 was taken 23 times"> + </span>]:<span class="lineCov">         23 :             if (((numblocks+1) % 10) == 0) {</span>
+<span class="lineNum">     119 </span>        [<span class="branchNoExec" title="Branch 0 was not executed"> # </span><span class="branchNoExec" title="Branch 1 was not executed"> # </span>]:<span class="lineNoCov">          0 :                 int level = ((numblocks+1) % 100) == 0 ? REDIS_WARNING :</span>
+<span class="lineNum">     120 </span>                :            :                                                          REDIS_NOTICE;
+<span class="lineNum">     121 </span>                :<span class="lineCov">       5320 :                 redisLog(level,&quot;Background AOF buffer size: %lu MB&quot;,</span>
+<span class="lineNum">     122 </span>                :<span class="lineNoCov">          0 :                     aofRewriteBufferSize()/(1024*1024));</span>
+<span class="lineNum">     123 </span>                :            :             }
+<span class="lineNum">     124 </span>                :            :         }
+<span class="lineNum">     125 </span>                :            :     }
+<span class="lineNum">     126 </span>                :<span class="lineCov">       5297 : }</span>
+<span class="lineNum">     127 </span>                :            : 
+<span class="lineNum">     128 </span>                :            : /* Write the buffer (possibly composed of multiple blocks) into the specified
+<a name="129"><span class="lineNum">     129 </span>                :            :  * fd. If no short write or any other error happens -1 is returned,</a>
+<span class="lineNum">     130 </span>                :            :  * otherwise the number of bytes written is returned. */
+<span class="lineNum">     131 </span>                :<span class="lineCov">        213 : ssize_t aofRewriteBufferWrite(int fd) {</span>
+<span class="lineNum">     132 </span>                :            :     listNode *ln;
+<span class="lineNum">     133 </span>                :            :     listIter li;
+<span class="lineNum">     134 </span>                :<span class="lineCov">        213 :     ssize_t count = 0;</span>
+<span class="lineNum">     135 </span>                :            : 
+<span class="lineNum">     136 </span>                :<span class="lineCov">        213 :     listRewind(server.aof_rewrite_buf_blocks,&amp;li);</span>
+<span class="lineNum">     137 </span>        [<span class="branchCov" title="Branch 1 was taken 23 times"> + </span><span class="branchCov" title="Branch 2 was taken 213 times"> + </span>]:<span class="lineCov">        449 :     while((ln = listNext(&amp;li))) {</span>
+<span class="lineNum">     138 </span>                :<span class="lineCov">         23 :         aofrwblock *block = listNodeValue(ln);</span>
+<span class="lineNum">     139 </span>                :            :         ssize_t nwritten;
+<span class="lineNum">     140 </span>                :            : 
+<span class="lineNum">     141 </span>        [<span class="branchCov" title="Branch 0 was taken 23 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">         23 :         if (block-&gt;used) {</span>
+<span class="lineNum">     142 </span>                :<span class="lineCov">         23 :             nwritten = write(fd,block-&gt;buf,block-&gt;used);</span>
+<span class="lineNum">     143 </span>        [<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchCov" title="Branch 1 was taken 23 times"> + </span>]:<span class="lineCov">         23 :             if (nwritten != block-&gt;used) {</span>
+<span class="lineNum">     144 </span>        [<span class="branchNoExec" title="Branch 0 was not executed"> # </span><span class="branchNoExec" title="Branch 1 was not executed"> # </span>]:<span class="lineNoCov">          0 :                 if (nwritten == 0) errno = EIO;</span>
+<span class="lineNum">     145 </span>                :            :                 return -1;
+<span class="lineNum">     146 </span>                :            :             }
+<span class="lineNum">     147 </span>                :<span class="lineCov">        236 :             count += nwritten;</span>
+<span class="lineNum">     148 </span>                :            :         }
+<span class="lineNum">     149 </span>                :            :     }
+<span class="lineNum">     150 </span>                :            :     return count;
+<span class="lineNum">     151 </span>                :            : }
+<span class="lineNum">     152 </span>                :            : 
+<span class="lineNum">     153 </span>                :            : /* ----------------------------------------------------------------------------
+<span class="lineNum">     154 </span>                :            :  * AOF file implementation
+<span class="lineNum">     155 </span>                :            :  * ------------------------------------------------------------------------- */
+<span class="lineNum">     156 </span>                :            : 
+<a name="157"><span class="lineNum">     157 </span>                :            : /* Starts a background task that performs fsync() against the specified</a>
+<span class="lineNum">     158 </span>                :            :  * file descriptor (the one of the AOF file) in another thread. */
+<span class="lineNum">     159 </span>                :<span class="lineCov">        109 : void aof_background_fsync(int fd) {</span>
+<span class="lineNum">     160 </span>                :<span class="lineCov">        109 :     bioCreateBackgroundJob(REDIS_BIO_AOF_FSYNC,(void*)(long)fd,NULL,NULL);</span>
+<span class="lineNum">     161 </span>                :<span class="lineCov">        109 : }</span>
+<span class="lineNum">     162 </span>                :            : 
+<a name="163"><span class="lineNum">     163 </span>                :            : /* Called when the user switches from &quot;appendonly yes&quot; to &quot;appendonly no&quot;</a>
+<span class="lineNum">     164 </span>                :            :  * at runtime using the CONFIG command. */
+<span class="lineNum">     165 </span>                :<span class="lineCov">         21 : void stopAppendOnly(void) {</span>
+<span class="lineNum">     166 </span>        [<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchCov" title="Branch 1 was taken 21 times"> + </span>]:<span class="lineCov">         21 :     redisAssert(server.aof_state != REDIS_AOF_OFF);</span>
+<span class="lineNum">     167 </span>                :<span class="lineCov">         21 :     flushAppendOnlyFile(1);</span>
+<span class="lineNum">     168 </span>                :<span class="lineCov">         21 :     aof_fsync(server.aof_fd);</span>
+<span class="lineNum">     169 </span>                :<span class="lineCov">         21 :     close(server.aof_fd);</span>
+<span class="lineNum">     170 </span>                :            : 
+<span class="lineNum">     171 </span>                :<span class="lineCov">         21 :     server.aof_fd = -1;</span>
+<span class="lineNum">     172 </span>                :<span class="lineCov">         21 :     server.aof_selected_db = -1;</span>
+<span class="lineNum">     173 </span>                :<span class="lineCov">         21 :     server.aof_state = REDIS_AOF_OFF;</span>
+<span class="lineNum">     174 </span>                :            :     /* rewrite operation in progress? kill it, wait child exit */
+<span class="lineNum">     175 </span>        [<span class="branchCov" title="Branch 0 was taken 19 times"> + </span><span class="branchCov" title="Branch 1 was taken 2 times"> + </span>]:<span class="lineCov">         21 :     if (server.aof_child_pid != -1) {</span>
+<span class="lineNum">     176 </span>                :            :         int statloc;
+<span class="lineNum">     177 </span>                :            : 
+<span class="lineNum">     178 </span>                :<span class="lineCov">         19 :         redisLog(REDIS_NOTICE,&quot;Killing running AOF rewrite child: %ld&quot;,</span>
+<span class="lineNum">     179 </span>                :<span class="lineCov">         19 :             (long) server.aof_child_pid);</span>
+<span class="lineNum">     180 </span>        [<span class="branchCov" title="Branch 1 was taken 19 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">         19 :         if (kill(server.aof_child_pid,SIGUSR1) != -1)</span>
+<span class="lineNum">     181 </span>                :<span class="lineCov">         19 :             wait3(&amp;statloc,0,NULL);</span>
+<span class="lineNum">     182 </span>                :            :         /* reset the buffer accumulating changes while the child saves */
+<span class="lineNum">     183 </span>                :<span class="lineCov">         19 :         aofRewriteBufferReset();</span>
+<span class="lineNum">     184 </span>                :<span class="lineCov">         19 :         aofRemoveTempFile(server.aof_child_pid);</span>
+<span class="lineNum">     185 </span>                :<span class="lineCov">         19 :         server.aof_child_pid = -1;</span>
+<span class="lineNum">     186 </span>                :<span class="lineCov">         19 :         server.aof_rewrite_time_start = -1;</span>
+<span class="lineNum">     187 </span>                :            :     }
+<span class="lineNum">     188 </span>                :<span class="lineCov">         21 : }</span>
+<span class="lineNum">     189 </span>                :            : 
+<a name="190"><span class="lineNum">     190 </span>                :            : /* Called when the user switches from &quot;appendonly no&quot; to &quot;appendonly yes&quot;</a>
+<span class="lineNum">     191 </span>                :            :  * at runtime using the CONFIG command. */
+<span class="lineNum">     192 </span>                :<span class="lineCov">         31 : int startAppendOnly(void) {</span>
+<span class="lineNum">     193 </span>                :<span class="lineCov">         31 :     server.aof_last_fsync = server.unixtime;</span>
+<span class="lineNum">     194 </span>                :<span class="lineCov">         62 :     server.aof_fd = open(server.aof_filename,O_WRONLY|O_APPEND|O_CREAT,0644);</span>
+<span class="lineNum">     195 </span>        [<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchCov" title="Branch 1 was taken 31 times"> + </span>]:<span class="lineCov">         31 :     redisAssert(server.aof_state == REDIS_AOF_OFF);</span>
+<span class="lineNum">     196 </span>        [<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchCov" title="Branch 1 was taken 31 times"> + </span>]:<span class="lineCov">         31 :     if (server.aof_fd == -1) {</span>
+<span class="lineNum">     197 </span>                :<span class="lineNoCov">          0 :         redisLog(REDIS_WARNING,&quot;Redis needs to enable the AOF but can't open the append only file: %s&quot;,strerror(errno));</span>
+<span class="lineNum">     198 </span>                :<span class="lineNoCov">          0 :         return REDIS_ERR;</span>
+<span class="lineNum">     199 </span>                :            :     }
+<span class="lineNum">     200 </span>        [<span class="branchNoCov" title="Branch 1 was not taken"> - </span><span class="branchCov" title="Branch 2 was taken 27 times"> + </span>]:<span class="lineCov">         31 :     if (rewriteAppendOnlyFileBackground() == REDIS_ERR) {</span>
+<span class="lineNum">     201 </span>                :<span class="lineNoCov">          0 :         close(server.aof_fd);</span>
+<span class="lineNum">     202 </span>                :<span class="lineNoCov">          0 :         redisLog(REDIS_WARNING,&quot;Redis needs to enable the AOF but can't trigger a background AOF rewrite operation. Check the above logs for more info about the error.&quot;);</span>
+<span class="lineNum">     203 </span>                :<span class="lineNoCov">          0 :         return REDIS_ERR;</span>
+<span class="lineNum">     204 </span>                :            :     }
+<span class="lineNum">     205 </span>                :            :     /* We correctly switched on AOF, now wait for the rerwite to be complete
+<span class="lineNum">     206 </span>                :            :      * in order to append data on disk. */
+<span class="lineNum">     207 </span>                :<span class="lineCov">         27 :     server.aof_state = REDIS_AOF_WAIT_REWRITE;</span>
+<span class="lineNum">     208 </span>                :<span class="lineCov">         27 :     return REDIS_OK;</span>
+<span class="lineNum">     209 </span>                :            : }
+<span class="lineNum">     210 </span>                :            : 
+<span class="lineNum">     211 </span>                :            : /* Write the append only file buffer on disk.
+<span class="lineNum">     212 </span>                :            :  *
+<span class="lineNum">     213 </span>                :            :  * Since we are required to write the AOF before replying to the client,
+<span class="lineNum">     214 </span>                :            :  * and the only way the client socket can get a write is entering when the
+<span class="lineNum">     215 </span>                :            :  * the event loop, we accumulate all the AOF writes in a memory
+<span class="lineNum">     216 </span>                :            :  * buffer and write it on disk using this function just before entering
+<span class="lineNum">     217 </span>                :            :  * the event loop again.
+<span class="lineNum">     218 </span>                :            :  *
+<span class="lineNum">     219 </span>                :            :  * About the 'force' argument:
+<span class="lineNum">     220 </span>                :            :  *
+<span class="lineNum">     221 </span>                :            :  * When the fsync policy is set to 'everysec' we may delay the flush if there
+<span class="lineNum">     222 </span>                :            :  * is still an fsync() going on in the background thread, since for instance
+<span class="lineNum">     223 </span>                :            :  * on Linux write(2) will be blocked by the background fsync anyway.
+<span class="lineNum">     224 </span>                :            :  * When this happens we remember that there is some aof buffer to be
+<span class="lineNum">     225 </span>                :            :  * flushed ASAP, and will try to do that in the serverCron() function.
+<span class="lineNum">     226 </span>                :            :  *
+<a name="227"><span class="lineNum">     227 </span>                :            :  * However if force is set to 1 we'll write regardless of the background</a>
+<span class="lineNum">     228 </span>                :            :  * fsync. */
+<span class="lineNum">     229 </span>                :<span class="lineCov">    4185125 : void flushAppendOnlyFile(int force) {</span>
+<span class="lineNum">     230 </span>                :            :     ssize_t nwritten;
+<span class="lineNum">     231 </span>                :<span class="lineCov">    4185125 :     int sync_in_progress = 0;</span>
+<span class="lineNum">     232 </span>                :            : 
+<span class="lineNum">     233 </span>        [<span class="branchCov" title="Branch 0 was taken 256852 times"> + </span><span class="branchCov" title="Branch 1 was taken 3928273 times"> + </span>]:<span class="lineCov">    4185125 :     if (sdslen(server.aof_buf) == 0) return;</span>
+<span class="lineNum">     234 </span>                :            : 
+<span class="lineNum">     235 </span>        [<span class="branchCov" title="Branch 0 was taken 256852 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">     256852 :     if (server.aof_fsync == AOF_FSYNC_EVERYSEC)</span>
+<span class="lineNum">     236 </span>                :<span class="lineCov">     256852 :         sync_in_progress = bioPendingJobsOfType(REDIS_BIO_AOF_FSYNC) != 0;</span>
+<span class="lineNum">     237 </span>                :            : 
+<span class="lineNum">     238 </span>        [<span class="branchCov" title="Branch 0 was taken 256852 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">     256852 :     if (server.aof_fsync == AOF_FSYNC_EVERYSEC &amp;&amp; !force) {</span>
+<span class="lineNum">     239 </span>                :            :         /* With this append fsync policy we do background fsyncing.
+<span class="lineNum">     240 </span>                :            :          * If the fsync is still in progress we can try to delay
+<span class="lineNum">     241 </span>                :            :          * the write for a couple of seconds. */
+<span class="lineNum">     242 </span>        [<span class="branchCov" title="Branch 0 was taken 901 times"> + </span><span class="branchCov" title="Branch 1 was taken 255951 times"> + </span>]:<span class="lineCov">     256852 :         if (sync_in_progress) {</span>
+<span class="lineNum">     243 </span>        [<span class="branchCov" title="Branch 0 was taken 78 times"> + </span><span class="branchCov" title="Branch 1 was taken 823 times"> + </span>]:<span class="lineCov">        901 :             if (server.aof_flush_postponed_start == 0) {</span>
+<span class="lineNum">     244 </span>                :            :                 /* No previous write postponinig, remember that we are
+<span class="lineNum">     245 </span>                :            :                  * postponing the flush and return. */
+<span class="lineNum">     246 </span>                :<span class="lineCov">         78 :                 server.aof_flush_postponed_start = server.unixtime;</span>
+<span class="lineNum">     247 </span>                :<span class="lineCov">         78 :                 return;</span>
+<span class="lineNum">     248 </span>        [<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchCov" title="Branch 1 was taken 823 times"> + </span>]:<span class="lineCov">        823 :             } else if (server.unixtime - server.aof_flush_postponed_start &lt; 2) {</span>
+<span class="lineNum">     249 </span>                :            :                 /* We were already waiting for fsync to finish, but for less
+<span class="lineNum">     250 </span>                :            :                  * than two seconds this is still ok. Postpone again. */
+<span class="lineNum">     251 </span>                :            :                 return;
+<span class="lineNum">     252 </span>                :            :             }
+<span class="lineNum">     253 </span>                :            :             /* Otherwise fall trough, and go write since we can't wait
+<span class="lineNum">     254 </span>                :            :              * over two seconds. */
+<span class="lineNum">     255 </span>                :<span class="lineNoCov">          0 :             server.aof_delayed_fsync++;</span>
+<span class="lineNum">     256 </span>                :<span class="lineNoCov">          0 :             redisLog(REDIS_NOTICE,&quot;Asynchronous AOF fsync is taking too long (disk is busy?). Writing the AOF buffer without waiting for fsync to complete, this may slow down Redis.&quot;);</span>
+<span class="lineNum">     257 </span>                :            :         }
+<span class="lineNum">     258 </span>                :            :     }
+<span class="lineNum">     259 </span>                :            :     /* If you are following this code path, then we are going to write so
+<span class="lineNum">     260 </span>                :            :      * set reset the postponed flush sentinel to zero. */
+<span class="lineNum">     261 </span>                :<span class="lineCov">     255951 :     server.aof_flush_postponed_start = 0;</span>
+<span class="lineNum">     262 </span>                :            : 
+<span class="lineNum">     263 </span>                :            :     /* We want to perform a single write. This should be guaranteed atomic
+<span class="lineNum">     264 </span>                :            :      * at least if the filesystem we are writing is a real physical one.
+<span class="lineNum">     265 </span>                :            :      * While this will save us against the server being killed I don't think
+<span class="lineNum">     266 </span>                :            :      * there is much to do about the whole server stopping for power problems
+<span class="lineNum">     267 </span>                :            :      * or alike */
+<span class="lineNum">     268 </span>                :<span class="lineCov">     255951 :     nwritten = write(server.aof_fd,server.aof_buf,sdslen(server.aof_buf));</span>
+<span class="lineNum">     269 </span>        [<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchCov" title="Branch 1 was taken 255951 times"> + </span>]:<span class="lineCov">     255951 :     if (nwritten != (signed)sdslen(server.aof_buf)) {</span>
+<span class="lineNum">     270 </span>                :            :         /* Ooops, we are in troubles. The best thing to do for now is
+<span class="lineNum">     271 </span>                :            :          * aborting instead of giving the illusion that everything is
+<span class="lineNum">     272 </span>                :            :          * working as expected. */
+<span class="lineNum">     273 </span>        [<span class="branchNoExec" title="Branch 0 was not executed"> # </span><span class="branchNoExec" title="Branch 1 was not executed"> # </span>]:<span class="lineNoCov">          0 :         if (nwritten == -1) {</span>
+<span class="lineNum">     274 </span>                :<span class="lineNoCov">          0 :             redisLog(REDIS_WARNING,&quot;Exiting on error writing to the append-only file: %s&quot;,strerror(errno));</span>
+<span class="lineNum">     275 </span>                :            :         } else {
+<span class="lineNum">     276 </span>                :<span class="lineNoCov">          0 :             redisLog(REDIS_WARNING,&quot;Exiting on short write while writing to &quot;</span>
+<span class="lineNum">     277 </span>                :            :                                    &quot;the append-only file: %s (nwritten=%ld, &quot;
+<span class="lineNum">     278 </span>                :            :                                    &quot;expected=%ld)&quot;,
+<span class="lineNum">     279 </span>                :<span class="lineNoCov">          0 :                                    strerror(errno),</span>
+<span class="lineNum">     280 </span>                :            :                                    (long)nwritten,
+<span class="lineNum">     281 </span>                :<span class="lineNoCov">          0 :                                    (long)sdslen(server.aof_buf));</span>
+<span class="lineNum">     282 </span>                :            : 
+<span class="lineNum">     283 </span>        [<span class="branchNoExec" title="Branch 1 was not executed"> # </span><span class="branchNoExec" title="Branch 2 was not executed"> # </span>]:<span class="lineNoCov">          0 :             if (ftruncate(server.aof_fd, server.aof_current_size) == -1) {</span>
+<span class="lineNum">     284 </span>                :<span class="lineNoCov">          0 :                 redisLog(REDIS_WARNING, &quot;Could not remove short write &quot;</span>
+<span class="lineNum">     285 </span>                :            :                          &quot;from the append-only file.  Redis may refuse &quot;
+<span class="lineNum">     286 </span>                :            :                          &quot;to load the AOF the next time it starts.  &quot;
+<span class="lineNum">     287 </span>                :<span class="lineNoCov">          0 :                          &quot;ftruncate: %s&quot;, strerror(errno));</span>
+<span class="lineNum">     288 </span>                :            :             }
+<span class="lineNum">     289 </span>                :            :         }
+<span class="lineNum">     290 </span>                :<span class="lineNoCov">          0 :         exit(1);</span>
+<span class="lineNum">     291 </span>                :            :     }
+<span class="lineNum">     292 </span>                :<span class="lineCov">     255951 :     server.aof_current_size += nwritten;</span>
+<span class="lineNum">     293 </span>                :            : 
+<span class="lineNum">     294 </span>                :            :     /* Re-use AOF buffer when it is small enough. The maximum comes from the
+<span class="lineNum">     295 </span>                :            :      * arena size of 4k minus some overhead (but is otherwise arbitrary). */
+<span class="lineNum">     296 </span>        [<span class="branchCov" title="Branch 0 was taken 255951 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">     255951 :     if ((sdslen(server.aof_buf)+sdsavail(server.aof_buf)) &lt; 4000) {</span>
+<span class="lineNum">     297 </span>                :<span class="lineCov">     255951 :         sdsclear(server.aof_buf);</span>
+<span class="lineNum">     298 </span>                :            :     } else {
+<span class="lineNum">     299 </span>                :<span class="lineNoCov">          0 :         sdsfree(server.aof_buf);</span>
+<span class="lineNum">     300 </span>                :<span class="lineNoCov">          0 :         server.aof_buf = sdsempty();</span>
+<span class="lineNum">     301 </span>                :            :     }
+<span class="lineNum">     302 </span>                :            : 
+<span class="lineNum">     303 </span>                :            :     /* Don't fsync if no-appendfsync-on-rewrite is set to yes and there are
+<span class="lineNum">     304 </span>                :            :      * children doing I/O in the background. */
+<span class="lineNum">     305 </span>[<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchCov" title="Branch 1 was taken 255951 times"> + </span>][<span class="branchNoExec" title="Branch 2 was not executed"> # </span><span class="branchNoExec" title="Branch 3 was not executed"> # </span>]:<span class="lineCov">     255951 :     if (server.aof_no_fsync_on_rewrite &amp;&amp;</span>
+<span class="lineNum">     306 </span>        [<span class="branchNoExec" title="Branch 0 was not executed"> # </span><span class="branchNoExec" title="Branch 1 was not executed"> # </span>]:<span class="lineNoCov">          0 :         (server.aof_child_pid != -1 || server.rdb_child_pid != -1))</span>
+<span class="lineNum">     307 </span>                :            :             return;
+<span class="lineNum">     308 </span>                :            : 
+<span class="lineNum">     309 </span>                :            :     /* Perform the fsync if needed. */
+<span class="lineNum">     310 </span>        [<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchCov" title="Branch 1 was taken 255951 times"> + </span>]:<span class="lineCov">     255951 :     if (server.aof_fsync == AOF_FSYNC_ALWAYS) {</span>
+<span class="lineNum">     311 </span>                :            :         /* aof_fsync is defined as fdatasync() for Linux in order to avoid
+<span class="lineNum">     312 </span>                :            :          * flushing metadata. */
+<span class="lineNum">     313 </span>                :<span class="lineNoCov">          0 :         aof_fsync(server.aof_fd); /* Let's try to get this data on the disk */</span>
+<span class="lineNum">     314 </span>                :<span class="lineNoCov">          0 :         server.aof_last_fsync = server.unixtime;</span>
+<span class="lineNum">     315 </span>[<span class="branchCov" title="Branch 0 was taken 255951 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>][<span class="branchCov" title="Branch 2 was taken 67 times"> + </span><span class="branchCov" title="Branch 3 was taken 255884 times"> + </span>]:<span class="lineCov">     255951 :     } else if ((server.aof_fsync == AOF_FSYNC_EVERYSEC &amp;&amp;</span>
+<span class="lineNum">     316 </span>                :<span class="lineCov">     255951 :                 server.unixtime &gt; server.aof_last_fsync)) {</span>
+<span class="lineNum">     317 </span>        [<span class="branchCov" title="Branch 0 was taken 67 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">         67 :         if (!sync_in_progress) aof_background_fsync(server.aof_fd);</span>
+<span class="lineNum">     318 </span>                :<span class="lineCov">    4185125 :         server.aof_last_fsync = server.unixtime;</span>
+<span class="lineNum">     319 </span>                :            :     }
+<a name="320"><span class="lineNum">     320 </span>                :            : }</a>
+<span class="lineNum">     321 </span>                :            : 
+<span class="lineNum">     322 </span>                :<span class="lineCov">     256759 : sds catAppendOnlyGenericCommand(sds dst, int argc, robj **argv) {</span>
+<span class="lineNum">     323 </span>                :            :     char buf[32];
+<span class="lineNum">     324 </span>                :            :     int len, j;
+<span class="lineNum">     325 </span>                :            :     robj *o;
+<span class="lineNum">     326 </span>                :            : 
+<span class="lineNum">     327 </span>                :<span class="lineCov">     256759 :     buf[0] = '*';</span>
+<span class="lineNum">     328 </span>                :<span class="lineCov">     256759 :     len = 1+ll2string(buf+1,sizeof(buf)-1,argc);</span>
+<span class="lineNum">     329 </span>                :<span class="lineCov">     256759 :     buf[len++] = '\r';</span>
+<span class="lineNum">     330 </span>                :<span class="lineCov">     256759 :     buf[len++] = '\n';</span>
+<span class="lineNum">     331 </span>                :<span class="lineCov">     256759 :     dst = sdscatlen(dst,buf,len);</span>
+<span class="lineNum">     332 </span>                :            : 
+<span class="lineNum">     333 </span>        [<span class="branchCov" title="Branch 1 was taken 770273 times"> + </span><span class="branchCov" title="Branch 2 was taken 256759 times"> + </span>]:<span class="lineCov">    1027032 :     for (j = 0; j &lt; argc; j++) {</span>
+<span class="lineNum">     334 </span>                :<span class="lineCov">     770273 :         o = getDecodedObject(argv[j]);</span>
+<span class="lineNum">     335 </span>                :<span class="lineCov">     770273 :         buf[0] = '$';</span>
+<span class="lineNum">     336 </span>                :<span class="lineCov">     770273 :         len = 1+ll2string(buf+1,sizeof(buf)-1,sdslen(o-&gt;ptr));</span>
+<span class="lineNum">     337 </span>                :<span class="lineCov">     770273 :         buf[len++] = '\r';</span>
+<span class="lineNum">     338 </span>                :<span class="lineCov">     770273 :         buf[len++] = '\n';</span>
+<span class="lineNum">     339 </span>                :<span class="lineCov">     770273 :         dst = sdscatlen(dst,buf,len);</span>
+<span class="lineNum">     340 </span>                :<span class="lineCov">     770273 :         dst = sdscatlen(dst,o-&gt;ptr,sdslen(o-&gt;ptr));</span>
+<span class="lineNum">     341 </span>                :<span class="lineCov">     770273 :         dst = sdscatlen(dst,&quot;\r\n&quot;,2);</span>
+<span class="lineNum">     342 </span>                :<span class="lineCov">     770273 :         decrRefCount(o);</span>
+<span class="lineNum">     343 </span>                :            :     }
+<span class="lineNum">     344 </span>                :<span class="lineCov">     256759 :     return dst;</span>
+<span class="lineNum">     345 </span>                :            : }
+<span class="lineNum">     346 </span>                :            : 
+<span class="lineNum">     347 </span>                :            : /* Create the sds representation of an PEXPIREAT command, using
+<span class="lineNum">     348 </span>                :            :  * 'seconds' as time to live and 'cmd' to understand what command
+<span class="lineNum">     349 </span>                :            :  * we are translating into a PEXPIREAT.
+<span class="lineNum">     350 </span>                :            :  *
+<span class="lineNum">     351 </span>                :            :  * This command is used in order to translate EXPIRE and PEXPIRE commands
+<a name="352"><span class="lineNum">     352 </span>                :            :  * into PEXPIREAT command so that we retain precision in the append only</a>
+<span class="lineNum">     353 </span>                :            :  * file, and the time is always absolute and not relative. */
+<span class="lineNum">     354 </span>                :<span class="lineCov">          5 : sds catAppendOnlyExpireAtCommand(sds buf, struct redisCommand *cmd, robj *key, robj *seconds) {</span>
+<span class="lineNum">     355 </span>                :            :     long long when;
+<span class="lineNum">     356 </span>                :            :     robj *argv[3];
+<span class="lineNum">     357 </span>                :            : 
+<span class="lineNum">     358 </span>                :            :     /* Make sure we can use strtol */
+<span class="lineNum">     359 </span>                :<span class="lineCov">          5 :     seconds = getDecodedObject(seconds);</span>
+<span class="lineNum">     360 </span>                :<span class="lineCov">          5 :     when = strtoll(seconds-&gt;ptr,NULL,10);</span>
+<span class="lineNum">     361 </span>                :            :     /* Convert argument into milliseconds for EXPIRE, SETEX, EXPIREAT */
+<span class="lineNum">     362 </span>[<span class="branchCov" title="Branch 0 was taken 4 times"> + </span><span class="branchCov" title="Branch 1 was taken 1 time"> + </span>][<span class="branchCov" title="Branch 2 was taken 3 times"> + </span><span class="branchCov" title="Branch 3 was taken 1 time"> + </span>]:<span class="lineCov">          5 :     if (cmd-&gt;proc == expireCommand || cmd-&gt;proc == setexCommand ||</span>
+<span class="lineNum">         </span>        [<span class="branchCov" title="Branch 4 was taken 1 time"> + </span><span class="branchCov" title="Branch 5 was taken 2 times"> + </span>]
+<span class="lineNum">     363 </span>                :<span class="lineCov">          3 :         cmd-&gt;proc == expireatCommand)</span>
+<span class="lineNum">     364 </span>                :            :     {
+<span class="lineNum">     365 </span>                :<span class="lineCov">          3 :         when *= 1000;</span>
+<span class="lineNum">     366 </span>                :            :     }
+<span class="lineNum">     367 </span>                :            :     /* Convert into absolute time for EXPIRE, PEXPIRE, SETEX, PSETEX */
+<span class="lineNum">     368 </span>[<span class="branchCov" title="Branch 0 was taken 4 times"> + </span><span class="branchCov" title="Branch 1 was taken 1 time"> + </span>][<span class="branchCov" title="Branch 2 was taken 3 times"> + </span><span class="branchCov" title="Branch 3 was taken 1 time"> + </span>]:<span class="lineCov">          5 :     if (cmd-&gt;proc == expireCommand || cmd-&gt;proc == pexpireCommand ||</span>
+<span class="lineNum">         </span>        [<span class="branchCov" title="Branch 4 was taken 2 times"> + </span><span class="branchCov" title="Branch 5 was taken 1 time"> + </span>]
+<span class="lineNum">     369 </span>        [<span class="branchCov" title="Branch 0 was taken 1 time"> + </span><span class="branchCov" title="Branch 1 was taken 1 time"> + </span>]:<span class="lineCov">          2 :         cmd-&gt;proc == setexCommand || cmd-&gt;proc == psetexCommand)</span>
+<span class="lineNum">     370 </span>                :            :     {
+<span class="lineNum">     371 </span>                :<span class="lineCov">          4 :         when += mstime();</span>
+<span class="lineNum">     372 </span>                :            :     }
+<span class="lineNum">     373 </span>                :<span class="lineCov">          5 :     decrRefCount(seconds);</span>
+<span class="lineNum">     374 </span>                :            : 
+<span class="lineNum">     375 </span>                :<span class="lineCov">          5 :     argv[0] = createStringObject(&quot;PEXPIREAT&quot;,9);</span>
+<span class="lineNum">     376 </span>                :<span class="lineCov">          5 :     argv[1] = key;</span>
+<span class="lineNum">     377 </span>                :<span class="lineCov">          5 :     argv[2] = createStringObjectFromLongLong(when);</span>
+<span class="lineNum">     378 </span>                :<span class="lineCov">          5 :     buf = catAppendOnlyGenericCommand(buf, 3, argv);</span>
+<span class="lineNum">     379 </span>                :<span class="lineCov">          5 :     decrRefCount(argv[0]);</span>
+<span class="lineNum">     380 </span>                :<span class="lineCov">          5 :     decrRefCount(argv[2]);</span>
+<span class="lineNum">     381 </span>                :<span class="lineCov">          5 :     return buf;</span>
+<a name="382"><span class="lineNum">     382 </span>                :            : }</a>
+<span class="lineNum">     383 </span>                :            : 
+<span class="lineNum">     384 </span>                :<span class="lineCov">     256757 : void feedAppendOnlyFile(struct redisCommand *cmd, int dictid, robj **argv, int argc) {</span>
+<span class="lineNum">     385 </span>                :<span class="lineCov">     256757 :     sds buf = sdsempty();</span>
+<span class="lineNum">     386 </span>                :            :     robj *tmpargv[3];
+<span class="lineNum">     387 </span>                :            : 
+<span class="lineNum">     388 </span>                :            :     /* The DB this command was targeting is not the same as the last command
+<span class="lineNum">     389 </span>                :            :      * we appendend. To issue a SELECT command is needed. */
+<span class="lineNum">     390 </span>        [<span class="branchCov" title="Branch 0 was taken 48 times"> + </span><span class="branchCov" title="Branch 1 was taken 256709 times"> + </span>]:<span class="lineCov">     256757 :     if (dictid != server.aof_selected_db) {</span>
+<span class="lineNum">     391 </span>                :            :         char seldb[64];
+<span class="lineNum">     392 </span>                :            : 
+<span class="lineNum">     393 </span>                :            :         snprintf(seldb,sizeof(seldb),&quot;%d&quot;,dictid);
+<span class="lineNum">     394 </span>                :<span class="lineCov">         48 :         buf = sdscatprintf(buf,&quot;*2\r\n$6\r\nSELECT\r\n$%lu\r\n%s\r\n&quot;,</span>
+<span class="lineNum">     395 </span>                :            :             (unsigned long)strlen(seldb),seldb);
+<span class="lineNum">     396 </span>                :<span class="lineCov">         48 :         server.aof_selected_db = dictid;</span>
+<span class="lineNum">     397 </span>                :            :     }
+<span class="lineNum">     398 </span>                :            : 
+<span class="lineNum">     399 </span>[<span class="branchCov" title="Branch 0 was taken 256756 times"> + </span><span class="branchCov" title="Branch 1 was taken 1 time"> + </span>][<span class="branchCov" title="Branch 2 was taken 256755 times"> + </span><span class="branchCov" title="Branch 3 was taken 1 time"> + </span>]:<span class="lineCov">     256757 :     if (cmd-&gt;proc == expireCommand || cmd-&gt;proc == pexpireCommand ||</span>
+<span class="lineNum">         </span>        [<span class="branchCov" title="Branch 4 was taken 1 time"> + </span><span class="branchCov" title="Branch 5 was taken 256754 times"> + </span>]
+<span class="lineNum">     400 </span>                :<span class="lineCov">     256755 :         cmd-&gt;proc == expireatCommand) {</span>
+<span class="lineNum">     401 </span>                :            :         /* Translate EXPIRE/PEXPIRE/EXPIREAT into PEXPIREAT */
+<span class="lineNum">     402 </span>                :<span class="lineCov">          3 :         buf = catAppendOnlyExpireAtCommand(buf,cmd,argv[1],argv[2]);</span>
+<span class="lineNum">     403 </span>[<span class="branchCov" title="Branch 0 was taken 256753 times"> + </span><span class="branchCov" title="Branch 1 was taken 1 time"> + </span>][<span class="branchCov" title="Branch 2 was taken 1 time"> + </span><span class="branchCov" title="Branch 3 was taken 256752 times"> + </span>]:<span class="lineCov">     256754 :     } else if (cmd-&gt;proc == setexCommand || cmd-&gt;proc == psetexCommand) {</span>
+<span class="lineNum">     404 </span>                :            :         /* Translate SETEX/PSETEX to SET and PEXPIREAT */
+<span class="lineNum">     405 </span>                :<span class="lineCov">          2 :         tmpargv[0] = createStringObject(&quot;SET&quot;,3);</span>
+<span class="lineNum">     406 </span>                :<span class="lineCov">          2 :         tmpargv[1] = argv[1];</span>
+<span class="lineNum">     407 </span>                :<span class="lineCov">          2 :         tmpargv[2] = argv[3];</span>
+<span class="lineNum">     408 </span>                :<span class="lineCov">          2 :         buf = catAppendOnlyGenericCommand(buf,3,tmpargv);</span>
+<span class="lineNum">     409 </span>                :<span class="lineCov">          2 :         decrRefCount(tmpargv[0]);</span>
+<span class="lineNum">     410 </span>                :<span class="lineCov">          2 :         buf = catAppendOnlyExpireAtCommand(buf,cmd,argv[1],argv[2]);</span>
+<span class="lineNum">     411 </span>                :            :     } else {
+<span class="lineNum">     412 </span>                :            :         /* All the other commands don't need translation or need the
+<span class="lineNum">     413 </span>                :            :          * same translation already operated in the command vector
+<span class="lineNum">     414 </span>                :            :          * for the replication itself. */
+<span class="lineNum">     415 </span>                :<span class="lineCov">     256752 :         buf = catAppendOnlyGenericCommand(buf,argc,argv);</span>
+<span class="lineNum">     416 </span>                :            :     }
+<span class="lineNum">     417 </span>                :            : 
+<span class="lineNum">     418 </span>                :            :     /* Append to the AOF buffer. This will be flushed on disk just before
+<span class="lineNum">     419 </span>                :            :      * of re-entering the event loop, so before the client will get a
+<span class="lineNum">     420 </span>                :            :      * positive reply about the operation performed. */
+<span class="lineNum">     421 </span>        [<span class="branchCov" title="Branch 0 was taken 256270 times"> + </span><span class="branchCov" title="Branch 1 was taken 487 times"> + </span>]:<span class="lineCov">     256757 :     if (server.aof_state == REDIS_AOF_ON)</span>
+<span class="lineNum">     422 </span>                :<span class="lineCov">     256270 :         server.aof_buf = sdscatlen(server.aof_buf,buf,sdslen(buf));</span>
+<span class="lineNum">     423 </span>                :            : 
+<span class="lineNum">     424 </span>                :            :     /* If a background append only file rewriting is in progress we want to
+<span class="lineNum">     425 </span>                :            :      * accumulate the differences between the child DB and the current one
+<span class="lineNum">     426 </span>                :            :      * in a buffer, so that when the child process will do its work we
+<span class="lineNum">     427 </span>                :            :      * can append the differences to the new append only file. */
+<span class="lineNum">     428 </span>        [<span class="branchCov" title="Branch 0 was taken 5297 times"> + </span><span class="branchCov" title="Branch 1 was taken 251460 times"> + </span>]:<span class="lineCov">     256757 :     if (server.aof_child_pid != -1)</span>
+<span class="lineNum">     429 </span>                :<span class="lineCov">       5297 :         aofRewriteBufferAppend((unsigned char*)buf,sdslen(buf));</span>
+<span class="lineNum">     430 </span>                :            : 
+<span class="lineNum">     431 </span>                :<span class="lineCov">     256757 :     sdsfree(buf);</span>
+<span class="lineNum">     432 </span>                :<span class="lineCov">     256757 : }</span>
+<span class="lineNum">     433 </span>                :            : 
+<span class="lineNum">     434 </span>                :            : /* ----------------------------------------------------------------------------
+<span class="lineNum">     435 </span>                :            :  * AOF loading
+<span class="lineNum">     436 </span>                :            :  * ------------------------------------------------------------------------- */
+<span class="lineNum">     437 </span>                :            : 
+<a name="438"><span class="lineNum">     438 </span>                :            : /* In Redis commands are always executed in the context of a client, so in</a>
+<span class="lineNum">     439 </span>                :            :  * order to load the append only file we need to create a fake client. */
+<span class="lineNum">     440 </span>                :<span class="lineCov">        178 : struct redisClient *createFakeClient(void) {</span>
+<span class="lineNum">     441 </span>                :<span class="lineCov">        178 :     struct redisClient *c = zmalloc(sizeof(*c));</span>
+<span class="lineNum">     442 </span>                :            : 
+<span class="lineNum">     443 </span>                :<span class="lineCov">        178 :     selectDb(c,0);</span>
+<span class="lineNum">     444 </span>                :<span class="lineCov">        178 :     c-&gt;fd = -1;</span>
+<span class="lineNum">     445 </span>                :<span class="lineCov">        178 :     c-&gt;name = NULL;</span>
+<span class="lineNum">     446 </span>                :<span class="lineCov">        178 :     c-&gt;querybuf = sdsempty();</span>
+<span class="lineNum">     447 </span>                :<span class="lineCov">        178 :     c-&gt;querybuf_peak = 0;</span>
+<span class="lineNum">     448 </span>                :<span class="lineCov">        178 :     c-&gt;argc = 0;</span>
+<span class="lineNum">     449 </span>                :<span class="lineCov">        178 :     c-&gt;argv = NULL;</span>
+<span class="lineNum">     450 </span>                :<span class="lineCov">        178 :     c-&gt;bufpos = 0;</span>
+<span class="lineNum">     451 </span>                :<span class="lineCov">        178 :     c-&gt;flags = 0;</span>
+<span class="lineNum">     452 </span>                :            :     /* We set the fake client as a slave waiting for the synchronization
+<span class="lineNum">     453 </span>                :            :      * so that Redis will not try to send replies to this client. */
+<span class="lineNum">     454 </span>                :<span class="lineCov">        178 :     c-&gt;replstate = REDIS_REPL_WAIT_BGSAVE_START;</span>
+<span class="lineNum">     455 </span>                :<span class="lineCov">        178 :     c-&gt;reply = listCreate();</span>
+<span class="lineNum">     456 </span>                :<span class="lineCov">        178 :     c-&gt;reply_bytes = 0;</span>
+<span class="lineNum">     457 </span>                :<span class="lineCov">        178 :     c-&gt;obuf_soft_limit_reached_time = 0;</span>
+<span class="lineNum">     458 </span>                :<span class="lineCov">        178 :     c-&gt;watched_keys = listCreate();</span>
+<span class="lineNum">     459 </span>                :<span class="lineCov">        178 :     listSetFreeMethod(c-&gt;reply,decrRefCountVoid);</span>
+<span class="lineNum">     460 </span>                :<span class="lineCov">        178 :     listSetDupMethod(c-&gt;reply,dupClientReplyValue);</span>
+<span class="lineNum">     461 </span>                :<span class="lineCov">        178 :     initClientMultiState(c);</span>
+<span class="lineNum">     462 </span>                :<span class="lineCov">        178 :     return c;</span>
+<a name="463"><span class="lineNum">     463 </span>                :            : }</a>
+<span class="lineNum">     464 </span>                :            : 
+<span class="lineNum">     465 </span>                :<span class="lineCov">        176 : void freeFakeClient(struct redisClient *c) {</span>
+<span class="lineNum">     466 </span>                :<span class="lineCov">        176 :     sdsfree(c-&gt;querybuf);</span>
+<span class="lineNum">     467 </span>                :<span class="lineCov">        176 :     listRelease(c-&gt;reply);</span>
+<span class="lineNum">     468 </span>                :<span class="lineCov">        176 :     listRelease(c-&gt;watched_keys);</span>
+<span class="lineNum">     469 </span>                :<span class="lineCov">        176 :     freeClientMultiState(c);</span>
+<span class="lineNum">     470 </span>                :<span class="lineCov">        176 :     zfree(c);</span>
+<span class="lineNum">     471 </span>                :<span class="lineCov">        176 : }</span>
+<span class="lineNum">     472 </span>                :            : 
+<span class="lineNum">     473 </span>                :            : /* Replay the append log file. On error REDIS_OK is returned. On non fatal
+<a name="474"><span class="lineNum">     474 </span>                :            :  * error (the append only file is zero-length) REDIS_ERR is returned. On</a>
+<span class="lineNum">     475 </span>                :            :  * fatal error an error message is logged and the program exists. */
+<span class="lineNum">     476 </span>                :<span class="lineCov">        180 : int loadAppendOnlyFile(char *filename) {</span>
+<span class="lineNum">     477 </span>                :            :     struct redisClient *fakeClient;
+<span class="lineNum">     478 </span>                :<span class="lineCov">        180 :     FILE *fp = fopen(filename,&quot;r&quot;);</span>
+<span class="lineNum">     479 </span>                :            :     struct redis_stat sb;
+<span class="lineNum">     480 </span>                :<span class="lineCov">        180 :     int old_aof_state = server.aof_state;</span>
+<span class="lineNum">     481 </span>                :<span class="lineCov">        180 :     long loops = 0;</span>
+<span class="lineNum">     482 </span>                :            : 
+<span class="lineNum">     483 </span>[<span class="branchCov" title="Branch 0 was taken 179 times"> + </span><span class="branchCov" title="Branch 1 was taken 1 time"> + </span>][<span class="branchCov" title="Branch 3 was taken 179 times"> + </span><span class="branchNoCov" title="Branch 4 was not taken"> - </span>]:<span class="lineCov">        359 :     if (fp &amp;&amp; redis_fstat(fileno(fp),&amp;sb) != -1 &amp;&amp; sb.st_size == 0) {</span>
+<span class="lineNum">         </span>        [<span class="branchCov" title="Branch 5 was taken 1 time"> + </span><span class="branchCov" title="Branch 6 was taken 178 times"> + </span>]
+<span class="lineNum">     484 </span>                :<span class="lineCov">          1 :         server.aof_current_size = 0;</span>
+<span class="lineNum">     485 </span>                :<span class="lineCov">          1 :         fclose(fp);</span>
+<span class="lineNum">     486 </span>                :<span class="lineCov">        177 :         return REDIS_ERR;</span>
+<span class="lineNum">     487 </span>                :            :     }
+<span class="lineNum">     488 </span>                :            : 
+<span class="lineNum">     489 </span>        [<span class="branchCov" title="Branch 0 was taken 1 time"> + </span><span class="branchCov" title="Branch 1 was taken 178 times"> + </span>]:<span class="lineCov">        179 :     if (fp == NULL) {</span>
+<span class="lineNum">     490 </span>                :<span class="lineCov">          1 :         redisLog(REDIS_WARNING,&quot;Fatal error: can't open the append log file for reading: %s&quot;,strerror(errno));</span>
+<span class="lineNum">     491 </span>                :<span class="lineCov">          1 :         exit(1);</span>
+<span class="lineNum">     492 </span>                :            :     }
+<span class="lineNum">     493 </span>                :            : 
+<span class="lineNum">     494 </span>                :            :     /* Temporarily disable AOF, to prevent EXEC from feeding a MULTI
+<span class="lineNum">     495 </span>                :            :      * to the same file we're about to read. */
+<span class="lineNum">     496 </span>                :<span class="lineCov">        178 :     server.aof_state = REDIS_AOF_OFF;</span>
+<span class="lineNum">     497 </span>                :            : 
+<span class="lineNum">     498 </span>                :<span class="lineCov">        178 :     fakeClient = createFakeClient();</span>
+<span class="lineNum">     499 </span>                :<span class="lineCov">        178 :     startLoading(fp);</span>
+<span class="lineNum">     500 </span>                :            : 
+<span class="lineNum">     501 </span>                :            :     while(1) {
+<span class="lineNum">     502 </span>                :            :         int argc, j;
+<span class="lineNum">     503 </span>                :            :         unsigned long len;
+<span class="lineNum">     504 </span>                :            :         robj **argv;
+<span class="lineNum">     505 </span>                :            :         char buf[128];
+<span class="lineNum">     506 </span>                :            :         sds argsds;
+<span class="lineNum">     507 </span>                :            :         struct redisCommand *cmd;
+<span class="lineNum">     508 </span>                :            : 
+<span class="lineNum">     509 </span>                :            :         /* Serve the clients from time to time */
+<span class="lineNum">     510 </span>        [<span class="branchCov" title="Branch 0 was taken 198 times"> + </span><span class="branchCov" title="Branch 1 was taken 21698 times"> + </span>]:<span class="lineCov">      21896 :         if (!(loops++ % 1000)) {</span>
+<span class="lineNum">     511 </span>                :<span class="lineCov">        198 :             loadingProgress(ftello(fp));</span>
+<span class="lineNum">     512 </span>                :<span class="lineCov">        198 :             aeProcessEvents(server.el, AE_FILE_EVENTS|AE_DONT_WAIT);</span>
+<span class="lineNum">     513 </span>                :            :         }
+<span class="lineNum">     514 </span>                :            : 
+<span class="lineNum">     515 </span>        [<span class="branchCov" title="Branch 0 was taken 177 times"> + </span><span class="branchCov" title="Branch 1 was taken 21719 times"> + </span>]:<span class="lineCov">      21896 :         if (fgets(buf,sizeof(buf),fp) == NULL) {</span>
+<span class="lineNum">     516 </span>        [<span class="branchCov" title="Branch 1 was taken 177 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">        177 :             if (feof(fp))</span>
+<span class="lineNum">     517 </span>                :            :                 break;
+<span class="lineNum">     518 </span>                :            :             else
+<span class="lineNum">     519 </span>                :            :                 goto readerr;
+<span class="lineNum">     520 </span>                :            :         }
+<span class="lineNum">     521 </span>        [<span class="branchCov" title="Branch 0 was taken 21719 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">      21719 :         if (buf[0] != '*') goto fmterr;</span>
+<span class="lineNum">     522 </span>                :<span class="lineCov">      21719 :         argc = atoi(buf+1);</span>
+<span class="lineNum">     523 </span>        [<span class="branchCov" title="Branch 0 was taken 21719 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">      21719 :         if (argc &lt; 1) goto fmterr;</span>
+<span class="lineNum">     524 </span>                :            : 
+<span class="lineNum">     525 </span>                :<span class="lineCov">      21719 :         argv = zmalloc(sizeof(robj*)*argc);</span>
+<span class="lineNum">     526 </span>        [<span class="branchCov" title="Branch 1 was taken 165849 times"> + </span><span class="branchCov" title="Branch 2 was taken 21718 times"> + </span>]:<span class="lineCov">     187567 :         for (j = 0; j &lt; argc; j++) {</span>
+<span class="lineNum">     527 </span>        [<span class="branchCov" title="Branch 0 was taken 165849 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">     165849 :             if (fgets(buf,sizeof(buf),fp) == NULL) goto readerr;</span>
+<span class="lineNum">     528 </span>        [<span class="branchCov" title="Branch 0 was taken 165849 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">     165849 :             if (buf[0] != '$') goto fmterr;</span>
+<span class="lineNum">     529 </span>                :<span class="lineCov">     165849 :             len = strtol(buf+1,NULL,10);</span>
+<span class="lineNum">     530 </span>                :<span class="lineCov">     165849 :             argsds = sdsnewlen(NULL,len);</span>
+<span class="lineNum">     531 </span>[<span class="branchCov" title="Branch 0 was taken 164592 times"> + </span><span class="branchCov" title="Branch 1 was taken 1257 times"> + </span>][<span class="branchCov" title="Branch 2 was taken 164592 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">     330441 :             if (len &amp;&amp; fread(argsds,len,1,fp) == 0) goto fmterr;</span>
+<span class="lineNum">     532 </span>                :<span class="lineCov">     165849 :             argv[j] = createObject(REDIS_STRING,argsds);</span>
+<span class="lineNum">     533 </span>        [<span class="branchCov" title="Branch 0 was taken 165848 times"> + </span><span class="branchCov" title="Branch 1 was taken 1 time"> + </span>]:<span class="lineCov">     165849 :             if (fread(buf,2,1,fp) == 0) goto fmterr; /* discard CRLF */</span>
+<span class="lineNum">     534 </span>                :            :         }
+<span class="lineNum">     535 </span>                :            : 
+<span class="lineNum">     536 </span>                :            :         /* Command lookup */
+<span class="lineNum">     537 </span>                :<span class="lineCov">      21718 :         cmd = lookupCommand(argv[0]-&gt;ptr);</span>
+<span class="lineNum">     538 </span>        [<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchCov" title="Branch 1 was taken 21718 times"> + </span>]:<span class="lineCov">      21718 :         if (!cmd) {</span>
+<span class="lineNum">     539 </span>                :<span class="lineNoCov">          0 :             redisLog(REDIS_WARNING,&quot;Unknown command '%s' reading the append only file&quot;, (char*)argv[0]-&gt;ptr);</span>
+<span class="lineNum">     540 </span>                :<span class="lineNoCov">          0 :             exit(1);</span>
+<span class="lineNum">     541 </span>                :            :         }
+<span class="lineNum">     542 </span>                :            :         /* Run the command in the context of a fake client */
+<span class="lineNum">     543 </span>                :<span class="lineCov">      21718 :         fakeClient-&gt;argc = argc;</span>
+<span class="lineNum">     544 </span>                :<span class="lineCov">      21718 :         fakeClient-&gt;argv = argv;</span>
+<span class="lineNum">     545 </span>                :<span class="lineCov">      21718 :         cmd-&gt;proc(fakeClient);</span>
+<span class="lineNum">     546 </span>                :            : 
+<span class="lineNum">     547 </span>                :            :         /* The fake client should not have a reply */
+<span class="lineNum">     548 </span>[<span class="branchCov" title="Branch 0 was taken 21718 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>][<span class="branchNoCov" title="Branch 2 was not taken"> - </span><span class="branchCov" title="Branch 3 was taken 21718 times"> + </span>]:<span class="lineCov">      21718 :         redisAssert(fakeClient-&gt;bufpos == 0 &amp;&amp; listLength(fakeClient-&gt;reply) == 0);</span>
+<span class="lineNum">     549 </span>                :            :         /* The fake client should never get blocked */
+<span class="lineNum">     550 </span>        [<span class="branchCov" title="Branch 0 was taken 21718 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">      21718 :         redisAssert((fakeClient-&gt;flags &amp; REDIS_BLOCKED) == 0);</span>
+<span class="lineNum">     551 </span>                :            : 
+<span class="lineNum">     552 </span>                :            :         /* Clean up. Command code may have changed argv/argc so we use the
+<span class="lineNum">     553 </span>                :            :          * argv/argc of the client instead of the local variables. */
+<span class="lineNum">     554 </span>        [<span class="branchCov" title="Branch 0 was taken 165847 times"> + </span><span class="branchCov" title="Branch 1 was taken 21718 times"> + </span>]:<span class="lineCov">     187565 :         for (j = 0; j &lt; fakeClient-&gt;argc; j++)</span>
+<span class="lineNum">     555 </span>                :<span class="lineCov">     165847 :             decrRefCount(fakeClient-&gt;argv[j]);</span>
+<span class="lineNum">     556 </span>                :<span class="lineCov">      21718 :         zfree(fakeClient-&gt;argv);</span>
+<span class="lineNum">     557 </span>                :<span class="lineCov">      21718 :     }</span>
+<span class="lineNum">     558 </span>                :            : 
+<span class="lineNum">     559 </span>                :            :     /* This point can only be reached when EOF is reached without errors.
+<span class="lineNum">     560 </span>                :            :      * If the client is in the middle of a MULTI/EXEC, log error and quit. */
+<span class="lineNum">     561 </span>        [<span class="branchCov" title="Branch 0 was taken 176 times"> + </span><span class="branchCov" title="Branch 1 was taken 1 time"> + </span>]:<span class="lineCov">        177 :     if (fakeClient-&gt;flags &amp; REDIS_MULTI) goto readerr;</span>
+<span class="lineNum">     562 </span>                :            : 
+<span class="lineNum">     563 </span>                :<span class="lineCov">        176 :     fclose(fp);</span>
+<span class="lineNum">     564 </span>                :<span class="lineCov">        176 :     freeFakeClient(fakeClient);</span>
+<span class="lineNum">     565 </span>                :<span class="lineCov">        176 :     server.aof_state = old_aof_state;</span>
+<span class="lineNum">     566 </span>                :<span class="lineCov">        176 :     stopLoading();</span>
+<span class="lineNum">     567 </span>                :<span class="lineCov">        176 :     aofUpdateCurrentSize();</span>
+<span class="lineNum">     568 </span>                :<span class="lineCov">        176 :     server.aof_rewrite_base_size = server.aof_current_size;</span>
+<span class="lineNum">     569 </span>                :<span class="lineCov">        176 :     return REDIS_OK;</span>
+<span class="lineNum">     570 </span>                :            : 
+<span class="lineNum">     571 </span>                :            : readerr:
+<span class="lineNum">     572 </span>        [<span class="branchCov" title="Branch 1 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          1 :     if (feof(fp)) {</span>
+<span class="lineNum">     573 </span>                :<span class="lineCov">          1 :         redisLog(REDIS_WARNING,&quot;Unexpected end of file reading the append only file&quot;);</span>
+<span class="lineNum">     574 </span>                :            :     } else {
+<span class="lineNum">     575 </span>                :<span class="lineNoCov">          0 :         redisLog(REDIS_WARNING,&quot;Unrecoverable error reading the append only file: %s&quot;, strerror(errno));</span>
+<span class="lineNum">     576 </span>                :            :     }
+<span class="lineNum">     577 </span>                :<span class="lineCov">          1 :     exit(1);</span>
+<span class="lineNum">     578 </span>                :            : fmterr:
+<span class="lineNum">     579 </span>                :<span class="lineCov">          1 :     redisLog(REDIS_WARNING,&quot;Bad file format reading the append only file: make a backup of your AOF file, then use ./redis-check-aof --fix &lt;filename&gt;&quot;);</span>
+<span class="lineNum">     580 </span>                :<span class="lineCov">          1 :     exit(1);</span>
+<span class="lineNum">     581 </span>                :            : }
+<span class="lineNum">     582 </span>                :            : 
+<span class="lineNum">     583 </span>                :            : /* ----------------------------------------------------------------------------
+<span class="lineNum">     584 </span>                :            :  * AOF rewrite
+<span class="lineNum">     585 </span>                :            :  * ------------------------------------------------------------------------- */
+<span class="lineNum">     586 </span>                :            : 
+<a name="587"><span class="lineNum">     587 </span>                :            : /* Delegate writing an object to writing a bulk string or bulk long long.</a>
+<span class="lineNum">     588 </span>                :            :  * This is not placed in rio.c since that adds the redis.h dependency. */
+<span class="lineNum">     589 </span>                :<span class="lineCov">     142042 : int rioWriteBulkObject(rio *r, robj *obj) {</span>
+<span class="lineNum">     590 </span>                :            :     /* Avoid using getDecodedObject to help copy-on-write (we are often
+<span class="lineNum">     591 </span>                :            :      * in a child process when this function is called). */
+<span class="lineNum">     592 </span>        [<span class="branchCov" title="Branch 0 was taken 71621 times"> + </span><span class="branchCov" title="Branch 1 was taken 70421 times"> + </span>]:<span class="lineCov">     142042 :     if (obj-&gt;encoding == REDIS_ENCODING_INT) {</span>
+<span class="lineNum">     593 </span>                :<span class="lineCov">      71621 :         return rioWriteBulkLongLong(r,(long)obj-&gt;ptr);</span>
+<span class="lineNum">     594 </span>        [<span class="branchCov" title="Branch 0 was taken 70421 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">      70421 :     } else if (sdsEncodedObject(obj)) {</span>
+<span class="lineNum">     595 </span>                :<span class="lineCov">      70421 :         return rioWriteBulkString(r,obj-&gt;ptr,sdslen(obj-&gt;ptr));</span>
+<span class="lineNum">     596 </span>                :            :     } else {
+<span class="lineNum">     597 </span>                :<span class="lineCov">     142042 :         redisPanic(&quot;Unknown string encoding&quot;);</span>
+<span class="lineNum">     598 </span>                :            :     }
+<span class="lineNum">     599 </span>                :            : }
+<span class="lineNum">     600 </span>                :            : 
+<a name="601"><span class="lineNum">     601 </span>                :            : /* Emit the commands needed to rebuild a list object.</a>
+<span class="lineNum">     602 </span>                :            :  * The function returns 0 on error, 1 on success. */
+<span class="lineNum">     603 </span>                :<span class="lineCov">          4 : int rewriteListObject(rio *r, robj *key, robj *o) {</span>
+<span class="lineNum">     604 </span>                :<span class="lineCov">          4 :     long long count = 0, items = listTypeLength(o);</span>
+<span class="lineNum">     605 </span>                :            : 
+<span class="lineNum">     606 </span>        [<span class="branchCov" title="Branch 0 was taken 2 times"> + </span><span class="branchCov" title="Branch 1 was taken 2 times"> + </span>]:<span class="lineCov">          4 :     if (o-&gt;encoding == REDIS_ENCODING_ZIPLIST) {</span>
+<span class="lineNum">     607 </span>                :<span class="lineCov">          2 :         unsigned char *zl = o-&gt;ptr;</span>
+<span class="lineNum">     608 </span>                :<span class="lineCov">          2 :         unsigned char *p = ziplistIndex(zl,0);</span>
+<span class="lineNum">     609 </span>                :            :         unsigned char *vstr;
+<span class="lineNum">     610 </span>                :            :         unsigned int vlen;
+<span class="lineNum">     611 </span>                :            :         long long vlong;
+<span class="lineNum">     612 </span>                :            : 
+<span class="lineNum">     613 </span>        [<span class="branchCov" title="Branch 1 was taken 20 times"> + </span><span class="branchCov" title="Branch 2 was taken 2 times"> + </span>]:<span class="lineCov">         22 :         while(ziplistGet(p,&amp;vstr,&amp;vlen,&amp;vlong)) {</span>
+<span class="lineNum">     614 </span>        [<span class="branchCov" title="Branch 0 was taken 2 times"> + </span><span class="branchCov" title="Branch 1 was taken 18 times"> + </span>]:<span class="lineCov">         20 :             if (count == 0) {</span>
+<span class="lineNum">     615 </span>                :<span class="lineCov">          2 :                 int cmd_items = (items &gt; REDIS_AOF_REWRITE_ITEMS_PER_CMD) ?</span>
+<span class="lineNum">     616 </span>                :<span class="lineCov">          2 :                     REDIS_AOF_REWRITE_ITEMS_PER_CMD : items;</span>
+<span class="lineNum">     617 </span>                :            : 
+<span class="lineNum">     618 </span>        [<span class="branchCov" title="Branch 1 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          2 :                 if (rioWriteBulkCount(r,'*',2+cmd_items) == 0) return 0;</span>
+<span class="lineNum">     619 </span>        [<span class="branchCov" title="Branch 1 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          2 :                 if (rioWriteBulkString(r,&quot;RPUSH&quot;,5) == 0) return 0;</span>
+<span class="lineNum">     620 </span>        [<span class="branchCov" title="Branch 1 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          2 :                 if (rioWriteBulkObject(r,key) == 0) return 0;</span>
+<span class="lineNum">     621 </span>                :            :             }
+<span class="lineNum">     622 </span>        [<span class="branchCov" title="Branch 0 was taken 10 times"> + </span><span class="branchCov" title="Branch 1 was taken 10 times"> + </span>]:<span class="lineCov">         20 :             if (vstr) {</span>
+<span class="lineNum">     623 </span>        [<span class="branchCov" title="Branch 1 was taken 10 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">         10 :                 if (rioWriteBulkString(r,(char*)vstr,vlen) == 0) return 0;</span>
+<span class="lineNum">     624 </span>                :            :             } else {
+<span class="lineNum">     625 </span>        [<span class="branchCov" title="Branch 1 was taken 10 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">         10 :                 if (rioWriteBulkLongLong(r,vlong) == 0) return 0;</span>
+<span class="lineNum">     626 </span>                :            :             }
+<span class="lineNum">     627 </span>                :<span class="lineCov">         20 :             p = ziplistNext(zl,p);</span>
+<span class="lineNum">     628 </span>        [<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchCov" title="Branch 1 was taken 20 times"> + </span>]:<span class="lineCov">         20 :             if (++count == REDIS_AOF_REWRITE_ITEMS_PER_CMD) count = 0;</span>
+<span class="lineNum">     629 </span>                :<span class="lineCov">         20 :             items--;</span>
+<span class="lineNum">     630 </span>                :            :         }
+<span class="lineNum">     631 </span>        [<span class="branchCov" title="Branch 0 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">          2 :     } else if (o-&gt;encoding == REDIS_ENCODING_LINKEDLIST) {</span>
+<span class="lineNum">     632 </span>                :<span class="lineCov">          2 :         list *list = o-&gt;ptr;</span>
+<span class="lineNum">     633 </span>                :            :         listNode *ln;
+<span class="lineNum">     634 </span>                :            :         listIter li;
+<span class="lineNum">     635 </span>                :            : 
+<span class="lineNum">     636 </span>                :<span class="lineCov">          2 :         listRewind(list,&amp;li);</span>
+<span class="lineNum">     637 </span>        [<span class="branchCov" title="Branch 1 was taken 2000 times"> + </span><span class="branchCov" title="Branch 2 was taken 2 times"> + </span>]:<span class="lineCov">       2002 :         while((ln = listNext(&amp;li))) {</span>
+<span class="lineNum">     638 </span>                :<span class="lineCov">       2000 :             robj *eleobj = listNodeValue(ln);</span>
+<span class="lineNum">     639 </span>                :            : 
+<span class="lineNum">     640 </span>        [<span class="branchCov" title="Branch 0 was taken 32 times"> + </span><span class="branchCov" title="Branch 1 was taken 1968 times"> + </span>]:<span class="lineCov">       2000 :             if (count == 0) {</span>
+<span class="lineNum">     641 </span>                :<span class="lineCov">         32 :                 int cmd_items = (items &gt; REDIS_AOF_REWRITE_ITEMS_PER_CMD) ?</span>
+<span class="lineNum">     642 </span>                :<span class="lineCov">         32 :                     REDIS_AOF_REWRITE_ITEMS_PER_CMD : items;</span>
+<span class="lineNum">     643 </span>                :            : 
+<span class="lineNum">     644 </span>        [<span class="branchCov" title="Branch 1 was taken 32 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">         32 :                 if (rioWriteBulkCount(r,'*',2+cmd_items) == 0) return 0;</span>
+<span class="lineNum">     645 </span>        [<span class="branchCov" title="Branch 1 was taken 32 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">         32 :                 if (rioWriteBulkString(r,&quot;RPUSH&quot;,5) == 0) return 0;</span>
+<span class="lineNum">     646 </span>        [<span class="branchCov" title="Branch 1 was taken 32 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">         32 :                 if (rioWriteBulkObject(r,key) == 0) return 0;</span>
+<span class="lineNum">     647 </span>                :            :             }
+<span class="lineNum">     648 </span>        [<span class="branchCov" title="Branch 1 was taken 2000 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">       2000 :             if (rioWriteBulkObject(r,eleobj) == 0) return 0;</span>
+<span class="lineNum">     649 </span>        [<span class="branchCov" title="Branch 0 was taken 30 times"> + </span><span class="branchCov" title="Branch 1 was taken 1970 times"> + </span>]:<span class="lineCov">       2000 :             if (++count == REDIS_AOF_REWRITE_ITEMS_PER_CMD) count = 0;</span>
+<span class="lineNum">     650 </span>                :<span class="lineCov">       2000 :             items--;</span>
+<span class="lineNum">     651 </span>                :            :         }
+<span class="lineNum">     652 </span>                :            :     } else {
+<span class="lineNum">     653 </span>                :<span class="lineCov">          4 :         redisPanic(&quot;Unknown list encoding&quot;);</span>
+<span class="lineNum">     654 </span>                :            :     }
+<span class="lineNum">     655 </span>                :            :     return 1;
+<span class="lineNum">     656 </span>                :            : }
+<span class="lineNum">     657 </span>                :            : 
+<a name="658"><span class="lineNum">     658 </span>                :            : /* Emit the commands needed to rebuild a set object.</a>
+<span class="lineNum">     659 </span>                :            :  * The function returns 0 on error, 1 on success. */
+<span class="lineNum">     660 </span>                :<span class="lineCov">          4 : int rewriteSetObject(rio *r, robj *key, robj *o) {</span>
+<span class="lineNum">     661 </span>                :<span class="lineCov">          4 :     long long count = 0, items = setTypeSize(o);</span>
+<span class="lineNum">     662 </span>                :            : 
+<span class="lineNum">     663 </span>        [<span class="branchCov" title="Branch 0 was taken 1 time"> + </span><span class="branchCov" title="Branch 1 was taken 3 times"> + </span>]:<span class="lineCov">          4 :     if (o-&gt;encoding == REDIS_ENCODING_INTSET) {</span>
+<span class="lineNum">     664 </span>                :            :         int ii = 0;
+<span class="lineNum">     665 </span>                :            :         int64_t llval;
+<span class="lineNum">     666 </span>                :            : 
+<span class="lineNum">     667 </span>        [<span class="branchCov" title="Branch 1 was taken 10 times"> + </span><span class="branchCov" title="Branch 2 was taken 1 time"> + </span>]:<span class="lineCov">         11 :         while(intsetGet(o-&gt;ptr,ii++,&amp;llval)) {</span>
+<span class="lineNum">     668 </span>        [<span class="branchCov" title="Branch 0 was taken 1 time"> + </span><span class="branchCov" title="Branch 1 was taken 9 times"> + </span>]:<span class="lineCov">         10 :             if (count == 0) {</span>
+<span class="lineNum">     669 </span>                :<span class="lineCov">          1 :                 int cmd_items = (items &gt; REDIS_AOF_REWRITE_ITEMS_PER_CMD) ?</span>
+<span class="lineNum">     670 </span>                :<span class="lineCov">          1 :                     REDIS_AOF_REWRITE_ITEMS_PER_CMD : items;</span>
+<span class="lineNum">     671 </span>                :            : 
+<span class="lineNum">     672 </span>        [<span class="branchCov" title="Branch 1 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          1 :                 if (rioWriteBulkCount(r,'*',2+cmd_items) == 0) return 0;</span>
+<span class="lineNum">     673 </span>        [<span class="branchCov" title="Branch 1 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          1 :                 if (rioWriteBulkString(r,&quot;SADD&quot;,4) == 0) return 0;</span>
+<span class="lineNum">     674 </span>        [<span class="branchCov" title="Branch 1 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          1 :                 if (rioWriteBulkObject(r,key) == 0) return 0;</span>
+<span class="lineNum">     675 </span>                :            :             }
+<span class="lineNum">     676 </span>        [<span class="branchCov" title="Branch 1 was taken 10 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">         10 :             if (rioWriteBulkLongLong(r,llval) == 0) return 0;</span>
+<span class="lineNum">     677 </span>        [<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchCov" title="Branch 1 was taken 10 times"> + </span>]:<span class="lineCov">         10 :             if (++count == REDIS_AOF_REWRITE_ITEMS_PER_CMD) count = 0;</span>
+<span class="lineNum">     678 </span>                :<span class="lineCov">         10 :             items--;</span>
+<span class="lineNum">     679 </span>                :            :         }
+<span class="lineNum">     680 </span>        [<span class="branchCov" title="Branch 0 was taken 3 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">          3 :     } else if (o-&gt;encoding == REDIS_ENCODING_HT) {</span>
+<span class="lineNum">     681 </span>                :<span class="lineCov">          3 :         dictIterator *di = dictGetIterator(o-&gt;ptr);</span>
+<span class="lineNum">     682 </span>                :            :         dictEntry *de;
+<span class="lineNum">     683 </span>                :            : 
+<span class="lineNum">     684 </span>        [<span class="branchCov" title="Branch 1 was taken 1929 times"> + </span><span class="branchCov" title="Branch 2 was taken 3 times"> + </span>]:<span class="lineCov">       1932 :         while((de = dictNext(di)) != NULL) {</span>
+<span class="lineNum">     685 </span>                :<span class="lineCov">       1929 :             robj *eleobj = dictGetKey(de);</span>
+<span class="lineNum">     686 </span>        [<span class="branchCov" title="Branch 0 was taken 32 times"> + </span><span class="branchCov" title="Branch 1 was taken 1897 times"> + </span>]:<span class="lineCov">       1929 :             if (count == 0) {</span>
+<span class="lineNum">     687 </span>                :<span class="lineCov">         32 :                 int cmd_items = (items &gt; REDIS_AOF_REWRITE_ITEMS_PER_CMD) ?</span>
+<span class="lineNum">     688 </span>                :<span class="lineCov">         32 :                     REDIS_AOF_REWRITE_ITEMS_PER_CMD : items;</span>
+<span class="lineNum">     689 </span>                :            : 
+<span class="lineNum">     690 </span>        [<span class="branchCov" title="Branch 1 was taken 32 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">         32 :                 if (rioWriteBulkCount(r,'*',2+cmd_items) == 0) return 0;</span>
+<span class="lineNum">     691 </span>        [<span class="branchCov" title="Branch 1 was taken 32 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">         32 :                 if (rioWriteBulkString(r,&quot;SADD&quot;,4) == 0) return 0;</span>
+<span class="lineNum">     692 </span>        [<span class="branchCov" title="Branch 1 was taken 32 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">         32 :                 if (rioWriteBulkObject(r,key) == 0) return 0;</span>
+<span class="lineNum">     693 </span>                :            :             }
+<span class="lineNum">     694 </span>        [<span class="branchCov" title="Branch 1 was taken 1929 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">       1929 :             if (rioWriteBulkObject(r,eleobj) == 0) return 0;</span>
+<span class="lineNum">     695 </span>        [<span class="branchCov" title="Branch 0 was taken 29 times"> + </span><span class="branchCov" title="Branch 1 was taken 1900 times"> + </span>]:<span class="lineCov">       1929 :             if (++count == REDIS_AOF_REWRITE_ITEMS_PER_CMD) count = 0;</span>
+<span class="lineNum">     696 </span>                :<span class="lineCov">       1929 :             items--;</span>
+<span class="lineNum">     697 </span>                :            :         }
+<span class="lineNum">     698 </span>                :<span class="lineCov">          3 :         dictReleaseIterator(di);</span>
+<span class="lineNum">     699 </span>                :            :     } else {
+<span class="lineNum">     700 </span>                :<span class="lineCov">          4 :         redisPanic(&quot;Unknown set encoding&quot;);</span>
+<span class="lineNum">     701 </span>                :            :     }
+<span class="lineNum">     702 </span>                :            :     return 1;
+<span class="lineNum">     703 </span>                :            : }
+<span class="lineNum">     704 </span>                :            : 
+<a name="705"><span class="lineNum">     705 </span>                :            : /* Emit the commands needed to rebuild a sorted set object.</a>
+<span class="lineNum">     706 </span>                :            :  * The function returns 0 on error, 1 on success. */
+<span class="lineNum">     707 </span>                :<span class="lineCov">          5 : int rewriteSortedSetObject(rio *r, robj *key, robj *o) {</span>
+<span class="lineNum">     708 </span>                :<span class="lineCov">          5 :     long long count = 0, items = zsetLength(o);</span>
+<span class="lineNum">     709 </span>                :            : 
+<span class="lineNum">     710 </span>        [<span class="branchCov" title="Branch 0 was taken 2 times"> + </span><span class="branchCov" title="Branch 1 was taken 3 times"> + </span>]:<span class="lineCov">          5 :     if (o-&gt;encoding == REDIS_ENCODING_ZIPLIST) {</span>
+<span class="lineNum">     711 </span>                :<span class="lineCov">          2 :         unsigned char *zl = o-&gt;ptr;</span>
+<span class="lineNum">     712 </span>                :            :         unsigned char *eptr, *sptr;
+<span class="lineNum">     713 </span>                :            :         unsigned char *vstr;
+<span class="lineNum">     714 </span>                :            :         unsigned int vlen;
+<span class="lineNum">     715 </span>                :            :         long long vll;
+<span class="lineNum">     716 </span>                :            :         double score;
+<span class="lineNum">     717 </span>                :            : 
+<span class="lineNum">     718 </span>                :<span class="lineCov">          2 :         eptr = ziplistIndex(zl,0);</span>
+<span class="lineNum">     719 </span>        [<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchCov" title="Branch 1 was taken 2 times"> + </span>]:<span class="lineCov">          2 :         redisAssert(eptr != NULL);</span>
+<span class="lineNum">     720 </span>                :<span class="lineCov">          2 :         sptr = ziplistNext(zl,eptr);</span>
+<span class="lineNum">     721 </span>        [<span class="branchCov" title="Branch 0 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">          2 :         redisAssert(sptr != NULL);</span>
+<span class="lineNum">     722 </span>                :            : 
+<span class="lineNum">     723 </span>        [<span class="branchCov" title="Branch 0 was taken 20 times"> + </span><span class="branchCov" title="Branch 1 was taken 2 times"> + </span>]:<span class="lineCov">         22 :         while (eptr != NULL) {</span>
+<span class="lineNum">     724 </span>        [<span class="branchNoCov" title="Branch 1 was not taken"> - </span><span class="branchCov" title="Branch 2 was taken 20 times"> + </span>]:<span class="lineCov">         20 :             redisAssert(ziplistGet(eptr,&amp;vstr,&amp;vlen,&amp;vll));</span>
+<span class="lineNum">     725 </span>                :<span class="lineCov">         20 :             score = zzlGetScore(sptr);</span>
+<span class="lineNum">     726 </span>                :            : 
+<span class="lineNum">     727 </span>        [<span class="branchCov" title="Branch 0 was taken 2 times"> + </span><span class="branchCov" title="Branch 1 was taken 18 times"> + </span>]:<span class="lineCov">         20 :             if (count == 0) {</span>
+<span class="lineNum">     728 </span>                :<span class="lineCov">          2 :                 int cmd_items = (items &gt; REDIS_AOF_REWRITE_ITEMS_PER_CMD) ?</span>
+<span class="lineNum">     729 </span>                :<span class="lineCov">          2 :                     REDIS_AOF_REWRITE_ITEMS_PER_CMD : items;</span>
+<span class="lineNum">     730 </span>                :            : 
+<span class="lineNum">     731 </span>        [<span class="branchCov" title="Branch 1 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          2 :                 if (rioWriteBulkCount(r,'*',2+cmd_items*2) == 0) return 0;</span>
+<span class="lineNum">     732 </span>        [<span class="branchCov" title="Branch 1 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          2 :                 if (rioWriteBulkString(r,&quot;ZADD&quot;,4) == 0) return 0;</span>
+<span class="lineNum">     733 </span>        [<span class="branchCov" title="Branch 1 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          2 :                 if (rioWriteBulkObject(r,key) == 0) return 0;</span>
+<span class="lineNum">     734 </span>                :            :             }
+<span class="lineNum">     735 </span>        [<span class="branchCov" title="Branch 1 was taken 20 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">         20 :             if (rioWriteBulkDouble(r,score) == 0) return 0;</span>
+<span class="lineNum">     736 </span>        [<span class="branchCov" title="Branch 0 was taken 10 times"> + </span><span class="branchCov" title="Branch 1 was taken 10 times"> + </span>]:<span class="lineCov">         20 :             if (vstr != NULL) {</span>
+<span class="lineNum">     737 </span>        [<span class="branchCov" title="Branch 1 was taken 10 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">         10 :                 if (rioWriteBulkString(r,(char*)vstr,vlen) == 0) return 0;</span>
+<span class="lineNum">     738 </span>                :            :             } else {
+<span class="lineNum">     739 </span>        [<span class="branchCov" title="Branch 1 was taken 10 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">         10 :                 if (rioWriteBulkLongLong(r,vll) == 0) return 0;</span>
+<span class="lineNum">     740 </span>                :            :             }
+<span class="lineNum">     741 </span>                :<span class="lineCov">         20 :             zzlNext(zl,&amp;eptr,&amp;sptr);</span>
+<span class="lineNum">     742 </span>        [<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchCov" title="Branch 1 was taken 20 times"> + </span>]:<span class="lineCov">         20 :             if (++count == REDIS_AOF_REWRITE_ITEMS_PER_CMD) count = 0;</span>
+<span class="lineNum">     743 </span>                :<span class="lineCov">         20 :             items--;</span>
+<span class="lineNum">     744 </span>                :            :         }
+<span class="lineNum">     745 </span>        [<span class="branchCov" title="Branch 0 was taken 3 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">          3 :     } else if (o-&gt;encoding == REDIS_ENCODING_SKIPLIST) {</span>
+<span class="lineNum">     746 </span>                :<span class="lineCov">          3 :         zset *zs = o-&gt;ptr;</span>
+<span class="lineNum">     747 </span>                :<span class="lineCov">          3 :         dictIterator *di = dictGetIterator(zs-&gt;dict);</span>
+<span class="lineNum">     748 </span>                :            :         dictEntry *de;
+<span class="lineNum">     749 </span>                :            : 
+<span class="lineNum">     750 </span>        [<span class="branchCov" title="Branch 1 was taken 2931 times"> + </span><span class="branchCov" title="Branch 2 was taken 3 times"> + </span>]:<span class="lineCov">       2934 :         while((de = dictNext(di)) != NULL) {</span>
+<span class="lineNum">     751 </span>                :<span class="lineCov">       2931 :             robj *eleobj = dictGetKey(de);</span>
+<span class="lineNum">     752 </span>                :<span class="lineCov">       2931 :             double *score = dictGetVal(de);</span>
+<span class="lineNum">     753 </span>                :            : 
+<span class="lineNum">     754 </span>        [<span class="branchCov" title="Branch 0 was taken 47 times"> + </span><span class="branchCov" title="Branch 1 was taken 2884 times"> + </span>]:<span class="lineCov">       2931 :             if (count == 0) {</span>
+<span class="lineNum">     755 </span>                :<span class="lineCov">         47 :                 int cmd_items = (items &gt; REDIS_AOF_REWRITE_ITEMS_PER_CMD) ?</span>
+<span class="lineNum">     756 </span>                :<span class="lineCov">         47 :                     REDIS_AOF_REWRITE_ITEMS_PER_CMD : items;</span>
+<span class="lineNum">     757 </span>                :            : 
+<span class="lineNum">     758 </span>        [<span class="branchCov" title="Branch 1 was taken 47 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">         47 :                 if (rioWriteBulkCount(r,'*',2+cmd_items*2) == 0) return 0;</span>
+<span class="lineNum">     759 </span>        [<span class="branchCov" title="Branch 1 was taken 47 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">         47 :                 if (rioWriteBulkString(r,&quot;ZADD&quot;,4) == 0) return 0;</span>
+<span class="lineNum">     760 </span>        [<span class="branchCov" title="Branch 1 was taken 47 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">         47 :                 if (rioWriteBulkObject(r,key) == 0) return 0;</span>
+<span class="lineNum">     761 </span>                :            :             }
+<span class="lineNum">     762 </span>        [<span class="branchCov" title="Branch 1 was taken 2931 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">       2931 :             if (rioWriteBulkDouble(r,*score) == 0) return 0;</span>
+<span class="lineNum">     763 </span>        [<span class="branchCov" title="Branch 1 was taken 2931 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">       2931 :             if (rioWriteBulkObject(r,eleobj) == 0) return 0;</span>
+<span class="lineNum">     764 </span>        [<span class="branchCov" title="Branch 0 was taken 44 times"> + </span><span class="branchCov" title="Branch 1 was taken 2887 times"> + </span>]:<span class="lineCov">       2931 :             if (++count == REDIS_AOF_REWRITE_ITEMS_PER_CMD) count = 0;</span>
+<span class="lineNum">     765 </span>                :<span class="lineCov">       2931 :             items--;</span>
+<span class="lineNum">     766 </span>                :            :         }
+<span class="lineNum">     767 </span>                :<span class="lineCov">          3 :         dictReleaseIterator(di);</span>
+<span class="lineNum">     768 </span>                :            :     } else {
+<span class="lineNum">     769 </span>                :<span class="lineCov">          5 :         redisPanic(&quot;Unknown sorted zset encoding&quot;);</span>
+<span class="lineNum">     770 </span>                :            :     }
+<span class="lineNum">     771 </span>                :            :     return 1;
+<span class="lineNum">     772 </span>                :            : }
+<span class="lineNum">     773 </span>                :            : 
+<span class="lineNum">     774 </span>                :            : /* Write either the key or the value of the currently selected item of an hash.
+<span class="lineNum">     775 </span>                :            :  * The 'hi' argument passes a valid Redis hash iterator.
+<span class="lineNum">     776 </span>                :            :  * The 'what' filed specifies if to write a key or a value and can be
+<span class="lineNum">     777 </span>                :            :  * either REDIS_HASH_KEY or REDIS_HASH_VALUE.
+<a name="778"><span class="lineNum">     778 </span>                :            :  *</a>
+<span class="lineNum">     779 </span>                :            :  * The function returns 0 on error, non-zero on success. */
+<span class="lineNum">     780 </span>                :<span class="lineCov">       3906 : static int rioWriteHashIteratorCursor(rio *r, hashTypeIterator *hi, int what) {</span>
+<span class="lineNum">     781 </span>        [<span class="branchCov" title="Branch 0 was taken 40 times"> + </span><span class="branchCov" title="Branch 1 was taken 3866 times"> + </span>]:<span class="lineCov">       3906 :     if (hi-&gt;encoding == REDIS_ENCODING_ZIPLIST) {</span>
+<span class="lineNum">     782 </span>                :<span class="lineCov">         40 :         unsigned char *vstr = NULL;</span>
+<span class="lineNum">     783 </span>                :<span class="lineCov">         40 :         unsigned int vlen = UINT_MAX;</span>
+<span class="lineNum">     784 </span>                :<span class="lineCov">         40 :         long long vll = LLONG_MAX;</span>
+<span class="lineNum">     785 </span>                :            : 
+<span class="lineNum">     786 </span>                :<span class="lineCov">         40 :         hashTypeCurrentFromZiplist(hi, what, &amp;vstr, &amp;vlen, &amp;vll);</span>
+<span class="lineNum">     787 </span>        [<span class="branchCov" title="Branch 0 was taken 20 times"> + </span><span class="branchCov" title="Branch 1 was taken 20 times"> + </span>]:<span class="lineCov">         40 :         if (vstr) {</span>
+<span class="lineNum">     788 </span>                :<span class="lineCov">         20 :             return rioWriteBulkString(r, (char*)vstr, vlen);</span>
+<span class="lineNum">     789 </span>                :            :         } else {
+<span class="lineNum">     790 </span>                :<span class="lineCov">         20 :             return rioWriteBulkLongLong(r, vll);</span>
+<span class="lineNum">     791 </span>                :            :         }
+<span class="lineNum">     792 </span>                :            : 
+<span class="lineNum">     793 </span>        [<span class="branchCov" title="Branch 0 was taken 3866 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">       3866 :     } else if (hi-&gt;encoding == REDIS_ENCODING_HT) {</span>
+<span class="lineNum">     794 </span>                :            :         robj *value;
+<span class="lineNum">     795 </span>                :            : 
+<span class="lineNum">     796 </span>                :<span class="lineCov">       3866 :         hashTypeCurrentFromHashTable(hi, what, &amp;value);</span>
+<span class="lineNum">     797 </span>                :<span class="lineCov">       3866 :         return rioWriteBulkObject(r, value);</span>
+<span class="lineNum">     798 </span>                :            :     }
+<span class="lineNum">     799 </span>                :            : 
+<span class="lineNum">     800 </span>                :<span class="lineCov">       3906 :     redisPanic(&quot;Unknown hash encoding&quot;);</span>
+<span class="lineNum">     801 </span>                :            :     return 0;
+<span class="lineNum">     802 </span>                :            : }
+<span class="lineNum">     803 </span>                :            : 
+<a name="804"><span class="lineNum">     804 </span>                :            : /* Emit the commands needed to rebuild a hash object.</a>
+<span class="lineNum">     805 </span>                :            :  * The function returns 0 on error, 1 on success. */
+<span class="lineNum">     806 </span>                :<span class="lineCov">          4 : int rewriteHashObject(rio *r, robj *key, robj *o) {</span>
+<span class="lineNum">     807 </span>                :            :     hashTypeIterator *hi;
+<span class="lineNum">     808 </span>                :<span class="lineCov">          4 :     long long count = 0, items = hashTypeLength(o);</span>
+<span class="lineNum">     809 </span>                :            : 
+<span class="lineNum">     810 </span>                :<span class="lineCov">          4 :     hi = hashTypeInitIterator(o);</span>
+<span class="lineNum">     811 </span>        [<span class="branchCov" title="Branch 1 was taken 1953 times"> + </span><span class="branchCov" title="Branch 2 was taken 4 times"> + </span>]:<span class="lineCov">       1957 :     while (hashTypeNext(hi) != REDIS_ERR) {</span>
+<span class="lineNum">     812 </span>        [<span class="branchCov" title="Branch 0 was taken 33 times"> + </span><span class="branchCov" title="Branch 1 was taken 1920 times"> + </span>]:<span class="lineCov">       1953 :         if (count == 0) {</span>
+<span class="lineNum">     813 </span>                :<span class="lineCov">         33 :             int cmd_items = (items &gt; REDIS_AOF_REWRITE_ITEMS_PER_CMD) ?</span>
+<span class="lineNum">     814 </span>                :<span class="lineCov">         33 :                 REDIS_AOF_REWRITE_ITEMS_PER_CMD : items;</span>
+<span class="lineNum">     815 </span>                :            : 
+<span class="lineNum">     816 </span>        [<span class="branchCov" title="Branch 1 was taken 33 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">         33 :             if (rioWriteBulkCount(r,'*',2+cmd_items*2) == 0) return 0;</span>
+<span class="lineNum">     817 </span>        [<span class="branchCov" title="Branch 1 was taken 33 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">         33 :             if (rioWriteBulkString(r,&quot;HMSET&quot;,5) == 0) return 0;</span>
+<span class="lineNum">     818 </span>        [<span class="branchCov" title="Branch 1 was taken 33 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">         33 :             if (rioWriteBulkObject(r,key) == 0) return 0;</span>
+<span class="lineNum">     819 </span>                :            :         }
+<span class="lineNum">     820 </span>                :            : 
+<span class="lineNum">     821 </span>        [<span class="branchCov" title="Branch 1 was taken 1953 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">       1953 :         if (rioWriteHashIteratorCursor(r, hi, REDIS_HASH_KEY) == 0) return 0;</span>
+<span class="lineNum">     822 </span>        [<span class="branchCov" title="Branch 1 was taken 1953 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">       1953 :         if (rioWriteHashIteratorCursor(r, hi, REDIS_HASH_VALUE) == 0) return 0;</span>
+<span class="lineNum">     823 </span>        [<span class="branchCov" title="Branch 0 was taken 29 times"> + </span><span class="branchCov" title="Branch 1 was taken 1924 times"> + </span>]:<span class="lineCov">       1953 :         if (++count == REDIS_AOF_REWRITE_ITEMS_PER_CMD) count = 0;</span>
+<span class="lineNum">     824 </span>                :<span class="lineCov">       1953 :         items--;</span>
+<span class="lineNum">     825 </span>                :            :     }
+<span class="lineNum">     826 </span>                :            : 
+<span class="lineNum">     827 </span>                :<span class="lineCov">          4 :     hashTypeReleaseIterator(hi);</span>
+<span class="lineNum">     828 </span>                :            : 
+<span class="lineNum">     829 </span>                :<span class="lineCov">          4 :     return 1;</span>
+<span class="lineNum">     830 </span>                :            : }
+<span class="lineNum">     831 </span>                :            : 
+<span class="lineNum">     832 </span>                :            : /* Write a sequence of commands able to fully rebuild the dataset into
+<span class="lineNum">     833 </span>                :            :  * &quot;filename&quot;. Used both by REWRITEAOF and BGREWRITEAOF.
+<span class="lineNum">     834 </span>                :            :  *
+<span class="lineNum">     835 </span>                :            :  * In order to minimize the number of commands needed in the rewritten
+<span class="lineNum">     836 </span>                :            :  * log Redis uses variadic commands when possible, such as RPUSH, SADD
+<a name="837"><span class="lineNum">     837 </span>                :            :  * and ZADD. However at max REDIS_AOF_REWRITE_ITEMS_PER_CMD items per time</a>
+<span class="lineNum">     838 </span>                :            :  * are inserted using a single command. */
+<span class="lineNum">     839 </span>                :<span class="lineCov">         27 : int rewriteAppendOnlyFile(char *filename) {</span>
+<span class="lineNum">     840 </span>                :<span class="lineCov">         27 :     dictIterator *di = NULL;</span>
+<span class="lineNum">     841 </span>                :            :     dictEntry *de;
+<span class="lineNum">     842 </span>                :            :     rio aof;
+<span class="lineNum">     843 </span>                :            :     FILE *fp;
+<span class="lineNum">     844 </span>                :            :     char tmpfile[256];
+<span class="lineNum">     845 </span>                :            :     int j;
+<span class="lineNum">     846 </span>                :<span class="lineCov">         27 :     long long now = mstime();</span>
+<span class="lineNum">     847 </span>                :            : 
+<span class="lineNum">     848 </span>                :            :     /* Note that we have to use a different temp name here compared to the
+<span class="lineNum">     849 </span>                :            :      * one used by rewriteAppendOnlyFileBackground() function. */
+<span class="lineNum">     850 </span>                :<span class="lineCov">         27 :     snprintf(tmpfile,256,&quot;temp-rewriteaof-%d.aof&quot;, (int) getpid());</span>
+<span class="lineNum">     851 </span>                :<span class="lineCov">         27 :     fp = fopen(tmpfile,&quot;w&quot;);</span>
+<span class="lineNum">     852 </span>        [<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchCov" title="Branch 1 was taken 27 times"> + </span>]:<span class="lineCov">         27 :     if (!fp) {</span>
+<span class="lineNum">     853 </span>                :<span class="lineNoCov">          0 :         redisLog(REDIS_WARNING, &quot;Opening the temp file for AOF rewrite in rewriteAppendOnlyFile(): %s&quot;, strerror(errno));</span>
+<span class="lineNum">     854 </span>                :<span class="lineNoCov">          0 :         return REDIS_ERR;</span>
+<span class="lineNum">     855 </span>                :            :     }
+<span class="lineNum">     856 </span>                :            : 
+<span class="lineNum">     857 </span>                :<span class="lineCov">         27 :     rioInitWithFile(&amp;aof,fp);</span>
+<span class="lineNum">     858 </span>        [<span class="branchCov" title="Branch 0 was taken 27 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">         27 :     if (server.aof_rewrite_incremental_fsync)</span>
+<span class="lineNum">     859 </span>                :<span class="lineCov">         27 :         rioSetAutoSync(&amp;aof,REDIS_AOF_AUTOSYNC_BYTES);</span>
+<span class="lineNum">     860 </span>        [<span class="branchCov" title="Branch 0 was taken 432 times"> + </span><span class="branchCov" title="Branch 1 was taken 27 times"> + </span>]:<span class="lineCov">        459 :     for (j = 0; j &lt; server.dbnum; j++) {</span>
+<span class="lineNum">     861 </span>                :<span class="lineCov">        432 :         char selectcmd[] = &quot;*2\r\n$6\r\nSELECT\r\n&quot;;</span>
+<span class="lineNum">     862 </span>                :<span class="lineCov">        432 :         redisDb *db = server.db+j;</span>
+<span class="lineNum">     863 </span>                :<span class="lineCov">        432 :         dict *d = db-&gt;dict;</span>
+<span class="lineNum">     864 </span>        [<span class="branchCov" title="Branch 0 was taken 409 times"> + </span><span class="branchCov" title="Branch 1 was taken 23 times"> + </span>]:<span class="lineCov">        432 :         if (dictSize(d) == 0) continue;</span>
+<span class="lineNum">     865 </span>                :<span class="lineCov">         23 :         di = dictGetSafeIterator(d);</span>
+<span class="lineNum">     866 </span>        [<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchCov" title="Branch 1 was taken 23 times"> + </span>]:<span class="lineCov">         23 :         if (!di) {</span>
+<span class="lineNum">     867 </span>                :<span class="lineNoCov">          0 :             fclose(fp);</span>
+<span class="lineNum">     868 </span>                :<span class="lineNoCov">          0 :             return REDIS_ERR;</span>
+<span class="lineNum">     869 </span>                :            :         }
+<span class="lineNum">     870 </span>                :            : 
+<span class="lineNum">     871 </span>                :            :         /* SELECT the new DB */
+<span class="lineNum">     872 </span>        [<span class="branchCov" title="Branch 1 was taken 23 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">         23 :         if (rioWrite(&amp;aof,selectcmd,sizeof(selectcmd)-1) == 0) goto werr;</span>
+<span class="lineNum">     873 </span>        [<span class="branchCov" title="Branch 1 was taken 23 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">         23 :         if (rioWriteBulkLongLong(&amp;aof,j) == 0) goto werr;</span>
+<span class="lineNum">     874 </span>                :            : 
+<span class="lineNum">     875 </span>                :            :         /* Iterate this DB writing every entry */
+<span class="lineNum">     876 </span>        [<span class="branchCov" title="Branch 1 was taken 65600 times"> + </span><span class="branchCov" title="Branch 2 was taken 23 times"> + </span>]:<span class="lineCov">      65623 :         while((de = dictNext(di)) != NULL) {</span>
+<span class="lineNum">     877 </span>                :            :             sds keystr;
+<span class="lineNum">     878 </span>                :            :             robj key, *o;
+<span class="lineNum">     879 </span>                :            :             long long expiretime;
+<span class="lineNum">     880 </span>                :            : 
+<span class="lineNum">     881 </span>                :<span class="lineCov">      65600 :             keystr = dictGetKey(de);</span>
+<span class="lineNum">     882 </span>                :<span class="lineCov">      65600 :             o = dictGetVal(de);</span>
+<span class="lineNum">     883 </span>                :<span class="lineCov">      65600 :             initStaticStringObject(key,keystr);</span>
+<span class="lineNum">     884 </span>                :            : 
+<span class="lineNum">     885 </span>                :<span class="lineCov">      65600 :             expiretime = getExpire(db,&amp;key);</span>
+<span class="lineNum">     886 </span>                :            : 
+<span class="lineNum">     887 </span>                :            :             /* If this key is already expired skip it */
+<span class="lineNum">     888 </span>        [<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchCov" title="Branch 1 was taken 65600 times"> + </span>]:<span class="lineCov">      65600 :             if (expiretime != -1 &amp;&amp; expiretime &lt; now) continue;</span>
+<span class="lineNum">     889 </span>                :            : 
+<span class="lineNum">     890 </span>                :            :             /* Save the key and associated value */
+<span class="lineNum">     891 </span>        [<span class="branchCov" title="Branch 0 was taken 65583 times"> + </span><span class="branchCov" title="Branch 1 was taken 17 times"> + </span>]:<span class="lineCov">      65600 :             if (o-&gt;type == REDIS_STRING) {</span>
+<span class="lineNum">     892 </span>                :            :                 /* Emit a SET command */
+<span class="lineNum">     893 </span>                :<span class="lineCov">      65583 :                 char cmd[]=&quot;*3\r\n$3\r\nSET\r\n&quot;;</span>
+<span class="lineNum">     894 </span>        [<span class="branchCov" title="Branch 1 was taken 65583 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">      65583 :                 if (rioWrite(&amp;aof,cmd,sizeof(cmd)-1) == 0) goto werr;</span>
+<span class="lineNum">     895 </span>                :            :                 /* Key and value */
+<span class="lineNum">     896 </span>        [<span class="branchCov" title="Branch 1 was taken 65583 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">      65583 :                 if (rioWriteBulkObject(&amp;aof,&amp;key) == 0) goto werr;</span>
+<span class="lineNum">     897 </span>        [<span class="branchCov" title="Branch 1 was taken 65583 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">      65583 :                 if (rioWriteBulkObject(&amp;aof,o) == 0) goto werr;</span>
+<span class="lineNum">     898 </span>        [<span class="branchCov" title="Branch 0 was taken 4 times"> + </span><span class="branchCov" title="Branch 1 was taken 13 times"> + </span>]:<span class="lineCov">         17 :             } else if (o-&gt;type == REDIS_LIST) {</span>
+<span class="lineNum">     899 </span>        [<span class="branchCov" title="Branch 1 was taken 4 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          4 :                 if (rewriteListObject(&amp;aof,&amp;key,o) == 0) goto werr;</span>
+<span class="lineNum">     900 </span>        [<span class="branchCov" title="Branch 0 was taken 4 times"> + </span><span class="branchCov" title="Branch 1 was taken 9 times"> + </span>]:<span class="lineCov">         13 :             } else if (o-&gt;type == REDIS_SET) {</span>
+<span class="lineNum">     901 </span>        [<span class="branchCov" title="Branch 1 was taken 4 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          4 :                 if (rewriteSetObject(&amp;aof,&amp;key,o) == 0) goto werr;</span>
+<span class="lineNum">     902 </span>        [<span class="branchCov" title="Branch 0 was taken 5 times"> + </span><span class="branchCov" title="Branch 1 was taken 4 times"> + </span>]:<span class="lineCov">          9 :             } else if (o-&gt;type == REDIS_ZSET) {</span>
+<span class="lineNum">     903 </span>        [<span class="branchCov" title="Branch 1 was taken 5 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          5 :                 if (rewriteSortedSetObject(&amp;aof,&amp;key,o) == 0) goto werr;</span>
+<span class="lineNum">     904 </span>        [<span class="branchCov" title="Branch 0 was taken 4 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">          4 :             } else if (o-&gt;type == REDIS_HASH) {</span>
+<span class="lineNum">     905 </span>        [<span class="branchCov" title="Branch 1 was taken 4 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          4 :                 if (rewriteHashObject(&amp;aof,&amp;key,o) == 0) goto werr;</span>
+<span class="lineNum">     906 </span>                :            :             } else {
+<span class="lineNum">     907 </span>                :<span class="lineNoCov">          0 :                 redisPanic(&quot;Unknown object type&quot;);</span>
+<span class="lineNum">     908 </span>                :            :             }
+<span class="lineNum">     909 </span>                :            :             /* Save the expire time */
+<span class="lineNum">     910 </span>        [<span class="branchCov" title="Branch 0 was taken 1 time"> + </span><span class="branchCov" title="Branch 1 was taken 65599 times"> + </span>]:<span class="lineCov">      65600 :             if (expiretime != -1) {</span>
+<span class="lineNum">     911 </span>                :<span class="lineCov">          1 :                 char cmd[]=&quot;*3\r\n$9\r\nPEXPIREAT\r\n&quot;;</span>
+<span class="lineNum">     912 </span>        [<span class="branchCov" title="Branch 1 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          1 :                 if (rioWrite(&amp;aof,cmd,sizeof(cmd)-1) == 0) goto werr;</span>
+<span class="lineNum">     913 </span>        [<span class="branchCov" title="Branch 1 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          1 :                 if (rioWriteBulkObject(&amp;aof,&amp;key) == 0) goto werr;</span>
+<span class="lineNum">     914 </span>        [<span class="branchCov" title="Branch 1 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">      65600 :                 if (rioWriteBulkLongLong(&amp;aof,expiretime) == 0) goto werr;</span>
+<span class="lineNum">     915 </span>                :            :             }
+<span class="lineNum">     916 </span>                :            :         }
+<span class="lineNum">     917 </span>                :<span class="lineCov">         23 :         dictReleaseIterator(di);</span>
+<span class="lineNum">     918 </span>                :            :     }
+<span class="lineNum">     919 </span>                :            : 
+<span class="lineNum">     920 </span>                :            :     /* Make sure data will not remain on the OS's output buffers */
+<span class="lineNum">     921 </span>                :<span class="lineCov">         27 :     fflush(fp);</span>
+<span class="lineNum">     922 </span>                :<span class="lineCov">         27 :     aof_fsync(fileno(fp));</span>
+<span class="lineNum">     923 </span>                :<span class="lineCov">         27 :     fclose(fp);</span>
+<span class="lineNum">     924 </span>                :            : 
+<span class="lineNum">     925 </span>                :            :     /* Use RENAME to make sure the DB file is changed atomically only
+<span class="lineNum">     926 </span>                :            :      * if the generate DB file is ok. */
+<span class="lineNum">     927 </span>        [<span class="branchNoCov" title="Branch 1 was not taken"> - </span><span class="branchCov" title="Branch 2 was taken 27 times"> + </span>]:<span class="lineCov">         27 :     if (rename(tmpfile,filename) == -1) {</span>
+<span class="lineNum">     928 </span>                :<span class="lineNoCov">          0 :         redisLog(REDIS_WARNING,&quot;Error moving temp append only file on the final destination: %s&quot;, strerror(errno));</span>
+<span class="lineNum">     929 </span>                :<span class="lineNoCov">          0 :         unlink(tmpfile);</span>
+<span class="lineNum">     930 </span>                :<span class="lineNoCov">          0 :         return REDIS_ERR;</span>
+<span class="lineNum">     931 </span>                :            :     }
+<span class="lineNum">     932 </span>                :<span class="lineCov">         27 :     redisLog(REDIS_NOTICE,&quot;SYNC append only file rewrite performed&quot;);</span>
+<span class="lineNum">     933 </span>                :<span class="lineCov">         27 :     return REDIS_OK;</span>
+<span class="lineNum">     934 </span>                :            : 
+<span class="lineNum">     935 </span>                :            : werr:
+<span class="lineNum">     936 </span>                :<span class="lineNoCov">          0 :     fclose(fp);</span>
+<span class="lineNum">     937 </span>                :<span class="lineNoCov">          0 :     unlink(tmpfile);</span>
+<span class="lineNum">     938 </span>                :<span class="lineNoCov">          0 :     redisLog(REDIS_WARNING,&quot;Write error writing append only file on disk: %s&quot;, strerror(errno));</span>
+<span class="lineNum">     939 </span>        [<span class="branchNoExec" title="Branch 0 was not executed"> # </span><span class="branchNoExec" title="Branch 1 was not executed"> # </span>]:<span class="lineCov">         27 :     if (di) dictReleaseIterator(di);</span>
+<span class="lineNum">     940 </span>                :            :     return REDIS_ERR;
+<span class="lineNum">     941 </span>                :            : }
+<span class="lineNum">     942 </span>                :            : 
+<span class="lineNum">     943 </span>                :            : /* This is how rewriting of the append only file in background works:
+<span class="lineNum">     944 </span>                :            :  *
+<span class="lineNum">     945 </span>                :            :  * 1) The user calls BGREWRITEAOF
+<span class="lineNum">     946 </span>                :            :  * 2) Redis calls this function, that forks():
+<span class="lineNum">     947 </span>                :            :  *    2a) the child rewrite the append only file in a temp file.
+<span class="lineNum">     948 </span>                :            :  *    2b) the parent accumulates differences in server.aof_rewrite_buf.
+<span class="lineNum">     949 </span>                :            :  * 3) When the child finished '2a' exists.
+<span class="lineNum">     950 </span>                :            :  * 4) The parent will trap the exit code, if it's OK, will append the
+<span class="lineNum">     951 </span>                :            :  *    data accumulated into server.aof_rewrite_buf into the temp file, and
+<span class="lineNum">     952 </span>                :            :  *    finally will rename(2) the temp file in the actual file name.
+<a name="953"><span class="lineNum">     953 </span>                :            :  *    The the new file is reopened as the new append only file. Profit!</a>
+<span class="lineNum">     954 </span>                :            :  */
+<span class="lineNum">     955 </span>                :<span class="lineCov">        259 : int rewriteAppendOnlyFileBackground(void) {</span>
+<span class="lineNum">     956 </span>                :            :     pid_t childpid;
+<span class="lineNum">     957 </span>                :            :     long long start;
+<span class="lineNum">     958 </span>                :            : 
+<span class="lineNum">     959 </span>        [<span class="branchCov" title="Branch 0 was taken 259 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">        259 :     if (server.aof_child_pid != -1) return REDIS_ERR;</span>
+<span class="lineNum">     960 </span>                :<span class="lineCov">        259 :     start = ustime();</span>
+<span class="lineNum">     961 </span>        [<span class="branchCov" title="Branch 1 was taken 27 times"> + </span><span class="branchCov" title="Branch 2 was taken 232 times"> + </span>]:<span class="lineCov">        259 :     if ((childpid = fork()) == 0) {</span>
+<span class="lineNum">     962 </span>                :            :         char tmpfile[256];
+<span class="lineNum">     963 </span>                :            : 
+<span class="lineNum">     964 </span>                :            :         /* Child */
+<span class="lineNum">     965 </span>                :<span class="lineCov">         27 :         closeListeningSockets(0);</span>
+<span class="lineNum">     966 </span>                :<span class="lineCov">         27 :         redisSetProcTitle(&quot;redis-aof-rewrite&quot;);</span>
+<span class="lineNum">     967 </span>                :<span class="lineCov">         27 :         snprintf(tmpfile,256,&quot;temp-rewriteaof-bg-%d.aof&quot;, (int) getpid());</span>
+<span class="lineNum">     968 </span>        [<span class="branchCov" title="Branch 1 was taken 27 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">         27 :         if (rewriteAppendOnlyFile(tmpfile) == REDIS_OK) {</span>
+<span class="lineNum">     969 </span>                :<span class="lineCov">         27 :             size_t private_dirty = zmalloc_get_private_dirty();</span>
+<span class="lineNum">     970 </span>                :            : 
+<span class="lineNum">     971 </span>        [<span class="branchCov" title="Branch 0 was taken 27 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">         27 :             if (private_dirty) {</span>
+<span class="lineNum">     972 </span>                :<span class="lineCov">         27 :                 redisLog(REDIS_NOTICE,</span>
+<span class="lineNum">     973 </span>                :            :                     &quot;AOF rewrite: %lu MB of memory used by copy-on-write&quot;,
+<span class="lineNum">     974 </span>                :            :                     private_dirty/(1024*1024));
+<span class="lineNum">     975 </span>                :            :             }
+<span class="lineNum">     976 </span>                :<span class="lineCov">         27 :             exitFromChild(0);</span>
+<span class="lineNum">     977 </span>                :            :         } else {
+<span class="lineNum">     978 </span>                :<span class="lineNoCov">          0 :             exitFromChild(1);</span>
+<span class="lineNum">     979 </span>                :            :         }
+<span class="lineNum">     980 </span>                :            :     } else {
+<span class="lineNum">     981 </span>                :            :         /* Parent */
+<span class="lineNum">     982 </span>                :<span class="lineCov">        232 :         server.stat_fork_time = ustime()-start;</span>
+<span class="lineNum">     983 </span>        [<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchCov" title="Branch 1 was taken 232 times"> + </span>]:<span class="lineCov">        232 :         if (childpid == -1) {</span>
+<span class="lineNum">     984 </span>                :<span class="lineNoCov">          0 :             redisLog(REDIS_WARNING,</span>
+<span class="lineNum">     985 </span>                :            :                 &quot;Can't rewrite append only file in background: fork: %s&quot;,
+<span class="lineNum">     986 </span>                :<span class="lineNoCov">          0 :                 strerror(errno));</span>
+<span class="lineNum">     987 </span>                :<span class="lineNoCov">          0 :             return REDIS_ERR;</span>
+<span class="lineNum">     988 </span>                :            :         }
+<span class="lineNum">     989 </span>                :<span class="lineCov">        232 :         redisLog(REDIS_NOTICE,</span>
+<span class="lineNum">     990 </span>                :            :             &quot;Background append only file rewriting started by pid %d&quot;,childpid);
+<span class="lineNum">     991 </span>                :<span class="lineCov">        232 :         server.aof_rewrite_scheduled = 0;</span>
+<span class="lineNum">     992 </span>                :<span class="lineCov">        232 :         server.aof_rewrite_time_start = time(NULL);</span>
+<span class="lineNum">     993 </span>                :<span class="lineCov">        232 :         server.aof_child_pid = childpid;</span>
+<span class="lineNum">     994 </span>                :<span class="lineCov">        232 :         updateDictResizePolicy();</span>
+<span class="lineNum">     995 </span>                :            :         /* We set appendseldb to -1 in order to force the next call to the
+<span class="lineNum">     996 </span>                :            :          * feedAppendOnlyFile() to issue a SELECT command, so the differences
+<span class="lineNum">     997 </span>                :            :          * accumulated by the parent into server.aof_rewrite_buf will start
+<span class="lineNum">     998 </span>                :            :          * with a SELECT statement and it will be safe to merge. */
+<span class="lineNum">     999 </span>                :<span class="lineCov">        232 :         server.aof_selected_db = -1;</span>
+<span class="lineNum">    1000 </span>                :<span class="lineCov">        232 :         replicationScriptCacheFlush();</span>
+<span class="lineNum">    1001 </span>                :<span class="lineCov">        232 :         return REDIS_OK;</span>
+<span class="lineNum">    1002 </span>                :            :     }
+<span class="lineNum">    1003 </span>                :            :     return REDIS_OK; /* unreached */
+<a name="1004"><span class="lineNum">    1004 </span>                :            : }</a>
+<span class="lineNum">    1005 </span>                :            : 
+<span class="lineNum">    1006 </span>                :<span class="lineCov">        214 : void bgrewriteaofCommand(redisClient *c) {</span>
+<span class="lineNum">    1007 </span>        [<span class="branchCov" title="Branch 0 was taken 6 times"> + </span><span class="branchCov" title="Branch 1 was taken 208 times"> + </span>]:<span class="lineCov">        214 :     if (server.aof_child_pid != -1) {</span>
+<span class="lineNum">    1008 </span>                :<span class="lineCov">          6 :         addReplyError(c,&quot;Background append only file rewriting already in progress&quot;);</span>
+<span class="lineNum">    1009 </span>        [<span class="branchCov" title="Branch 0 was taken 2 times"> + </span><span class="branchCov" title="Branch 1 was taken 206 times"> + </span>]:<span class="lineCov">        208 :     } else if (server.rdb_child_pid != -1) {</span>
+<span class="lineNum">    1010 </span>                :<span class="lineCov">          2 :         server.aof_rewrite_scheduled = 1;</span>
+<span class="lineNum">    1011 </span>                :<span class="lineCov">          2 :         addReplyStatus(c,&quot;Background append only file rewriting scheduled&quot;);</span>
+<span class="lineNum">    1012 </span>        [<span class="branchCov" title="Branch 1 was taken 189 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">        206 :     } else if (rewriteAppendOnlyFileBackground() == REDIS_OK) {</span>
+<span class="lineNum">    1013 </span>                :<span class="lineCov">        189 :         addReplyStatus(c,&quot;Background append only file rewriting started&quot;);</span>
+<span class="lineNum">    1014 </span>                :            :     } else {
+<span class="lineNum">    1015 </span>                :<span class="lineNoCov">          0 :         addReply(c,shared.err);</span>
+<span class="lineNum">    1016 </span>                :            :     }
+<a name="1017"><span class="lineNum">    1017 </span>                :<span class="lineCov">        197 : }</span></a>
+<span class="lineNum">    1018 </span>                :            : 
+<span class="lineNum">    1019 </span>                :<span class="lineCov">        232 : void aofRemoveTempFile(pid_t childpid) {</span>
+<span class="lineNum">    1020 </span>                :            :     char tmpfile[256];
+<span class="lineNum">    1021 </span>                :            : 
+<span class="lineNum">    1022 </span>                :            :     snprintf(tmpfile,256,&quot;temp-rewriteaof-bg-%d.aof&quot;, (int) childpid);
+<span class="lineNum">    1023 </span>                :<span class="lineCov">        232 :     unlink(tmpfile);</span>
+<span class="lineNum">    1024 </span>                :<span class="lineCov">        232 : }</span>
+<span class="lineNum">    1025 </span>                :            : 
+<span class="lineNum">    1026 </span>                :            : /* Update the server.aof_current_size filed explicitly using stat(2)
+<span class="lineNum">    1027 </span>                :            :  * to check the size of the file. This is useful after a rewrite or after
+<a name="1028"><span class="lineNum">    1028 </span>                :            :  * a restart, normally the size is updated just adding the write length</a>
+<span class="lineNum">    1029 </span>                :            :  * to the current length, that is much faster. */
+<span class="lineNum">    1030 </span>                :<span class="lineCov">        218 : void aofUpdateCurrentSize(void) {</span>
+<span class="lineNum">    1031 </span>                :            :     struct redis_stat sb;
+<span class="lineNum">    1032 </span>                :            : 
+<span class="lineNum">    1033 </span>        [<span class="branchCov" title="Branch 0 was taken 171 times"> + </span><span class="branchCov" title="Branch 1 was taken 47 times"> + </span>]:<span class="lineCov">        218 :     if (redis_fstat(server.aof_fd,&amp;sb) == -1) {</span>
+<span class="lineNum">    1034 </span>                :<span class="lineCov">        171 :         redisLog(REDIS_WARNING,&quot;Unable to obtain the AOF file length. stat: %s&quot;,</span>
+<span class="lineNum">    1035 </span>                :<span class="lineCov">        171 :             strerror(errno));</span>
+<span class="lineNum">    1036 </span>                :            :     } else {
+<span class="lineNum">    1037 </span>                :<span class="lineCov">         47 :         server.aof_current_size = sb.st_size;</span>
+<span class="lineNum">    1038 </span>                :            :     }
+<span class="lineNum">    1039 </span>                :<span class="lineCov">        218 : }</span>
+<span class="lineNum">    1040 </span>                :            : 
+<a name="1041"><span class="lineNum">    1041 </span>                :            : /* A background append only file rewriting (BGREWRITEAOF) terminated its work.</a>
+<span class="lineNum">    1042 </span>                :            :  * Handle this. */
+<span class="lineNum">    1043 </span>                :<span class="lineCov">        213 : void backgroundRewriteDoneHandler(int exitcode, int bysignal) {</span>
+<span class="lineNum">    1044 </span>        [<span class="branchCov" title="Branch 0 was taken 213 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">        213 :     if (!bysignal &amp;&amp; exitcode == 0) {</span>
+<span class="lineNum">    1045 </span>                :            :         int newfd, oldfd;
+<span class="lineNum">    1046 </span>                :            :         char tmpfile[256];
+<span class="lineNum">    1047 </span>                :<span class="lineCov">        213 :         long long now = ustime();</span>
+<span class="lineNum">    1048 </span>                :            : 
+<span class="lineNum">    1049 </span>                :<span class="lineCov">        213 :         redisLog(REDIS_NOTICE,</span>
+<span class="lineNum">    1050 </span>                :            :             &quot;Background AOF rewrite terminated with success&quot;);
+<span class="lineNum">    1051 </span>                :            : 
+<span class="lineNum">    1052 </span>                :            :         /* Flush the differences accumulated by the parent to the
+<span class="lineNum">    1053 </span>                :            :          * rewritten AOF. */
+<span class="lineNum">    1054 </span>                :<span class="lineCov">        213 :         snprintf(tmpfile,256,&quot;temp-rewriteaof-bg-%d.aof&quot;,</span>
+<span class="lineNum">    1055 </span>                :            :             (int)server.aof_child_pid);
+<span class="lineNum">    1056 </span>                :<span class="lineCov">        213 :         newfd = open(tmpfile,O_WRONLY|O_APPEND);</span>
+<span class="lineNum">    1057 </span>        [<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchCov" title="Branch 1 was taken 213 times"> + </span>]:<span class="lineCov">        213 :         if (newfd == -1) {</span>
+<span class="lineNum">    1058 </span>                :<span class="lineNoCov">          0 :             redisLog(REDIS_WARNING,</span>
+<span class="lineNum">    1059 </span>                :<span class="lineNoCov">          0 :                 &quot;Unable to open the temporary AOF produced by the child: %s&quot;, strerror(errno));</span>
+<span class="lineNum">    1060 </span>                :<span class="lineNoCov">          0 :             goto cleanup;</span>
+<span class="lineNum">    1061 </span>                :            :         }
+<span class="lineNum">    1062 </span>                :            : 
+<span class="lineNum">    1063 </span>        [<span class="branchNoCov" title="Branch 1 was not taken"> - </span><span class="branchCov" title="Branch 2 was taken 213 times"> + </span>]:<span class="lineCov">        213 :         if (aofRewriteBufferWrite(newfd) == -1) {</span>
+<span class="lineNum">    1064 </span>                :<span class="lineNoCov">          0 :             redisLog(REDIS_WARNING,</span>
+<span class="lineNum">    1065 </span>                :<span class="lineNoCov">          0 :                 &quot;Error trying to flush the parent diff to the rewritten AOF: %s&quot;, strerror(errno));</span>
+<span class="lineNum">    1066 </span>                :<span class="lineNoCov">          0 :             close(newfd);</span>
+<span class="lineNum">    1067 </span>                :<span class="lineNoCov">          0 :             goto cleanup;</span>
+<span class="lineNum">    1068 </span>                :            :         }
+<span class="lineNum">    1069 </span>                :            : 
+<span class="lineNum">    1070 </span>                :<span class="lineCov">        213 :         redisLog(REDIS_NOTICE,</span>
+<span class="lineNum">    1071 </span>                :            :             &quot;Parent diff successfully flushed to the rewritten AOF (%lu bytes)&quot;, aofRewriteBufferSize());
+<span class="lineNum">    1072 </span>                :            : 
+<span class="lineNum">    1073 </span>                :            :         /* The only remaining thing to do is to rename the temporary file to
+<span class="lineNum">    1074 </span>                :            :          * the configured file and switch the file descriptor used to do AOF
+<span class="lineNum">    1075 </span>                :            :          * writes. We don't want close(2) or rename(2) calls to block the
+<span class="lineNum">    1076 </span>                :            :          * server on old file deletion.
+<span class="lineNum">    1077 </span>                :            :          *
+<span class="lineNum">    1078 </span>                :            :          * There are two possible scenarios:
+<span class="lineNum">    1079 </span>                :            :          *
+<span class="lineNum">    1080 </span>                :            :          * 1) AOF is DISABLED and this was a one time rewrite. The temporary
+<span class="lineNum">    1081 </span>                :            :          * file will be renamed to the configured file. When this file already
+<span class="lineNum">    1082 </span>                :            :          * exists, it will be unlinked, which may block the server.
+<span class="lineNum">    1083 </span>                :            :          *
+<span class="lineNum">    1084 </span>                :            :          * 2) AOF is ENABLED and the rewritten AOF will immediately start
+<span class="lineNum">    1085 </span>                :            :          * receiving writes. After the temporary file is renamed to the
+<span class="lineNum">    1086 </span>                :            :          * configured file, the original AOF file descriptor will be closed.
+<span class="lineNum">    1087 </span>                :            :          * Since this will be the last reference to that file, closing it
+<span class="lineNum">    1088 </span>                :            :          * causes the underlying file to be unlinked, which may block the
+<span class="lineNum">    1089 </span>                :            :          * server.
+<span class="lineNum">    1090 </span>                :            :          *
+<span class="lineNum">    1091 </span>                :            :          * To mitigate the blocking effect of the unlink operation (either
+<span class="lineNum">    1092 </span>                :            :          * caused by rename(2) in scenario 1, or by close(2) in scenario 2), we
+<span class="lineNum">    1093 </span>                :            :          * use a background thread to take care of this. First, we
+<span class="lineNum">    1094 </span>                :            :          * make scenario 1 identical to scenario 2 by opening the target file
+<span class="lineNum">    1095 </span>                :            :          * when it exists. The unlink operation after the rename(2) will then
+<span class="lineNum">    1096 </span>                :            :          * be executed upon calling close(2) for its descriptor. Everything to
+<span class="lineNum">    1097 </span>                :            :          * guarantee atomicity for this switch has already happened by then, so
+<span class="lineNum">    1098 </span>                :            :          * we don't care what the outcome or duration of that close operation
+<span class="lineNum">    1099 </span>                :            :          * is, as long as the file descriptor is released again. */
+<span class="lineNum">    1100 </span>        [<span class="branchCov" title="Branch 0 was taken 171 times"> + </span><span class="branchCov" title="Branch 1 was taken 42 times"> + </span>]:<span class="lineCov">        213 :         if (server.aof_fd == -1) {</span>
+<span class="lineNum">    1101 </span>                :            :             /* AOF disabled */
+<span class="lineNum">    1102 </span>                :            : 
+<span class="lineNum">    1103 </span>                :            :              /* Don't care if this fails: oldfd will be -1 and we handle that.
+<span class="lineNum">    1104 </span>                :            :               * One notable case of -1 return is if the old file does
+<span class="lineNum">    1105 </span>                :            :               * not exist. */
+<span class="lineNum">    1106 </span>                :<span class="lineCov">        171 :              oldfd = open(server.aof_filename,O_RDONLY|O_NONBLOCK);</span>
+<span class="lineNum">    1107 </span>                :            :         } else {
+<span class="lineNum">    1108 </span>                :            :             /* AOF enabled */
+<span class="lineNum">    1109 </span>                :            :             oldfd = -1; /* We'll set this to the current AOF filedes later. */
+<span class="lineNum">    1110 </span>                :            :         }
+<span class="lineNum">    1111 </span>                :            : 
+<span class="lineNum">    1112 </span>                :            :         /* Rename the temporary file. This will not unlink the target file if
+<span class="lineNum">    1113 </span>                :            :          * it exists, because we reference it with &quot;oldfd&quot;. */
+<span class="lineNum">    1114 </span>        [<span class="branchNoCov" title="Branch 1 was not taken"> - </span><span class="branchCov" title="Branch 2 was taken 213 times"> + </span>]:<span class="lineCov">        213 :         if (rename(tmpfile,server.aof_filename) == -1) {</span>
+<span class="lineNum">    1115 </span>                :<span class="lineNoCov">          0 :             redisLog(REDIS_WARNING,</span>
+<span class="lineNum">    1116 </span>                :<span class="lineNoCov">          0 :                 &quot;Error trying to rename the temporary AOF file: %s&quot;, strerror(errno));</span>
+<span class="lineNum">    1117 </span>                :<span class="lineNoCov">          0 :             close(newfd);</span>
+<span class="lineNum">    1118 </span>        [<span class="branchNoExec" title="Branch 0 was not executed"> # </span><span class="branchNoExec" title="Branch 1 was not executed"> # </span>]:<span class="lineNoCov">          0 :             if (oldfd != -1) close(oldfd);</span>
+<span class="lineNum">    1119 </span>                :            :             goto cleanup;
+<span class="lineNum">    1120 </span>                :            :         }
+<span class="lineNum">    1121 </span>                :            : 
+<span class="lineNum">    1122 </span>        [<span class="branchCov" title="Branch 0 was taken 171 times"> + </span><span class="branchCov" title="Branch 1 was taken 42 times"> + </span>]:<span class="lineCov">        213 :         if (server.aof_fd == -1) {</span>
+<span class="lineNum">    1123 </span>                :            :             /* AOF disabled, we don't need to set the AOF file descriptor
+<span class="lineNum">    1124 </span>                :            :              * to this new file, so we can close it. */
+<span class="lineNum">    1125 </span>                :<span class="lineCov">        171 :             close(newfd);</span>
+<span class="lineNum">    1126 </span>                :            :         } else {
+<span class="lineNum">    1127 </span>                :            :             /* AOF enabled, replace the old fd with the new one. */
+<span class="lineNum">    1128 </span>                :<span class="lineCov">         42 :             oldfd = server.aof_fd;</span>
+<span class="lineNum">    1129 </span>                :<span class="lineCov">         42 :             server.aof_fd = newfd;</span>
+<span class="lineNum">    1130 </span>        [<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchCov" title="Branch 1 was taken 42 times"> + </span>]:<span class="lineCov">         42 :             if (server.aof_fsync == AOF_FSYNC_ALWAYS)</span>
+<span class="lineNum">    1131 </span>                :<span class="lineNoCov">          0 :                 aof_fsync(newfd);</span>
+<span class="lineNum">    1132 </span>        [<span class="branchCov" title="Branch 0 was taken 42 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">         42 :             else if (server.aof_fsync == AOF_FSYNC_EVERYSEC)</span>
+<span class="lineNum">    1133 </span>                :<span class="lineCov">         42 :                 aof_background_fsync(newfd);</span>
+<span class="lineNum">    1134 </span>                :<span class="lineCov">         42 :             server.aof_selected_db = -1; /* Make sure SELECT is re-issued */</span>
+<span class="lineNum">    1135 </span>                :<span class="lineCov">         42 :             aofUpdateCurrentSize();</span>
+<span class="lineNum">    1136 </span>                :<span class="lineCov">         42 :             server.aof_rewrite_base_size = server.aof_current_size;</span>
+<span class="lineNum">    1137 </span>                :            : 
+<span class="lineNum">    1138 </span>                :            :             /* Clear regular AOF buffer since its contents was just written to
+<span class="lineNum">    1139 </span>                :            :              * the new AOF from the background rewrite buffer. */
+<span class="lineNum">    1140 </span>                :<span class="lineCov">         42 :             sdsfree(server.aof_buf);</span>
+<span class="lineNum">    1141 </span>                :<span class="lineCov">         42 :             server.aof_buf = sdsempty();</span>
+<span class="lineNum">    1142 </span>                :            :         }
+<span class="lineNum">    1143 </span>                :            : 
+<span class="lineNum">    1144 </span>                :<span class="lineCov">        213 :         server.aof_lastbgrewrite_status = REDIS_OK;</span>
+<span class="lineNum">    1145 </span>                :            : 
+<span class="lineNum">    1146 </span>                :<span class="lineCov">        213 :         redisLog(REDIS_NOTICE, &quot;Background AOF rewrite finished successfully&quot;);</span>
+<span class="lineNum">    1147 </span>                :            :         /* Change state from WAIT_REWRITE to ON if needed */
+<span class="lineNum">    1148 </span>        [<span class="branchCov" title="Branch 0 was taken 27 times"> + </span><span class="branchCov" title="Branch 1 was taken 186 times"> + </span>]:<span class="lineCov">        213 :         if (server.aof_state == REDIS_AOF_WAIT_REWRITE)</span>
+<span class="lineNum">    1149 </span>                :<span class="lineCov">         27 :             server.aof_state = REDIS_AOF_ON;</span>
+<span class="lineNum">    1150 </span>                :            : 
+<span class="lineNum">    1151 </span>                :            :         /* Asynchronously close the overwritten AOF. */
+<span class="lineNum">    1152 </span>        [<span class="branchCov" title="Branch 0 was taken 211 times"> + </span><span class="branchCov" title="Branch 1 was taken 2 times"> + </span>]:<span class="lineCov">        213 :         if (oldfd != -1) bioCreateBackgroundJob(REDIS_BIO_CLOSE_FILE,(void*)(long)oldfd,NULL,NULL);</span>
+<span class="lineNum">    1153 </span>                :            : 
+<span class="lineNum">    1154 </span>                :<span class="lineCov">        213 :         redisLog(REDIS_VERBOSE,</span>
+<span class="lineNum">    1155 </span>                :<span class="lineCov">        213 :             &quot;Background AOF rewrite signal handler took %lldus&quot;, ustime()-now);</span>
+<span class="lineNum">    1156 </span>        [<span class="branchNoExec" title="Branch 0 was not executed"> # </span><span class="branchNoExec" title="Branch 1 was not executed"> # </span>]:<span class="lineNoCov">          0 :     } else if (!bysignal &amp;&amp; exitcode != 0) {</span>
+<span class="lineNum">    1157 </span>                :<span class="lineNoCov">          0 :         server.aof_lastbgrewrite_status = REDIS_ERR;</span>
+<span class="lineNum">    1158 </span>                :            : 
+<span class="lineNum">    1159 </span>                :<span class="lineNoCov">          0 :         redisLog(REDIS_WARNING,</span>
+<span class="lineNum">    1160 </span>                :            :             &quot;Background AOF rewrite terminated with error&quot;);
+<span class="lineNum">    1161 </span>                :            :     } else {
+<span class="lineNum">    1162 </span>                :<span class="lineNoCov">          0 :         server.aof_lastbgrewrite_status = REDIS_ERR;</span>
+<span class="lineNum">    1163 </span>                :            : 
+<span class="lineNum">    1164 </span>                :<span class="lineNoCov">          0 :         redisLog(REDIS_WARNING,</span>
+<span class="lineNum">    1165 </span>                :            :             &quot;Background AOF rewrite terminated by signal %d&quot;, bysignal);
+<span class="lineNum">    1166 </span>                :            :     }
+<span class="lineNum">    1167 </span>                :            : 
+<span class="lineNum">    1168 </span>                :            : cleanup:
+<span class="lineNum">    1169 </span>                :<span class="lineCov">        213 :     aofRewriteBufferReset();</span>
+<span class="lineNum">    1170 </span>                :<span class="lineCov">        213 :     aofRemoveTempFile(server.aof_child_pid);</span>
+<span class="lineNum">    1171 </span>                :<span class="lineCov">        213 :     server.aof_child_pid = -1;</span>
+<span class="lineNum">    1172 </span>                :<span class="lineCov">        213 :     server.aof_rewrite_time_last = time(NULL)-server.aof_rewrite_time_start;</span>
+<span class="lineNum">    1173 </span>                :<span class="lineCov">        213 :     server.aof_rewrite_time_start = -1;</span>
+<span class="lineNum">    1174 </span>                :            :     /* Schedule a new rewrite if we are waiting for it to switch the AOF ON. */
+<span class="lineNum">    1175 </span>        [<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchCov" title="Branch 1 was taken 213 times"> + </span>]:<span class="lineCov">        213 :     if (server.aof_state == REDIS_AOF_WAIT_REWRITE)</span>
+<span class="lineNum">    1176 </span>                :<span class="lineNoCov">          0 :         server.aof_rewrite_scheduled = 1;</span>
+<span class="lineNum">    1177 </span>                :<span class="lineCov">        213 : }</span>
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.9</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

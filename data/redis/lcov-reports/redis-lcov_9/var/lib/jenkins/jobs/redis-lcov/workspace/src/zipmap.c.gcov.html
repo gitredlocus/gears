@@ -1,0 +1,560 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - redis-lcov_9.info - /var/lib/jenkins/jobs/redis-lcov/workspace/src/zipmap.c</title>
+  <link rel="stylesheet" type="text/css" href="../../../../../../../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../../../../../../../index.html">top level</a> - <a href="index.html">var/lib/jenkins/jobs/redis-lcov/workspace/src</a> - zipmap.c<span style="font-size: 80%;"> (source / <a href="zipmap.c.func.html">functions</a>)</span></td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">redis-lcov_9.info</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">31</td>
+            <td class="headerCovTableEntry">128</td>
+            <td class="headerCovTableEntryLo">24.2 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2013-08-26</td>
+            <td></td>
+            <td class="headerItem">Functions:</td>
+            <td class="headerCovTableEntry">6</td>
+            <td class="headerCovTableEntry">15</td>
+            <td class="headerCovTableEntryLo">40.0 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Legend:</td>
+            <td class="headerValueLeg">            Lines:
+            <span class="coverLegendCov">hit</span>
+            <span class="coverLegendNoCov">not hit</span>
+            | Branches:
+            <span class="coverLegendCov">+</span> taken
+            <span class="coverLegendNoCov">-</span> not taken
+            <span class="coverLegendNoCov">#</span> not executed
+</td>
+            <td></td>
+            <td class="headerItem">Branches:</td>
+            <td class="headerCovTableEntry">9</td>
+            <td class="headerCovTableEntry">64</td>
+            <td class="headerCovTableEntryLo">14.1 %</td>
+          </tr>
+          <tr><td><img src="../../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">           Branch data     Line data    Source code</pre>
+<pre class="source">
+<a name="1"><span class="lineNum">       1 </span>                :            : /* String -&gt; String Map data structure optimized for size.</a>
+<span class="lineNum">       2 </span>                :            :  * This file implements a data structure mapping strings to other strings
+<span class="lineNum">       3 </span>                :            :  * implementing an O(n) lookup data structure designed to be very memory
+<span class="lineNum">       4 </span>                :            :  * efficient.
+<span class="lineNum">       5 </span>                :            :  *
+<span class="lineNum">       6 </span>                :            :  * The Redis Hash type uses this data structure for hashes composed of a small
+<span class="lineNum">       7 </span>                :            :  * number of elements, to switch to an hash table once a given number of
+<span class="lineNum">       8 </span>                :            :  * elements is reached.
+<span class="lineNum">       9 </span>                :            :  *
+<span class="lineNum">      10 </span>                :            :  * Given that many times Redis Hashes are used to represent objects composed
+<span class="lineNum">      11 </span>                :            :  * of few fields, this is a very big win in terms of used memory.
+<span class="lineNum">      12 </span>                :            :  *
+<span class="lineNum">      13 </span>                :            :  * --------------------------------------------------------------------------
+<span class="lineNum">      14 </span>                :            :  *
+<span class="lineNum">      15 </span>                :            :  * Copyright (c) 2009-2010, Salvatore Sanfilippo &lt;antirez at gmail dot com&gt;
+<span class="lineNum">      16 </span>                :            :  * All rights reserved.
+<span class="lineNum">      17 </span>                :            :  *
+<span class="lineNum">      18 </span>                :            :  * Redistribution and use in source and binary forms, with or without
+<span class="lineNum">      19 </span>                :            :  * modification, are permitted provided that the following conditions are met:
+<span class="lineNum">      20 </span>                :            :  *
+<span class="lineNum">      21 </span>                :            :  *   * Redistributions of source code must retain the above copyright notice,
+<span class="lineNum">      22 </span>                :            :  *     this list of conditions and the following disclaimer.
+<span class="lineNum">      23 </span>                :            :  *   * Redistributions in binary form must reproduce the above copyright
+<span class="lineNum">      24 </span>                :            :  *     notice, this list of conditions and the following disclaimer in the
+<span class="lineNum">      25 </span>                :            :  *     documentation and/or other materials provided with the distribution.
+<span class="lineNum">      26 </span>                :            :  *   * Neither the name of Redis nor the names of its contributors may be used
+<span class="lineNum">      27 </span>                :            :  *     to endorse or promote products derived from this software without
+<span class="lineNum">      28 </span>                :            :  *     specific prior written permission.
+<span class="lineNum">      29 </span>                :            :  *
+<span class="lineNum">      30 </span>                :            :  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS &quot;AS IS&quot;
+<span class="lineNum">      31 </span>                :            :  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+<span class="lineNum">      32 </span>                :            :  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+<span class="lineNum">      33 </span>                :            :  * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+<span class="lineNum">      34 </span>                :            :  * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+<span class="lineNum">      35 </span>                :            :  * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+<span class="lineNum">      36 </span>                :            :  * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+<span class="lineNum">      37 </span>                :            :  * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+<span class="lineNum">      38 </span>                :            :  * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+<span class="lineNum">      39 </span>                :            :  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+<span class="lineNum">      40 </span>                :            :  * POSSIBILITY OF SUCH DAMAGE.
+<span class="lineNum">      41 </span>                :            :  */
+<span class="lineNum">      42 </span>                :            : 
+<span class="lineNum">      43 </span>                :            : /* Memory layout of a zipmap, for the map &quot;foo&quot; =&gt; &quot;bar&quot;, &quot;hello&quot; =&gt; &quot;world&quot;:
+<span class="lineNum">      44 </span>                :            :  *
+<span class="lineNum">      45 </span>                :            :  * &lt;zmlen&gt;&lt;len&gt;&quot;foo&quot;&lt;len&gt;&lt;free&gt;&quot;bar&quot;&lt;len&gt;&quot;hello&quot;&lt;len&gt;&lt;free&gt;&quot;world&quot;
+<span class="lineNum">      46 </span>                :            :  *
+<span class="lineNum">      47 </span>                :            :  * &lt;zmlen&gt; is 1 byte length that holds the current size of the zipmap.
+<span class="lineNum">      48 </span>                :            :  * When the zipmap length is greater than or equal to 254, this value
+<span class="lineNum">      49 </span>                :            :  * is not used and the zipmap needs to be traversed to find out the length.
+<span class="lineNum">      50 </span>                :            :  *
+<span class="lineNum">      51 </span>                :            :  * &lt;len&gt; is the length of the following string (key or value).
+<span class="lineNum">      52 </span>                :            :  * &lt;len&gt; lengths are encoded in a single value or in a 5 bytes value.
+<span class="lineNum">      53 </span>                :            :  * If the first byte value (as an unsigned 8 bit value) is between 0 and
+<span class="lineNum">      54 </span>                :            :  * 252, it's a single-byte length. If it is 253 then a four bytes unsigned
+<span class="lineNum">      55 </span>                :            :  * integer follows (in the host byte ordering). A value of 255 is used to
+<span class="lineNum">      56 </span>                :            :  * signal the end of the hash. The special value 254 is used to mark
+<span class="lineNum">      57 </span>                :            :  * empty space that can be used to add new key/value pairs.
+<span class="lineNum">      58 </span>                :            :  *
+<span class="lineNum">      59 </span>                :            :  * &lt;free&gt; is the number of free unused bytes after the string, resulting 
+<span class="lineNum">      60 </span>                :            :  * from modification of values associated to a key. For instance if &quot;foo&quot;
+<span class="lineNum">      61 </span>                :            :  * is set to &quot;bar&quot;, and later &quot;foo&quot; will be set to &quot;hi&quot;, it will have a
+<span class="lineNum">      62 </span>                :            :  * free byte to use if the value will enlarge again later, or even in
+<span class="lineNum">      63 </span>                :            :  * order to add a key/value pair if it fits.
+<span class="lineNum">      64 </span>                :            :  *
+<span class="lineNum">      65 </span>                :            :  * &lt;free&gt; is always an unsigned 8 bit number, because if after an
+<span class="lineNum">      66 </span>                :            :  * update operation there are more than a few free bytes, the zipmap will be
+<span class="lineNum">      67 </span>                :            :  * reallocated to make sure it is as small as possible.
+<span class="lineNum">      68 </span>                :            :  *
+<span class="lineNum">      69 </span>                :            :  * The most compact representation of the above two elements hash is actually:
+<span class="lineNum">      70 </span>                :            :  *
+<span class="lineNum">      71 </span>                :            :  * &quot;\x02\x03foo\x03\x00bar\x05hello\x05\x00world\xff&quot;
+<span class="lineNum">      72 </span>                :            :  *
+<span class="lineNum">      73 </span>                :            :  * Note that because keys and values are prefixed length &quot;objects&quot;,
+<span class="lineNum">      74 </span>                :            :  * the lookup will take O(N) where N is the number of elements
+<span class="lineNum">      75 </span>                :            :  * in the zipmap and *not* the number of bytes needed to represent the zipmap.
+<span class="lineNum">      76 </span>                :            :  * This lowers the constant times considerably.
+<span class="lineNum">      77 </span>                :            :  */
+<span class="lineNum">      78 </span>                :            : 
+<span class="lineNum">      79 </span>                :            : #include &lt;stdio.h&gt;
+<span class="lineNum">      80 </span>                :            : #include &lt;string.h&gt;
+<span class="lineNum">      81 </span>                :            : #include &lt;assert.h&gt;
+<span class="lineNum">      82 </span>                :            : #include &quot;zmalloc.h&quot;
+<span class="lineNum">      83 </span>                :            : #include &quot;endianconv.h&quot;
+<span class="lineNum">      84 </span>                :            : 
+<span class="lineNum">      85 </span>                :            : #define ZIPMAP_BIGLEN 254
+<span class="lineNum">      86 </span>                :            : #define ZIPMAP_END 255
+<span class="lineNum">      87 </span>                :            : 
+<span class="lineNum">      88 </span>                :            : /* The following defines the max value for the &lt;free&gt; field described in the
+<span class="lineNum">      89 </span>                :            :  * comments above, that is, the max number of trailing bytes in a value. */
+<span class="lineNum">      90 </span>                :            : #define ZIPMAP_VALUE_MAX_FREE 4
+<span class="lineNum">      91 </span>                :            : 
+<span class="lineNum">      92 </span>                :            : /* The following macro returns the number of bytes needed to encode the length
+<span class="lineNum">      93 </span>                :            :  * for the integer value _l, that is, 1 byte for lengths &lt; ZIPMAP_BIGLEN and
+<span class="lineNum">      94 </span>                :            :  * 5 bytes for all the other lengths. */
+<span class="lineNum">      95 </span>                :            : #define ZIPMAP_LEN_BYTES(_l) (((_l) &lt; ZIPMAP_BIGLEN) ? 1 : sizeof(unsigned int)+1)
+<a name="96"><span class="lineNum">      96 </span>                :            : </a>
+<span class="lineNum">      97 </span>                :            : /* Create a new empty zipmap. */
+<span class="lineNum">      98 </span>                :<span class="lineNoCov">          0 : unsigned char *zipmapNew(void) {</span>
+<span class="lineNum">      99 </span>                :<span class="lineNoCov">          0 :     unsigned char *zm = zmalloc(2);</span>
+<span class="lineNum">     100 </span>                :            : 
+<span class="lineNum">     101 </span>                :<span class="lineNoCov">          0 :     zm[0] = 0; /* Length */</span>
+<span class="lineNum">     102 </span>                :<span class="lineNoCov">          0 :     zm[1] = ZIPMAP_END;</span>
+<span class="lineNum">     103 </span>                :<span class="lineNoCov">          0 :     return zm;</span>
+<span class="lineNum">     104 </span>                :            : }
+<a name="105"><span class="lineNum">     105 </span>                :            : </a>
+<span class="lineNum">     106 </span>                :            : /* Decode the encoded length pointed by 'p' */
+<span class="lineNum">     107 </span>                :<span class="lineCov">         24 : static unsigned int zipmapDecodeLength(unsigned char *p) {</span>
+<span class="lineNum">     108 </span>                :<span class="lineCov">         24 :     unsigned int len = *p;</span>
+<span class="lineNum">     109 </span>                :            : 
+<span class="lineNum">     110 </span>        [<span class="branchCov" title="Branch 0 was taken 24 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">         24 :     if (len &lt; ZIPMAP_BIGLEN) return len;</span>
+<span class="lineNum">     111 </span>                :<span class="lineNoCov">          0 :     memcpy(&amp;len,p+1,sizeof(unsigned int));</span>
+<span class="lineNum">     112 </span>                :            :     memrev32ifbe(&amp;len);
+<span class="lineNum">     113 </span>                :<span class="lineCov">         24 :     return len;</span>
+<span class="lineNum">     114 </span>                :            : }
+<span class="lineNum">     115 </span>                :            : 
+<a name="116"><span class="lineNum">     116 </span>                :            : /* Encode the length 'l' writing it in 'p'. If p is NULL it just returns</a>
+<span class="lineNum">     117 </span>                :            :  * the amount of bytes required to encode such a length. */
+<span class="lineNum">     118 </span>                :<span class="lineCov">         12 : static unsigned int zipmapEncodeLength(unsigned char *p, unsigned int len) {</span>
+<span class="lineNum">     119 </span>        [<span class="branchCov" title="Branch 0 was taken 12 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">         12 :     if (p == NULL) {</span>
+<span class="lineNum">     120 </span>        [<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchCov" title="Branch 1 was taken 12 times"> + </span>]:<span class="lineCov">         12 :         return ZIPMAP_LEN_BYTES(len);</span>
+<span class="lineNum">     121 </span>                :            :     } else {
+<span class="lineNum">     122 </span>        [<span class="branchNoExec" title="Branch 0 was not executed"> # </span><span class="branchNoExec" title="Branch 1 was not executed"> # </span>]:<span class="lineNoCov">          0 :         if (len &lt; ZIPMAP_BIGLEN) {</span>
+<span class="lineNum">     123 </span>                :<span class="lineNoCov">          0 :             p[0] = len;</span>
+<span class="lineNum">     124 </span>                :<span class="lineNoCov">          0 :             return 1;</span>
+<span class="lineNum">     125 </span>                :            :         } else {
+<span class="lineNum">     126 </span>                :<span class="lineNoCov">          0 :             p[0] = ZIPMAP_BIGLEN;</span>
+<span class="lineNum">     127 </span>                :<span class="lineNoCov">          0 :             memcpy(p+1,&amp;len,sizeof(len));</span>
+<span class="lineNum">     128 </span>                :            :             memrev32ifbe(p+1);
+<span class="lineNum">     129 </span>                :<span class="lineCov">         12 :             return 1+sizeof(len);</span>
+<span class="lineNum">     130 </span>                :            :         }
+<span class="lineNum">     131 </span>                :            :     }
+<span class="lineNum">     132 </span>                :            : }
+<span class="lineNum">     133 </span>                :            : 
+<span class="lineNum">     134 </span>                :            : /* Search for a matching key, returning a pointer to the entry inside the
+<span class="lineNum">     135 </span>                :            :  * zipmap. Returns NULL if the key is not found.
+<span class="lineNum">     136 </span>                :            :  *
+<span class="lineNum">     137 </span>                :            :  * If NULL is returned, and totlen is not NULL, it is set to the entire
+<a name="138"><span class="lineNum">     138 </span>                :            :  * size of the zimap, so that the calling function will be able to</a>
+<span class="lineNum">     139 </span>                :            :  * reallocate the original zipmap to make room for more entries. */
+<span class="lineNum">     140 </span>                :<span class="lineNoCov">          0 : static unsigned char *zipmapLookupRaw(unsigned char *zm, unsigned char *key, unsigned int klen, unsigned int *totlen) {</span>
+<span class="lineNum">     141 </span>                :<span class="lineNoCov">          0 :     unsigned char *p = zm+1, *k = NULL;</span>
+<span class="lineNum">     142 </span>                :            :     unsigned int l,llen;
+<span class="lineNum">     143 </span>                :            : 
+<span class="lineNum">     144 </span>        [<span class="branchNoExec" title="Branch 0 was not executed"> # </span><span class="branchNoExec" title="Branch 1 was not executed"> # </span>]:<span class="lineNoCov">          0 :     while(*p != ZIPMAP_END) {</span>
+<span class="lineNum">     145 </span>                :            :         unsigned char free;
+<span class="lineNum">     146 </span>                :            : 
+<span class="lineNum">     147 </span>                :            :         /* Match or skip the key */
+<span class="lineNum">     148 </span>                :<span class="lineNoCov">          0 :         l = zipmapDecodeLength(p);</span>
+<span class="lineNum">     149 </span>                :<span class="lineNoCov">          0 :         llen = zipmapEncodeLength(NULL,l);</span>
+<span class="lineNum">     150 </span>[<span class="branchNoExec" title="Branch 0 was not executed"> # </span><span class="branchNoExec" title="Branch 1 was not executed"> # </span>][<span class="branchNoExec" title="Branch 2 was not executed"> # </span><span class="branchNoExec" title="Branch 3 was not executed"> # </span>]:<span class="lineNoCov">          0 :         if (key != NULL &amp;&amp; k == NULL &amp;&amp; l == klen &amp;&amp; !memcmp(p+llen,key,l)) {</span>
+<span class="lineNum">         </span>        [<span class="branchNoExec" title="Branch 4 was not executed"> # </span><span class="branchNoExec" title="Branch 5 was not executed"> # </span>]
+<span class="lineNum">     151 </span>                :            :             /* Only return when the user doesn't care
+<span class="lineNum">     152 </span>                :            :              * for the total length of the zipmap. */
+<span class="lineNum">     153 </span>        [<span class="branchNoExec" title="Branch 0 was not executed"> # </span><span class="branchNoExec" title="Branch 1 was not executed"> # </span>]:<span class="lineNoCov">          0 :             if (totlen != NULL) {</span>
+<span class="lineNum">     154 </span>                :            :                 k = p;
+<span class="lineNum">     155 </span>                :            :             } else {
+<span class="lineNum">     156 </span>                :            :                 return p;
+<span class="lineNum">     157 </span>                :            :             }
+<span class="lineNum">     158 </span>                :            :         }
+<span class="lineNum">     159 </span>                :<span class="lineNoCov">          0 :         p += llen+l;</span>
+<span class="lineNum">     160 </span>                :            :         /* Skip the value as well */
+<span class="lineNum">     161 </span>                :<span class="lineNoCov">          0 :         l = zipmapDecodeLength(p);</span>
+<span class="lineNum">     162 </span>                :<span class="lineNoCov">          0 :         p += zipmapEncodeLength(NULL,l);</span>
+<span class="lineNum">     163 </span>                :<span class="lineNoCov">          0 :         free = p[0];</span>
+<span class="lineNum">     164 </span>                :<span class="lineNoCov">          0 :         p += l+1+free; /* +1 to skip the free byte */</span>
+<span class="lineNum">     165 </span>                :            :     }
+<span class="lineNum">     166 </span>        [<span class="branchNoExec" title="Branch 0 was not executed"> # </span><span class="branchNoExec" title="Branch 1 was not executed"> # </span>]:<span class="lineNoCov">          0 :     if (totlen != NULL) *totlen = (unsigned int)(p-zm)+1;</span>
+<span class="lineNum">     167 </span>                :            :     return k;
+<span class="lineNum">     168 </span>                :            : }
+<span class="lineNum">     169 </span>                :            : 
+<span class="lineNum">     170 </span>                :            : static unsigned long zipmapRequiredLength(unsigned int klen, unsigned int vlen) {
+<a name="171"><span class="lineNum">     171 </span>                :            :     unsigned int l;</a>
+<span class="lineNum">     172 </span>                :            : 
+<span class="lineNum">     173 </span>                :<span class="lineNoCov">          0 :     l = klen+vlen+3;</span>
+<span class="lineNum">     174 </span>        [<span class="branchNoExec" title="Branch 0 was not executed"> # </span><span class="branchNoExec" title="Branch 1 was not executed"> # </span>]:<span class="lineNoCov">          0 :     if (klen &gt;= ZIPMAP_BIGLEN) l += 4;</span>
+<span class="lineNum">     175 </span>        [<span class="branchNoExec" title="Branch 0 was not executed"> # </span><span class="branchNoExec" title="Branch 1 was not executed"> # </span>]:<span class="lineNoCov">          0 :     if (vlen &gt;= ZIPMAP_BIGLEN) l += 4;</span>
+<span class="lineNum">     176 </span>                :<span class="lineNoCov">          0 :     return l;</span>
+<span class="lineNum">     177 </span>                :            : }
+<a name="178"><span class="lineNum">     178 </span>                :            : </a>
+<span class="lineNum">     179 </span>                :            : /* Return the total amount used by a key (encoded length + payload) */
+<span class="lineNum">     180 </span>                :<span class="lineCov">          6 : static unsigned int zipmapRawKeyLength(unsigned char *p) {</span>
+<span class="lineNum">     181 </span>                :<span class="lineCov">          6 :     unsigned int l = zipmapDecodeLength(p);</span>
+<span class="lineNum">     182 </span>                :<span class="lineCov">          6 :     return zipmapEncodeLength(NULL,l) + l;</span>
+<span class="lineNum">     183 </span>                :            : }
+<span class="lineNum">     184 </span>                :            : 
+<a name="185"><span class="lineNum">     185 </span>                :            : /* Return the total amount used by a value</a>
+<span class="lineNum">     186 </span>                :            :  * (encoded length + single byte free count + payload) */
+<span class="lineNum">     187 </span>                :<span class="lineCov">          6 : static unsigned int zipmapRawValueLength(unsigned char *p) {</span>
+<span class="lineNum">     188 </span>                :<span class="lineCov">          6 :     unsigned int l = zipmapDecodeLength(p);</span>
+<span class="lineNum">     189 </span>                :            :     unsigned int used;
+<span class="lineNum">     190 </span>                :            :     
+<span class="lineNum">     191 </span>                :<span class="lineCov">          6 :     used = zipmapEncodeLength(NULL,l);</span>
+<span class="lineNum">     192 </span>                :<span class="lineCov">          6 :     used += p[used] + 1 + l;</span>
+<span class="lineNum">     193 </span>                :<span class="lineCov">          6 :     return used;</span>
+<span class="lineNum">     194 </span>                :            : }
+<span class="lineNum">     195 </span>                :            : 
+<span class="lineNum">     196 </span>                :            : /* If 'p' points to a key, this function returns the total amount of
+<span class="lineNum">     197 </span>                :            :  * bytes used to store this entry (entry = key + associated value + trailing
+<a name="198"><span class="lineNum">     198 </span>                :            :  * free space if any). */</a>
+<span class="lineNum">     199 </span>                :            : static unsigned int zipmapRawEntryLength(unsigned char *p) {
+<span class="lineNum">     200 </span>                :<span class="lineNoCov">          0 :     unsigned int l = zipmapRawKeyLength(p);</span>
+<span class="lineNum">     201 </span>                :<span class="lineNoCov">          0 :     return l + zipmapRawValueLength(p+l);</span>
+<a name="202"><span class="lineNum">     202 </span>                :            : }</a>
+<span class="lineNum">     203 </span>                :            : 
+<span class="lineNum">     204 </span>                :<span class="lineNoCov">          0 : static inline unsigned char *zipmapResize(unsigned char *zm, unsigned int len) {</span>
+<span class="lineNum">     205 </span>                :<span class="lineNoCov">          0 :     zm = zrealloc(zm, len);</span>
+<span class="lineNum">     206 </span>                :<span class="lineNoCov">          0 :     zm[len-1] = ZIPMAP_END;</span>
+<span class="lineNum">     207 </span>                :<span class="lineNoCov">          0 :     return zm;</span>
+<span class="lineNum">     208 </span>                :            : }
+<span class="lineNum">     209 </span>                :            : 
+<span class="lineNum">     210 </span>                :            : /* Set key to value, creating the key if it does not already exist.
+<span class="lineNum">     211 </span>                :            :  * If 'update' is not NULL, *update is set to 1 if the key was
+<span class="lineNum">     212 </span>                :            :  * already preset, otherwise to 0. */
+<span class="lineNum">     213 </span>                :<span class="lineNoCov">          0 : unsigned char *zipmapSet(unsigned char *zm, unsigned char *key, unsigned int klen, unsigned char *val, unsigned int vlen, int *update) {</span>
+<span class="lineNum">     214 </span>                :            :     unsigned int zmlen, offset;
+<span class="lineNum">     215 </span>                :<span class="lineNoCov">          0 :     unsigned int freelen, reqlen = zipmapRequiredLength(klen,vlen);</span>
+<span class="lineNum">     216 </span>                :            :     unsigned int empty, vempty;
+<span class="lineNum">     217 </span>                :            :     unsigned char *p;
+<span class="lineNum">     218 </span>                :            :    
+<span class="lineNum">     219 </span>                :<span class="lineNoCov">          0 :     freelen = reqlen;</span>
+<span class="lineNum">     220 </span>        [<span class="branchNoExec" title="Branch 0 was not executed"> # </span><span class="branchNoExec" title="Branch 1 was not executed"> # </span>]:<span class="lineNoCov">          0 :     if (update) *update = 0;</span>
+<span class="lineNum">     221 </span>                :<span class="lineNoCov">          0 :     p = zipmapLookupRaw(zm,key,klen,&amp;zmlen);</span>
+<span class="lineNum">     222 </span>        [<span class="branchNoExec" title="Branch 0 was not executed"> # </span><span class="branchNoExec" title="Branch 1 was not executed"> # </span>]:<span class="lineNoCov">          0 :     if (p == NULL) {</span>
+<span class="lineNum">     223 </span>                :            :         /* Key not found: enlarge */
+<span class="lineNum">     224 </span>                :<span class="lineNoCov">          0 :         zm = zipmapResize(zm, zmlen+reqlen);</span>
+<span class="lineNum">     225 </span>                :<span class="lineNoCov">          0 :         p = zm+zmlen-1;</span>
+<span class="lineNum">     226 </span>                :<span class="lineNoCov">          0 :         zmlen = zmlen+reqlen;</span>
+<span class="lineNum">     227 </span>                :            : 
+<span class="lineNum">     228 </span>                :            :         /* Increase zipmap length (this is an insert) */
+<span class="lineNum">     229 </span>        [<span class="branchNoExec" title="Branch 0 was not executed"> # </span><span class="branchNoExec" title="Branch 1 was not executed"> # </span>]:<span class="lineNoCov">          0 :         if (zm[0] &lt; ZIPMAP_BIGLEN) zm[0]++;</span>
+<span class="lineNum">     230 </span>                :            :     } else {
+<span class="lineNum">     231 </span>                :            :         /* Key found. Is there enough space for the new value? */
+<span class="lineNum">     232 </span>                :            :         /* Compute the total length: */
+<span class="lineNum">     233 </span>        [<span class="branchNoExec" title="Branch 0 was not executed"> # </span><span class="branchNoExec" title="Branch 1 was not executed"> # </span>]:<span class="lineNoCov">          0 :         if (update) *update = 1;</span>
+<span class="lineNum">     234 </span>                :<span class="lineNoCov">          0 :         freelen = zipmapRawEntryLength(p);</span>
+<span class="lineNum">     235 </span>        [<span class="branchNoExec" title="Branch 0 was not executed"> # </span><span class="branchNoExec" title="Branch 1 was not executed"> # </span>]:<span class="lineNoCov">          0 :         if (freelen &lt; reqlen) {</span>
+<span class="lineNum">     236 </span>                :            :             /* Store the offset of this key within the current zipmap, so
+<span class="lineNum">     237 </span>                :            :              * it can be resized. Then, move the tail backwards so this
+<span class="lineNum">     238 </span>                :            :              * pair fits at the current position. */
+<span class="lineNum">     239 </span>                :<span class="lineNoCov">          0 :             offset = p-zm;</span>
+<span class="lineNum">     240 </span>                :<span class="lineNoCov">          0 :             zm = zipmapResize(zm, zmlen-freelen+reqlen);</span>
+<span class="lineNum">     241 </span>                :<span class="lineNoCov">          0 :             p = zm+offset;</span>
+<span class="lineNum">     242 </span>                :            : 
+<span class="lineNum">     243 </span>                :            :             /* The +1 in the number of bytes to be moved is caused by the
+<span class="lineNum">     244 </span>                :            :              * end-of-zipmap byte. Note: the *original* zmlen is used. */
+<span class="lineNum">     245 </span>                :<span class="lineNoCov">          0 :             memmove(p+reqlen, p+freelen, zmlen-(offset+freelen+1));</span>
+<span class="lineNum">     246 </span>                :<span class="lineNoCov">          0 :             zmlen = zmlen-freelen+reqlen;</span>
+<span class="lineNum">     247 </span>                :<span class="lineNoCov">          0 :             freelen = reqlen;</span>
+<span class="lineNum">     248 </span>                :            :         }
+<span class="lineNum">     249 </span>                :            :     }
+<span class="lineNum">     250 </span>                :            : 
+<span class="lineNum">     251 </span>                :            :     /* We now have a suitable block where the key/value entry can
+<span class="lineNum">     252 </span>                :            :      * be written. If there is too much free space, move the tail
+<span class="lineNum">     253 </span>                :            :      * of the zipmap a few bytes to the front and shrink the zipmap,
+<span class="lineNum">     254 </span>                :            :      * as we want zipmaps to be very space efficient. */
+<span class="lineNum">     255 </span>                :<span class="lineNoCov">          0 :     empty = freelen-reqlen;</span>
+<span class="lineNum">     256 </span>        [<span class="branchNoExec" title="Branch 0 was not executed"> # </span><span class="branchNoExec" title="Branch 1 was not executed"> # </span>]:<span class="lineNoCov">          0 :     if (empty &gt;= ZIPMAP_VALUE_MAX_FREE) {</span>
+<span class="lineNum">     257 </span>                :            :         /* First, move the tail &lt;empty&gt; bytes to the front, then resize
+<span class="lineNum">     258 </span>                :            :          * the zipmap to be &lt;empty&gt; bytes smaller. */
+<span class="lineNum">     259 </span>                :<span class="lineNoCov">          0 :         offset = p-zm;</span>
+<span class="lineNum">     260 </span>                :<span class="lineNoCov">          0 :         memmove(p+reqlen, p+freelen, zmlen-(offset+freelen+1));</span>
+<span class="lineNum">     261 </span>                :<span class="lineNoCov">          0 :         zmlen -= empty;</span>
+<span class="lineNum">     262 </span>                :<span class="lineNoCov">          0 :         zm = zipmapResize(zm, zmlen);</span>
+<span class="lineNum">     263 </span>                :<span class="lineNoCov">          0 :         p = zm+offset;</span>
+<span class="lineNum">     264 </span>                :<span class="lineNoCov">          0 :         vempty = 0;</span>
+<span class="lineNum">     265 </span>                :            :     } else {
+<span class="lineNum">     266 </span>                :            :         vempty = empty;
+<span class="lineNum">     267 </span>                :            :     }
+<span class="lineNum">     268 </span>                :            : 
+<span class="lineNum">     269 </span>                :            :     /* Just write the key + value and we are done. */
+<span class="lineNum">     270 </span>                :            :     /* Key: */
+<span class="lineNum">     271 </span>                :<span class="lineNoCov">          0 :     p += zipmapEncodeLength(p,klen);</span>
+<span class="lineNum">     272 </span>                :<span class="lineNoCov">          0 :     memcpy(p,key,klen);</span>
+<span class="lineNum">     273 </span>                :<span class="lineNoCov">          0 :     p += klen;</span>
+<span class="lineNum">     274 </span>                :            :     /* Value: */
+<span class="lineNum">     275 </span>                :<span class="lineNoCov">          0 :     p += zipmapEncodeLength(p,vlen);</span>
+<span class="lineNum">     276 </span>                :<span class="lineNoCov">          0 :     *p++ = vempty;</span>
+<span class="lineNum">     277 </span>                :<span class="lineNoCov">          0 :     memcpy(p,val,vlen);</span>
+<span class="lineNum">     278 </span>                :<span class="lineNoCov">          0 :     return zm;</span>
+<span class="lineNum">     279 </span>                :            : }
+<span class="lineNum">     280 </span>                :            : 
+<span class="lineNum">     281 </span>                :            : /* Remove the specified key. If 'deleted' is not NULL the pointed integer is
+<span class="lineNum">     282 </span>                :            :  * set to 0 if the key was not found, to 1 if it was found and deleted. */
+<span class="lineNum">     283 </span>                :<span class="lineNoCov">          0 : unsigned char *zipmapDel(unsigned char *zm, unsigned char *key, unsigned int klen, int *deleted) {</span>
+<span class="lineNum">     284 </span>                :            :     unsigned int zmlen, freelen;
+<span class="lineNum">     285 </span>                :<span class="lineNoCov">          0 :     unsigned char *p = zipmapLookupRaw(zm,key,klen,&amp;zmlen);</span>
+<span class="lineNum">     286 </span>        [<span class="branchNoExec" title="Branch 0 was not executed"> # </span><span class="branchNoExec" title="Branch 1 was not executed"> # </span>]:<span class="lineNoCov">          0 :     if (p) {</span>
+<span class="lineNum">     287 </span>                :<span class="lineNoCov">          0 :         freelen = zipmapRawEntryLength(p);</span>
+<span class="lineNum">     288 </span>                :<span class="lineNoCov">          0 :         memmove(p, p+freelen, zmlen-((p-zm)+freelen+1));</span>
+<span class="lineNum">     289 </span>                :<span class="lineNoCov">          0 :         zm = zipmapResize(zm, zmlen-freelen);</span>
+<span class="lineNum">     290 </span>                :            : 
+<span class="lineNum">     291 </span>                :            :         /* Decrease zipmap length */
+<span class="lineNum">     292 </span>        [<span class="branchNoExec" title="Branch 0 was not executed"> # </span><span class="branchNoExec" title="Branch 1 was not executed"> # </span>]:<span class="lineNoCov">          0 :         if (zm[0] &lt; ZIPMAP_BIGLEN) zm[0]--;</span>
+<span class="lineNum">     293 </span>                :            : 
+<span class="lineNum">     294 </span>        [<span class="branchNoExec" title="Branch 0 was not executed"> # </span><span class="branchNoExec" title="Branch 1 was not executed"> # </span>]:<span class="lineNoCov">          0 :         if (deleted) *deleted = 1;</span>
+<span class="lineNum">     295 </span>                :            :     } else {
+<span class="lineNum">     296 </span>        [<span class="branchNoExec" title="Branch 0 was not executed"> # </span><span class="branchNoExec" title="Branch 1 was not executed"> # </span>]:<span class="lineNoCov">          0 :         if (deleted) *deleted = 0;</span>
+<span class="lineNum">     297 </span>                :            :     }
+<span class="lineNum">     298 </span>                :<span class="lineNoCov">          0 :     return zm;</span>
+<span class="lineNum">     299 </span>                :            : }
+<a name="300"><span class="lineNum">     300 </span>                :            : </a>
+<span class="lineNum">     301 </span>                :            : /* Call before iterating through elements via zipmapNext() */
+<span class="lineNum">     302 </span>                :<span class="lineCov">          3 : unsigned char *zipmapRewind(unsigned char *zm) {</span>
+<span class="lineNum">     303 </span>                :<span class="lineCov">          3 :     return zm+1;</span>
+<span class="lineNum">     304 </span>                :            : }
+<span class="lineNum">     305 </span>                :            : 
+<span class="lineNum">     306 </span>                :            : /* This function is used to iterate through all the zipmap elements.
+<span class="lineNum">     307 </span>                :            :  * In the first call the first argument is the pointer to the zipmap + 1.
+<span class="lineNum">     308 </span>                :            :  * In the next calls what zipmapNext returns is used as first argument.
+<span class="lineNum">     309 </span>                :            :  * Example:
+<span class="lineNum">     310 </span>                :            :  *
+<span class="lineNum">     311 </span>                :            :  * unsigned char *i = zipmapRewind(my_zipmap);
+<span class="lineNum">     312 </span>                :            :  * while((i = zipmapNext(i,&amp;key,&amp;klen,&amp;value,&amp;vlen)) != NULL) {
+<span class="lineNum">     313 </span>                :            :  *     printf(&quot;%d bytes key at $p\n&quot;, klen, key);
+<span class="lineNum">     314 </span>                :            :  *     printf(&quot;%d bytes value at $p\n&quot;, vlen, value);
+<a name="315"><span class="lineNum">     315 </span>                :            :  * }</a>
+<span class="lineNum">     316 </span>                :            :  */
+<span class="lineNum">     317 </span>                :<span class="lineCov">          9 : unsigned char *zipmapNext(unsigned char *zm, unsigned char **key, unsigned int *klen, unsigned char **value, unsigned int *vlen) {</span>
+<span class="lineNum">     318 </span>        [<span class="branchCov" title="Branch 0 was taken 6 times"> + </span><span class="branchCov" title="Branch 1 was taken 3 times"> + </span>]:<span class="lineCov">          9 :     if (zm[0] == ZIPMAP_END) return NULL;</span>
+<span class="lineNum">     319 </span>        [<span class="branchCov" title="Branch 0 was taken 6 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">          6 :     if (key) {</span>
+<span class="lineNum">     320 </span>                :<span class="lineCov">          6 :         *key = zm;</span>
+<span class="lineNum">     321 </span>                :<span class="lineCov">          6 :         *klen = zipmapDecodeLength(zm);</span>
+<span class="lineNum">     322 </span>        [<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchCov" title="Branch 1 was taken 6 times"> + </span>]:<span class="lineCov">          6 :         *key += ZIPMAP_LEN_BYTES(*klen);</span>
+<span class="lineNum">     323 </span>                :            :     }
+<span class="lineNum">     324 </span>                :<span class="lineCov">          6 :     zm += zipmapRawKeyLength(zm);</span>
+<span class="lineNum">     325 </span>        [<span class="branchCov" title="Branch 0 was taken 6 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">          6 :     if (value) {</span>
+<span class="lineNum">     326 </span>                :<span class="lineCov">          6 :         *value = zm+1;</span>
+<span class="lineNum">     327 </span>                :<span class="lineCov">          6 :         *vlen = zipmapDecodeLength(zm);</span>
+<span class="lineNum">     328 </span>        [<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchCov" title="Branch 1 was taken 6 times"> + </span>]:<span class="lineCov">          6 :         *value += ZIPMAP_LEN_BYTES(*vlen);</span>
+<span class="lineNum">     329 </span>                :            :     }
+<span class="lineNum">     330 </span>                :<span class="lineCov">          6 :     zm += zipmapRawValueLength(zm);</span>
+<span class="lineNum">     331 </span>                :<span class="lineCov">          9 :     return zm;</span>
+<span class="lineNum">     332 </span>                :            : }
+<span class="lineNum">     333 </span>                :            : 
+<a name="334"><span class="lineNum">     334 </span>                :            : /* Search a key and retrieve the pointer and len of the associated value.</a>
+<span class="lineNum">     335 </span>                :            :  * If the key is found the function returns 1, otherwise 0. */
+<span class="lineNum">     336 </span>                :<span class="lineNoCov">          0 : int zipmapGet(unsigned char *zm, unsigned char *key, unsigned int klen, unsigned char **value, unsigned int *vlen) {</span>
+<span class="lineNum">     337 </span>                :            :     unsigned char *p;
+<span class="lineNum">     338 </span>                :            : 
+<span class="lineNum">     339 </span>        [<span class="branchNoExec" title="Branch 1 was not executed"> # </span><span class="branchNoExec" title="Branch 2 was not executed"> # </span>]:<span class="lineNoCov">          0 :     if ((p = zipmapLookupRaw(zm,key,klen,NULL)) == NULL) return 0;</span>
+<span class="lineNum">     340 </span>                :<span class="lineNoCov">          0 :     p += zipmapRawKeyLength(p);</span>
+<span class="lineNum">     341 </span>                :<span class="lineNoCov">          0 :     *vlen = zipmapDecodeLength(p);</span>
+<span class="lineNum">     342 </span>        [<span class="branchNoExec" title="Branch 0 was not executed"> # </span><span class="branchNoExec" title="Branch 1 was not executed"> # </span>]:<span class="lineNoCov">          0 :     *value = p + ZIPMAP_LEN_BYTES(*vlen) + 1;</span>
+<span class="lineNum">     343 </span>                :<span class="lineNoCov">          0 :     return 1;</span>
+<span class="lineNum">     344 </span>                :            : }
+<a name="345"><span class="lineNum">     345 </span>                :            : </a>
+<span class="lineNum">     346 </span>                :            : /* Return 1 if the key exists, otherwise 0 is returned. */
+<span class="lineNum">     347 </span>                :<span class="lineNoCov">          0 : int zipmapExists(unsigned char *zm, unsigned char *key, unsigned int klen) {</span>
+<span class="lineNum">     348 </span>                :<span class="lineNoCov">          0 :     return zipmapLookupRaw(zm,key,klen,NULL) != NULL;</span>
+<span class="lineNum">     349 </span>                :            : }
+<a name="350"><span class="lineNum">     350 </span>                :            : </a>
+<span class="lineNum">     351 </span>                :            : /* Return the number of entries inside a zipmap */
+<span class="lineNum">     352 </span>                :<span class="lineNoCov">          0 : unsigned int zipmapLen(unsigned char *zm) {</span>
+<span class="lineNum">     353 </span>                :<span class="lineNoCov">          0 :     unsigned int len = 0;</span>
+<span class="lineNum">     354 </span>        [<span class="branchNoExec" title="Branch 0 was not executed"> # </span><span class="branchNoExec" title="Branch 1 was not executed"> # </span>]:<span class="lineNoCov">          0 :     if (zm[0] &lt; ZIPMAP_BIGLEN) {</span>
+<span class="lineNum">     355 </span>                :<span class="lineNoCov">          0 :         len = zm[0];</span>
+<span class="lineNum">     356 </span>                :            :     } else {
+<span class="lineNum">     357 </span>                :<span class="lineNoCov">          0 :         unsigned char *p = zipmapRewind(zm);</span>
+<span class="lineNum">     358 </span>        [<span class="branchNoExec" title="Branch 1 was not executed"> # </span><span class="branchNoExec" title="Branch 2 was not executed"> # </span>]:<span class="lineNoCov">          0 :         while((p = zipmapNext(p,NULL,NULL,NULL,NULL)) != NULL) len++;</span>
+<span class="lineNum">     359 </span>                :            : 
+<span class="lineNum">     360 </span>                :            :         /* Re-store length if small enough */
+<span class="lineNum">     361 </span>        [<span class="branchNoExec" title="Branch 0 was not executed"> # </span><span class="branchNoExec" title="Branch 1 was not executed"> # </span>]:<span class="lineNoCov">          0 :         if (len &lt; ZIPMAP_BIGLEN) zm[0] = len;</span>
+<span class="lineNum">     362 </span>                :            :     }
+<span class="lineNum">     363 </span>                :<span class="lineNoCov">          0 :     return len;</span>
+<span class="lineNum">     364 </span>                :            : }
+<span class="lineNum">     365 </span>                :            : 
+<span class="lineNum">     366 </span>                :            : /* Return the raw size in bytes of a zipmap, so that we can serialize
+<a name="367"><span class="lineNum">     367 </span>                :            :  * the zipmap on disk (or everywhere is needed) just writing the returned</a>
+<span class="lineNum">     368 </span>                :            :  * amount of bytes of the C array starting at the zipmap pointer. */
+<span class="lineNum">     369 </span>                :<span class="lineNoCov">          0 : size_t zipmapBlobLen(unsigned char *zm) {</span>
+<span class="lineNum">     370 </span>                :            :     unsigned int totlen;
+<span class="lineNum">     371 </span>                :<span class="lineNoCov">          0 :     zipmapLookupRaw(zm,NULL,0,&amp;totlen);</span>
+<span class="lineNum">     372 </span>                :<span class="lineNoCov">          0 :     return totlen;</span>
+<span class="lineNum">     373 </span>                :            : }
+<span class="lineNum">     374 </span>                :            : 
+<span class="lineNum">     375 </span>                :            : #ifdef ZIPMAP_TEST_MAIN
+<span class="lineNum">     376 </span>                :            : void zipmapRepr(unsigned char *p) {
+<span class="lineNum">     377 </span>                :            :     unsigned int l;
+<span class="lineNum">     378 </span>                :            : 
+<span class="lineNum">     379 </span>                :            :     printf(&quot;{status %u}&quot;,*p++);
+<span class="lineNum">     380 </span>                :            :     while(1) {
+<span class="lineNum">     381 </span>                :            :         if (p[0] == ZIPMAP_END) {
+<span class="lineNum">     382 </span>                :            :             printf(&quot;{end}&quot;);
+<span class="lineNum">     383 </span>                :            :             break;
+<span class="lineNum">     384 </span>                :            :         } else {
+<span class="lineNum">     385 </span>                :            :             unsigned char e;
+<span class="lineNum">     386 </span>                :            : 
+<span class="lineNum">     387 </span>                :            :             l = zipmapDecodeLength(p);
+<span class="lineNum">     388 </span>                :            :             printf(&quot;{key %u}&quot;,l);
+<span class="lineNum">     389 </span>                :            :             p += zipmapEncodeLength(NULL,l);
+<span class="lineNum">     390 </span>                :            :             if (l != 0 &amp;&amp; fwrite(p,l,1,stdout) == 0) perror(&quot;fwrite&quot;);
+<span class="lineNum">     391 </span>                :            :             p += l;
+<span class="lineNum">     392 </span>                :            : 
+<span class="lineNum">     393 </span>                :            :             l = zipmapDecodeLength(p);
+<span class="lineNum">     394 </span>                :            :             printf(&quot;{value %u}&quot;,l);
+<span class="lineNum">     395 </span>                :            :             p += zipmapEncodeLength(NULL,l);
+<span class="lineNum">     396 </span>                :            :             e = *p++;
+<span class="lineNum">     397 </span>                :            :             if (l != 0 &amp;&amp; fwrite(p,l,1,stdout) == 0) perror(&quot;fwrite&quot;);
+<span class="lineNum">     398 </span>                :            :             p += l+e;
+<span class="lineNum">     399 </span>                :            :             if (e) {
+<span class="lineNum">     400 </span>                :            :                 printf(&quot;[&quot;);
+<span class="lineNum">     401 </span>                :            :                 while(e--) printf(&quot;.&quot;);
+<span class="lineNum">     402 </span>                :            :                 printf(&quot;]&quot;);
+<span class="lineNum">     403 </span>                :            :             }
+<span class="lineNum">     404 </span>                :            :         }
+<span class="lineNum">     405 </span>                :            :     }
+<span class="lineNum">     406 </span>                :            :     printf(&quot;\n&quot;);
+<span class="lineNum">     407 </span>                :            : }
+<span class="lineNum">     408 </span>                :            : 
+<span class="lineNum">     409 </span>                :            : int main(void) {
+<span class="lineNum">     410 </span>                :            :     unsigned char *zm;
+<span class="lineNum">     411 </span>                :            : 
+<span class="lineNum">     412 </span>                :            :     zm = zipmapNew();
+<span class="lineNum">     413 </span>                :            : 
+<span class="lineNum">     414 </span>                :            :     zm = zipmapSet(zm,(unsigned char*) &quot;name&quot;,4, (unsigned char*) &quot;foo&quot;,3,NULL);
+<span class="lineNum">     415 </span>                :            :     zm = zipmapSet(zm,(unsigned char*) &quot;surname&quot;,7, (unsigned char*) &quot;foo&quot;,3,NULL);
+<span class="lineNum">     416 </span>                :            :     zm = zipmapSet(zm,(unsigned char*) &quot;age&quot;,3, (unsigned char*) &quot;foo&quot;,3,NULL);
+<span class="lineNum">     417 </span>                :            :     zipmapRepr(zm);
+<span class="lineNum">     418 </span>                :            : 
+<span class="lineNum">     419 </span>                :            :     zm = zipmapSet(zm,(unsigned char*) &quot;hello&quot;,5, (unsigned char*) &quot;world!&quot;,6,NULL);
+<span class="lineNum">     420 </span>                :            :     zm = zipmapSet(zm,(unsigned char*) &quot;foo&quot;,3, (unsigned char*) &quot;bar&quot;,3,NULL);
+<span class="lineNum">     421 </span>                :            :     zm = zipmapSet(zm,(unsigned char*) &quot;foo&quot;,3, (unsigned char*) &quot;!&quot;,1,NULL);
+<span class="lineNum">     422 </span>                :            :     zipmapRepr(zm);
+<span class="lineNum">     423 </span>                :            :     zm = zipmapSet(zm,(unsigned char*) &quot;foo&quot;,3, (unsigned char*) &quot;12345&quot;,5,NULL);
+<span class="lineNum">     424 </span>                :            :     zipmapRepr(zm);
+<span class="lineNum">     425 </span>                :            :     zm = zipmapSet(zm,(unsigned char*) &quot;new&quot;,3, (unsigned char*) &quot;xx&quot;,2,NULL);
+<span class="lineNum">     426 </span>                :            :     zm = zipmapSet(zm,(unsigned char*) &quot;noval&quot;,5, (unsigned char*) &quot;&quot;,0,NULL);
+<span class="lineNum">     427 </span>                :            :     zipmapRepr(zm);
+<span class="lineNum">     428 </span>                :            :     zm = zipmapDel(zm,(unsigned char*) &quot;new&quot;,3,NULL);
+<span class="lineNum">     429 </span>                :            :     zipmapRepr(zm);
+<span class="lineNum">     430 </span>                :            : 
+<span class="lineNum">     431 </span>                :            :     printf(&quot;\nLook up large key:\n&quot;);
+<span class="lineNum">     432 </span>                :            :     {
+<span class="lineNum">     433 </span>                :            :         unsigned char buf[512];
+<span class="lineNum">     434 </span>                :            :         unsigned char *value;
+<span class="lineNum">     435 </span>                :            :         unsigned int vlen, i;
+<span class="lineNum">     436 </span>                :            :         for (i = 0; i &lt; 512; i++) buf[i] = 'a';
+<span class="lineNum">     437 </span>                :            : 
+<span class="lineNum">     438 </span>                :            :         zm = zipmapSet(zm,buf,512,(unsigned char*) &quot;long&quot;,4,NULL);
+<span class="lineNum">     439 </span>                :            :         if (zipmapGet(zm,buf,512,&amp;value,&amp;vlen)) {
+<span class="lineNum">     440 </span>                :            :             printf(&quot;  &lt;long key&gt; is associated to the %d bytes value: %.*s\n&quot;,
+<span class="lineNum">     441 </span>                :            :                 vlen, vlen, value);
+<span class="lineNum">     442 </span>                :            :         }
+<span class="lineNum">     443 </span>                :            :     }
+<span class="lineNum">     444 </span>                :            : 
+<span class="lineNum">     445 </span>                :            :     printf(&quot;\nPerform a direct lookup:\n&quot;);
+<span class="lineNum">     446 </span>                :            :     {
+<span class="lineNum">     447 </span>                :            :         unsigned char *value;
+<span class="lineNum">     448 </span>                :            :         unsigned int vlen;
+<span class="lineNum">     449 </span>                :            : 
+<span class="lineNum">     450 </span>                :            :         if (zipmapGet(zm,(unsigned char*) &quot;foo&quot;,3,&amp;value,&amp;vlen)) {
+<span class="lineNum">     451 </span>                :            :             printf(&quot;  foo is associated to the %d bytes value: %.*s\n&quot;,
+<span class="lineNum">     452 </span>                :            :                 vlen, vlen, value);
+<span class="lineNum">     453 </span>                :            :         }
+<span class="lineNum">     454 </span>                :            :     }
+<span class="lineNum">     455 </span>                :            :     printf(&quot;\nIterate through elements:\n&quot;);
+<span class="lineNum">     456 </span>                :            :     {
+<span class="lineNum">     457 </span>                :            :         unsigned char *i = zipmapRewind(zm);
+<span class="lineNum">     458 </span>                :            :         unsigned char *key, *value;
+<span class="lineNum">     459 </span>                :            :         unsigned int klen, vlen;
+<span class="lineNum">     460 </span>                :            : 
+<span class="lineNum">     461 </span>                :            :         while((i = zipmapNext(i,&amp;key,&amp;klen,&amp;value,&amp;vlen)) != NULL) {
+<span class="lineNum">     462 </span>                :            :             printf(&quot;  %d:%.*s =&gt; %d:%.*s\n&quot;, klen, klen, key, vlen, vlen, value);
+<span class="lineNum">     463 </span>                :            :         }
+<span class="lineNum">     464 </span>                :            :     }
+<span class="lineNum">     465 </span>                :            :     return 0;
+<span class="lineNum">     466 </span>                :            : }
+<span class="lineNum">     467 </span>                :            : #endif
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.9</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>
