@@ -29,3 +29,5 @@ sudo cp -R $REDLOCUS_JENKINS_DIR/plugins .
 sudo cp -R $REDLOCUS_JENKINS_DIR/jobs .
 
 sudo chown -R jenkins:jenkins *
+
+sudo service jenkins restart

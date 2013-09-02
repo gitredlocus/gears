@@ -19,3 +19,5 @@ sudo rm -f $JENKINS_INSTALLATION_DIR/hudson.triggers.SCMTrigger.xml
 sudo rm -rf $JENKINS_INSTALLATION_DIR/users
 sudo rm -rf $JENKINS_INSTALLATION_DIR/plugins
 sudo rm -rf $JENKINS_INSTALLATION_DIR/jobs
+
+sudo service jenkins restart
