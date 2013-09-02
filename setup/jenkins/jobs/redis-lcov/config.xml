@@ -15,7 +15,7 @@
     </userRemoteConfigs>
     <branches>
       <hudson.plugins.git.BranchSpec>
-        <name>**</name>
+        <name>unstable</name>
       </hudson.plugins.git.BranchSpec>
     </branches>
     <disableSubmodules>false</disableSubmodules>
@@ -51,14 +51,11 @@
     <hudson.tasks.Shell>
       <command>#!/bin/bash
 
-#SW_GNU=/opt/sw/gnu
-#export PATH=&quot;$SW_GNU/bin:$PATH&quot;
-#export LD_LIBRARY_PATH=&quot;$SW_GNU/lib:$LD_LIBRARY_PATH&quot;
-
 make distclean
 make -j8 lcov
 
-secloud_path=/opt/sw/secloud
+tools_path=/opt/redlocus/tools
+parsers_path=/opt/redlocus/parsers
 report_path=/var/lib/jenkins/jobs/${JOB_NAME}/reports
 latest_path=/var/lib/jenkins/jobs/${JOB_NAME}/reports/latest
 
@@ -69,10 +66,10 @@ mkdir -p $report_path/${JOB_NAME}_${BUILD_NUMBER}
 
 report_file=${report_path}/${JOB_NAME}_${BUILD_NUMBER}/${JOB_NAME}_${BUILD_NUMBER}.info
 
-geninfo -o $report_file .
-genhtml --legend -o lcov-html $report_file --output-directory $report_path/${JOB_NAME}_${BUILD_NUMBER}
+$tools_path/geninfo -o $report_file .
+$tools_path/genhtml --legend -o lcov-html $report_file --output-directory $report_path/${JOB_NAME}_${BUILD_NUMBER}
 
-python $secloud_path/tools/parsers/lcov_parser.py $report_path/${JOB_NAME}_${BUILD_NUMBER}/index.html $report_path/${JOB_NAME}_${BUILD_NUMBER}/lcov.JSON
+python $parsers_path/lcov_parser.py $report_path/${JOB_NAME}_${BUILD_NUMBER}/index.html $report_path/${JOB_NAME}_${BUILD_NUMBER}/lcov.JSON
 
 cp -r $report_path/${JOB_NAME}_${BUILD_NUMBER}/* $latest_path</command>
     </hudson.tasks.Shell>
