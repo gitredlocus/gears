@@ -15,7 +15,7 @@
     </userRemoteConfigs>
     <branches>
       <hudson.plugins.git.BranchSpec>
-        <name>**</name>
+        <name>unstable</name>
       </hudson.plugins.git.BranchSpec>
     </branches>
     <disableSubmodules>false</disableSubmodules>
@@ -51,7 +51,8 @@
     <hudson.tasks.Shell>
       <command>#!/bin/bash
 
-secloud_path=/opt/sw/secloud
+tools_path=/opt/redlocus/tools
+parsers_path=/opt/redlocus/parsers
 report_path=/var/lib/jenkins/jobs/${JOB_NAME}/reports
 latest_path=/var/lib/jenkins/jobs/${JOB_NAME}/reports/latest
 
@@ -59,13 +60,13 @@ mkdir -p $report_path
 mkdir -p $latest_path
 mkdir -p $report_path/${JOB_NAME}_${BUILD_NUMBER}
 
-find . -name *.c | xargs $secloud_path/tools/C/pmccabe -v &gt; /tmp/tmp.$$$$ 
+find . -name *.c | xargs $tools_path/pmccabe -v &gt; /tmp/tmp.$$$$ 
 head -7 /tmp/tmp.$$$$ &gt; $report_path/${JOB_NAME}_${BUILD_NUMBER}/mcc.txt
 
 rm /tmp/tmp.$$$$
-find . -name *.c | xargs $secloud_path/tools/C/pmccabe | tail -n +8 | sort -rn  &gt;&gt; $report_path/${JOB_NAME}_${BUILD_NUMBER}/mcc.txt
+find . -name *.c | xargs $tools_path/pmccabe | tail -n +8 | sort -rn  &gt;&gt; $report_path/${JOB_NAME}_${BUILD_NUMBER}/mcc.txt
 
-python $secloud_path/tools/parsers/mcc_parser.py $report_path/${JOB_NAME}_${BUILD_NUMBER}/mcc.txt $report_path/${JOB_NAME}_${BUILD_NUMBER}/mcc.JSON
+python $parsers_path/mcc_parser.py $report_path/${JOB_NAME}_${BUILD_NUMBER}/mcc.txt $report_path/${JOB_NAME}_${BUILD_NUMBER}/mcc.JSON
 
 cp $report_path/${JOB_NAME}_${BUILD_NUMBER}/* $latest_path</command>
     </hudson.tasks.Shell>

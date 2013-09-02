@@ -15,7 +15,7 @@
     </userRemoteConfigs>
     <branches>
       <hudson.plugins.git.BranchSpec>
-        <name>**</name>
+        <name>unstable</name>
       </hudson.plugins.git.BranchSpec>
     </branches>
     <disableSubmodules>false</disableSubmodules>
@@ -51,7 +51,7 @@
     <hudson.tasks.Shell>
       <command>#!/bin/bash
 
-secloud_path=/opt/sw/secloud
+tools_path=/opt/redlocus/tools
 report_path=/var/lib/jenkins/jobs/${JOB_NAME}/reports
 latest_path=/var/lib/jenkins/jobs/${JOB_NAME}/reports/latest
 
@@ -59,7 +59,7 @@ mkdir -p $report_path
 mkdir -p $latest_path
 mkdir -p $report_path/${JOB_NAME}_${BUILD_NUMBER}
 
-$secloud_path/tools/C/cloc src &gt; $report_path/${JOB_NAME}_${BUILD_NUMBER}/cloc.txt
+$tools_path/cloc src &gt; $report_path/${JOB_NAME}_${BUILD_NUMBER}/cloc.txt
 
 cp $report_path/${JOB_NAME}_${BUILD_NUMBER}/cloc.txt $latest_path/cloc.txt</command>
     </hudson.tasks.Shell>
