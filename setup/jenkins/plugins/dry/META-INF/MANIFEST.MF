@@ -1,0 +1,23 @@
+Manifest-Version: 1.0
+Archiver-Version: Plexus Archiver
+Created-By: Apache Maven
+Built-By: hafner
+Build-Jdk: 1.7.0_21
+Extension-Name: dry
+Specification-Title: This plug-in generates reports of duplicated code
+  in a project.
+Implementation-Title: dry
+Implementation-Version: 2.35
+Plugin-Class: hudson.plugins.dry.DryPlugin
+Group-Id: org.jvnet.hudson.plugins
+Short-Name: dry
+Long-Name: Duplicate Code Scanner Plug-in
+Url: http://wiki.jenkins-ci.org/x/X4IuAg
+Plugin-Version: 2.35
+Hudson-Version: 1.424
+Jenkins-Version: 1.424
+Plugin-Dependencies: analysis-core:1.50,dashboard-view:2.2;resolution:
+ =optional,maven-plugin:1.424;resolution:=optional,ant:1.1,token-macro
+ :1.5.1;resolution:=optional
+Plugin-Developers: Ulli Hafner:drulli:ullrich.hafner@gmail.com
+

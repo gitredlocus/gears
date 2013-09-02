@@ -1,0 +1,6 @@
+The goals is to create base configuration for /var/lib/jenkins.
+
+The base config should have
+    - users
+    - jobs
+    - plugins

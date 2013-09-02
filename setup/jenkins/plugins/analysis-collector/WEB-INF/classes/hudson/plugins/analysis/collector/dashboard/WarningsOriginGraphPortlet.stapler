@@ -1,0 +1,2 @@
+#Sat Jul 13 13:39:53 CEST 2013
+constructor=name,width,height,dayCountString,isCheckStyleActivated,isDryActivated,isFindBugsActivated,isPmdActivated,isOpenTasksActivated,isWarningsActivated

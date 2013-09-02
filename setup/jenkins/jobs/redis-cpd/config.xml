@@ -1,0 +1,87 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<project>
+  <actions/>
+  <description></description>
+  <keepDependencies>false</keepDependencies>
+  <properties/>
+  <scm class="hudson.plugins.git.GitSCM">
+    <configVersion>2</configVersion>
+    <userRemoteConfigs>
+      <hudson.plugins.git.UserRemoteConfig>
+        <name></name>
+        <refspec></refspec>
+        <url>git://github.com/gitredlocus/redis.git</url>
+      </hudson.plugins.git.UserRemoteConfig>
+    </userRemoteConfigs>
+    <branches>
+      <hudson.plugins.git.BranchSpec>
+        <name>**</name>
+      </hudson.plugins.git.BranchSpec>
+    </branches>
+    <disableSubmodules>false</disableSubmodules>
+    <recursiveSubmodules>false</recursiveSubmodules>
+    <doGenerateSubmoduleConfigurations>false</doGenerateSubmoduleConfigurations>
+    <authorOrCommitter>false</authorOrCommitter>
+    <clean>false</clean>
+    <wipeOutWorkspace>false</wipeOutWorkspace>
+    <pruneBranches>false</pruneBranches>
+    <remotePoll>false</remotePoll>
+    <ignoreNotifyCommit>false</ignoreNotifyCommit>
+    <useShallowClone>false</useShallowClone>
+    <buildChooser class="hudson.plugins.git.util.DefaultBuildChooser"/>
+    <gitTool>Default</gitTool>
+    <submoduleCfg class="list"/>
+    <relativeTargetDir></relativeTargetDir>
+    <reference></reference>
+    <excludedRegions></excludedRegions>
+    <excludedUsers></excludedUsers>
+    <gitConfigName></gitConfigName>
+    <gitConfigEmail></gitConfigEmail>
+    <skipTag>false</skipTag>
+    <includedRegions></includedRegions>
+    <scmName></scmName>
+  </scm>
+  <canRoam>true</canRoam>
+  <disabled>false</disabled>
+  <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
+  <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
+  <triggers class="vector"/>
+  <concurrentBuild>false</concurrentBuild>
+  <builders>
+    <hudson.tasks.Shell>
+      <command>#!/bin/bash
+
+make clean
+
+secloud_path=/opt/sw/secloud
+tools_path=$secloud_path/tools/C/pmd-bin-5.0.5
+report_path=/var/lib/jenkins/jobs/${JOB_NAME}/reports
+latest_path=/var/lib/jenkins/jobs/${JOB_NAME}/reports/latest
+
+mkdir -p $report_path
+mkdir -p $report_path/${JOB_NAME}_${BUILD_NUMBER}
+mkdir -p $latest_path
+
+set +e
+
+java -Xmx256m -classpath $tools_path/lib/pmd-5.0.5.jar:$tools_path/lib/commons-io-2.2.jar net.sourceforge.pmd.cpd.CPD --minimum-tokens 100 --language cpp --encoding UTF-8 --format net.sourceforge.pmd.cpd.XMLRenderer --files src &gt; $report_path/${JOB_NAME}_${BUILD_NUMBER}/cpd_original.xml
+rc=$?
+echo &quot;Found $rc defects&quot;
+
+# if cod_original.xml has warning msg in the 1st line, remove that line.
+head -n 1 $report_path/${JOB_NAME}_${BUILD_NUMBER}/cpd_original.xml | grep xml
+if [ $? -ne 0 ]; then
+    tail -n +2 $report_path/${JOB_NAME}_${BUILD_NUMBER}/cpd_original.xml &gt; $report_path/${JOB_NAME}_${BUILD_NUMBER}/cpd.xml
+else
+    cp $report_path/${JOB_NAME}_${BUILD_NUMBER}/cpd_original.xml $report_path/${JOB_NAME}_${BUILD_NUMBER}/cpd.xml
+fi
+rm $report_path/${JOB_NAME}_${BUILD_NUMBER}/cpd_original.xml
+
+python $secloud_path/tools/parsers/cpd_parser.py $report_path/${JOB_NAME}_${BUILD_NUMBER}/cpd.xml $report_path/${JOB_NAME}_${BUILD_NUMBER}/cpd.JSON
+
+cp -r $report_path/${JOB_NAME}_${BUILD_NUMBER}/* $latest_path</command>
+    </hudson.tasks.Shell>
+  </builders>
+  <publishers/>
+  <buildWrappers/>
+</project>
