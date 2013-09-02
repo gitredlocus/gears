@@ -21,14 +21,14 @@ cd ..
 echo "Building LLVM and Clang"
 mkdir build #(for building without polluting the source dir)
 cd build
-../configure --enable-optimized --disable-assertions 
-# CC=gcc CXX=g++ ../configure --enable-optimized --enable-targets=host-only --disable-assertions
+# ../configure --enable-optimized --disable-assertions
+CC=gcc CXX=g++ ../configure --enable-optimized --disable-assertions
 make -j2
 
 # All done
 echo "Clang is now ready to use"
 
-# If above step fails try this configuration 
+# If above step fails try this configuration
 # echo "Run sudo make install in $PWD"
 
 # Here is how to run clang
