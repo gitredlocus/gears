@@ -66,8 +66,8 @@ mkdir -p $report_path/${JOB_NAME}_${BUILD_NUMBER}
 
 report_file=${report_path}/${JOB_NAME}_${BUILD_NUMBER}/${JOB_NAME}_${BUILD_NUMBER}.info
 
-$tools_path/geninfo -o $report_file .
-$tools_path/genhtml --legend -o lcov-html $report_file --output-directory $report_path/${JOB_NAME}_${BUILD_NUMBER}
+$tools_path/lcov/geninfo -o $report_file .
+$tools_path/lcov/genhtml --legend -o lcov-html $report_file --output-directory $report_path/${JOB_NAME}_${BUILD_NUMBER}
 
 python $parsers_path/lcov_parser.py $report_path/${JOB_NAME}_${BUILD_NUMBER}/index.html $report_path/${JOB_NAME}_${BUILD_NUMBER}/lcov.JSON
 

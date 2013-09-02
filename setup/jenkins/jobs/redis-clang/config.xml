@@ -15,7 +15,7 @@
     </userRemoteConfigs>
     <branches>
       <hudson.plugins.git.BranchSpec>
-        <name>**</name>
+        <name>unstable</name>
       </hudson.plugins.git.BranchSpec>
     </branches>
     <disableSubmodules>false</disableSubmodules>
@@ -51,9 +51,8 @@
     <hudson.tasks.Shell>
       <command>#!/bin/bash
 
-make clean
-
-secloud_path=/opt/sw/secloud
+tools_path=/opt/redlocus/tools
+parsers_path=/opt/redlocus/parsers
 report_path=/var/lib/jenkins/jobs/${JOB_NAME}/reports
 latest_path=/var/lib/jenkins/jobs/${JOB_NAME}/reports/latest
 rm -rf $latest_path
@@ -63,11 +62,13 @@ mkdir -p $report_path
 #    PATH=&quot;${PATH:+&quot;$PATH:&quot;}$tools_path&quot;
 #fi
 
-$secloud_path/tools/C/clang/bin/scan-build --use-analyzer=$secloud_path/tools/C/clang/bin/clang -o $report_path/${JOB_NAME}_${BUILD_NUMBER} make -j4 CC=$secloud_path/tools/C/clang/bin/ccc-analyzer
+make clean
+
+$tools_path/clang/scan-build --use-analyzer=$tools_path/clang/clang -o $report_path/${JOB_NAME}_${BUILD_NUMBER} make -j4 CC=$tools_path/clang/ccc-analyzer
 
 cp -r $report_path/${JOB_NAME}_${BUILD_NUMBER}/* $latest_path
 
-python $secloud_path/tools/parsers/clang_parser.py $latest_path/index.html $report_path/${JOB_NAME}_${BUILD_NUMBER}/clang.JSON
+python $parsers_path/clang_parser.py $latest_path/index.html $report_path/${JOB_NAME}_${BUILD_NUMBER}/clang.JSON
 
 cp $report_path/${JOB_NAME}_${BUILD_NUMBER}/clang.JSON $latest_path</command>
     </hudson.tasks.Shell>
