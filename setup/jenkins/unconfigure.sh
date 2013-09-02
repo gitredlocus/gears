@@ -6,12 +6,16 @@
 
 JENKINS_INSTALLATION_DIR=/var/lib/jenkins
 
-sudo unlink $JENKINS_INSTALLATION_DIR/config.xml
-sudo unlink $JENKINS_INSTALLATION_DIR/hudson.plugins.analysis.core.GlobalSettings.xml
-sudo unlink $JENKINS_INSTALLATION_DIR/hudson.plugins.git.GitSCM.xml
-sudo unlink $JENKINS_INSTALLATION_DIR/hudson.plugins.git.GitTool.xml
-sudo unlink $JENKINS_INSTALLATION_DIR/hudson.tasks.Ant.xml
-sudo unlink $JENKINS_INSTALLATION_DIR/hudson.tasks.Mailer.xml
-sudo unlink $JENKINS_INSTALLATION_DIR/hudson.tasks.Maven.xml
-sudo unlink $JENKINS_INSTALLATION_DIR/hudson.tasks.Shell.xml
-sudo unlink $JENKINS_INSTALLATION_DIR/hudson.triggers.SCMTrigger.xml
+sudo rm -f $JENKINS_INSTALLATION_DIR/config.xml
+sudo rm -f $JENKINS_INSTALLATION_DIR/hudson.plugins.analysis.core.GlobalSettings.xml
+sudo rm -f $JENKINS_INSTALLATION_DIR/hudson.plugins.git.GitSCM.xml
+sudo rm -f $JENKINS_INSTALLATION_DIR/hudson.plugins.git.GitTool.xml
+sudo rm -f $JENKINS_INSTALLATION_DIR/hudson.tasks.Ant.xml
+sudo rm -f $JENKINS_INSTALLATION_DIR/hudson.tasks.Mailer.xml
+sudo rm -f $JENKINS_INSTALLATION_DIR/hudson.tasks.Maven.xml
+sudo rm -f $JENKINS_INSTALLATION_DIR/hudson.tasks.Shell.xml
+sudo rm -f $JENKINS_INSTALLATION_DIR/hudson.triggers.SCMTrigger.xml
+
+sudo rm -f $JENKINS_INSTALLATION_DIR/users
+sudo rm -f $JENKINS_INSTALLATION_DIR/plugins
+sudo rm -f $JENKINS_INSTALLATION_DIR/jobs
