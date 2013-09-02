@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <hudson.plugins.git.GitSCM_-DescriptorImpl>
   <generation>1</generation>
-  <globalConfigName></globalConfigName>
-  <globalConfigEmail></globalConfigEmail>
+  <globalConfigName>redlocus</globalConfigName>
+  <globalConfigEmail>git@redlocus.com</globalConfigEmail>
   <createAccountBasedOnEmail>false</createAccountBasedOnEmail>
 </hudson.plugins.git.GitSCM_-DescriptorImpl>
