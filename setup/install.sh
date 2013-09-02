@@ -4,6 +4,8 @@
 # Master setup script that installs, AMP (apache, mysql, php) stack and Jenkins.
 # Use/Enhance this script to perform all installations on top of base ubuntu image.
 #
+# FIXME: if something is already installed, verify the installation, and skip it.
+#
 
 sudo apt-get update
 

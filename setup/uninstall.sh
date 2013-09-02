@@ -5,6 +5,9 @@
 # (in reverse order of installation)
 # Use/Enhance this script to perform all cleanups from top of base ubuntu image.
 #
+# FIXME: make a copy of db before removing. also, remove only those components
+#        that we installed
+#
 
 sudo apt-get update
 
