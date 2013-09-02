@@ -58,13 +58,8 @@ latest_path=/var/lib/jenkins/jobs/${JOB_NAME}/reports/latest
 rm -rf $latest_path
 mkdir -p $report_path
 
-#if [[ &quot;:$PATH:&quot; != *&quot;:$tools_path:&quot;* ]]; then
-#    PATH=&quot;${PATH:+&quot;$PATH:&quot;}$tools_path&quot;
-#fi
-
 make clean
-
-$tools_path/clang/scan-build --use-analyzer=$tools_path/clang/clang -o $report_path/${JOB_NAME}_${BUILD_NUMBER} make -j4 CC=$tools_path/clang/ccc-analyzer
+make -j4 CC=&quot;$tools_path/clang --analyze&quot;
 
 cp -r $report_path/${JOB_NAME}_${BUILD_NUMBER}/* $latest_path
 
