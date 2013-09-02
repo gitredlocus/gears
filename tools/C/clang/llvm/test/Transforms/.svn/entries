@@ -1,205 +1,0 @@
-10
-
-dir
-188448
-http://llvm.org/svn/llvm-project/llvm/trunk/test/Transforms
-http://llvm.org/svn/llvm-project
-
-
-
-2013-08-14T00:24:38.379276Z
-188339
-arsenm
-has-props
-
-
-
-
-
-
-
-
-
-
-
-
-
-91177308-0d34-0410-b5e6-96231b3b80d8
-
-ObjCARC
-dir
-
-DeadStoreElimination
-dir
-
-LoopVectorize
-dir
-
-Sink
-dir
-
-SROA
-dir
-
-EarlyCSE
-dir
-
-ConstantMerge
-dir
-
-StripSymbols
-dir
-
-LowerSwitch
-dir
-
-SLPVectorizer
-dir
-
-MemCpyOpt
-dir
-
-Inline
-dir
-
-BBVectorize
-dir
-
-DebugIR
-dir
-
-BlockPlacement
-dir
-
-LowerExpectIntrinsic
-dir
-
-LICM
-dir
-
-Internalize
-dir
-
-LoopSimplify
-dir
-
-ScalarRepl
-dir
-
-GVN
-dir
-
-PhaseOrdering
-dir
-
-ADCE
-dir
-
-TailCallElim
-dir
-
-LoopDeletion
-dir
-
-DeadArgElim
-dir
-
-Mem2Reg
-dir
-
-Reg2Mem
-dir
-
-LoopUnswitch
-dir
-
-BranchFolding
-dir
-
-MetaRenamer
-dir
-
-IndVarSimplify
-dir
-
-JumpThreading
-dir
-
-Reassociate
-dir
-
-TailDup
-dir
-
-FunctionAttrs
-dir
-
-LowerInvoke
-dir
-
-LCSSA
-dir
-
-LoopUnroll
-dir
-
-PruneEH
-dir
-
-CodeExtractor
-dir
-
-GCOVProfiling
-dir
-
-InstCombine
-dir
-
-MergeFunc
-dir
-
-SimplifyCFG
-dir
-
-GlobalDCE
-dir
-
-LoopStrengthReduce
-dir
-
-StructurizeCFG
-dir
-
-CodeGenPrepare
-dir
-
-IPConstantProp
-dir
-
-GlobalOpt
-dir
-
-CorrelatedValuePropagation
-dir
-
-LowerAtomic
-dir
-
-ConstProp
-dir
-
-SCCP
-dir
-
-LoopRotate
-dir
-
-ArgumentPromotion
-dir
-
-InstSimplify
-dir
-
-LoopIdiom
-dir
-

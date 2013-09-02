@@ -1,82 +1,0 @@
-10
-
-dir
-188448
-http://llvm.org/svn/llvm-project/llvm/trunk/test/CodeGen
-http://llvm.org/svn/llvm-project
-
-
-
-2013-08-14T23:25:00.121732Z
-188431
-tstellar
-has-props
-
-
-
-
-
-
-
-
-
-
-
-
-
-91177308-0d34-0410-b5e6-96231b3b80d8
-
-Hexagon
-dir
-
-Thumb2
-dir
-
-SPARC
-dir
-
-Mips
-dir
-
-SI
-dir
-
-Generic
-dir
-
-SystemZ
-dir
-
-Thumb
-dir
-
-PowerPC
-dir
-
-NVPTX
-dir
-
-ARM
-dir
-
-XCore
-dir
-
-Inputs
-dir
-
-CPP
-dir
-
-X86
-dir
-
-MSP430
-dir
-
-R600
-dir
-
-AArch64
-dir
-
