@@ -67,3 +67,57 @@ Stack trace:
 REQUEST_URI=/webApp/index.php?r=site/contact
 HTTP_REFERER=http://localhost/webApp/index.php?r=site/page&view=about
 ---
+2013/09/01 23:37:37 [error] [exception.CException] exception 'CException' with message 'CWebApplication and its behaviors do not have a method or closure named "theme".' in C:\nobackup\wamp\www\webApp\framework\base\CComponent.php:265
+Stack trace:
+#0 C:\nobackup\wamp\www\webApp\themes\gear\views\layouts\main.php(17): CComponent->__call('theme', Array)
+#1 C:\nobackup\wamp\www\webApp\themes\gear\views\layouts\main.php(17): CWebApplication->theme()
+#2 C:\nobackup\wamp\www\webApp\framework\web\CBaseController.php(126): require('C:\nobackup\wam...')
+#3 C:\nobackup\wamp\www\webApp\framework\web\CBaseController.php(95): CBaseController->renderInternal('C:\nobackup\wam...', Array, true)
+#4 C:\nobackup\wamp\www\webApp\framework\web\widgets\CContentDecorator.php(76): CBaseController->renderFile('C:\nobackup\wam...', Array, true)
+#5 C:\nobackup\wamp\www\webApp\framework\web\widgets\CContentDecorator.php(54): CContentDecorator->decorate('<div id="conten...')
+#6 C:\nobackup\wamp\www\webApp\framework\web\widgets\COutputProcessor.php(44): CContentDecorator->processOutput('<div id="conten...')
+#7 C:\nobackup\wamp\www\webApp\framework\web\CBaseController.php(206): COutputProcessor->run()
+#8 C:\nobackup\wamp\www\webApp\framework\web\CBaseController.php(300): CBaseController->endWidget('CContentDecorat...')
+#9 C:\nobackup\wamp\www\webApp\protected\views\layouts\column1.php(6): CBaseController->endContent()
+#10 C:\nobackup\wamp\www\webApp\framework\web\CBaseController.php(126): require('C:\nobackup\wam...')
+#11 C:\nobackup\wamp\www\webApp\framework\web\CBaseController.php(95): CBaseController->renderInternal('C:\nobackup\wam...', Array, true)
+#12 C:\nobackup\wamp\www\webApp\framework\web\CController.php(784): CBaseController->renderFile('C:\nobackup\wam...', Array, true)
+#13 C:\nobackup\wamp\www\webApp\protected\controllers\SiteController.php(32): CController->render('index')
+#14 C:\nobackup\wamp\www\webApp\framework\web\actions\CInlineAction.php(49): SiteController->actionIndex()
+#15 C:\nobackup\wamp\www\webApp\framework\web\CController.php(308): CInlineAction->runWithParams(Array)
+#16 C:\nobackup\wamp\www\webApp\framework\web\CController.php(286): CController->runAction(Object(CInlineAction))
+#17 C:\nobackup\wamp\www\webApp\framework\web\CController.php(265): CController->runActionWithFilters(Object(CInlineAction), Array)
+#18 C:\nobackup\wamp\www\webApp\framework\web\CWebApplication.php(282): CController->run('')
+#19 C:\nobackup\wamp\www\webApp\framework\web\CWebApplication.php(141): CWebApplication->runController('')
+#20 C:\nobackup\wamp\www\webApp\framework\base\CApplication.php(169): CWebApplication->processRequest()
+#21 C:\nobackup\wamp\www\webApp\index.php(13): CApplication->run()
+#22 {main}
+REQUEST_URI=/webApp/index.php
+---
+2013/09/01 23:37:38 [error] [exception.CException] exception 'CException' with message 'CWebApplication and its behaviors do not have a method or closure named "theme".' in C:\nobackup\wamp\www\webApp\framework\base\CComponent.php:265
+Stack trace:
+#0 C:\nobackup\wamp\www\webApp\themes\gear\views\layouts\main.php(17): CComponent->__call('theme', Array)
+#1 C:\nobackup\wamp\www\webApp\themes\gear\views\layouts\main.php(17): CWebApplication->theme()
+#2 C:\nobackup\wamp\www\webApp\framework\web\CBaseController.php(126): require('C:\nobackup\wam...')
+#3 C:\nobackup\wamp\www\webApp\framework\web\CBaseController.php(95): CBaseController->renderInternal('C:\nobackup\wam...', Array, true)
+#4 C:\nobackup\wamp\www\webApp\framework\web\widgets\CContentDecorator.php(76): CBaseController->renderFile('C:\nobackup\wam...', Array, true)
+#5 C:\nobackup\wamp\www\webApp\framework\web\widgets\CContentDecorator.php(54): CContentDecorator->decorate('<div id="conten...')
+#6 C:\nobackup\wamp\www\webApp\framework\web\widgets\COutputProcessor.php(44): CContentDecorator->processOutput('<div id="conten...')
+#7 C:\nobackup\wamp\www\webApp\framework\web\CBaseController.php(206): COutputProcessor->run()
+#8 C:\nobackup\wamp\www\webApp\framework\web\CBaseController.php(300): CBaseController->endWidget('CContentDecorat...')
+#9 C:\nobackup\wamp\www\webApp\protected\views\layouts\column1.php(6): CBaseController->endContent()
+#10 C:\nobackup\wamp\www\webApp\framework\web\CBaseController.php(126): require('C:\nobackup\wam...')
+#11 C:\nobackup\wamp\www\webApp\framework\web\CBaseController.php(95): CBaseController->renderInternal('C:\nobackup\wam...', Array, true)
+#12 C:\nobackup\wamp\www\webApp\framework\web\CController.php(784): CBaseController->renderFile('C:\nobackup\wam...', Array, true)
+#13 C:\nobackup\wamp\www\webApp\protected\controllers\SiteController.php(32): CController->render('index')
+#14 C:\nobackup\wamp\www\webApp\framework\web\actions\CInlineAction.php(49): SiteController->actionIndex()
+#15 C:\nobackup\wamp\www\webApp\framework\web\CController.php(308): CInlineAction->runWithParams(Array)
+#16 C:\nobackup\wamp\www\webApp\framework\web\CController.php(286): CController->runAction(Object(CInlineAction))
+#17 C:\nobackup\wamp\www\webApp\framework\web\CController.php(265): CController->runActionWithFilters(Object(CInlineAction), Array)
+#18 C:\nobackup\wamp\www\webApp\framework\web\CWebApplication.php(282): CController->run('')
+#19 C:\nobackup\wamp\www\webApp\framework\web\CWebApplication.php(141): CWebApplication->runController('')
+#20 C:\nobackup\wamp\www\webApp\framework\base\CApplication.php(169): CWebApplication->processRequest()
+#21 C:\nobackup\wamp\www\webApp\index.php(13): CApplication->run()
+#22 {main}
+REQUEST_URI=/webApp/index.php
+---
