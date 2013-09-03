@@ -19,7 +19,7 @@ sudo cp -R $REDLOCUS_GEARS_DIR/tools/C/pmd-bin-5.0.5 $REDLOCUS_TOOLS_DIR/pmd-bin
 sudo mkdir -p $REDLOCUS_TOOLS_DIR/lcov
 sudo cp $REDLOCUS_GEARS_DIR/tools/C/lcov/geninfo $REDLOCUS_TOOLS_DIR/lcov/geninfo
 sudo cp $REDLOCUS_GEARS_DIR/tools/C/lcov/genhtml $REDLOCUS_TOOLS_DIR/lcov/genhtml
-sudo cp $REDLOCUS_GEARS_DIR/tools/C/clang/clang $REDLOCUS_TOOLS_DIR/clang
+sudo cp -R $REDLOCUS_GEARS_DIR/tools/C/clang/llvm $REDLOCUS_TOOLS_DIR/llvm
 
 sudo rm -rf $REDLOCUS_PARSERS_DIR
 sudo mkdir -p $REDLOCUS_PARSERS_DIR

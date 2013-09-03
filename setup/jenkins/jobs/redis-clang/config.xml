@@ -59,7 +59,7 @@ rm -rf $latest_path
 mkdir -p $report_path
 
 make clean
-make -j4 CC=&quot;$tools_path/clang --analyze&quot;
+$tools_path/llvm/tools/clang/tools/scan-build/scan-build --use-analyzer=$tools_path/llvm/build/Release/bin/clang make -j2 CC=$tools_path/llvm/tools/clang/tools/scan-build/ccc-analyzer
 
 cp -r $report_path/${JOB_NAME}_${BUILD_NUMBER}/* $latest_path
 
