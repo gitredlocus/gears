@@ -14,7 +14,7 @@
   <builders/>
   <publishers>
     <hudson.tasks.BuildTrigger>
-      <childProjects>redis-clang, redis-cpd, redis-lcov,redis-mcc,redis-cloc, redis-ct, redis-splint</childProjects>
+      <childProjects>redis-build,redis-clang, redis-cpd, redis-lcov,redis-mcc,redis-cloc, redis-ct, redis-splint</childProjects>
       <threshold>
         <name>SUCCESS</name>
         <ordinal>0</ordinal>
