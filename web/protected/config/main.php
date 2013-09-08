@@ -33,6 +33,7 @@ return array(
 	// application components
 	'components'=>array(
 		'user'=>array(
+			'loginUrl'=>array('user/login'),
 			// enable cookie-based authentication
 			'allowAutoLogin'=>true,
 		),

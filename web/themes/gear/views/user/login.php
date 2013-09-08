@@ -2,7 +2,6 @@
 
 ?>
 
-
 <div class="container">  
 	<div class="span4 offset4">
 		<div class="padded">
@@ -11,22 +10,21 @@
 	        <span class="title">Login</span>
 	      </div>	
 	      <div class="box-content padded">
-	        <form class="separate-sections">
+	        <form class="separate-sections" method="post">
 	          <div class="input-prepend">
 	          <span class="add-on" href="#">
 	            <i class="icon-user"></i>
 	          </span>
-	            <input type="text" placeholder="username">
+	            <input name="user[user_name]" type="text" placeholder="username">
 	          </div>	
 	          <div class="input-prepend">
 	          <span class="add-on" href="#">
 	            <i class="icon-key"></i>
 	          </span>
-	            <input type="password" placeholder="password">
+	            <input name="user[password]" type="password" placeholder="password">
 	          </div>	
 	          <div>
-	            <a class="btn btn-blue btn-block" href="#">Login <i class="icon-signin"></i>
-	            </a>
+	            <button type="submit" class="btn btn-blue btn-block" href="#">Login <i class="icon-signin"></i></button>
 	          </div>
 	        </form>	
 	        <div>

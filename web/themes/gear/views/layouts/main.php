@@ -24,7 +24,6 @@
   <script src="<?php echo Yii::app()->theme->baseUrl; ?>/javascripts/application.js" type="text/javascript"></script>
 </head>
 <body>
-	
 	<?php echo $content; ?>
 	<div class="clear"></div>
 

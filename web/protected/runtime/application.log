@@ -1015,3 +1015,1489 @@ Stack trace:
 REQUEST_URI=/themes/gear/javascripts/vendor/excanvas.js
 HTTP_REFERER=http://localhost:8888/user/login
 ---
+2013/09/08 06:54:56 [error] [php] Undefined index: user_name (/Volumes/HDD/dev/gears/web/protected/controllers/UserController.php:37)
+Stack trace:
+#0 /Volumes/HDD/dev/gears/web/framework/web/filters/CFilterChain.php(133): UserController->runAction()
+#1 /Volumes/HDD/dev/gears/web/framework/web/filters/CFilter.php(40): CFilterChain->run()
+#2 /Volumes/HDD/dev/gears/web/framework/web/CController.php(1145): CAccessControlFilter->filter()
+#3 /Volumes/HDD/dev/gears/web/framework/web/filters/CInlineFilter.php(58): UserController->filterAccessControl()
+#4 /Volumes/HDD/dev/gears/web/framework/web/filters/CFilterChain.php(130): CInlineFilter->filter()
+#5 /Volumes/HDD/dev/gears/web/framework/web/CController.php(291): CFilterChain->run()
+#6 /Volumes/HDD/dev/gears/web/framework/web/CController.php(265): UserController->runActionWithFilters()
+#7 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(282): UserController->run()
+#8 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(141): CWebApplication->runController()
+#9 /Volumes/HDD/dev/gears/web/framework/base/CApplication.php(169): CWebApplication->processRequest()
+#10 /Volumes/HDD/dev/gears/web/index.php(13): CWebApplication->run()
+REQUEST_URI=/user/login
+in /Volumes/HDD/dev/gears/web/protected/controllers/UserController.php (37)
+in /Volumes/HDD/dev/gears/web/index.php (13)
+2013/09/08 06:56:12 [error] [php] Undefined variable: username (/Volumes/HDD/dev/gears/web/protected/controllers/UserController.php:41)
+Stack trace:
+#0 /Volumes/HDD/dev/gears/web/framework/web/filters/CFilterChain.php(133): UserController->runAction()
+#1 /Volumes/HDD/dev/gears/web/framework/web/filters/CFilter.php(40): CFilterChain->run()
+#2 /Volumes/HDD/dev/gears/web/framework/web/CController.php(1145): CAccessControlFilter->filter()
+#3 /Volumes/HDD/dev/gears/web/framework/web/filters/CInlineFilter.php(58): UserController->filterAccessControl()
+#4 /Volumes/HDD/dev/gears/web/framework/web/filters/CFilterChain.php(130): CInlineFilter->filter()
+#5 /Volumes/HDD/dev/gears/web/framework/web/CController.php(291): CFilterChain->run()
+#6 /Volumes/HDD/dev/gears/web/framework/web/CController.php(265): UserController->runActionWithFilters()
+#7 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(282): UserController->run()
+#8 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(141): CWebApplication->runController()
+#9 /Volumes/HDD/dev/gears/web/framework/base/CApplication.php(169): CWebApplication->processRequest()
+#10 /Volumes/HDD/dev/gears/web/index.php(13): CWebApplication->run()
+REQUEST_URI=/user/login
+in /Volumes/HDD/dev/gears/web/protected/controllers/UserController.php (41)
+in /Volumes/HDD/dev/gears/web/index.php (13)
+2013/09/08 07:00:29 [error] [exception.CException] exception 'CException' with message 'User and its behaviors do not have a method or closure named "validatePassword".' in /Volumes/HDD/dev/gears/web/framework/base/CComponent.php:265
+Stack trace:
+#0 /Volumes/HDD/dev/gears/web/framework/db/ar/CActiveRecord.php(225): CComponent->__call('validatePasswor...', Array)
+#1 /Volumes/HDD/dev/gears/web/protected/controllers/UserController.php(45): CActiveRecord->__call('validatePasswor...', Array)
+#2 /Volumes/HDD/dev/gears/web/protected/controllers/UserController.php(45): User->validatePassword('andrew')
+#3 /Volumes/HDD/dev/gears/web/framework/web/actions/CInlineAction.php(49): UserController->actionLogin()
+#4 /Volumes/HDD/dev/gears/web/framework/web/CController.php(308): CInlineAction->runWithParams(Array)
+#5 /Volumes/HDD/dev/gears/web/framework/web/filters/CFilterChain.php(133): CController->runAction(Object(CInlineAction))
+#6 /Volumes/HDD/dev/gears/web/framework/web/filters/CFilter.php(40): CFilterChain->run()
+#7 /Volumes/HDD/dev/gears/web/framework/web/CController.php(1145): CFilter->filter(Object(CFilterChain))
+#8 /Volumes/HDD/dev/gears/web/framework/web/filters/CInlineFilter.php(58): CController->filterAccessControl(Object(CFilterChain))
+#9 /Volumes/HDD/dev/gears/web/framework/web/filters/CFilterChain.php(130): CInlineFilter->filter(Object(CFilterChain))
+#10 /Volumes/HDD/dev/gears/web/framework/web/CController.php(291): CFilterChain->run()
+#11 /Volumes/HDD/dev/gears/web/framework/web/CController.php(265): CController->runActionWithFilters(Object(CInlineAction), Array)
+#12 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(282): CController->run('login')
+#13 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(141): CWebApplication->runController('user/login')
+#14 /Volumes/HDD/dev/gears/web/framework/base/CApplication.php(169): CWebApplication->processRequest()
+#15 /Volumes/HDD/dev/gears/web/index.php(13): CApplication->run()
+#16 {main}
+REQUEST_URI=/user/login
+HTTP_REFERER=http://localhost:8888/user/login
+---
+2013/09/08 07:06:25 [error] [exception.CHttpException.404] exception 'CHttpException' with message 'The system is unable to find the requested action "login".' in /Volumes/HDD/dev/gears/web/framework/web/CController.php:483
+Stack trace:
+#0 /Volumes/HDD/dev/gears/web/framework/web/CController.php(270): CController->missingAction('login')
+#1 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(282): CController->run('login')
+#2 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(141): CWebApplication->runController('site/login')
+#3 /Volumes/HDD/dev/gears/web/framework/base/CApplication.php(169): CWebApplication->processRequest()
+#4 /Volumes/HDD/dev/gears/web/index.php(13): CApplication->run()
+#5 {main}
+REQUEST_URI=/site/login
+---
+2013/09/08 07:06:25 [error] [exception.CHttpException.404] exception 'CHttpException' with message 'The system is unable to find the requested action "login".' in /Volumes/HDD/dev/gears/web/framework/web/CController.php:483
+Stack trace:
+#0 /Volumes/HDD/dev/gears/web/framework/web/CController.php(270): CController->missingAction('login')
+#1 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(282): CController->run('login')
+#2 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(141): CWebApplication->runController('site/login')
+#3 /Volumes/HDD/dev/gears/web/framework/base/CApplication.php(169): CWebApplication->processRequest()
+#4 /Volumes/HDD/dev/gears/web/index.php(13): CApplication->run()
+#5 {main}
+REQUEST_URI=/site/login
+---
+2013/09/08 07:06:25 [error] [exception.CHttpException.404] exception 'CHttpException' with message 'The system is unable to find the requested action "login".' in /Volumes/HDD/dev/gears/web/framework/web/CController.php:483
+Stack trace:
+#0 /Volumes/HDD/dev/gears/web/framework/web/CController.php(270): CController->missingAction('login')
+#1 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(282): CController->run('login')
+#2 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(141): CWebApplication->runController('site/login')
+#3 /Volumes/HDD/dev/gears/web/framework/base/CApplication.php(169): CWebApplication->processRequest()
+#4 /Volumes/HDD/dev/gears/web/index.php(13): CApplication->run()
+#5 {main}
+REQUEST_URI=/site/login
+---
+2013/09/08 07:06:25 [error] [exception.CHttpException.404] exception 'CHttpException' with message 'The system is unable to find the requested action "login".' in /Volumes/HDD/dev/gears/web/framework/web/CController.php:483
+Stack trace:
+#0 /Volumes/HDD/dev/gears/web/framework/web/CController.php(270): CController->missingAction('login')
+#1 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(282): CController->run('login')
+#2 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(141): CWebApplication->runController('site/login')
+#3 /Volumes/HDD/dev/gears/web/framework/base/CApplication.php(169): CWebApplication->processRequest()
+#4 /Volumes/HDD/dev/gears/web/index.php(13): CApplication->run()
+#5 {main}
+REQUEST_URI=/site/login
+---
+2013/09/08 07:06:25 [error] [exception.CHttpException.404] exception 'CHttpException' with message 'The system is unable to find the requested action "login".' in /Volumes/HDD/dev/gears/web/framework/web/CController.php:483
+Stack trace:
+#0 /Volumes/HDD/dev/gears/web/framework/web/CController.php(270): CController->missingAction('login')
+#1 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(282): CController->run('login')
+#2 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(141): CWebApplication->runController('site/login')
+#3 /Volumes/HDD/dev/gears/web/framework/base/CApplication.php(169): CWebApplication->processRequest()
+#4 /Volumes/HDD/dev/gears/web/index.php(13): CApplication->run()
+#5 {main}
+REQUEST_URI=/site/login
+---
+2013/09/08 07:06:25 [error] [exception.CHttpException.404] exception 'CHttpException' with message 'The system is unable to find the requested action "login".' in /Volumes/HDD/dev/gears/web/framework/web/CController.php:483
+Stack trace:
+#0 /Volumes/HDD/dev/gears/web/framework/web/CController.php(270): CController->missingAction('login')
+#1 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(282): CController->run('login')
+#2 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(141): CWebApplication->runController('site/login')
+#3 /Volumes/HDD/dev/gears/web/framework/base/CApplication.php(169): CWebApplication->processRequest()
+#4 /Volumes/HDD/dev/gears/web/index.php(13): CApplication->run()
+#5 {main}
+REQUEST_URI=/site/login
+---
+2013/09/08 07:06:26 [error] [exception.CHttpException.404] exception 'CHttpException' with message 'The system is unable to find the requested action "login".' in /Volumes/HDD/dev/gears/web/framework/web/CController.php:483
+Stack trace:
+#0 /Volumes/HDD/dev/gears/web/framework/web/CController.php(270): CController->missingAction('login')
+#1 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(282): CController->run('login')
+#2 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(141): CWebApplication->runController('site/login')
+#3 /Volumes/HDD/dev/gears/web/framework/base/CApplication.php(169): CWebApplication->processRequest()
+#4 /Volumes/HDD/dev/gears/web/index.php(13): CApplication->run()
+#5 {main}
+REQUEST_URI=/site/login
+---
+2013/09/08 07:06:26 [error] [exception.CHttpException.404] exception 'CHttpException' with message 'The system is unable to find the requested action "login".' in /Volumes/HDD/dev/gears/web/framework/web/CController.php:483
+Stack trace:
+#0 /Volumes/HDD/dev/gears/web/framework/web/CController.php(270): CController->missingAction('login')
+#1 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(282): CController->run('login')
+#2 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(141): CWebApplication->runController('site/login')
+#3 /Volumes/HDD/dev/gears/web/framework/base/CApplication.php(169): CWebApplication->processRequest()
+#4 /Volumes/HDD/dev/gears/web/index.php(13): CApplication->run()
+#5 {main}
+REQUEST_URI=/site/login
+---
+2013/09/08 07:06:26 [error] [exception.CHttpException.404] exception 'CHttpException' with message 'The system is unable to find the requested action "login".' in /Volumes/HDD/dev/gears/web/framework/web/CController.php:483
+Stack trace:
+#0 /Volumes/HDD/dev/gears/web/framework/web/CController.php(270): CController->missingAction('login')
+#1 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(282): CController->run('login')
+#2 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(141): CWebApplication->runController('site/login')
+#3 /Volumes/HDD/dev/gears/web/framework/base/CApplication.php(169): CWebApplication->processRequest()
+#4 /Volumes/HDD/dev/gears/web/index.php(13): CApplication->run()
+#5 {main}
+REQUEST_URI=/site/login
+---
+2013/09/08 07:06:26 [error] [exception.CHttpException.404] exception 'CHttpException' with message 'The system is unable to find the requested action "login".' in /Volumes/HDD/dev/gears/web/framework/web/CController.php:483
+Stack trace:
+#0 /Volumes/HDD/dev/gears/web/framework/web/CController.php(270): CController->missingAction('login')
+#1 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(282): CController->run('login')
+#2 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(141): CWebApplication->runController('site/login')
+#3 /Volumes/HDD/dev/gears/web/framework/base/CApplication.php(169): CWebApplication->processRequest()
+#4 /Volumes/HDD/dev/gears/web/index.php(13): CApplication->run()
+#5 {main}
+REQUEST_URI=/site/login
+---
+2013/09/08 07:06:26 [error] [exception.CHttpException.404] exception 'CHttpException' with message 'The system is unable to find the requested action "login".' in /Volumes/HDD/dev/gears/web/framework/web/CController.php:483
+Stack trace:
+#0 /Volumes/HDD/dev/gears/web/framework/web/CController.php(270): CController->missingAction('login')
+#1 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(282): CController->run('login')
+#2 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(141): CWebApplication->runController('site/login')
+#3 /Volumes/HDD/dev/gears/web/framework/base/CApplication.php(169): CWebApplication->processRequest()
+#4 /Volumes/HDD/dev/gears/web/index.php(13): CApplication->run()
+#5 {main}
+REQUEST_URI=/site/login
+---
+2013/09/08 07:06:26 [error] [exception.CHttpException.404] exception 'CHttpException' with message 'The system is unable to find the requested action "login".' in /Volumes/HDD/dev/gears/web/framework/web/CController.php:483
+Stack trace:
+#0 /Volumes/HDD/dev/gears/web/framework/web/CController.php(270): CController->missingAction('login')
+#1 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(282): CController->run('login')
+#2 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(141): CWebApplication->runController('site/login')
+#3 /Volumes/HDD/dev/gears/web/framework/base/CApplication.php(169): CWebApplication->processRequest()
+#4 /Volumes/HDD/dev/gears/web/index.php(13): CApplication->run()
+#5 {main}
+REQUEST_URI=/site/login
+---
+2013/09/08 07:06:26 [error] [exception.CHttpException.404] exception 'CHttpException' with message 'The system is unable to find the requested action "login".' in /Volumes/HDD/dev/gears/web/framework/web/CController.php:483
+Stack trace:
+#0 /Volumes/HDD/dev/gears/web/framework/web/CController.php(270): CController->missingAction('login')
+#1 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(282): CController->run('login')
+#2 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(141): CWebApplication->runController('site/login')
+#3 /Volumes/HDD/dev/gears/web/framework/base/CApplication.php(169): CWebApplication->processRequest()
+#4 /Volumes/HDD/dev/gears/web/index.php(13): CApplication->run()
+#5 {main}
+REQUEST_URI=/site/login
+---
+2013/09/08 07:06:26 [error] [exception.CHttpException.404] exception 'CHttpException' with message 'The system is unable to find the requested action "login".' in /Volumes/HDD/dev/gears/web/framework/web/CController.php:483
+Stack trace:
+#0 /Volumes/HDD/dev/gears/web/framework/web/CController.php(270): CController->missingAction('login')
+#1 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(282): CController->run('login')
+#2 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(141): CWebApplication->runController('site/login')
+#3 /Volumes/HDD/dev/gears/web/framework/base/CApplication.php(169): CWebApplication->processRequest()
+#4 /Volumes/HDD/dev/gears/web/index.php(13): CApplication->run()
+#5 {main}
+REQUEST_URI=/site/login
+---
+2013/09/08 07:06:26 [error] [exception.CHttpException.404] exception 'CHttpException' with message 'The system is unable to find the requested action "login".' in /Volumes/HDD/dev/gears/web/framework/web/CController.php:483
+Stack trace:
+#0 /Volumes/HDD/dev/gears/web/framework/web/CController.php(270): CController->missingAction('login')
+#1 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(282): CController->run('login')
+#2 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(141): CWebApplication->runController('site/login')
+#3 /Volumes/HDD/dev/gears/web/framework/base/CApplication.php(169): CWebApplication->processRequest()
+#4 /Volumes/HDD/dev/gears/web/index.php(13): CApplication->run()
+#5 {main}
+REQUEST_URI=/site/login
+---
+2013/09/08 07:06:26 [error] [exception.CHttpException.404] exception 'CHttpException' with message 'The system is unable to find the requested action "login".' in /Volumes/HDD/dev/gears/web/framework/web/CController.php:483
+Stack trace:
+#0 /Volumes/HDD/dev/gears/web/framework/web/CController.php(270): CController->missingAction('login')
+#1 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(282): CController->run('login')
+#2 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(141): CWebApplication->runController('site/login')
+#3 /Volumes/HDD/dev/gears/web/framework/base/CApplication.php(169): CWebApplication->processRequest()
+#4 /Volumes/HDD/dev/gears/web/index.php(13): CApplication->run()
+#5 {main}
+REQUEST_URI=/site/login
+---
+2013/09/08 07:06:26 [error] [exception.CHttpException.404] exception 'CHttpException' with message 'The system is unable to find the requested action "login".' in /Volumes/HDD/dev/gears/web/framework/web/CController.php:483
+Stack trace:
+#0 /Volumes/HDD/dev/gears/web/framework/web/CController.php(270): CController->missingAction('login')
+#1 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(282): CController->run('login')
+#2 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(141): CWebApplication->runController('site/login')
+#3 /Volumes/HDD/dev/gears/web/framework/base/CApplication.php(169): CWebApplication->processRequest()
+#4 /Volumes/HDD/dev/gears/web/index.php(13): CApplication->run()
+#5 {main}
+REQUEST_URI=/site/login
+---
+2013/09/08 07:06:26 [error] [exception.CHttpException.404] exception 'CHttpException' with message 'The system is unable to find the requested action "login".' in /Volumes/HDD/dev/gears/web/framework/web/CController.php:483
+Stack trace:
+#0 /Volumes/HDD/dev/gears/web/framework/web/CController.php(270): CController->missingAction('login')
+#1 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(282): CController->run('login')
+#2 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(141): CWebApplication->runController('site/login')
+#3 /Volumes/HDD/dev/gears/web/framework/base/CApplication.php(169): CWebApplication->processRequest()
+#4 /Volumes/HDD/dev/gears/web/index.php(13): CApplication->run()
+#5 {main}
+REQUEST_URI=/site/login
+---
+2013/09/08 07:06:26 [error] [exception.CHttpException.404] exception 'CHttpException' with message 'The system is unable to find the requested action "login".' in /Volumes/HDD/dev/gears/web/framework/web/CController.php:483
+Stack trace:
+#0 /Volumes/HDD/dev/gears/web/framework/web/CController.php(270): CController->missingAction('login')
+#1 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(282): CController->run('login')
+#2 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(141): CWebApplication->runController('site/login')
+#3 /Volumes/HDD/dev/gears/web/framework/base/CApplication.php(169): CWebApplication->processRequest()
+#4 /Volumes/HDD/dev/gears/web/index.php(13): CApplication->run()
+#5 {main}
+REQUEST_URI=/site/login
+---
+2013/09/08 07:06:26 [error] [exception.CHttpException.404] exception 'CHttpException' with message 'The system is unable to find the requested action "login".' in /Volumes/HDD/dev/gears/web/framework/web/CController.php:483
+Stack trace:
+#0 /Volumes/HDD/dev/gears/web/framework/web/CController.php(270): CController->missingAction('login')
+#1 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(282): CController->run('login')
+#2 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(141): CWebApplication->runController('site/login')
+#3 /Volumes/HDD/dev/gears/web/framework/base/CApplication.php(169): CWebApplication->processRequest()
+#4 /Volumes/HDD/dev/gears/web/index.php(13): CApplication->run()
+#5 {main}
+REQUEST_URI=/site/login
+---
+2013/09/08 07:06:45 [error] [exception.CHttpException.404] exception 'CHttpException' with message 'The system is unable to find the requested action "login".' in /Volumes/HDD/dev/gears/web/framework/web/CController.php:483
+Stack trace:
+#0 /Volumes/HDD/dev/gears/web/framework/web/CController.php(270): CController->missingAction('login')
+#1 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(282): CController->run('login')
+#2 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(141): CWebApplication->runController('site/login')
+#3 /Volumes/HDD/dev/gears/web/framework/base/CApplication.php(169): CWebApplication->processRequest()
+#4 /Volumes/HDD/dev/gears/web/index.php(13): CApplication->run()
+#5 {main}
+REQUEST_URI=/site/login
+---
+2013/09/08 07:06:45 [error] [exception.CHttpException.404] exception 'CHttpException' with message 'The system is unable to find the requested action "login".' in /Volumes/HDD/dev/gears/web/framework/web/CController.php:483
+Stack trace:
+#0 /Volumes/HDD/dev/gears/web/framework/web/CController.php(270): CController->missingAction('login')
+#1 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(282): CController->run('login')
+#2 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(141): CWebApplication->runController('site/login')
+#3 /Volumes/HDD/dev/gears/web/framework/base/CApplication.php(169): CWebApplication->processRequest()
+#4 /Volumes/HDD/dev/gears/web/index.php(13): CApplication->run()
+#5 {main}
+REQUEST_URI=/site/login
+---
+2013/09/08 07:06:45 [error] [exception.CHttpException.404] exception 'CHttpException' with message 'The system is unable to find the requested action "login".' in /Volumes/HDD/dev/gears/web/framework/web/CController.php:483
+Stack trace:
+#0 /Volumes/HDD/dev/gears/web/framework/web/CController.php(270): CController->missingAction('login')
+#1 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(282): CController->run('login')
+#2 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(141): CWebApplication->runController('site/login')
+#3 /Volumes/HDD/dev/gears/web/framework/base/CApplication.php(169): CWebApplication->processRequest()
+#4 /Volumes/HDD/dev/gears/web/index.php(13): CApplication->run()
+#5 {main}
+REQUEST_URI=/site/login
+---
+2013/09/08 07:06:45 [error] [exception.CHttpException.404] exception 'CHttpException' with message 'The system is unable to find the requested action "login".' in /Volumes/HDD/dev/gears/web/framework/web/CController.php:483
+Stack trace:
+#0 /Volumes/HDD/dev/gears/web/framework/web/CController.php(270): CController->missingAction('login')
+#1 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(282): CController->run('login')
+#2 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(141): CWebApplication->runController('site/login')
+#3 /Volumes/HDD/dev/gears/web/framework/base/CApplication.php(169): CWebApplication->processRequest()
+#4 /Volumes/HDD/dev/gears/web/index.php(13): CApplication->run()
+#5 {main}
+REQUEST_URI=/site/login
+---
+2013/09/08 07:06:45 [error] [exception.CHttpException.404] exception 'CHttpException' with message 'The system is unable to find the requested action "login".' in /Volumes/HDD/dev/gears/web/framework/web/CController.php:483
+Stack trace:
+#0 /Volumes/HDD/dev/gears/web/framework/web/CController.php(270): CController->missingAction('login')
+#1 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(282): CController->run('login')
+#2 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(141): CWebApplication->runController('site/login')
+#3 /Volumes/HDD/dev/gears/web/framework/base/CApplication.php(169): CWebApplication->processRequest()
+#4 /Volumes/HDD/dev/gears/web/index.php(13): CApplication->run()
+#5 {main}
+REQUEST_URI=/site/login
+---
+2013/09/08 07:06:45 [error] [exception.CHttpException.404] exception 'CHttpException' with message 'The system is unable to find the requested action "login".' in /Volumes/HDD/dev/gears/web/framework/web/CController.php:483
+Stack trace:
+#0 /Volumes/HDD/dev/gears/web/framework/web/CController.php(270): CController->missingAction('login')
+#1 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(282): CController->run('login')
+#2 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(141): CWebApplication->runController('site/login')
+#3 /Volumes/HDD/dev/gears/web/framework/base/CApplication.php(169): CWebApplication->processRequest()
+#4 /Volumes/HDD/dev/gears/web/index.php(13): CApplication->run()
+#5 {main}
+REQUEST_URI=/site/login
+---
+2013/09/08 07:06:45 [error] [exception.CHttpException.404] exception 'CHttpException' with message 'The system is unable to find the requested action "login".' in /Volumes/HDD/dev/gears/web/framework/web/CController.php:483
+Stack trace:
+#0 /Volumes/HDD/dev/gears/web/framework/web/CController.php(270): CController->missingAction('login')
+#1 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(282): CController->run('login')
+#2 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(141): CWebApplication->runController('site/login')
+#3 /Volumes/HDD/dev/gears/web/framework/base/CApplication.php(169): CWebApplication->processRequest()
+#4 /Volumes/HDD/dev/gears/web/index.php(13): CApplication->run()
+#5 {main}
+REQUEST_URI=/site/login
+---
+2013/09/08 07:06:45 [error] [exception.CHttpException.404] exception 'CHttpException' with message 'The system is unable to find the requested action "login".' in /Volumes/HDD/dev/gears/web/framework/web/CController.php:483
+Stack trace:
+#0 /Volumes/HDD/dev/gears/web/framework/web/CController.php(270): CController->missingAction('login')
+#1 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(282): CController->run('login')
+#2 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(141): CWebApplication->runController('site/login')
+#3 /Volumes/HDD/dev/gears/web/framework/base/CApplication.php(169): CWebApplication->processRequest()
+#4 /Volumes/HDD/dev/gears/web/index.php(13): CApplication->run()
+#5 {main}
+REQUEST_URI=/site/login
+---
+2013/09/08 07:06:45 [error] [exception.CHttpException.404] exception 'CHttpException' with message 'The system is unable to find the requested action "login".' in /Volumes/HDD/dev/gears/web/framework/web/CController.php:483
+Stack trace:
+#0 /Volumes/HDD/dev/gears/web/framework/web/CController.php(270): CController->missingAction('login')
+#1 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(282): CController->run('login')
+#2 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(141): CWebApplication->runController('site/login')
+#3 /Volumes/HDD/dev/gears/web/framework/base/CApplication.php(169): CWebApplication->processRequest()
+#4 /Volumes/HDD/dev/gears/web/index.php(13): CApplication->run()
+#5 {main}
+REQUEST_URI=/site/login
+---
+2013/09/08 07:06:45 [error] [exception.CHttpException.404] exception 'CHttpException' with message 'The system is unable to find the requested action "login".' in /Volumes/HDD/dev/gears/web/framework/web/CController.php:483
+Stack trace:
+#0 /Volumes/HDD/dev/gears/web/framework/web/CController.php(270): CController->missingAction('login')
+#1 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(282): CController->run('login')
+#2 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(141): CWebApplication->runController('site/login')
+#3 /Volumes/HDD/dev/gears/web/framework/base/CApplication.php(169): CWebApplication->processRequest()
+#4 /Volumes/HDD/dev/gears/web/index.php(13): CApplication->run()
+#5 {main}
+REQUEST_URI=/site/login
+---
+2013/09/08 07:06:46 [error] [exception.CHttpException.404] exception 'CHttpException' with message 'The system is unable to find the requested action "login".' in /Volumes/HDD/dev/gears/web/framework/web/CController.php:483
+Stack trace:
+#0 /Volumes/HDD/dev/gears/web/framework/web/CController.php(270): CController->missingAction('login')
+#1 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(282): CController->run('login')
+#2 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(141): CWebApplication->runController('site/login')
+#3 /Volumes/HDD/dev/gears/web/framework/base/CApplication.php(169): CWebApplication->processRequest()
+#4 /Volumes/HDD/dev/gears/web/index.php(13): CApplication->run()
+#5 {main}
+REQUEST_URI=/site/login
+---
+2013/09/08 07:06:46 [error] [exception.CHttpException.404] exception 'CHttpException' with message 'The system is unable to find the requested action "login".' in /Volumes/HDD/dev/gears/web/framework/web/CController.php:483
+Stack trace:
+#0 /Volumes/HDD/dev/gears/web/framework/web/CController.php(270): CController->missingAction('login')
+#1 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(282): CController->run('login')
+#2 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(141): CWebApplication->runController('site/login')
+#3 /Volumes/HDD/dev/gears/web/framework/base/CApplication.php(169): CWebApplication->processRequest()
+#4 /Volumes/HDD/dev/gears/web/index.php(13): CApplication->run()
+#5 {main}
+REQUEST_URI=/site/login
+---
+2013/09/08 07:06:46 [error] [exception.CHttpException.404] exception 'CHttpException' with message 'The system is unable to find the requested action "login".' in /Volumes/HDD/dev/gears/web/framework/web/CController.php:483
+Stack trace:
+#0 /Volumes/HDD/dev/gears/web/framework/web/CController.php(270): CController->missingAction('login')
+#1 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(282): CController->run('login')
+#2 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(141): CWebApplication->runController('site/login')
+#3 /Volumes/HDD/dev/gears/web/framework/base/CApplication.php(169): CWebApplication->processRequest()
+#4 /Volumes/HDD/dev/gears/web/index.php(13): CApplication->run()
+#5 {main}
+REQUEST_URI=/site/login
+---
+2013/09/08 07:06:46 [error] [exception.CHttpException.404] exception 'CHttpException' with message 'The system is unable to find the requested action "login".' in /Volumes/HDD/dev/gears/web/framework/web/CController.php:483
+Stack trace:
+#0 /Volumes/HDD/dev/gears/web/framework/web/CController.php(270): CController->missingAction('login')
+#1 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(282): CController->run('login')
+#2 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(141): CWebApplication->runController('site/login')
+#3 /Volumes/HDD/dev/gears/web/framework/base/CApplication.php(169): CWebApplication->processRequest()
+#4 /Volumes/HDD/dev/gears/web/index.php(13): CApplication->run()
+#5 {main}
+REQUEST_URI=/site/login
+---
+2013/09/08 07:06:46 [error] [exception.CHttpException.404] exception 'CHttpException' with message 'The system is unable to find the requested action "login".' in /Volumes/HDD/dev/gears/web/framework/web/CController.php:483
+Stack trace:
+#0 /Volumes/HDD/dev/gears/web/framework/web/CController.php(270): CController->missingAction('login')
+#1 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(282): CController->run('login')
+#2 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(141): CWebApplication->runController('site/login')
+#3 /Volumes/HDD/dev/gears/web/framework/base/CApplication.php(169): CWebApplication->processRequest()
+#4 /Volumes/HDD/dev/gears/web/index.php(13): CApplication->run()
+#5 {main}
+REQUEST_URI=/site/login
+---
+2013/09/08 07:06:46 [error] [exception.CHttpException.404] exception 'CHttpException' with message 'The system is unable to find the requested action "login".' in /Volumes/HDD/dev/gears/web/framework/web/CController.php:483
+Stack trace:
+#0 /Volumes/HDD/dev/gears/web/framework/web/CController.php(270): CController->missingAction('login')
+#1 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(282): CController->run('login')
+#2 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(141): CWebApplication->runController('site/login')
+#3 /Volumes/HDD/dev/gears/web/framework/base/CApplication.php(169): CWebApplication->processRequest()
+#4 /Volumes/HDD/dev/gears/web/index.php(13): CApplication->run()
+#5 {main}
+REQUEST_URI=/site/login
+---
+2013/09/08 07:06:46 [error] [exception.CHttpException.404] exception 'CHttpException' with message 'The system is unable to find the requested action "login".' in /Volumes/HDD/dev/gears/web/framework/web/CController.php:483
+Stack trace:
+#0 /Volumes/HDD/dev/gears/web/framework/web/CController.php(270): CController->missingAction('login')
+#1 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(282): CController->run('login')
+#2 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(141): CWebApplication->runController('site/login')
+#3 /Volumes/HDD/dev/gears/web/framework/base/CApplication.php(169): CWebApplication->processRequest()
+#4 /Volumes/HDD/dev/gears/web/index.php(13): CApplication->run()
+#5 {main}
+REQUEST_URI=/site/login
+---
+2013/09/08 07:06:46 [error] [exception.CHttpException.404] exception 'CHttpException' with message 'The system is unable to find the requested action "login".' in /Volumes/HDD/dev/gears/web/framework/web/CController.php:483
+Stack trace:
+#0 /Volumes/HDD/dev/gears/web/framework/web/CController.php(270): CController->missingAction('login')
+#1 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(282): CController->run('login')
+#2 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(141): CWebApplication->runController('site/login')
+#3 /Volumes/HDD/dev/gears/web/framework/base/CApplication.php(169): CWebApplication->processRequest()
+#4 /Volumes/HDD/dev/gears/web/index.php(13): CApplication->run()
+#5 {main}
+REQUEST_URI=/site/login
+---
+2013/09/08 07:06:46 [error] [exception.CHttpException.404] exception 'CHttpException' with message 'The system is unable to find the requested action "login".' in /Volumes/HDD/dev/gears/web/framework/web/CController.php:483
+Stack trace:
+#0 /Volumes/HDD/dev/gears/web/framework/web/CController.php(270): CController->missingAction('login')
+#1 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(282): CController->run('login')
+#2 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(141): CWebApplication->runController('site/login')
+#3 /Volumes/HDD/dev/gears/web/framework/base/CApplication.php(169): CWebApplication->processRequest()
+#4 /Volumes/HDD/dev/gears/web/index.php(13): CApplication->run()
+#5 {main}
+REQUEST_URI=/site/login
+---
+2013/09/08 07:06:46 [error] [exception.CHttpException.404] exception 'CHttpException' with message 'The system is unable to find the requested action "login".' in /Volumes/HDD/dev/gears/web/framework/web/CController.php:483
+Stack trace:
+#0 /Volumes/HDD/dev/gears/web/framework/web/CController.php(270): CController->missingAction('login')
+#1 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(282): CController->run('login')
+#2 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(141): CWebApplication->runController('site/login')
+#3 /Volumes/HDD/dev/gears/web/framework/base/CApplication.php(169): CWebApplication->processRequest()
+#4 /Volumes/HDD/dev/gears/web/index.php(13): CApplication->run()
+#5 {main}
+REQUEST_URI=/site/login
+---
+2013/09/08 07:06:46 [error] [exception.CHttpException.404] exception 'CHttpException' with message 'The system is unable to find the requested action "login".' in /Volumes/HDD/dev/gears/web/framework/web/CController.php:483
+Stack trace:
+#0 /Volumes/HDD/dev/gears/web/framework/web/CController.php(270): CController->missingAction('login')
+#1 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(282): CController->run('login')
+#2 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(141): CWebApplication->runController('site/login')
+#3 /Volumes/HDD/dev/gears/web/framework/base/CApplication.php(169): CWebApplication->processRequest()
+#4 /Volumes/HDD/dev/gears/web/index.php(13): CApplication->run()
+#5 {main}
+REQUEST_URI=/site/login
+---
+2013/09/08 07:06:47 [error] [exception.CHttpException.404] exception 'CHttpException' with message 'The system is unable to find the requested action "login".' in /Volumes/HDD/dev/gears/web/framework/web/CController.php:483
+Stack trace:
+#0 /Volumes/HDD/dev/gears/web/framework/web/CController.php(270): CController->missingAction('login')
+#1 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(282): CController->run('login')
+#2 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(141): CWebApplication->runController('site/login')
+#3 /Volumes/HDD/dev/gears/web/framework/base/CApplication.php(169): CWebApplication->processRequest()
+#4 /Volumes/HDD/dev/gears/web/index.php(13): CApplication->run()
+#5 {main}
+REQUEST_URI=/site/login
+---
+2013/09/08 07:06:47 [error] [exception.CHttpException.404] exception 'CHttpException' with message 'The system is unable to find the requested action "login".' in /Volumes/HDD/dev/gears/web/framework/web/CController.php:483
+Stack trace:
+#0 /Volumes/HDD/dev/gears/web/framework/web/CController.php(270): CController->missingAction('login')
+#1 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(282): CController->run('login')
+#2 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(141): CWebApplication->runController('site/login')
+#3 /Volumes/HDD/dev/gears/web/framework/base/CApplication.php(169): CWebApplication->processRequest()
+#4 /Volumes/HDD/dev/gears/web/index.php(13): CApplication->run()
+#5 {main}
+REQUEST_URI=/site/login
+---
+2013/09/08 07:06:47 [error] [exception.CHttpException.404] exception 'CHttpException' with message 'The system is unable to find the requested action "login".' in /Volumes/HDD/dev/gears/web/framework/web/CController.php:483
+Stack trace:
+#0 /Volumes/HDD/dev/gears/web/framework/web/CController.php(270): CController->missingAction('login')
+#1 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(282): CController->run('login')
+#2 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(141): CWebApplication->runController('site/login')
+#3 /Volumes/HDD/dev/gears/web/framework/base/CApplication.php(169): CWebApplication->processRequest()
+#4 /Volumes/HDD/dev/gears/web/index.php(13): CApplication->run()
+#5 {main}
+REQUEST_URI=/site/login
+---
+2013/09/08 07:06:47 [error] [exception.CHttpException.404] exception 'CHttpException' with message 'The system is unable to find the requested action "login".' in /Volumes/HDD/dev/gears/web/framework/web/CController.php:483
+Stack trace:
+#0 /Volumes/HDD/dev/gears/web/framework/web/CController.php(270): CController->missingAction('login')
+#1 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(282): CController->run('login')
+#2 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(141): CWebApplication->runController('site/login')
+#3 /Volumes/HDD/dev/gears/web/framework/base/CApplication.php(169): CWebApplication->processRequest()
+#4 /Volumes/HDD/dev/gears/web/index.php(13): CApplication->run()
+#5 {main}
+REQUEST_URI=/site/login
+---
+2013/09/08 07:06:47 [error] [exception.CHttpException.404] exception 'CHttpException' with message 'The system is unable to find the requested action "login".' in /Volumes/HDD/dev/gears/web/framework/web/CController.php:483
+Stack trace:
+#0 /Volumes/HDD/dev/gears/web/framework/web/CController.php(270): CController->missingAction('login')
+#1 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(282): CController->run('login')
+#2 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(141): CWebApplication->runController('site/login')
+#3 /Volumes/HDD/dev/gears/web/framework/base/CApplication.php(169): CWebApplication->processRequest()
+#4 /Volumes/HDD/dev/gears/web/index.php(13): CApplication->run()
+#5 {main}
+REQUEST_URI=/site/login
+---
+2013/09/08 07:06:47 [error] [exception.CHttpException.404] exception 'CHttpException' with message 'The system is unable to find the requested action "login".' in /Volumes/HDD/dev/gears/web/framework/web/CController.php:483
+Stack trace:
+#0 /Volumes/HDD/dev/gears/web/framework/web/CController.php(270): CController->missingAction('login')
+#1 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(282): CController->run('login')
+#2 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(141): CWebApplication->runController('site/login')
+#3 /Volumes/HDD/dev/gears/web/framework/base/CApplication.php(169): CWebApplication->processRequest()
+#4 /Volumes/HDD/dev/gears/web/index.php(13): CApplication->run()
+#5 {main}
+REQUEST_URI=/site/login
+---
+2013/09/08 07:06:47 [error] [exception.CHttpException.404] exception 'CHttpException' with message 'The system is unable to find the requested action "login".' in /Volumes/HDD/dev/gears/web/framework/web/CController.php:483
+Stack trace:
+#0 /Volumes/HDD/dev/gears/web/framework/web/CController.php(270): CController->missingAction('login')
+#1 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(282): CController->run('login')
+#2 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(141): CWebApplication->runController('site/login')
+#3 /Volumes/HDD/dev/gears/web/framework/base/CApplication.php(169): CWebApplication->processRequest()
+#4 /Volumes/HDD/dev/gears/web/index.php(13): CApplication->run()
+#5 {main}
+REQUEST_URI=/site/login
+---
+2013/09/08 07:06:47 [error] [exception.CHttpException.404] exception 'CHttpException' with message 'The system is unable to find the requested action "login".' in /Volumes/HDD/dev/gears/web/framework/web/CController.php:483
+Stack trace:
+#0 /Volumes/HDD/dev/gears/web/framework/web/CController.php(270): CController->missingAction('login')
+#1 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(282): CController->run('login')
+#2 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(141): CWebApplication->runController('site/login')
+#3 /Volumes/HDD/dev/gears/web/framework/base/CApplication.php(169): CWebApplication->processRequest()
+#4 /Volumes/HDD/dev/gears/web/index.php(13): CApplication->run()
+#5 {main}
+REQUEST_URI=/site/login
+---
+2013/09/08 07:06:48 [error] [exception.CHttpException.404] exception 'CHttpException' with message 'The system is unable to find the requested action "login".' in /Volumes/HDD/dev/gears/web/framework/web/CController.php:483
+Stack trace:
+#0 /Volumes/HDD/dev/gears/web/framework/web/CController.php(270): CController->missingAction('login')
+#1 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(282): CController->run('login')
+#2 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(141): CWebApplication->runController('site/login')
+#3 /Volumes/HDD/dev/gears/web/framework/base/CApplication.php(169): CWebApplication->processRequest()
+#4 /Volumes/HDD/dev/gears/web/index.php(13): CApplication->run()
+#5 {main}
+REQUEST_URI=/site/login
+---
+2013/09/08 07:06:48 [error] [exception.CHttpException.404] exception 'CHttpException' with message 'The system is unable to find the requested action "login".' in /Volumes/HDD/dev/gears/web/framework/web/CController.php:483
+Stack trace:
+#0 /Volumes/HDD/dev/gears/web/framework/web/CController.php(270): CController->missingAction('login')
+#1 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(282): CController->run('login')
+#2 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(141): CWebApplication->runController('site/login')
+#3 /Volumes/HDD/dev/gears/web/framework/base/CApplication.php(169): CWebApplication->processRequest()
+#4 /Volumes/HDD/dev/gears/web/index.php(13): CApplication->run()
+#5 {main}
+REQUEST_URI=/site/login
+---
+2013/09/08 07:06:48 [error] [exception.CHttpException.404] exception 'CHttpException' with message 'The system is unable to find the requested action "login".' in /Volumes/HDD/dev/gears/web/framework/web/CController.php:483
+Stack trace:
+#0 /Volumes/HDD/dev/gears/web/framework/web/CController.php(270): CController->missingAction('login')
+#1 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(282): CController->run('login')
+#2 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(141): CWebApplication->runController('site/login')
+#3 /Volumes/HDD/dev/gears/web/framework/base/CApplication.php(169): CWebApplication->processRequest()
+#4 /Volumes/HDD/dev/gears/web/index.php(13): CApplication->run()
+#5 {main}
+REQUEST_URI=/site/login
+---
+2013/09/08 07:06:48 [error] [exception.CHttpException.404] exception 'CHttpException' with message 'The system is unable to find the requested action "login".' in /Volumes/HDD/dev/gears/web/framework/web/CController.php:483
+Stack trace:
+#0 /Volumes/HDD/dev/gears/web/framework/web/CController.php(270): CController->missingAction('login')
+#1 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(282): CController->run('login')
+#2 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(141): CWebApplication->runController('site/login')
+#3 /Volumes/HDD/dev/gears/web/framework/base/CApplication.php(169): CWebApplication->processRequest()
+#4 /Volumes/HDD/dev/gears/web/index.php(13): CApplication->run()
+#5 {main}
+REQUEST_URI=/site/login
+---
+2013/09/08 07:06:48 [error] [exception.CHttpException.404] exception 'CHttpException' with message 'The system is unable to find the requested action "login".' in /Volumes/HDD/dev/gears/web/framework/web/CController.php:483
+Stack trace:
+#0 /Volumes/HDD/dev/gears/web/framework/web/CController.php(270): CController->missingAction('login')
+#1 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(282): CController->run('login')
+#2 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(141): CWebApplication->runController('site/login')
+#3 /Volumes/HDD/dev/gears/web/framework/base/CApplication.php(169): CWebApplication->processRequest()
+#4 /Volumes/HDD/dev/gears/web/index.php(13): CApplication->run()
+#5 {main}
+REQUEST_URI=/site/login
+---
+2013/09/08 07:06:48 [error] [exception.CHttpException.404] exception 'CHttpException' with message 'The system is unable to find the requested action "login".' in /Volumes/HDD/dev/gears/web/framework/web/CController.php:483
+Stack trace:
+#0 /Volumes/HDD/dev/gears/web/framework/web/CController.php(270): CController->missingAction('login')
+#1 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(282): CController->run('login')
+#2 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(141): CWebApplication->runController('site/login')
+#3 /Volumes/HDD/dev/gears/web/framework/base/CApplication.php(169): CWebApplication->processRequest()
+#4 /Volumes/HDD/dev/gears/web/index.php(13): CApplication->run()
+#5 {main}
+REQUEST_URI=/site/login
+---
+2013/09/08 07:06:48 [error] [exception.CHttpException.404] exception 'CHttpException' with message 'The system is unable to find the requested action "login".' in /Volumes/HDD/dev/gears/web/framework/web/CController.php:483
+Stack trace:
+#0 /Volumes/HDD/dev/gears/web/framework/web/CController.php(270): CController->missingAction('login')
+#1 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(282): CController->run('login')
+#2 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(141): CWebApplication->runController('site/login')
+#3 /Volumes/HDD/dev/gears/web/framework/base/CApplication.php(169): CWebApplication->processRequest()
+#4 /Volumes/HDD/dev/gears/web/index.php(13): CApplication->run()
+#5 {main}
+REQUEST_URI=/site/login
+---
+2013/09/08 07:06:48 [error] [exception.CHttpException.404] exception 'CHttpException' with message 'The system is unable to find the requested action "login".' in /Volumes/HDD/dev/gears/web/framework/web/CController.php:483
+Stack trace:
+#0 /Volumes/HDD/dev/gears/web/framework/web/CController.php(270): CController->missingAction('login')
+#1 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(282): CController->run('login')
+#2 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(141): CWebApplication->runController('site/login')
+#3 /Volumes/HDD/dev/gears/web/framework/base/CApplication.php(169): CWebApplication->processRequest()
+#4 /Volumes/HDD/dev/gears/web/index.php(13): CApplication->run()
+#5 {main}
+REQUEST_URI=/site/login
+---
+2013/09/08 07:06:48 [error] [exception.CHttpException.404] exception 'CHttpException' with message 'The system is unable to find the requested action "login".' in /Volumes/HDD/dev/gears/web/framework/web/CController.php:483
+Stack trace:
+#0 /Volumes/HDD/dev/gears/web/framework/web/CController.php(270): CController->missingAction('login')
+#1 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(282): CController->run('login')
+#2 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(141): CWebApplication->runController('site/login')
+#3 /Volumes/HDD/dev/gears/web/framework/base/CApplication.php(169): CWebApplication->processRequest()
+#4 /Volumes/HDD/dev/gears/web/index.php(13): CApplication->run()
+#5 {main}
+REQUEST_URI=/site/login
+---
+2013/09/08 07:06:48 [error] [exception.CHttpException.404] exception 'CHttpException' with message 'The system is unable to find the requested action "login".' in /Volumes/HDD/dev/gears/web/framework/web/CController.php:483
+Stack trace:
+#0 /Volumes/HDD/dev/gears/web/framework/web/CController.php(270): CController->missingAction('login')
+#1 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(282): CController->run('login')
+#2 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(141): CWebApplication->runController('site/login')
+#3 /Volumes/HDD/dev/gears/web/framework/base/CApplication.php(169): CWebApplication->processRequest()
+#4 /Volumes/HDD/dev/gears/web/index.php(13): CApplication->run()
+#5 {main}
+REQUEST_URI=/site/login
+---
+2013/09/08 07:06:48 [error] [exception.CHttpException.404] exception 'CHttpException' with message 'The system is unable to find the requested action "login".' in /Volumes/HDD/dev/gears/web/framework/web/CController.php:483
+Stack trace:
+#0 /Volumes/HDD/dev/gears/web/framework/web/CController.php(270): CController->missingAction('login')
+#1 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(282): CController->run('login')
+#2 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(141): CWebApplication->runController('site/login')
+#3 /Volumes/HDD/dev/gears/web/framework/base/CApplication.php(169): CWebApplication->processRequest()
+#4 /Volumes/HDD/dev/gears/web/index.php(13): CApplication->run()
+#5 {main}
+REQUEST_URI=/site/login
+---
+2013/09/08 07:06:48 [error] [exception.CHttpException.404] exception 'CHttpException' with message 'The system is unable to find the requested action "login".' in /Volumes/HDD/dev/gears/web/framework/web/CController.php:483
+Stack trace:
+#0 /Volumes/HDD/dev/gears/web/framework/web/CController.php(270): CController->missingAction('login')
+#1 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(282): CController->run('login')
+#2 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(141): CWebApplication->runController('site/login')
+#3 /Volumes/HDD/dev/gears/web/framework/base/CApplication.php(169): CWebApplication->processRequest()
+#4 /Volumes/HDD/dev/gears/web/index.php(13): CApplication->run()
+#5 {main}
+REQUEST_URI=/site/login
+---
+2013/09/08 07:06:48 [error] [exception.CHttpException.404] exception 'CHttpException' with message 'The system is unable to find the requested action "login".' in /Volumes/HDD/dev/gears/web/framework/web/CController.php:483
+Stack trace:
+#0 /Volumes/HDD/dev/gears/web/framework/web/CController.php(270): CController->missingAction('login')
+#1 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(282): CController->run('login')
+#2 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(141): CWebApplication->runController('site/login')
+#3 /Volumes/HDD/dev/gears/web/framework/base/CApplication.php(169): CWebApplication->processRequest()
+#4 /Volumes/HDD/dev/gears/web/index.php(13): CApplication->run()
+#5 {main}
+REQUEST_URI=/site/login
+---
+2013/09/08 07:06:57 [error] [exception.CHttpException.404] exception 'CHttpException' with message 'The system is unable to find the requested action "login".' in /Volumes/HDD/dev/gears/web/framework/web/CController.php:483
+Stack trace:
+#0 /Volumes/HDD/dev/gears/web/framework/web/CController.php(270): CController->missingAction('login')
+#1 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(282): CController->run('login')
+#2 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(141): CWebApplication->runController('site/login')
+#3 /Volumes/HDD/dev/gears/web/framework/base/CApplication.php(169): CWebApplication->processRequest()
+#4 /Volumes/HDD/dev/gears/web/index.php(13): CApplication->run()
+#5 {main}
+REQUEST_URI=/site/login
+---
+2013/09/08 07:06:57 [error] [exception.CHttpException.404] exception 'CHttpException' with message 'The system is unable to find the requested action "login".' in /Volumes/HDD/dev/gears/web/framework/web/CController.php:483
+Stack trace:
+#0 /Volumes/HDD/dev/gears/web/framework/web/CController.php(270): CController->missingAction('login')
+#1 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(282): CController->run('login')
+#2 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(141): CWebApplication->runController('site/login')
+#3 /Volumes/HDD/dev/gears/web/framework/base/CApplication.php(169): CWebApplication->processRequest()
+#4 /Volumes/HDD/dev/gears/web/index.php(13): CApplication->run()
+#5 {main}
+REQUEST_URI=/site/login
+---
+2013/09/08 07:06:57 [error] [exception.CHttpException.404] exception 'CHttpException' with message 'The system is unable to find the requested action "login".' in /Volumes/HDD/dev/gears/web/framework/web/CController.php:483
+Stack trace:
+#0 /Volumes/HDD/dev/gears/web/framework/web/CController.php(270): CController->missingAction('login')
+#1 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(282): CController->run('login')
+#2 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(141): CWebApplication->runController('site/login')
+#3 /Volumes/HDD/dev/gears/web/framework/base/CApplication.php(169): CWebApplication->processRequest()
+#4 /Volumes/HDD/dev/gears/web/index.php(13): CApplication->run()
+#5 {main}
+REQUEST_URI=/site/login
+---
+2013/09/08 07:06:57 [error] [exception.CHttpException.404] exception 'CHttpException' with message 'The system is unable to find the requested action "login".' in /Volumes/HDD/dev/gears/web/framework/web/CController.php:483
+Stack trace:
+#0 /Volumes/HDD/dev/gears/web/framework/web/CController.php(270): CController->missingAction('login')
+#1 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(282): CController->run('login')
+#2 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(141): CWebApplication->runController('site/login')
+#3 /Volumes/HDD/dev/gears/web/framework/base/CApplication.php(169): CWebApplication->processRequest()
+#4 /Volumes/HDD/dev/gears/web/index.php(13): CApplication->run()
+#5 {main}
+REQUEST_URI=/site/login
+---
+2013/09/08 07:06:57 [error] [exception.CHttpException.404] exception 'CHttpException' with message 'The system is unable to find the requested action "login".' in /Volumes/HDD/dev/gears/web/framework/web/CController.php:483
+Stack trace:
+#0 /Volumes/HDD/dev/gears/web/framework/web/CController.php(270): CController->missingAction('login')
+#1 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(282): CController->run('login')
+#2 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(141): CWebApplication->runController('site/login')
+#3 /Volumes/HDD/dev/gears/web/framework/base/CApplication.php(169): CWebApplication->processRequest()
+#4 /Volumes/HDD/dev/gears/web/index.php(13): CApplication->run()
+#5 {main}
+REQUEST_URI=/site/login
+---
+2013/09/08 07:06:57 [error] [exception.CHttpException.404] exception 'CHttpException' with message 'The system is unable to find the requested action "login".' in /Volumes/HDD/dev/gears/web/framework/web/CController.php:483
+Stack trace:
+#0 /Volumes/HDD/dev/gears/web/framework/web/CController.php(270): CController->missingAction('login')
+#1 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(282): CController->run('login')
+#2 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(141): CWebApplication->runController('site/login')
+#3 /Volumes/HDD/dev/gears/web/framework/base/CApplication.php(169): CWebApplication->processRequest()
+#4 /Volumes/HDD/dev/gears/web/index.php(13): CApplication->run()
+#5 {main}
+REQUEST_URI=/site/login
+---
+2013/09/08 07:06:58 [error] [exception.CHttpException.404] exception 'CHttpException' with message 'The system is unable to find the requested action "login".' in /Volumes/HDD/dev/gears/web/framework/web/CController.php:483
+Stack trace:
+#0 /Volumes/HDD/dev/gears/web/framework/web/CController.php(270): CController->missingAction('login')
+#1 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(282): CController->run('login')
+#2 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(141): CWebApplication->runController('site/login')
+#3 /Volumes/HDD/dev/gears/web/framework/base/CApplication.php(169): CWebApplication->processRequest()
+#4 /Volumes/HDD/dev/gears/web/index.php(13): CApplication->run()
+#5 {main}
+REQUEST_URI=/site/login
+---
+2013/09/08 07:06:58 [error] [exception.CHttpException.404] exception 'CHttpException' with message 'The system is unable to find the requested action "login".' in /Volumes/HDD/dev/gears/web/framework/web/CController.php:483
+Stack trace:
+#0 /Volumes/HDD/dev/gears/web/framework/web/CController.php(270): CController->missingAction('login')
+#1 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(282): CController->run('login')
+#2 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(141): CWebApplication->runController('site/login')
+#3 /Volumes/HDD/dev/gears/web/framework/base/CApplication.php(169): CWebApplication->processRequest()
+#4 /Volumes/HDD/dev/gears/web/index.php(13): CApplication->run()
+#5 {main}
+REQUEST_URI=/site/login
+---
+2013/09/08 07:06:58 [error] [exception.CHttpException.404] exception 'CHttpException' with message 'The system is unable to find the requested action "login".' in /Volumes/HDD/dev/gears/web/framework/web/CController.php:483
+Stack trace:
+#0 /Volumes/HDD/dev/gears/web/framework/web/CController.php(270): CController->missingAction('login')
+#1 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(282): CController->run('login')
+#2 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(141): CWebApplication->runController('site/login')
+#3 /Volumes/HDD/dev/gears/web/framework/base/CApplication.php(169): CWebApplication->processRequest()
+#4 /Volumes/HDD/dev/gears/web/index.php(13): CApplication->run()
+#5 {main}
+REQUEST_URI=/site/login
+---
+2013/09/08 07:06:58 [error] [exception.CHttpException.404] exception 'CHttpException' with message 'The system is unable to find the requested action "login".' in /Volumes/HDD/dev/gears/web/framework/web/CController.php:483
+Stack trace:
+#0 /Volumes/HDD/dev/gears/web/framework/web/CController.php(270): CController->missingAction('login')
+#1 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(282): CController->run('login')
+#2 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(141): CWebApplication->runController('site/login')
+#3 /Volumes/HDD/dev/gears/web/framework/base/CApplication.php(169): CWebApplication->processRequest()
+#4 /Volumes/HDD/dev/gears/web/index.php(13): CApplication->run()
+#5 {main}
+REQUEST_URI=/site/login
+---
+2013/09/08 07:06:58 [error] [exception.CHttpException.404] exception 'CHttpException' with message 'The system is unable to find the requested action "login".' in /Volumes/HDD/dev/gears/web/framework/web/CController.php:483
+Stack trace:
+#0 /Volumes/HDD/dev/gears/web/framework/web/CController.php(270): CController->missingAction('login')
+#1 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(282): CController->run('login')
+#2 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(141): CWebApplication->runController('site/login')
+#3 /Volumes/HDD/dev/gears/web/framework/base/CApplication.php(169): CWebApplication->processRequest()
+#4 /Volumes/HDD/dev/gears/web/index.php(13): CApplication->run()
+#5 {main}
+REQUEST_URI=/site/login
+---
+2013/09/08 07:06:58 [error] [exception.CHttpException.404] exception 'CHttpException' with message 'The system is unable to find the requested action "login".' in /Volumes/HDD/dev/gears/web/framework/web/CController.php:483
+Stack trace:
+#0 /Volumes/HDD/dev/gears/web/framework/web/CController.php(270): CController->missingAction('login')
+#1 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(282): CController->run('login')
+#2 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(141): CWebApplication->runController('site/login')
+#3 /Volumes/HDD/dev/gears/web/framework/base/CApplication.php(169): CWebApplication->processRequest()
+#4 /Volumes/HDD/dev/gears/web/index.php(13): CApplication->run()
+#5 {main}
+REQUEST_URI=/site/login
+---
+2013/09/08 07:06:58 [error] [exception.CHttpException.404] exception 'CHttpException' with message 'The system is unable to find the requested action "login".' in /Volumes/HDD/dev/gears/web/framework/web/CController.php:483
+Stack trace:
+#0 /Volumes/HDD/dev/gears/web/framework/web/CController.php(270): CController->missingAction('login')
+#1 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(282): CController->run('login')
+#2 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(141): CWebApplication->runController('site/login')
+#3 /Volumes/HDD/dev/gears/web/framework/base/CApplication.php(169): CWebApplication->processRequest()
+#4 /Volumes/HDD/dev/gears/web/index.php(13): CApplication->run()
+#5 {main}
+REQUEST_URI=/site/login
+---
+2013/09/08 07:06:58 [error] [exception.CHttpException.404] exception 'CHttpException' with message 'The system is unable to find the requested action "login".' in /Volumes/HDD/dev/gears/web/framework/web/CController.php:483
+Stack trace:
+#0 /Volumes/HDD/dev/gears/web/framework/web/CController.php(270): CController->missingAction('login')
+#1 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(282): CController->run('login')
+#2 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(141): CWebApplication->runController('site/login')
+#3 /Volumes/HDD/dev/gears/web/framework/base/CApplication.php(169): CWebApplication->processRequest()
+#4 /Volumes/HDD/dev/gears/web/index.php(13): CApplication->run()
+#5 {main}
+REQUEST_URI=/site/login
+---
+2013/09/08 07:06:58 [error] [exception.CHttpException.404] exception 'CHttpException' with message 'The system is unable to find the requested action "login".' in /Volumes/HDD/dev/gears/web/framework/web/CController.php:483
+Stack trace:
+#0 /Volumes/HDD/dev/gears/web/framework/web/CController.php(270): CController->missingAction('login')
+#1 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(282): CController->run('login')
+#2 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(141): CWebApplication->runController('site/login')
+#3 /Volumes/HDD/dev/gears/web/framework/base/CApplication.php(169): CWebApplication->processRequest()
+#4 /Volumes/HDD/dev/gears/web/index.php(13): CApplication->run()
+#5 {main}
+REQUEST_URI=/site/login
+---
+2013/09/08 07:06:58 [error] [exception.CHttpException.404] exception 'CHttpException' with message 'The system is unable to find the requested action "login".' in /Volumes/HDD/dev/gears/web/framework/web/CController.php:483
+Stack trace:
+#0 /Volumes/HDD/dev/gears/web/framework/web/CController.php(270): CController->missingAction('login')
+#1 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(282): CController->run('login')
+#2 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(141): CWebApplication->runController('site/login')
+#3 /Volumes/HDD/dev/gears/web/framework/base/CApplication.php(169): CWebApplication->processRequest()
+#4 /Volumes/HDD/dev/gears/web/index.php(13): CApplication->run()
+#5 {main}
+REQUEST_URI=/site/login
+---
+2013/09/08 07:06:58 [error] [exception.CHttpException.404] exception 'CHttpException' with message 'The system is unable to find the requested action "login".' in /Volumes/HDD/dev/gears/web/framework/web/CController.php:483
+Stack trace:
+#0 /Volumes/HDD/dev/gears/web/framework/web/CController.php(270): CController->missingAction('login')
+#1 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(282): CController->run('login')
+#2 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(141): CWebApplication->runController('site/login')
+#3 /Volumes/HDD/dev/gears/web/framework/base/CApplication.php(169): CWebApplication->processRequest()
+#4 /Volumes/HDD/dev/gears/web/index.php(13): CApplication->run()
+#5 {main}
+REQUEST_URI=/site/login
+---
+2013/09/08 07:06:58 [error] [exception.CHttpException.404] exception 'CHttpException' with message 'The system is unable to find the requested action "login".' in /Volumes/HDD/dev/gears/web/framework/web/CController.php:483
+Stack trace:
+#0 /Volumes/HDD/dev/gears/web/framework/web/CController.php(270): CController->missingAction('login')
+#1 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(282): CController->run('login')
+#2 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(141): CWebApplication->runController('site/login')
+#3 /Volumes/HDD/dev/gears/web/framework/base/CApplication.php(169): CWebApplication->processRequest()
+#4 /Volumes/HDD/dev/gears/web/index.php(13): CApplication->run()
+#5 {main}
+REQUEST_URI=/site/login
+---
+2013/09/08 07:06:58 [error] [exception.CHttpException.404] exception 'CHttpException' with message 'The system is unable to find the requested action "login".' in /Volumes/HDD/dev/gears/web/framework/web/CController.php:483
+Stack trace:
+#0 /Volumes/HDD/dev/gears/web/framework/web/CController.php(270): CController->missingAction('login')
+#1 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(282): CController->run('login')
+#2 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(141): CWebApplication->runController('site/login')
+#3 /Volumes/HDD/dev/gears/web/framework/base/CApplication.php(169): CWebApplication->processRequest()
+#4 /Volumes/HDD/dev/gears/web/index.php(13): CApplication->run()
+#5 {main}
+REQUEST_URI=/site/login
+---
+2013/09/08 07:06:58 [error] [exception.CHttpException.404] exception 'CHttpException' with message 'The system is unable to find the requested action "login".' in /Volumes/HDD/dev/gears/web/framework/web/CController.php:483
+Stack trace:
+#0 /Volumes/HDD/dev/gears/web/framework/web/CController.php(270): CController->missingAction('login')
+#1 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(282): CController->run('login')
+#2 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(141): CWebApplication->runController('site/login')
+#3 /Volumes/HDD/dev/gears/web/framework/base/CApplication.php(169): CWebApplication->processRequest()
+#4 /Volumes/HDD/dev/gears/web/index.php(13): CApplication->run()
+#5 {main}
+REQUEST_URI=/site/login
+---
+2013/09/08 07:08:05 [error] [exception.CHttpException.404] exception 'CHttpException' with message 'The system is unable to find the requested action "login".' in /Volumes/HDD/dev/gears/web/framework/web/CController.php:483
+Stack trace:
+#0 /Volumes/HDD/dev/gears/web/framework/web/CController.php(270): CController->missingAction('login')
+#1 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(282): CController->run('login')
+#2 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(141): CWebApplication->runController('site/login')
+#3 /Volumes/HDD/dev/gears/web/framework/base/CApplication.php(169): CWebApplication->processRequest()
+#4 /Volumes/HDD/dev/gears/web/index.php(13): CApplication->run()
+#5 {main}
+REQUEST_URI=/site/login
+---
+2013/09/08 07:08:05 [error] [exception.CHttpException.404] exception 'CHttpException' with message 'The system is unable to find the requested action "oauth".' in /Volumes/HDD/dev/gears/web/framework/web/CController.php:483
+Stack trace:
+#0 /Volumes/HDD/dev/gears/web/framework/web/CController.php(270): CController->missingAction('oauth')
+#1 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(282): CController->run('oauth')
+#2 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(141): CWebApplication->runController('user/oauth')
+#3 /Volumes/HDD/dev/gears/web/framework/base/CApplication.php(169): CWebApplication->processRequest()
+#4 /Volumes/HDD/dev/gears/web/index.php(13): CApplication->run()
+#5 {main}
+REQUEST_URI=/user/oauth
+---
+2013/09/08 07:08:05 [error] [exception.CHttpException.404] exception 'CHttpException' with message 'The system is unable to find the requested action "oauth".' in /Volumes/HDD/dev/gears/web/framework/web/CController.php:483
+Stack trace:
+#0 /Volumes/HDD/dev/gears/web/framework/web/CController.php(270): CController->missingAction('oauth')
+#1 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(282): CController->run('oauth')
+#2 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(141): CWebApplication->runController('user/oauth')
+#3 /Volumes/HDD/dev/gears/web/framework/base/CApplication.php(169): CWebApplication->processRequest()
+#4 /Volumes/HDD/dev/gears/web/index.php(13): CApplication->run()
+#5 {main}
+REQUEST_URI=/user/oauth
+---
+2013/09/08 07:08:05 [error] [exception.CHttpException.404] exception 'CHttpException' with message 'The system is unable to find the requested action "oauth".' in /Volumes/HDD/dev/gears/web/framework/web/CController.php:483
+Stack trace:
+#0 /Volumes/HDD/dev/gears/web/framework/web/CController.php(270): CController->missingAction('oauth')
+#1 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(282): CController->run('oauth')
+#2 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(141): CWebApplication->runController('user/oauth')
+#3 /Volumes/HDD/dev/gears/web/framework/base/CApplication.php(169): CWebApplication->processRequest()
+#4 /Volumes/HDD/dev/gears/web/index.php(13): CApplication->run()
+#5 {main}
+REQUEST_URI=/user/oauth
+---
+2013/09/08 07:08:05 [error] [exception.CHttpException.404] exception 'CHttpException' with message 'The system is unable to find the requested action "oauth".' in /Volumes/HDD/dev/gears/web/framework/web/CController.php:483
+Stack trace:
+#0 /Volumes/HDD/dev/gears/web/framework/web/CController.php(270): CController->missingAction('oauth')
+#1 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(282): CController->run('oauth')
+#2 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(141): CWebApplication->runController('user/oauth')
+#3 /Volumes/HDD/dev/gears/web/framework/base/CApplication.php(169): CWebApplication->processRequest()
+#4 /Volumes/HDD/dev/gears/web/index.php(13): CApplication->run()
+#5 {main}
+REQUEST_URI=/user/oauth
+---
+2013/09/08 07:08:05 [error] [exception.CHttpException.404] exception 'CHttpException' with message 'The system is unable to find the requested action "oauth".' in /Volumes/HDD/dev/gears/web/framework/web/CController.php:483
+Stack trace:
+#0 /Volumes/HDD/dev/gears/web/framework/web/CController.php(270): CController->missingAction('oauth')
+#1 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(282): CController->run('oauth')
+#2 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(141): CWebApplication->runController('user/oauth')
+#3 /Volumes/HDD/dev/gears/web/framework/base/CApplication.php(169): CWebApplication->processRequest()
+#4 /Volumes/HDD/dev/gears/web/index.php(13): CApplication->run()
+#5 {main}
+REQUEST_URI=/user/oauth
+---
+2013/09/08 07:08:06 [error] [exception.CHttpException.404] exception 'CHttpException' with message 'The system is unable to find the requested action "oauth".' in /Volumes/HDD/dev/gears/web/framework/web/CController.php:483
+Stack trace:
+#0 /Volumes/HDD/dev/gears/web/framework/web/CController.php(270): CController->missingAction('oauth')
+#1 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(282): CController->run('oauth')
+#2 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(141): CWebApplication->runController('user/oauth')
+#3 /Volumes/HDD/dev/gears/web/framework/base/CApplication.php(169): CWebApplication->processRequest()
+#4 /Volumes/HDD/dev/gears/web/index.php(13): CApplication->run()
+#5 {main}
+REQUEST_URI=/user/oauth
+---
+2013/09/08 07:08:06 [error] [exception.CHttpException.404] exception 'CHttpException' with message 'The system is unable to find the requested action "oauth".' in /Volumes/HDD/dev/gears/web/framework/web/CController.php:483
+Stack trace:
+#0 /Volumes/HDD/dev/gears/web/framework/web/CController.php(270): CController->missingAction('oauth')
+#1 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(282): CController->run('oauth')
+#2 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(141): CWebApplication->runController('user/oauth')
+#3 /Volumes/HDD/dev/gears/web/framework/base/CApplication.php(169): CWebApplication->processRequest()
+#4 /Volumes/HDD/dev/gears/web/index.php(13): CApplication->run()
+#5 {main}
+REQUEST_URI=/user/oauth
+---
+2013/09/08 07:08:06 [error] [exception.CHttpException.404] exception 'CHttpException' with message 'The system is unable to find the requested action "oauth".' in /Volumes/HDD/dev/gears/web/framework/web/CController.php:483
+Stack trace:
+#0 /Volumes/HDD/dev/gears/web/framework/web/CController.php(270): CController->missingAction('oauth')
+#1 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(282): CController->run('oauth')
+#2 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(141): CWebApplication->runController('user/oauth')
+#3 /Volumes/HDD/dev/gears/web/framework/base/CApplication.php(169): CWebApplication->processRequest()
+#4 /Volumes/HDD/dev/gears/web/index.php(13): CApplication->run()
+#5 {main}
+REQUEST_URI=/user/oauth
+---
+2013/09/08 07:08:06 [error] [exception.CHttpException.404] exception 'CHttpException' with message 'The system is unable to find the requested action "oauth".' in /Volumes/HDD/dev/gears/web/framework/web/CController.php:483
+Stack trace:
+#0 /Volumes/HDD/dev/gears/web/framework/web/CController.php(270): CController->missingAction('oauth')
+#1 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(282): CController->run('oauth')
+#2 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(141): CWebApplication->runController('user/oauth')
+#3 /Volumes/HDD/dev/gears/web/framework/base/CApplication.php(169): CWebApplication->processRequest()
+#4 /Volumes/HDD/dev/gears/web/index.php(13): CApplication->run()
+#5 {main}
+REQUEST_URI=/user/oauth
+---
+2013/09/08 07:08:06 [error] [exception.CHttpException.404] exception 'CHttpException' with message 'The system is unable to find the requested action "oauth".' in /Volumes/HDD/dev/gears/web/framework/web/CController.php:483
+Stack trace:
+#0 /Volumes/HDD/dev/gears/web/framework/web/CController.php(270): CController->missingAction('oauth')
+#1 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(282): CController->run('oauth')
+#2 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(141): CWebApplication->runController('user/oauth')
+#3 /Volumes/HDD/dev/gears/web/framework/base/CApplication.php(169): CWebApplication->processRequest()
+#4 /Volumes/HDD/dev/gears/web/index.php(13): CApplication->run()
+#5 {main}
+REQUEST_URI=/user/oauth
+---
+2013/09/08 07:08:06 [error] [exception.CHttpException.404] exception 'CHttpException' with message 'The system is unable to find the requested action "oauth".' in /Volumes/HDD/dev/gears/web/framework/web/CController.php:483
+Stack trace:
+#0 /Volumes/HDD/dev/gears/web/framework/web/CController.php(270): CController->missingAction('oauth')
+#1 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(282): CController->run('oauth')
+#2 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(141): CWebApplication->runController('user/oauth')
+#3 /Volumes/HDD/dev/gears/web/framework/base/CApplication.php(169): CWebApplication->processRequest()
+#4 /Volumes/HDD/dev/gears/web/index.php(13): CApplication->run()
+#5 {main}
+REQUEST_URI=/user/oauth
+---
+2013/09/08 07:08:06 [error] [exception.CHttpException.404] exception 'CHttpException' with message 'The system is unable to find the requested action "oauth".' in /Volumes/HDD/dev/gears/web/framework/web/CController.php:483
+Stack trace:
+#0 /Volumes/HDD/dev/gears/web/framework/web/CController.php(270): CController->missingAction('oauth')
+#1 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(282): CController->run('oauth')
+#2 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(141): CWebApplication->runController('user/oauth')
+#3 /Volumes/HDD/dev/gears/web/framework/base/CApplication.php(169): CWebApplication->processRequest()
+#4 /Volumes/HDD/dev/gears/web/index.php(13): CApplication->run()
+#5 {main}
+REQUEST_URI=/user/oauth
+---
+2013/09/08 07:08:06 [error] [exception.CHttpException.404] exception 'CHttpException' with message 'The system is unable to find the requested action "oauth".' in /Volumes/HDD/dev/gears/web/framework/web/CController.php:483
+Stack trace:
+#0 /Volumes/HDD/dev/gears/web/framework/web/CController.php(270): CController->missingAction('oauth')
+#1 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(282): CController->run('oauth')
+#2 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(141): CWebApplication->runController('user/oauth')
+#3 /Volumes/HDD/dev/gears/web/framework/base/CApplication.php(169): CWebApplication->processRequest()
+#4 /Volumes/HDD/dev/gears/web/index.php(13): CApplication->run()
+#5 {main}
+REQUEST_URI=/user/oauth
+---
+2013/09/08 07:08:06 [error] [exception.CHttpException.404] exception 'CHttpException' with message 'The system is unable to find the requested action "oauth".' in /Volumes/HDD/dev/gears/web/framework/web/CController.php:483
+Stack trace:
+#0 /Volumes/HDD/dev/gears/web/framework/web/CController.php(270): CController->missingAction('oauth')
+#1 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(282): CController->run('oauth')
+#2 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(141): CWebApplication->runController('user/oauth')
+#3 /Volumes/HDD/dev/gears/web/framework/base/CApplication.php(169): CWebApplication->processRequest()
+#4 /Volumes/HDD/dev/gears/web/index.php(13): CApplication->run()
+#5 {main}
+REQUEST_URI=/user/oauth
+---
+2013/09/08 07:08:06 [error] [exception.CHttpException.404] exception 'CHttpException' with message 'The system is unable to find the requested action "oauth".' in /Volumes/HDD/dev/gears/web/framework/web/CController.php:483
+Stack trace:
+#0 /Volumes/HDD/dev/gears/web/framework/web/CController.php(270): CController->missingAction('oauth')
+#1 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(282): CController->run('oauth')
+#2 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(141): CWebApplication->runController('user/oauth')
+#3 /Volumes/HDD/dev/gears/web/framework/base/CApplication.php(169): CWebApplication->processRequest()
+#4 /Volumes/HDD/dev/gears/web/index.php(13): CApplication->run()
+#5 {main}
+REQUEST_URI=/user/oauth
+---
+2013/09/08 07:08:06 [error] [exception.CHttpException.404] exception 'CHttpException' with message 'The system is unable to find the requested action "oauth".' in /Volumes/HDD/dev/gears/web/framework/web/CController.php:483
+Stack trace:
+#0 /Volumes/HDD/dev/gears/web/framework/web/CController.php(270): CController->missingAction('oauth')
+#1 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(282): CController->run('oauth')
+#2 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(141): CWebApplication->runController('user/oauth')
+#3 /Volumes/HDD/dev/gears/web/framework/base/CApplication.php(169): CWebApplication->processRequest()
+#4 /Volumes/HDD/dev/gears/web/index.php(13): CApplication->run()
+#5 {main}
+REQUEST_URI=/user/oauth
+---
+2013/09/08 07:08:06 [error] [exception.CHttpException.404] exception 'CHttpException' with message 'The system is unable to find the requested action "oauth".' in /Volumes/HDD/dev/gears/web/framework/web/CController.php:483
+Stack trace:
+#0 /Volumes/HDD/dev/gears/web/framework/web/CController.php(270): CController->missingAction('oauth')
+#1 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(282): CController->run('oauth')
+#2 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(141): CWebApplication->runController('user/oauth')
+#3 /Volumes/HDD/dev/gears/web/framework/base/CApplication.php(169): CWebApplication->processRequest()
+#4 /Volumes/HDD/dev/gears/web/index.php(13): CApplication->run()
+#5 {main}
+REQUEST_URI=/user/oauth
+---
+2013/09/08 07:08:06 [error] [exception.CHttpException.404] exception 'CHttpException' with message 'The system is unable to find the requested action "oauth".' in /Volumes/HDD/dev/gears/web/framework/web/CController.php:483
+Stack trace:
+#0 /Volumes/HDD/dev/gears/web/framework/web/CController.php(270): CController->missingAction('oauth')
+#1 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(282): CController->run('oauth')
+#2 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(141): CWebApplication->runController('user/oauth')
+#3 /Volumes/HDD/dev/gears/web/framework/base/CApplication.php(169): CWebApplication->processRequest()
+#4 /Volumes/HDD/dev/gears/web/index.php(13): CApplication->run()
+#5 {main}
+REQUEST_URI=/user/oauth
+---
+2013/09/08 07:08:06 [error] [exception.CHttpException.404] exception 'CHttpException' with message 'The system is unable to find the requested action "oauth".' in /Volumes/HDD/dev/gears/web/framework/web/CController.php:483
+Stack trace:
+#0 /Volumes/HDD/dev/gears/web/framework/web/CController.php(270): CController->missingAction('oauth')
+#1 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(282): CController->run('oauth')
+#2 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(141): CWebApplication->runController('user/oauth')
+#3 /Volumes/HDD/dev/gears/web/framework/base/CApplication.php(169): CWebApplication->processRequest()
+#4 /Volumes/HDD/dev/gears/web/index.php(13): CApplication->run()
+#5 {main}
+REQUEST_URI=/user/oauth
+---
+2013/09/08 07:08:06 [error] [exception.CHttpException.404] exception 'CHttpException' with message 'The system is unable to find the requested action "oauth".' in /Volumes/HDD/dev/gears/web/framework/web/CController.php:483
+Stack trace:
+#0 /Volumes/HDD/dev/gears/web/framework/web/CController.php(270): CController->missingAction('oauth')
+#1 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(282): CController->run('oauth')
+#2 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(141): CWebApplication->runController('user/oauth')
+#3 /Volumes/HDD/dev/gears/web/framework/base/CApplication.php(169): CWebApplication->processRequest()
+#4 /Volumes/HDD/dev/gears/web/index.php(13): CApplication->run()
+#5 {main}
+REQUEST_URI=/user/oauth
+---
+2013/09/08 07:08:19 [error] [exception.CHttpException.404] exception 'CHttpException' with message 'The system is unable to find the requested action "oauth".' in /Volumes/HDD/dev/gears/web/framework/web/CController.php:483
+Stack trace:
+#0 /Volumes/HDD/dev/gears/web/framework/web/CController.php(270): CController->missingAction('oauth')
+#1 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(282): CController->run('oauth')
+#2 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(141): CWebApplication->runController('user/oauth')
+#3 /Volumes/HDD/dev/gears/web/framework/base/CApplication.php(169): CWebApplication->processRequest()
+#4 /Volumes/HDD/dev/gears/web/index.php(13): CApplication->run()
+#5 {main}
+REQUEST_URI=/user/oauth
+---
+2013/09/08 07:08:19 [error] [exception.CHttpException.404] exception 'CHttpException' with message 'The system is unable to find the requested action "oauth".' in /Volumes/HDD/dev/gears/web/framework/web/CController.php:483
+Stack trace:
+#0 /Volumes/HDD/dev/gears/web/framework/web/CController.php(270): CController->missingAction('oauth')
+#1 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(282): CController->run('oauth')
+#2 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(141): CWebApplication->runController('user/oauth')
+#3 /Volumes/HDD/dev/gears/web/framework/base/CApplication.php(169): CWebApplication->processRequest()
+#4 /Volumes/HDD/dev/gears/web/index.php(13): CApplication->run()
+#5 {main}
+REQUEST_URI=/user/oauth
+---
+2013/09/08 07:08:19 [error] [exception.CHttpException.404] exception 'CHttpException' with message 'The system is unable to find the requested action "oauth".' in /Volumes/HDD/dev/gears/web/framework/web/CController.php:483
+Stack trace:
+#0 /Volumes/HDD/dev/gears/web/framework/web/CController.php(270): CController->missingAction('oauth')
+#1 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(282): CController->run('oauth')
+#2 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(141): CWebApplication->runController('user/oauth')
+#3 /Volumes/HDD/dev/gears/web/framework/base/CApplication.php(169): CWebApplication->processRequest()
+#4 /Volumes/HDD/dev/gears/web/index.php(13): CApplication->run()
+#5 {main}
+REQUEST_URI=/user/oauth
+---
+2013/09/08 07:08:19 [error] [exception.CHttpException.404] exception 'CHttpException' with message 'The system is unable to find the requested action "oauth".' in /Volumes/HDD/dev/gears/web/framework/web/CController.php:483
+Stack trace:
+#0 /Volumes/HDD/dev/gears/web/framework/web/CController.php(270): CController->missingAction('oauth')
+#1 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(282): CController->run('oauth')
+#2 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(141): CWebApplication->runController('user/oauth')
+#3 /Volumes/HDD/dev/gears/web/framework/base/CApplication.php(169): CWebApplication->processRequest()
+#4 /Volumes/HDD/dev/gears/web/index.php(13): CApplication->run()
+#5 {main}
+REQUEST_URI=/user/oauth
+---
+2013/09/08 07:08:19 [error] [exception.CHttpException.404] exception 'CHttpException' with message 'The system is unable to find the requested action "oauth".' in /Volumes/HDD/dev/gears/web/framework/web/CController.php:483
+Stack trace:
+#0 /Volumes/HDD/dev/gears/web/framework/web/CController.php(270): CController->missingAction('oauth')
+#1 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(282): CController->run('oauth')
+#2 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(141): CWebApplication->runController('user/oauth')
+#3 /Volumes/HDD/dev/gears/web/framework/base/CApplication.php(169): CWebApplication->processRequest()
+#4 /Volumes/HDD/dev/gears/web/index.php(13): CApplication->run()
+#5 {main}
+REQUEST_URI=/user/oauth
+---
+2013/09/08 07:08:20 [error] [exception.CHttpException.404] exception 'CHttpException' with message 'The system is unable to find the requested action "oauth".' in /Volumes/HDD/dev/gears/web/framework/web/CController.php:483
+Stack trace:
+#0 /Volumes/HDD/dev/gears/web/framework/web/CController.php(270): CController->missingAction('oauth')
+#1 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(282): CController->run('oauth')
+#2 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(141): CWebApplication->runController('user/oauth')
+#3 /Volumes/HDD/dev/gears/web/framework/base/CApplication.php(169): CWebApplication->processRequest()
+#4 /Volumes/HDD/dev/gears/web/index.php(13): CApplication->run()
+#5 {main}
+REQUEST_URI=/user/oauth
+---
+2013/09/08 07:08:20 [error] [exception.CHttpException.404] exception 'CHttpException' with message 'The system is unable to find the requested action "oauth".' in /Volumes/HDD/dev/gears/web/framework/web/CController.php:483
+Stack trace:
+#0 /Volumes/HDD/dev/gears/web/framework/web/CController.php(270): CController->missingAction('oauth')
+#1 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(282): CController->run('oauth')
+#2 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(141): CWebApplication->runController('user/oauth')
+#3 /Volumes/HDD/dev/gears/web/framework/base/CApplication.php(169): CWebApplication->processRequest()
+#4 /Volumes/HDD/dev/gears/web/index.php(13): CApplication->run()
+#5 {main}
+REQUEST_URI=/user/oauth
+---
+2013/09/08 07:08:20 [error] [exception.CHttpException.404] exception 'CHttpException' with message 'The system is unable to find the requested action "oauth".' in /Volumes/HDD/dev/gears/web/framework/web/CController.php:483
+Stack trace:
+#0 /Volumes/HDD/dev/gears/web/framework/web/CController.php(270): CController->missingAction('oauth')
+#1 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(282): CController->run('oauth')
+#2 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(141): CWebApplication->runController('user/oauth')
+#3 /Volumes/HDD/dev/gears/web/framework/base/CApplication.php(169): CWebApplication->processRequest()
+#4 /Volumes/HDD/dev/gears/web/index.php(13): CApplication->run()
+#5 {main}
+REQUEST_URI=/user/oauth
+---
+2013/09/08 07:08:20 [error] [exception.CHttpException.404] exception 'CHttpException' with message 'The system is unable to find the requested action "oauth".' in /Volumes/HDD/dev/gears/web/framework/web/CController.php:483
+Stack trace:
+#0 /Volumes/HDD/dev/gears/web/framework/web/CController.php(270): CController->missingAction('oauth')
+#1 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(282): CController->run('oauth')
+#2 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(141): CWebApplication->runController('user/oauth')
+#3 /Volumes/HDD/dev/gears/web/framework/base/CApplication.php(169): CWebApplication->processRequest()
+#4 /Volumes/HDD/dev/gears/web/index.php(13): CApplication->run()
+#5 {main}
+REQUEST_URI=/user/oauth
+---
+2013/09/08 07:08:20 [error] [exception.CHttpException.404] exception 'CHttpException' with message 'The system is unable to find the requested action "oauth".' in /Volumes/HDD/dev/gears/web/framework/web/CController.php:483
+Stack trace:
+#0 /Volumes/HDD/dev/gears/web/framework/web/CController.php(270): CController->missingAction('oauth')
+#1 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(282): CController->run('oauth')
+#2 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(141): CWebApplication->runController('user/oauth')
+#3 /Volumes/HDD/dev/gears/web/framework/base/CApplication.php(169): CWebApplication->processRequest()
+#4 /Volumes/HDD/dev/gears/web/index.php(13): CApplication->run()
+#5 {main}
+REQUEST_URI=/user/oauth
+---
+2013/09/08 07:08:20 [error] [exception.CHttpException.404] exception 'CHttpException' with message 'The system is unable to find the requested action "oauth".' in /Volumes/HDD/dev/gears/web/framework/web/CController.php:483
+Stack trace:
+#0 /Volumes/HDD/dev/gears/web/framework/web/CController.php(270): CController->missingAction('oauth')
+#1 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(282): CController->run('oauth')
+#2 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(141): CWebApplication->runController('user/oauth')
+#3 /Volumes/HDD/dev/gears/web/framework/base/CApplication.php(169): CWebApplication->processRequest()
+#4 /Volumes/HDD/dev/gears/web/index.php(13): CApplication->run()
+#5 {main}
+REQUEST_URI=/user/oauth
+---
+2013/09/08 07:08:20 [error] [exception.CHttpException.404] exception 'CHttpException' with message 'The system is unable to find the requested action "oauth".' in /Volumes/HDD/dev/gears/web/framework/web/CController.php:483
+Stack trace:
+#0 /Volumes/HDD/dev/gears/web/framework/web/CController.php(270): CController->missingAction('oauth')
+#1 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(282): CController->run('oauth')
+#2 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(141): CWebApplication->runController('user/oauth')
+#3 /Volumes/HDD/dev/gears/web/framework/base/CApplication.php(169): CWebApplication->processRequest()
+#4 /Volumes/HDD/dev/gears/web/index.php(13): CApplication->run()
+#5 {main}
+REQUEST_URI=/user/oauth
+---
+2013/09/08 07:08:20 [error] [exception.CHttpException.404] exception 'CHttpException' with message 'The system is unable to find the requested action "oauth".' in /Volumes/HDD/dev/gears/web/framework/web/CController.php:483
+Stack trace:
+#0 /Volumes/HDD/dev/gears/web/framework/web/CController.php(270): CController->missingAction('oauth')
+#1 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(282): CController->run('oauth')
+#2 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(141): CWebApplication->runController('user/oauth')
+#3 /Volumes/HDD/dev/gears/web/framework/base/CApplication.php(169): CWebApplication->processRequest()
+#4 /Volumes/HDD/dev/gears/web/index.php(13): CApplication->run()
+#5 {main}
+REQUEST_URI=/user/oauth
+---
+2013/09/08 07:08:20 [error] [exception.CHttpException.404] exception 'CHttpException' with message 'The system is unable to find the requested action "oauth".' in /Volumes/HDD/dev/gears/web/framework/web/CController.php:483
+Stack trace:
+#0 /Volumes/HDD/dev/gears/web/framework/web/CController.php(270): CController->missingAction('oauth')
+#1 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(282): CController->run('oauth')
+#2 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(141): CWebApplication->runController('user/oauth')
+#3 /Volumes/HDD/dev/gears/web/framework/base/CApplication.php(169): CWebApplication->processRequest()
+#4 /Volumes/HDD/dev/gears/web/index.php(13): CApplication->run()
+#5 {main}
+REQUEST_URI=/user/oauth
+---
+2013/09/08 07:08:20 [error] [exception.CHttpException.404] exception 'CHttpException' with message 'The system is unable to find the requested action "oauth".' in /Volumes/HDD/dev/gears/web/framework/web/CController.php:483
+Stack trace:
+#0 /Volumes/HDD/dev/gears/web/framework/web/CController.php(270): CController->missingAction('oauth')
+#1 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(282): CController->run('oauth')
+#2 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(141): CWebApplication->runController('user/oauth')
+#3 /Volumes/HDD/dev/gears/web/framework/base/CApplication.php(169): CWebApplication->processRequest()
+#4 /Volumes/HDD/dev/gears/web/index.php(13): CApplication->run()
+#5 {main}
+REQUEST_URI=/user/oauth
+---
+2013/09/08 07:08:20 [error] [exception.CHttpException.404] exception 'CHttpException' with message 'The system is unable to find the requested action "oauth".' in /Volumes/HDD/dev/gears/web/framework/web/CController.php:483
+Stack trace:
+#0 /Volumes/HDD/dev/gears/web/framework/web/CController.php(270): CController->missingAction('oauth')
+#1 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(282): CController->run('oauth')
+#2 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(141): CWebApplication->runController('user/oauth')
+#3 /Volumes/HDD/dev/gears/web/framework/base/CApplication.php(169): CWebApplication->processRequest()
+#4 /Volumes/HDD/dev/gears/web/index.php(13): CApplication->run()
+#5 {main}
+REQUEST_URI=/user/oauth
+---
+2013/09/08 07:08:20 [error] [exception.CHttpException.404] exception 'CHttpException' with message 'The system is unable to find the requested action "oauth".' in /Volumes/HDD/dev/gears/web/framework/web/CController.php:483
+Stack trace:
+#0 /Volumes/HDD/dev/gears/web/framework/web/CController.php(270): CController->missingAction('oauth')
+#1 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(282): CController->run('oauth')
+#2 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(141): CWebApplication->runController('user/oauth')
+#3 /Volumes/HDD/dev/gears/web/framework/base/CApplication.php(169): CWebApplication->processRequest()
+#4 /Volumes/HDD/dev/gears/web/index.php(13): CApplication->run()
+#5 {main}
+REQUEST_URI=/user/oauth
+---
+2013/09/08 07:08:20 [error] [exception.CHttpException.404] exception 'CHttpException' with message 'The system is unable to find the requested action "oauth".' in /Volumes/HDD/dev/gears/web/framework/web/CController.php:483
+Stack trace:
+#0 /Volumes/HDD/dev/gears/web/framework/web/CController.php(270): CController->missingAction('oauth')
+#1 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(282): CController->run('oauth')
+#2 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(141): CWebApplication->runController('user/oauth')
+#3 /Volumes/HDD/dev/gears/web/framework/base/CApplication.php(169): CWebApplication->processRequest()
+#4 /Volumes/HDD/dev/gears/web/index.php(13): CApplication->run()
+#5 {main}
+REQUEST_URI=/user/oauth
+---
+2013/09/08 07:08:20 [error] [exception.CHttpException.404] exception 'CHttpException' with message 'The system is unable to find the requested action "oauth".' in /Volumes/HDD/dev/gears/web/framework/web/CController.php:483
+Stack trace:
+#0 /Volumes/HDD/dev/gears/web/framework/web/CController.php(270): CController->missingAction('oauth')
+#1 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(282): CController->run('oauth')
+#2 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(141): CWebApplication->runController('user/oauth')
+#3 /Volumes/HDD/dev/gears/web/framework/base/CApplication.php(169): CWebApplication->processRequest()
+#4 /Volumes/HDD/dev/gears/web/index.php(13): CApplication->run()
+#5 {main}
+REQUEST_URI=/user/oauth
+---
+2013/09/08 07:17:18 [error] [php] strcasecmp() expects parameter 2 to be string, object given (/Volumes/HDD/dev/gears/web/framework/web/auth/CAccessControlFilter.php:320)
+Stack trace:
+#0 /Volumes/HDD/dev/gears/web/framework/web/auth/CAccessControlFilter.php(135): CAccessRule->isUserAllowed()
+#1 /Volumes/HDD/dev/gears/web/framework/web/filters/CFilter.php(38): CAccessControlFilter->preFilter()
+#2 /Volumes/HDD/dev/gears/web/framework/web/CController.php(1145): CAccessControlFilter->filter()
+#3 /Volumes/HDD/dev/gears/web/framework/web/filters/CInlineFilter.php(58): SiteController->filterAccessControl()
+#4 /Volumes/HDD/dev/gears/web/framework/web/filters/CFilterChain.php(130): CInlineFilter->filter()
+#5 /Volumes/HDD/dev/gears/web/framework/web/CController.php(291): CFilterChain->run()
+#6 /Volumes/HDD/dev/gears/web/framework/web/CController.php(265): SiteController->runActionWithFilters()
+#7 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(282): SiteController->run()
+#8 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(141): CWebApplication->runController()
+#9 /Volumes/HDD/dev/gears/web/framework/base/CApplication.php(169): CWebApplication->processRequest()
+#10 /Volumes/HDD/dev/gears/web/index.php(13): CWebApplication->run()
+REQUEST_URI=/
+in /Volumes/HDD/dev/gears/web/index.php (13)
+2013/09/08 07:17:18 [error] [php] strcasecmp() expects parameter 2 to be string, object given (/Volumes/HDD/dev/gears/web/framework/web/auth/CAccessControlFilter.php:320)
+Stack trace:
+#0 /Volumes/HDD/dev/gears/web/framework/web/auth/CAccessControlFilter.php(135): CAccessRule->isUserAllowed()
+#1 /Volumes/HDD/dev/gears/web/framework/web/filters/CFilter.php(38): CAccessControlFilter->preFilter()
+#2 /Volumes/HDD/dev/gears/web/framework/web/CController.php(1145): CAccessControlFilter->filter()
+#3 /Volumes/HDD/dev/gears/web/framework/web/filters/CInlineFilter.php(58): SiteController->filterAccessControl()
+#4 /Volumes/HDD/dev/gears/web/framework/web/filters/CFilterChain.php(130): CInlineFilter->filter()
+#5 /Volumes/HDD/dev/gears/web/framework/web/CController.php(291): CFilterChain->run()
+#6 /Volumes/HDD/dev/gears/web/framework/web/CController.php(265): SiteController->runActionWithFilters()
+#7 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(282): SiteController->run()
+#8 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(141): CWebApplication->runController()
+#9 /Volumes/HDD/dev/gears/web/framework/base/CApplication.php(169): CWebApplication->processRequest()
+#10 /Volumes/HDD/dev/gears/web/index.php(13): CWebApplication->run()
+REQUEST_URI=/
+in /Volumes/HDD/dev/gears/web/index.php (13)
+2013/09/08 07:20:30 [error] [php] session_regenerate_id() [<a href='function.session-regenerate-id'>function.session-regenerate-id</a>]: Cannot regenerate session id - headers already sent (/Volumes/HDD/dev/gears/web/framework/web/CHttpSession.php:185)
+Stack trace:
+#0 /Volumes/HDD/dev/gears/web/framework/web/auth/CWebUser.php(227): CWebUser->changeIdentity()
+#1 /Volumes/HDD/dev/gears/web/protected/controllers/UserController.php(50): CWebUser->login()
+#2 /Volumes/HDD/dev/gears/web/framework/web/actions/CInlineAction.php(49): UserController->actionLogin()
+#3 /Volumes/HDD/dev/gears/web/framework/web/CController.php(308): CInlineAction->runWithParams()
+#4 /Volumes/HDD/dev/gears/web/framework/web/filters/CFilterChain.php(133): UserController->runAction()
+#5 /Volumes/HDD/dev/gears/web/framework/web/filters/CFilter.php(40): CFilterChain->run()
+#6 /Volumes/HDD/dev/gears/web/framework/web/CController.php(1145): CAccessControlFilter->filter()
+#7 /Volumes/HDD/dev/gears/web/framework/web/filters/CInlineFilter.php(58): UserController->filterAccessControl()
+#8 /Volumes/HDD/dev/gears/web/framework/web/filters/CFilterChain.php(130): CInlineFilter->filter()
+#9 /Volumes/HDD/dev/gears/web/framework/web/CController.php(291): CFilterChain->run()
+#10 /Volumes/HDD/dev/gears/web/framework/web/CController.php(265): UserController->runActionWithFilters()
+#11 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(282): UserController->run()
+#12 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(141): CWebApplication->runController()
+#13 /Volumes/HDD/dev/gears/web/framework/base/CApplication.php(169): CWebApplication->processRequest()
+#14 /Volumes/HDD/dev/gears/web/index.php(13): CWebApplication->run()
+REQUEST_URI=/user/login
+in /Volumes/HDD/dev/gears/web/protected/controllers/UserController.php (50)
+in /Volumes/HDD/dev/gears/web/index.php (13)
+2013/09/08 07:23:04 [error] [php] Object of class CWebUser could not be converted to string (/Volumes/HDD/dev/gears/web/themes/gear/views/layouts/main.php:27)
+Stack trace:
+#0 /Volumes/HDD/dev/gears/web/framework/web/widgets/CContentDecorator.php(76): UserController->renderFile()
+#1 /Volumes/HDD/dev/gears/web/framework/web/widgets/CContentDecorator.php(54): CContentDecorator->decorate()
+#2 /Volumes/HDD/dev/gears/web/framework/web/widgets/COutputProcessor.php(44): CContentDecorator->processOutput()
+#3 /Volumes/HDD/dev/gears/web/framework/web/CBaseController.php(206): CContentDecorator->run()
+#4 /Volumes/HDD/dev/gears/web/framework/web/CBaseController.php(300): UserController->endWidget()
+#5 /Volumes/HDD/dev/gears/web/themes/gear/views/layouts/without_header.php(3): UserController->endContent()
+#6 /Volumes/HDD/dev/gears/web/framework/web/CBaseController.php(126): require()
+#7 /Volumes/HDD/dev/gears/web/framework/web/CBaseController.php(95): UserController->renderInternal()
+#8 /Volumes/HDD/dev/gears/web/framework/web/CController.php(784): UserController->renderFile()
+#9 /Volumes/HDD/dev/gears/web/protected/controllers/UserController.php(57): UserController->render()
+#10 /Volumes/HDD/dev/gears/web/framework/web/actions/CInlineAction.php(49): UserController->actionLogin()
+#11 /Volumes/HDD/dev/gears/web/framework/web/CController.php(308): CInlineAction->runWithParams()
+#12 /Volumes/HDD/dev/gears/web/framework/web/filters/CFilterChain.php(133): UserController->runAction()
+#13 /Volumes/HDD/dev/gears/web/framework/web/filters/CFilter.php(40): CFilterChain->run()
+#14 /Volumes/HDD/dev/gears/web/framework/web/CController.php(1145): CAccessControlFilter->filter()
+#15 /Volumes/HDD/dev/gears/web/framework/web/filters/CInlineFilter.php(58): UserController->filterAccessControl()
+#16 /Volumes/HDD/dev/gears/web/framework/web/filters/CFilterChain.php(130): CInlineFilter->filter()
+#17 /Volumes/HDD/dev/gears/web/framework/web/CController.php(291): CFilterChain->run()
+#18 /Volumes/HDD/dev/gears/web/framework/web/CController.php(265): UserController->runActionWithFilters()
+#19 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(282): UserController->run()
+#20 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(141): CWebApplication->runController()
+#21 /Volumes/HDD/dev/gears/web/framework/base/CApplication.php(169): CWebApplication->processRequest()
+#22 /Volumes/HDD/dev/gears/web/index.php(13): CWebApplication->run()
+REQUEST_URI=/user/login
+in /Volumes/HDD/dev/gears/web/themes/gear/views/layouts/main.php (27)
+in /Volumes/HDD/dev/gears/web/themes/gear/views/layouts/without_header.php (3)
+in /Volumes/HDD/dev/gears/web/protected/controllers/UserController.php (57)
+2013/09/08 07:25:02 [error] [exception.CException] exception 'CException' with message 'Property "User.id" is not defined.' in /Volumes/HDD/dev/gears/web/framework/base/CComponent.php:130
+Stack trace:
+#0 /Volumes/HDD/dev/gears/web/framework/db/ar/CActiveRecord.php(143): CComponent->__get('id')
+#1 /Volumes/HDD/dev/gears/web/protected/components/UserIdentity.php(33): CActiveRecord->__get('id')
+#2 /Volumes/HDD/dev/gears/web/protected/controllers/UserController.php(46): UserIdentity->authenticate()
+#3 /Volumes/HDD/dev/gears/web/framework/web/actions/CInlineAction.php(49): UserController->actionLogin()
+#4 /Volumes/HDD/dev/gears/web/framework/web/CController.php(308): CInlineAction->runWithParams(Array)
+#5 /Volumes/HDD/dev/gears/web/framework/web/filters/CFilterChain.php(133): CController->runAction(Object(CInlineAction))
+#6 /Volumes/HDD/dev/gears/web/framework/web/filters/CFilter.php(40): CFilterChain->run()
+#7 /Volumes/HDD/dev/gears/web/framework/web/CController.php(1145): CFilter->filter(Object(CFilterChain))
+#8 /Volumes/HDD/dev/gears/web/framework/web/filters/CInlineFilter.php(58): CController->filterAccessControl(Object(CFilterChain))
+#9 /Volumes/HDD/dev/gears/web/framework/web/filters/CFilterChain.php(130): CInlineFilter->filter(Object(CFilterChain))
+#10 /Volumes/HDD/dev/gears/web/framework/web/CController.php(291): CFilterChain->run()
+#11 /Volumes/HDD/dev/gears/web/framework/web/CController.php(265): CController->runActionWithFilters(Object(CInlineAction), Array)
+#12 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(282): CController->run('login')
+#13 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(141): CWebApplication->runController('user/login')
+#14 /Volumes/HDD/dev/gears/web/framework/base/CApplication.php(169): CWebApplication->processRequest()
+#15 /Volumes/HDD/dev/gears/web/index.php(13): CApplication->run()
+#16 {main}
+REQUEST_URI=/user/login
+HTTP_REFERER=http://localhost:8888/user/login
+---
+2013/09/08 07:29:26 [error] [exception.CHttpException.404] exception 'CHttpException' with message 'Unable to resolve the request "images/avatars/avatar3.jpg".' in /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php:286
+Stack trace:
+#0 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(141): CWebApplication->runController('images/avatars/...')
+#1 /Volumes/HDD/dev/gears/web/framework/base/CApplication.php(169): CWebApplication->processRequest()
+#2 /Volumes/HDD/dev/gears/web/index.php(13): CApplication->run()
+#3 {main}
+REQUEST_URI=/images/avatars/avatar3.jpg
+HTTP_REFERER=http://localhost:8888/
+---
+2013/09/08 07:29:26 [error] [exception.CHttpException.404] exception 'CHttpException' with message 'Unable to resolve the request "images/avatars/avatar3.jpg".' in /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php:286
+Stack trace:
+#0 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(141): CWebApplication->runController('images/avatars/...')
+#1 /Volumes/HDD/dev/gears/web/framework/base/CApplication.php(169): CWebApplication->processRequest()
+#2 /Volumes/HDD/dev/gears/web/index.php(13): CApplication->run()
+#3 {main}
+REQUEST_URI=/images/avatars/avatar3.jpg
+HTTP_REFERER=http://localhost:8888/
+---
+2013/09/08 07:29:38 [error] [exception.CHttpException.404] exception 'CHttpException' with message 'Unable to resolve the request "images/avatars/avatar3.jpg".' in /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php:286
+Stack trace:
+#0 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(141): CWebApplication->runController('images/avatars/...')
+#1 /Volumes/HDD/dev/gears/web/framework/base/CApplication.php(169): CWebApplication->processRequest()
+#2 /Volumes/HDD/dev/gears/web/index.php(13): CApplication->run()
+#3 {main}
+REQUEST_URI=/images/avatars/avatar3.jpg
+HTTP_REFERER=http://localhost:8888/
+---
+2013/09/08 07:29:38 [error] [exception.CHttpException.404] exception 'CHttpException' with message 'Unable to resolve the request "images/avatars/avatar3.jpg".' in /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php:286
+Stack trace:
+#0 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(141): CWebApplication->runController('images/avatars/...')
+#1 /Volumes/HDD/dev/gears/web/framework/base/CApplication.php(169): CWebApplication->processRequest()
+#2 /Volumes/HDD/dev/gears/web/index.php(13): CApplication->run()
+#3 {main}
+REQUEST_URI=/images/avatars/avatar3.jpg
+HTTP_REFERER=http://localhost:8888/
+---
+2013/09/08 07:29:41 [error] [exception.CHttpException.404] exception 'CHttpException' with message 'Unable to resolve the request "images/avatars/avatar3.jpg".' in /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php:286
+Stack trace:
+#0 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(141): CWebApplication->runController('images/avatars/...')
+#1 /Volumes/HDD/dev/gears/web/framework/base/CApplication.php(169): CWebApplication->processRequest()
+#2 /Volumes/HDD/dev/gears/web/index.php(13): CApplication->run()
+#3 {main}
+REQUEST_URI=/images/avatars/avatar3.jpg
+HTTP_REFERER=http://localhost:8888/
+---
+2013/09/08 07:29:41 [error] [exception.CHttpException.404] exception 'CHttpException' with message 'Unable to resolve the request "images/avatars/avatar3.jpg".' in /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php:286
+Stack trace:
+#0 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(141): CWebApplication->runController('images/avatars/...')
+#1 /Volumes/HDD/dev/gears/web/framework/base/CApplication.php(169): CWebApplication->processRequest()
+#2 /Volumes/HDD/dev/gears/web/index.php(13): CApplication->run()
+#3 {main}
+REQUEST_URI=/images/avatars/avatar3.jpg
+HTTP_REFERER=http://localhost:8888/
+---
+2013/09/08 07:32:31 [error] [exception.CHttpException.404] exception 'CHttpException' with message 'Unable to resolve the request "images/avatars/avatar3.jpg".' in /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php:286
+Stack trace:
+#0 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(141): CWebApplication->runController('images/avatars/...')
+#1 /Volumes/HDD/dev/gears/web/framework/base/CApplication.php(169): CWebApplication->processRequest()
+#2 /Volumes/HDD/dev/gears/web/index.php(13): CApplication->run()
+#3 {main}
+REQUEST_URI=/images/avatars/avatar3.jpg
+HTTP_REFERER=http://localhost:8888/
+---
+2013/09/08 07:32:46 [error] [exception.CHttpException.404] exception 'CHttpException' with message 'The system is unable to find the requested action "user".' in /Volumes/HDD/dev/gears/web/framework/web/CController.php:483
+Stack trace:
+#0 /Volumes/HDD/dev/gears/web/framework/web/CController.php(270): CController->missingAction('user')
+#1 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(282): CController->run('user')
+#2 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(141): CWebApplication->runController('user/user/login')
+#3 /Volumes/HDD/dev/gears/web/framework/base/CApplication.php(169): CWebApplication->processRequest()
+#4 /Volumes/HDD/dev/gears/web/index.php(13): CApplication->run()
+#5 {main}
+REQUEST_URI=/user/user/login
+---
+2013/09/08 07:33:21 [error] [exception.CHttpException.404] exception 'CHttpException' with message 'The system is unable to find the requested action "user".' in /Volumes/HDD/dev/gears/web/framework/web/CController.php:483
+Stack trace:
+#0 /Volumes/HDD/dev/gears/web/framework/web/CController.php(270): CController->missingAction('user')
+#1 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(282): CController->run('user')
+#2 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(141): CWebApplication->runController('user/user/login')
+#3 /Volumes/HDD/dev/gears/web/framework/base/CApplication.php(169): CWebApplication->processRequest()
+#4 /Volumes/HDD/dev/gears/web/index.php(13): CApplication->run()
+#5 {main}
+REQUEST_URI=/user/user/login
+---
+2013/09/08 07:33:30 [error] [exception.CHttpException.404] exception 'CHttpException' with message 'Unable to resolve the request "images/avatars/avatar3.jpg".' in /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php:286
+Stack trace:
+#0 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(141): CWebApplication->runController('images/avatars/...')
+#1 /Volumes/HDD/dev/gears/web/framework/base/CApplication.php(169): CWebApplication->processRequest()
+#2 /Volumes/HDD/dev/gears/web/index.php(13): CApplication->run()
+#3 {main}
+REQUEST_URI=/images/avatars/avatar3.jpg
+HTTP_REFERER=http://localhost:8888/
+---
+2013/09/08 07:33:37 [error] [exception.CHttpException.404] exception 'CHttpException' with message 'The system is unable to find the requested action "user".' in /Volumes/HDD/dev/gears/web/framework/web/CController.php:483
+Stack trace:
+#0 /Volumes/HDD/dev/gears/web/framework/web/CController.php(270): CController->missingAction('user')
+#1 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(282): CController->run('user')
+#2 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(141): CWebApplication->runController('user/user/login')
+#3 /Volumes/HDD/dev/gears/web/framework/base/CApplication.php(169): CWebApplication->processRequest()
+#4 /Volumes/HDD/dev/gears/web/index.php(13): CApplication->run()
+#5 {main}
+REQUEST_URI=/user/user/login
+---
+2013/09/08 07:33:39 [error] [exception.CHttpException.404] exception 'CHttpException' with message 'Unable to resolve the request "images/avatars/avatar3.jpg".' in /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php:286
+Stack trace:
+#0 /Volumes/HDD/dev/gears/web/framework/web/CWebApplication.php(141): CWebApplication->runController('images/avatars/...')
+#1 /Volumes/HDD/dev/gears/web/framework/base/CApplication.php(169): CWebApplication->processRequest()
+#2 /Volumes/HDD/dev/gears/web/index.php(13): CApplication->run()
+#3 {main}
+REQUEST_URI=/images/avatars/avatar3.jpg
+HTTP_REFERER=http://localhost:8888/
+---

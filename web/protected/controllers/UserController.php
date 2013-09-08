@@ -15,7 +15,7 @@ class UserController extends Controller
 	{
 		return array(
 			array('allow',  // allow all users to perform 'index' and 'view' actions
-				'actions'=>array('login'),
+				'actions'=>array('login','logout'),
 				'users'=>array('*'),
 			),
 			array('allow',  // allow all users to perform 'index' and 'view' actions
@@ -34,17 +34,19 @@ class UserController extends Controller
 		
 		if (isset($_POST['user']))
 		{
-			$user_name = $_POST['user_name'];
-			$password = $_POST['password'];
+			$user_name = $_POST['user']['user_name'];
+			$password = $_POST['user']['password'];
 			$user = User::model()->findByAttributes(array(
-				'user_name'=>$username
+				'user_name'=>$user_name
 			));
 			
 			if ($user)
 			{
-				if ($user->validatePassword($password))
+				$identity = new UserIdentity($user_name, $password);
+				if ($identity->authenticate())
 				{
-					
+					$duration = 3600*24*30;
+					Yii::app()->user->login($identity, $duration);
 					$this->redirect('/');
 				}
 			}
@@ -54,6 +56,12 @@ class UserController extends Controller
 		$this->render('login', array(
 			'showHeader'=>true,
 		));
+	}
+	
+	public function actionLogout()
+	{
+		Yii::app()->user->logout();
+		$this->redirect('user/login');
 	}
 }
 	
