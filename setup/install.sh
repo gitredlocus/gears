@@ -27,3 +27,6 @@ sudo apt-get install -y jenkins
 # install PHP
 # apt-cache search php5- (and install pkgs that needed)
 sudo apt-get install -y php5 libapache2-mod-php5 php5-mcrypt
+
+# install python-mysql interface
+sudo apt-get install python-mysqldb

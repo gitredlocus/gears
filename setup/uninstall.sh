@@ -11,6 +11,9 @@
 
 sudo apt-get update
 
+# remove python-mysql interface
+sudo apt-get remove python-mysqldb
+
 # remove PHP
 # apt-cache search php5- (and install pkgs that needed)
 sudo apt-get remove -y php5 libapache2-mod-php5 php5-mcrypt
