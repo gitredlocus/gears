@@ -1,2 +1,2 @@
-web/assets/*
-web/protected/runtime/*
+sedash/web/assets/*
+sedash/application/runtime/*
