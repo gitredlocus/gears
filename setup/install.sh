@@ -7,16 +7,18 @@
 # FIXME: if something is already installed, verify the installation, and skip it.
 #
 
+# (optionally) update the package db
 sudo apt-get update
 
 # install Apache
 sudo apt-get install -y apache2
 
-# install mysql
+# install mysql (root password: root)
 sudo apt-get install -y mysql-server
 sudo mysql_install_db
 sudo /usr/bin/mysql_secure_installation
-sudo apt-get install -y libapache2-mod-auth-mysql php5-mysql
+sudo apt-get install -y libapache2-mod-auth-mysql
+#sudo apt-get install -y php5-mysql
 
 # install jenkins
 sudo apt-get install -y openjdk-7-jdk
@@ -26,7 +28,7 @@ sudo apt-get install -y jenkins
 
 # install PHP
 # apt-cache search php5- (and install pkgs that needed)
-sudo apt-get install -y php5 libapache2-mod-php5 php5-mcrypt
+# sudo apt-get install -y php5 libapache2-mod-php5 php5-mcrypt
 
 # install python-mysql interface
 sudo apt-get install python-mysqldb
