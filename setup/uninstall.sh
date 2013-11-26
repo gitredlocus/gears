@@ -10,7 +10,7 @@
 #
 
 # remove python-mysql interface
-sudo apt-get remove python-mysqldb
+sudo apt-get remove -y python-mysqldb
 
 # remove PHP
 # apt-cache search php5- (and install pkgs that needed)
