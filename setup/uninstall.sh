@@ -9,8 +9,6 @@
 #        that we installed
 #
 
-sudo apt-get update
-
 # remove python-mysql interface
 sudo apt-get remove python-mysqldb
 
