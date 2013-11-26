@@ -5,7 +5,7 @@
 #
 
 JENKINS_INSTALLATION_DIR=/var/lib/jenkins
-REDLOCUS_JENKINS_DIR=/home/bmehta/redlocus/gears/setup/jenkins
+REDLOCUS_JENKINS_DIR=$PWD
 
 # nuke default (empty) jobs and plugins directory
 sudo rm -rf $JENKINS_INSTALLATION_DIR/jobs
